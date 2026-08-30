@@ -1,0 +1,12 @@
+services:
+  control-api:
+    build:
+      context: ./control-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./control-api/app:/app/app
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8000
+    restart: unless-stopped

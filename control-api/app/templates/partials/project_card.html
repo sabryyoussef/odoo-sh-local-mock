@@ -1,0 +1,47 @@
+<article class="project-card" data-project-name="{{ project.name|lower }}">
+  <header class="project-card__head">
+    <h2 class="project-card__name">
+      <a href="/project/{{ project.slug }}/branches" title="Open branches">{{ project.name }}</a>
+    </h2>
+    <button type="button" class="project-card__menu" title="More (placeholder)" aria-label="More">⋮</button>
+  </header>
+
+  <dl class="project-card__rows">
+    <div class="project-card__row">
+      <dt>License</dt>
+      <dd class="tone tone--{{ project.license_tone }}">{{ project.license }}</dd>
+    </div>
+    <div class="project-card__row">
+      <dt>Status</dt>
+      <dd class="tone tone--{{ project.status_tone }}">{{ project.status }}</dd>
+    </div>
+    <div class="project-card__row">
+      <dt>Version</dt>
+      <dd>{{ project.version }}</dd>
+    </div>
+    <div class="project-card__row">
+      <dt>Location</dt>
+      <dd>{{ project.location }}</dd>
+    </div>
+  </dl>
+
+  <footer class="project-card__actions">
+    <div class="project-card__icons">
+      <button type="button" class="icon-btn" title="Notifications (placeholder)">
+        <span aria-hidden="true">🔔</span>
+        {% if project.notifications %}
+          <span class="icon-btn__badge">{{ project.notifications }}</span>
+        {% endif %}
+      </button>
+      <a class="icon-btn" href="/project/{{ project.slug }}/settings" title="Settings">
+        <span aria-hidden="true">⚙</span>
+      </a>
+      <button type="button" class="icon-btn" title="{{ project.git_provider }} (placeholder)">
+        <span aria-hidden="true">⌥</span>
+        <span class="icon-btn__label">{{ project.git_provider }}</span>
+      </button>
+    </div>
+
+    <a class="project-card__open" href="/project/{{ project.slug }}/branches">Open <span aria-hidden="true">›</span></a>
+  </footer>
+</article>

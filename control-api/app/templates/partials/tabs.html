@@ -1,0 +1,18 @@
+<nav class="content-tabs" aria-label="Branch sections">
+  {% for tab in content_tabs %}
+    {% if tab.href %}
+      <a
+        class="content-tabs__tab{% if active_tab == tab.id %} is-active{% endif %}"
+        href="{{ tab.href }}"
+        data-tab="{{ tab.id }}"
+      >{{ tab.label }}</a>
+    {% else %}
+      <button
+        type="button"
+        class="content-tabs__tab{% if active_tab == tab.id %} is-active{% endif %}"
+        data-tab="{{ tab.id }}"
+        {% if tab.id != "history" %}title="Placeholder"{% endif %}
+      >{{ tab.label }}</button>
+    {% endif %}
+  {% endfor %}
+</nav>

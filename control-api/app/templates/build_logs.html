@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Logs · Build #{{ build.number }}{% endblock %}
+{% block shell %}
+  <main class="main-panel main-panel--fullish">
+    <div class="build-page">
+      <div class="build-header">
+        <div>
+          <a class="crumb-mini" href="/project/{{ project.slug }}/build/{{ build.id }}">← Build #{{ build.number }}</a>
+          <h1>Logs</h1>
+          <p class="muted">{{ project.name }} · {{ build.branch }} · {{ build.commit }}</p>
+        </div>
+        <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">Connect</a>
+      </div>
+
+      <nav class="content-tabs">
+        <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}">Overview</a>
+        <a class="content-tabs__tab is-active" href="/project/{{ project.slug }}/build/{{ build.id }}/logs">Logs</a>
+        <a class="content-tabs__tab" href="/project/{{ project.slug }}/backups">Backups</a>
+        <a class="content-tabs__tab" href="/project/{{ project.slug }}/settings">Settings</a>
+      </nav>
+
+      <section class="tab-body">
+        <div class="log-filters" id="log-filters">
+          <button type="button" class="btn is-filter-active" data-channel="all">All</button>
+          <button type="button" class="btn" data-channel="build">Build</button>
+          <button type="button" class="btn" data-channel="odoo">Odoo</button>
+          <button type="button" class="btn" data-channel="tests">Tests</button>
+        </div>
+        <pre class="terminal" id="log-terminal">{% for row in logs %}<div class="log-line" data-channel="{{ row.channel }}">[{{ row.ts }}] {{ row.line }}</div>
+{% endfor %}</pre>
+      </section>
+    </div>
+  </main>
+{% endblock %}

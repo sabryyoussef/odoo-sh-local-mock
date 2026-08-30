@@ -1,0 +1,24 @@
+<div class="branch-header">
+  <div class="branch-header__row">
+    <div class="branch-header__title-wrap">
+      <span class="status-dot status-dot--{{ current_branch.status }} status-dot--lg"></span>
+      <h1 class="branch-header__title">{{ current_branch.name }}</h1>
+      <span class="branch-header__version">{{ current_branch.version }}</span>
+      <span class="env-pill env-pill--{{ current_branch.environment }}">{{ current_branch.environment }}</span>
+    </div>
+    <div class="branch-header__actions">
+      {% for action in branch_actions %}
+        <button
+          type="button"
+          class="btn{% if action.danger %} btn--danger{% endif %}"
+          data-action="{{ action.id }}"
+          title="{{ action.label }} (UI only)"
+        >{{ action.label }}</button>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="clone-bar">
+    <code class="clone-bar__cmd" id="clone-command">{{ clone_command }}</code>
+    <button type="button" class="btn btn--ghost" id="copy-clone" title="Copy">Copy</button>
+  </div>
+</div>

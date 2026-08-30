@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Connect · {{ project.name }}{% endblock %}
+{% block shell %}
+  <main class="main-panel main-panel--fullish">
+    <div class="build-page">
+      <div class="build-header">
+        <div>
+          <a class="crumb-mini" href="/project/{{ project.slug }}/build/{{ build.id }}">← Build #{{ build.number }}</a>
+          <h1>Connect to Odoo Mock</h1>
+        </div>
+      </div>
+
+      <section class="connect-layout">
+        <div class="flow-card">
+          <h2>{{ project.name }}</h2>
+          <dl class="kv">
+            <div><dt>Environment</dt><dd>{{ build.environment }}</dd></div>
+            <div><dt>Odoo</dt><dd>{{ build.odoo_version }}</dd></div>
+            <div><dt>Instance URL</dt><dd><code>{{ build.local_url }}</code></dd></div>
+            <div><dt>Database</dt><dd>{{ build.database_name }}</dd></div>
+          </dl>
+          <a class="btn-hero btn-hero--primary" href="#mock-login">Open Mock Odoo</a>
+          <p class="muted" style="margin-top:10px">No real Odoo instance is running — this is a visual mock.</p>
+        </div>
+
+        <div class="odoo-login-mock" id="mock-login">
+          <div class="odoo-login-mock__bar">Mock Odoo {{ build.odoo_version }}</div>
+          <div class="odoo-login-mock__body">
+            <h3>Login</h3>
+            <label class="field"><span>Email</span><input type="email" value="admin@example.com"></label>
+            <label class="field"><span>Password</span><input type="password" value="admin"></label>
+            <button type="button" class="btn-hero btn-hero--primary" title="Placeholder">Log in</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+{% endblock %}

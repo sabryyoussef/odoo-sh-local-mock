@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Branches · {{ project.display_name }}{% endblock %}
+
+{% block shell %}
+  {% include "partials/sidebar.html" %}
+  <main class="main-panel">
+    {% include "partials/branch_header.html" %}
+    {% include "partials/tabs.html" %}
+    <section class="tab-body" id="tab-body">
+      {% if active_tab == "history" %}
+        {% include "partials/history_timeline.html" %}
+      {% else %}
+        <div class="placeholder-panel">
+          <h2>{{ active_tab|upper }}</h2>
+          <p>Placeholder — not implemented in this batch.</p>
+        </div>
+      {% endif %}
+    </section>
+  </main>
+{% endblock %}

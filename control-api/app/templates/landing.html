@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Mock Odoo.sh{% endblock %}
+{% block body_class %}body--landing{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+
+{% block shell %}
+<div class="landing">
+  {% include "partials/marketing_nav.html" %}
+  {% include "partials/hero.html" %}
+  {% include "partials/preview_mock.html" %}
+  {% include "partials/feature_cards.html" %}
+  {% include "partials/cta_footer.html" %}
+</div>
+{% endblock %}

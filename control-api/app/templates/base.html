@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Mock Odoo.sh{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% block top %}
+    {% if project is defined and project %}
+      {% include "partials/top_nav.html" %}
+    {% endif %}
+  {% endblock %}
+  <div class="{% block shell_class %}app-shell{% endblock %}">
+    {% block shell %}{% endblock %}
+  </div>
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

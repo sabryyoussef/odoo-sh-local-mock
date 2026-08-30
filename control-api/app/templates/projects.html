@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Your Projects · Odoo.sh Mock{% endblock %}
+{% block body_class %}body--projects{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+
+{% block shell %}
+<div class="projects-page">
+  {% include "partials/projects_top_bar.html" %}
+  {% include "partials/projects_banner.html" %}
+
+  <section class="projects-main">
+    <div class="projects-toolbar">
+      <h1 class="projects-toolbar__title">Your Projects</h1>
+      <div class="projects-toolbar__controls">
+        <a class="projects-demo-link" href="/project/alzaeem/branches">Open Demo Branches</a>
+        <label class="projects-search">
+          <span class="projects-search__icon" aria-hidden="true">⌕</span>
+          <input
+            id="project-search"
+            type="search"
+            placeholder="Search…"
+            autocomplete="off"
+          >
+        </label>
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button type="button" class="view-toggle__btn is-active" data-view="grid" title="Grid view" aria-pressed="true">
+            <span aria-hidden="true">▦</span>
+          </button>
+          <button type="button" class="view-toggle__btn" data-view="list" title="List view" aria-pressed="false">
+            <span aria-hidden="true">☰</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-grid" id="project-grid">
+      <a class="project-card project-card--create" href="/projects/new" data-project-name="__create__">
+        <span class="project-card__plus" aria-hidden="true">+</span>
+        <span class="project-card__create-label">Create New</span>
+      </a>
+
+      {% for project in projects %}
+        {% include "partials/project_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

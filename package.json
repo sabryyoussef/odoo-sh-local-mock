@@ -1,0 +1,10 @@
+{
+  "name": "odoo-sh-local-mock-docs",
+  "private": true,
+  "scripts": {
+    "screenshots": "node scripts/capture-screenshots.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.1"
+  }
+}

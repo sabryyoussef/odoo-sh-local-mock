@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Deploy · Mock Odoo.sh{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main">
+    <div class="flow-header">
+      <h1>Deploy Project</h1>
+      <p>Configure your GitHub repository and subscription to create a Mock Odoo.sh project.</p>
+    </div>
+
+    <form class="deploy-form" id="deploy-form" action="/deploy/progress" method="get">
+      <section class="flow-card">
+        <h2>GitHub Repository</h2>
+        <div class="seg">
+          <label class="seg__opt is-active"><input type="radio" name="repo_mode" value="existing" checked> Existing Repository</label>
+          <label class="seg__opt"><input type="radio" name="repo_mode" value="new"> New Repository</label>
+        </div>
+        <label class="field">
+          <span>Repository</span>
+          <select name="repository" id="deploy-repo">
+            {% for repo in repos %}
+              <option value="{{ repo.full_name }}" {% if repo.full_name == default_repo %}selected{% endif %}>{{ repo.full_name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </section>
+
+      <section class="flow-card">
+        <h2>Project</h2>
+        <label class="field">
+          <span>Project Name</span>
+          <input type="text" name="project_name" id="deploy-name" value="{{ default_project }}">
+        </label>
+        <label class="field">
+          <span>Odoo Version</span>
+          <select name="odoo_version" id="deploy-version">
+            {% for v in odoo_versions %}
+              <option value="{{ v }}" {% if v == default_version %}selected{% endif %}>{{ v }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="field">
+          <span>Hosting Location</span>
+          <select name="location" id="deploy-location">
+            {% for loc in locations %}
+              <option value="{{ loc }}" {% if loc == default_location %}selected{% endif %}>{{ loc }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </section>
+
+      <section class="flow-card">
+        <h2>Subscription Code</h2>
+        <div class="field-row">
+          <label class="field field--grow">
+            <span>Code</span>
+            <input type="text" name="subscription_code" id="subscription-code" value="{{ prefill_code }}" autocomplete="off">
+          </label>
+          <button type="button" class="btn-hero btn-hero--primary" id="validate-sub">Validate</button>
+        </div>
+        <div id="sub-result" class="sub-result" hidden
+             data-plan="{{ subscription.plan }}"
+             data-code="{{ subscription.code }}"
+             data-expires="{{ subscription.expires }}"
+             data-allowed="{{ subscription.projects_allowed }}"
+             data-used="{{ subscription.projects_used }}"
+             data-versions="{{ subscription.odoo_versions }}"></div>
+        <input type="hidden" id="sub-valid-code" value="{{ valid_code }}">
+      </section>
+
+      <section class="flow-card">
+        <h2>Environment Defaults</h2>
+        <dl class="kv">
+          <div><dt>Production branch</dt><dd>main</dd></div>
+          <div><dt>Staging branch</dt><dd>staging</dd></div>
+          <div><dt>Other branches</dt><dd>Development</dd></div>
+        </dl>
+      </section>
+
+      <section class="flow-card summary-card" id="deploy-summary">
+        <h2>Summary</h2>
+        <dl class="kv">
+          <div><dt>Repository</dt><dd id="sum-repo">{{ default_repo }}</dd></div>
+          <div><dt>Project</dt><dd id="sum-name">{{ default_project }}</dd></div>
+          <div><dt>Odoo</dt><dd id="sum-version">{{ default_version }}</dd></div>
+          <div><dt>Location</dt><dd id="sum-location">{{ default_location }}</dd></div>
+          <div><dt>Subscription</dt><dd id="sum-sub">Not validated</dd></div>
+        </dl>
+      </section>
+
+      <div class="flow-actions">
+        <a class="btn" href="/projects">Cancel</a>
+        <button type="submit" class="btn-hero btn-hero--primary" id="deploy-submit" disabled>Deploy Platform</button>
+      </div>
+    </form>
+  </main>
+</div>
+{% endblock %}

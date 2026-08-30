@@ -1,0 +1,37 @@
+<header class="top-nav">
+  <nav class="top-nav__left" aria-label="Primary">
+    <a class="top-nav__brand" href="/" title="Mock Odoo.sh home">Mock Odoo.sh</a>
+    {% for item in nav_items %}
+      <a
+        class="top-nav__link{% if active_nav == item.id %} is-active{% endif %}"
+        href="{{ item.href }}"
+      >{{ item.label }}</a>
+    {% endfor %}
+  </nav>
+  <div class="top-nav__right">
+    {% for item in nav_right %}
+      <a
+        class="top-nav__link top-nav__link--muted{% if active_nav == item.id %} is-active{% endif %}"
+        href="{{ item.href }}"
+      >{{ item.label }}</a>
+    {% endfor %}
+    <div class="top-nav__crumb" title="Navigation">
+      <a class="top-nav__crumb-link" href="/">Home</a>
+      <span class="top-nav__crumb-sep" aria-hidden="true">›</span>
+      <a class="top-nav__crumb-link" href="{{ projects_url|default('/projects') }}">Projects</a>
+      <span class="top-nav__crumb-sep" aria-hidden="true">›</span>
+      <a
+        class="top-nav__project top-nav__project--link"
+        href="{{ projects_url|default('/projects') }}"
+        title="{{ project.git_repository }} · back to Projects"
+      >
+        <span class="top-nav__project-dot"></span>
+        <span>{{ project.display_name }}</span>
+      </a>
+    </div>
+    <div class="top-nav__user" title="{{ (project.user.email if project.user is defined else user.email) }}">
+      <span class="avatar avatar--sm">{{ (project.user.initials if project.user is defined else user.initials) }}</span>
+      <span class="top-nav__user-name">{{ (project.user.name if project.user is defined else user.display_name) }}</span>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Checkout · {{ plan.name }}{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--wide">
+    <div class="flow-header">
+      <h1>Checkout</h1>
+      <p>Complete your Mock Odoo.sh subscription. <strong>Demo checkout — no real payment will be processed.</strong></p>
+      {% if plan.unknown_requested %}
+        <p class="sub-result sub-result--bad" style="display:inline-block">Unknown plan requested — showing Professional.</p>
+      {% endif %}
+    </div>
+
+    <div class="checkout-layout">
+      <div class="checkout-form">
+        <section class="flow-card">
+          <h2>Billing details</h2>
+          <label class="field"><span>GitHub Account</span><input type="text" value="{{ user.username }}" readonly></label>
+          <label class="field"><span>Billing Email</span><input type="text" value="{{ user.email }}"></label>
+          <label class="field"><span>Full Name</span><input type="text" value="{{ user.full_name }}"></label>
+          <label class="field"><span>Company</span><input type="text" value="{{ user.company }}" placeholder="Optional"></label>
+          <label class="field"><span>Country</span><input type="text" value="{{ user.country }}"></label>
+        </section>
+
+        <section class="flow-card">
+          <h2>Payment</h2>
+          <p class="demo-note">Demo payment — no real charge will occur. No card check required.</p>
+          {% if plan.price > 0 %}
+            <label class="field"><span>Card Number</span><input type="text" value="4242 4242 4242 4242"></label>
+            <div class="field-row">
+              <label class="field field--grow"><span>Expiry</span><input type="text" value="12/29"></label>
+              <label class="field field--grow"><span>CVV</span><input type="text" value="123"></label>
+            </div>
+          {% else %}
+            <p class="muted">No card required for the free trial.</p>
+          {% endif %}
+        </section>
+
+        <div class="flow-actions" style="justify-content:flex-start">
+          <a class="btn" href="/pricing">Back to Pricing</a>
+          <a class="btn-hero btn-hero--primary" id="pay-btn" href="/payment/success?plan={{ plan.id }}">{{ plan.pay_cta }}</a>
+        </div>
+      </div>
+
+      <aside class="flow-card order-summary">
+        <h2>Order summary</h2>
+        <div class="order-plan">
+          <strong>{{ plan.name }}</strong>
+          <div class="pricing-price">
+            <strong>{{ plan.price_label }}</strong>
+            {% if plan.price > 0 %}<span>/ {{ plan.period }}</span>{% else %}<span>· {{ plan.period }}</span>{% endif %}
+          </div>
+        </div>
+        <ul class="pricing-features">
+          {% for feature in plan.features %}
+            <li><span class="check">✓</span> {{ feature }}</li>
+          {% endfor %}
+        </ul>
+        <dl class="kv">
+          <div><dt>Subtotal</dt><dd>{% if plan.price > 0 %}${{ plan.price }}{% else %}$0{% endif %}</dd></div>
+          <div><dt>Tax</dt><dd>$0</dd></div>
+          <div><dt>Total</dt><dd><strong>{% if plan.price > 0 %}${{ plan.price }}{% else %}$0{% endif %}</strong></dd></div>
+        </dl>
+        <a class="btn-hero btn-hero--primary pricing-cta" style="margin-top:14px;display:block;text-align:center" href="/payment/success?plan={{ plan.id }}">{{ plan.pay_cta }}</a>
+      </aside>
+    </div>
+  </main>
+</div>
+{% endblock %}

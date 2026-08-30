@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Backups · {{ project.name }}{% endblock %}
+{% block shell %}
+  <main class="main-panel main-panel--fullish">
+    <div class="build-page">
+      <div class="build-header">
+        <div>
+          <a class="crumb-mini" href="/project/{{ project.slug }}/branches">← Branches</a>
+          <h1>Backups</h1>
+          <p class="muted">{{ project.name }}</p>
+        </div>
+        <a class="btn" href="/project/{{ project.slug }}/settings">Settings</a>
+      </div>
+
+      <section class="tab-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Environment</th>
+              <th>Database</th>
+              <th>Size</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for backup in backups %}
+              <tr>
+                <td>{{ backup.created_at }}</td>
+                <td>{{ backup.environment }}</td>
+                <td>{{ backup.database }}</td>
+                <td>{{ backup.size }}</td>
+                <td><span class="tone tone--valid">{{ backup.status }}</span></td>
+                <td class="table-actions">
+                  <button type="button" class="btn btn--sm" title="Placeholder">Restore</button>
+                  <button type="button" class="btn btn--sm" title="Placeholder">Download</button>
+                  <button type="button" class="btn btn--sm" title="Placeholder">Clone to Staging</button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+{% endblock %}

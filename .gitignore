@@ -1,0 +1,14 @@
+node_modules/
+.playwright/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+data/
+*.db
+.DS_Store
+.venv/
+venv/
+dist/
+.cache/

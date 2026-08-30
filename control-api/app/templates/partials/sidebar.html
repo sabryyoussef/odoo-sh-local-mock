@@ -1,0 +1,34 @@
+<aside class="sidebar" aria-label="Branches">
+  <div class="sidebar__search">
+    <input
+      id="branch-filter"
+      type="search"
+      class="sidebar__search-input"
+      placeholder="Filter branches…"
+      autocomplete="off"
+    >
+  </div>
+
+  {% for env in environments %}
+    <section class="sidebar__section" data-env="{{ env.id }}">
+      <h2 class="sidebar__section-title">{{ env.label }}</h2>
+      <ul class="sidebar__branch-list">
+        {% for branch in env.branches %}
+          <li>
+            <a
+              class="sidebar__branch{% if branch.active %} is-active{% endif %}"
+              href="/project/{{ project.slug }}/branches?branch={{ branch.name|urlencode }}"
+              data-branch-name="{{ branch.name|lower }}"
+            >
+              <span class="status-dot status-dot--{{ branch.status }}" title="{{ branch.status }}"></span>
+              <span class="sidebar__branch-name">{{ branch.name }}</span>
+              <span class="sidebar__branch-version">{{ branch.version }}</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="sidebar__empty">No branches</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+</aside>

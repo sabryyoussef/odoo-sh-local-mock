@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Settings · {{ project.name }}{% endblock %}
+{% block shell %}
+  <main class="main-panel main-panel--fullish">
+    <div class="build-page">
+      <div class="build-header">
+        <div>
+          <a class="crumb-mini" href="/project/{{ project.slug }}/branches">← Branches</a>
+          <h1>Project Settings</h1>
+        </div>
+      </div>
+
+      <section class="settings-grid">
+        <div class="flow-card">
+          <h2>General</h2>
+          <label class="field"><span>Project Name</span><input type="text" value="{{ project.name }}" readonly></label>
+        </div>
+        <div class="flow-card">
+          <h2>GitHub</h2>
+          <label class="field"><span>Repository</span><input type="text" value="{{ project.github_full_name }}" readonly></label>
+        </div>
+        <div class="flow-card">
+          <h2>Odoo</h2>
+          <label class="field"><span>Version</span><input type="text" value="{{ project.odoo_version }}" readonly></label>
+        </div>
+        <div class="flow-card">
+          <h2>Hosting</h2>
+          <label class="field"><span>Region</span><input type="text" value="{{ project.location }}" readonly></label>
+        </div>
+        <div class="flow-card">
+          <h2>Subscription</h2>
+          <dl class="kv">
+            <div><dt>Code</dt><dd><code>{{ project.subscription_code }}</code></dd></div>
+            <div><dt>Status</dt><dd class="tone tone--valid">Valid</dd></div>
+          </dl>
+        </div>
+        <div class="flow-card">
+          <h2>Environment Variables</h2>
+          <table class="data-table">
+            <thead><tr><th>Key</th><th>Value</th></tr></thead>
+            <tbody>
+              {% for env in project.env_vars %}
+                <tr><td><code>{{ env.key }}</code></td><td>{{ env.value }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="flow-card danger-zone">
+          <h2>Danger Zone</h2>
+          <div class="flow-actions" style="justify-content:flex-start">
+            <button type="button" class="btn" title="Placeholder">Archive Project</button>
+            <button type="button" class="btn btn--danger" title="Placeholder">Delete Project</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+{% endblock %}

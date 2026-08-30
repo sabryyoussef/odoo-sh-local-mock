@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Mock Odoo.sh{% endblock %}
+{% block body_class %}body--auth{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="auth-page">
+  <a class="auth-brand" href="/"><span aria-hidden="true">◆</span> Mock Odoo.sh</a>
+  <div class="auth-card">
+    <h1>Continue with GitHub</h1>
+    <p class="auth-lead">Connect your GitHub account to deploy and manage Odoo projects.</p>
+    <div class="auth-github-icon" aria-hidden="true">GH</div>
+    <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github/authorize">
+      Sign in with GitHub
+    </a>
+    <a class="auth-secondary" href="/auth/github/authorize">Continue with GitHub</a>
+    <p class="auth-note">Mock authentication only — no real OAuth.</p>
+  </div>
+  <a class="auth-back" href="/">← Back to landing</a>
+</div>
+{% endblock %}

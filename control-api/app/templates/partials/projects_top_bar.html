@@ -1,0 +1,16 @@
+<header class="projects-topbar">
+  <a class="projects-topbar__brand" href="/">
+    <span class="projects-topbar__mark" aria-hidden="true">◆</span>
+    <span class="projects-topbar__name">Mock Odoo.sh</span>
+  </a>
+  <div class="projects-topbar__right">
+    <a class="projects-topbar__home" href="/">Home</a>
+    <a class="projects-topbar__home" href="/deploy">Deploy</a>
+    <a class="projects-topbar__home" href="/account">Account</a>
+    <a class="projects-topbar__user" href="/account" title="{{ user.email }}">
+      <span class="avatar avatar--sm">{{ user.initials }}</span>
+      <span class="projects-topbar__username">{{ user.display_name }}</span>
+      <span class="projects-topbar__caret" aria-hidden="true">▾</span>
+    </a>
+  </div>
+</header>

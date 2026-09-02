@@ -30,7 +30,8 @@ const test = base.extend({
   resetUser: [
     async ({ page, runtime }, use, testInfo) => {
       const project = testInfo.project.name;
-      if (project === "desktop-chromium" || project === "mobile-chromium") {
+      const isLifecycle = project.startsWith("lifecycle") || /lifecycle/.test(testInfo.file || "");
+      if ((project === "desktop-chromium" || project === "mobile-chromium") && !isLifecycle) {
         const res = await page.request.post(`${runtime.baseURL}/e2e/reset-user`, {
           headers: { "x-e2e-secret": runtime.authSecret },
         });

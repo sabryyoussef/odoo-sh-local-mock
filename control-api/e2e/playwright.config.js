@@ -28,7 +28,7 @@ const projects = [
   },
   {
     name: "desktop-chromium",
-    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js/,
+    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js|lifecycle/,
     dependencies: ["setup"],
     use: {
       browserName: "chromium",
@@ -38,7 +38,7 @@ const projects = [
   },
   {
     name: "mobile-chromium",
-    testMatch: /responsive\.spec\.js/,
+    testMatch: /(^|\/)responsive\.spec\.js$/,
     dependencies: ["setup"],
     use: {
       browserName: "chromium",
@@ -52,6 +52,24 @@ const projects = [
     use: {
       browserName: "chromium",
       viewport: { width: 1280, height: 720 },
+      storageState: { cookies: [], origins: [] },
+    },
+  },
+  {
+    name: "lifecycle-chromium",
+    testMatch: /lifecycle\.spec\.js/,
+    use: {
+      browserName: "chromium",
+      viewport: { width: 1280, height: 720 },
+      storageState: { cookies: [], origins: [] },
+    },
+  },
+  {
+    name: "lifecycle-mobile",
+    testMatch: /lifecycle\.responsive\.spec\.js/,
+    use: {
+      browserName: "chromium",
+      ...devices["Pixel 5"],
       storageState: { cookies: [], origins: [] },
     },
   },

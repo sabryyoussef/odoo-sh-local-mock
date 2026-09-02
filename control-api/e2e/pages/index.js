@@ -51,4 +51,26 @@ class WizardPage {
   }
 }
 
-module.exports = { LoginPage, WizardPage };
+class LifecyclePage {
+  constructor(page) {
+    this.page = page;
+  }
+
+  panel() {
+    return this.page.getByTestId("lifecycle-panel");
+  }
+
+  state() {
+    return this.page.getByTestId("lifecycle-state");
+  }
+
+  countdown() {
+    return this.page.getByTestId("lifecycle-countdown");
+  }
+
+  async openTrial(trialId) {
+    await this.page.goto(`/portal/platform/trials/${trialId}`);
+  }
+}
+
+module.exports = { LoginPage, WizardPage, LifecyclePage };

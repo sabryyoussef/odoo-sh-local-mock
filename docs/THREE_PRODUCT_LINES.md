@@ -49,17 +49,17 @@ Authoritative constants: `control-api/app/product_lines.py`. Integrity: `control
 | Route | Purpose |
 |-------|---------|
 | `GET /cloud` | Product overview |
-| `GET /cloud/pricing` | Plans (presentation-only prices) |
-| `GET/POST /cloud/register` | Email/password registration (no GitHub) |
-| `GET/POST /cloud/login` | Cloud sign-in |
+| `GET /cloud/pricing` | Plan selection (carries `plan` + `cycle`) |
+| `GET/POST /cloud/register` | Short email/password registration |
+| `GET/POST /cloud/login` | Cloud sign-in + resume precedence |
 | `POST /cloud/logout` | Cloud logout |
-| `GET/POST /cloud/setup/plan` | Plan + billing cycle |
-| `GET/POST /cloud/setup/version` | Odoo version (Odoo 19 Community) |
-| `GET/POST /cloud/setup/package` | Approved packages |
-| `GET/POST /cloud/setup/company` | Company / users / storage |
-| `GET/POST /cloud/setup/addons` | Approved add-ons only |
-| `GET /cloud/setup/review` | Server-side totals |
-| `GET/POST /cloud/checkout` | Demo checkout (no card fields) |
+| `GET/POST /cloud/setup` | Combined configure (package, company, add-ons) |
+| `GET /cloud/setup/quote` | Server quote preview (JSON, not trusted totals) |
+| `GET/POST /cloud/setup/confirm` | Review + idempotent demo checkout |
+| `GET /cloud/setup/plan` | Redirect: pricing or configure |
+| `GET /cloud/setup/version\|package\|company\|addons` | Redirect to `/cloud/setup` |
+| `GET /cloud/setup/review` and `GET /cloud/checkout` | Redirect to confirm |
+| `POST /cloud/checkout` | Same handler as confirm POST |
 | `GET /cloud/checkout/success` | Order/subscription codes |
 | `GET /cloud/provisioning/{id}` | Status (never fake Ready) |
 | `GET /cloud/instances` | Workspaces; Open Odoo gated |
@@ -171,7 +171,7 @@ GitHub/build controls are not shown on catalogue pages.
 
 ## Helpers ERP Cloud flow (Implemented; checkout/provisioning mocked)
 
-`/cloud` → `/cloud/pricing` → register → plan → Odoo 19 → package → company → approved add-ons → review → demo checkout → provisioning/instances.
+`/cloud` → `/cloud/pricing` (plan is chosen here) → register/login → `/cloud/setup` → `/cloud/setup/confirm` → provisioning/instances.
 
 Duplicate checkout with the same idempotency key returns the same order.
 

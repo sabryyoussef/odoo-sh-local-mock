@@ -1,25 +1,28 @@
 {% extends "cloud/base.html" %}
-{% block title %}Cloud sign in{% endblock %}
-{% block cloud_crumb %} · Sign in{% endblock %}
+{% block title %}{{ t('cloud.signin') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.signin') }}{% endblock %}
 {% block cloud_content %}
 <div class="flow-header">
-  <h1>Sign in to Helpers ERP Cloud</h1>
-  <p>Email and password — GitHub is not required.</p>
+  <h1>{{ t('cloud.signin_title') }}</h1>
+  <p>{{ t('cloud.signin_lead') }}</p>
 </div>
-{% if error_message %}<div class="sub-result sub-result--bad">{{ error_message }}</div>{% endif %}
+{% if error_message %}
+  <div class="sub-result sub-result--bad" role="alert" id="form-error-summary" tabindex="-1">{{ error_message }}</div>
+{% endif %}
 <section class="flow-card" style="max-width:480px">
   <form method="post" action="/cloud/login">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="hidden" name="next" value="{{ next }}">
-    <label class="field"><span>Work email</span>
+    <input type="hidden" name="plan" value="{{ plan|default('') }}">
+    <input type="hidden" name="cycle" value="{{ cycle|default('') }}">
+    <label class="field"><span>{{ t('cloud.email') }}</span>
       <input type="email" name="email" value="{{ form.email|default('') }}" autocomplete="username" required>
     </label>
-    <label class="field"><span>Password</span>
+    <label class="field"><span>{{ t('cloud.password') }}</span>
       <input type="password" name="password" autocomplete="current-password" required>
     </label>
     <div class="flow-actions">
-      <button type="submit" class="btn-hero btn-hero--primary">Sign in</button>
-      <a class="btn" href="/cloud/register">Create an account</a>
+      <button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.signin') }}</button>
+      <a class="btn" href="/cloud/register{% if plan %}?plan={{ plan }}&amp;cycle={{ cycle }}{% endif %}">{{ t('cloud.create_account') }}</a>
     </div>
   </form>
 </section>

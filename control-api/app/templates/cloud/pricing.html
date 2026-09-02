@@ -1,33 +1,72 @@
 {% extends "cloud/base.html" %}
-{% block title %}Cloud plans · Helpers ERP Cloud{% endblock %}
-{% block cloud_crumb %} · Plans{% endblock %}
+{% block title %}{{ t('cloud.plans_title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('nav.pricing') }}{% endblock %}
 {% block cloud_content %}
 <div class="flow-header" style="text-align:center">
-  <h1>Helpers ERP Cloud plans</h1>
-  <p>Choose a managed plan. Prices below are <strong>Presentation Only</strong> and are calculated on the server when you configure your ERP.</p>
-  <p><span class="badge badge--warning">Presentation Only</span> No real charge will occur.</p>
+  <h1>{{ t('cloud.plans_title') }}</h1>
+  <p>{{ t('cloud.plans_lead') }}</p>
+  <p><span class="badge badge--warning">{{ t('cloud.presentation') }}</span> {{ t('cloud.no_charge') }}</p>
 </div>
+<form method="get" action="/cloud/pricing" class="seg billing-cycle-form" id="cloud-cycle-form">
+  <fieldset class="seg">
+    <legend class="muted">{{ t('cloud.billing_cycle') }}</legend>
+    <label class="seg__opt{% if selected_cycle != 'annual' %} is-active{% endif %}">
+      <input type="radio" name="cycle" value="monthly" {% if selected_cycle != 'annual' %}checked{% endif %}>
+      {{ t('cloud.monthly') }}
+    </label>
+    <label class="seg__opt{% if selected_cycle == 'annual' %} is-active{% endif %}">
+      <input type="radio" name="cycle" value="annual" {% if selected_cycle == 'annual' %}checked{% endif %}>
+      {{ t('cloud.annual') }}
+    </label>
+  </fieldset>
+  <noscript><button type="submit" class="btn">{{ t('cloud.show_prices') }}</button></noscript>
+</form>
+<p class="muted" style="text-align:center">{{ t('cloud.annual_is_yearly') }}</p>
 <div class="pricing-grid">
-  {% for plan in plans %}
+  {% for card in plan_cards %}
+    {% set plan = card.plan %}
     <article class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
-      {% if plan.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
+      {% if plan.recommended %}<div class="pricing-badge">{{ t('common.recommended') }}</div>{% endif %}
       <h2>{{ plan.name }}</h2>
-      <div class="pricing-price">
-        <strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong>
-        <span>/ month</span>
-      </div>
-      <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} / year</p>
+      {% if plan.quote_required %}
+        <div class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></div>
+      {% elif card.cycle == 'annual' %}
+        <div class="pricing-price">
+          <strong>{{ format_money(plan.price_annual_cents, plan.currency) }}</strong>
+          <span>{{ t('common.year') }}</span>
+        </div>
+        <p class="muted">{{ t('cloud.yearly_total') }} · {{ t('cloud.equiv_month') }} {{ format_money(((plan.price_annual_cents + 6) // 12), plan.currency) }}</p>
+      {% else %}
+        <div class="pricing-price">
+          <strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong>
+          <span>{{ t('common.month') }}</span>
+        </div>
+        {% if not card.annual_disabled %}
+          <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} {{ t('common.year') }} · {{ t('cloud.yearly_total') }}</p>
+        {% endif %}
+      {% endif %}
       <p>{{ plan.description }}</p>
       <ul class="pricing-features">
-        <li><span class="check">✓</span> {{ plan.included_users }} users included{% if plan.max_users %} (max {{ plan.max_users }}){% endif %}</li>
-        <li><span class="check">✓</span> {{ plan.included_storage_gb }} GB storage{% if plan.max_storage_gb %} (max {{ plan.max_storage_gb }} GB){% endif %}</li>
-        <li><span class="check">✓</span> {{ plan.backup_retention_days }}-day backup retention</li>
-        <li><span class="check">✓</span> {{ plan.support_level|replace('_',' ') }} support</li>
-        {% if plan.trial_days %}<li><span class="check">✓</span> {{ plan.trial_days }}-day trial{% if plan.is_demo %} (demo limitations){% endif %}</li>{% endif %}
-        {% if plan.quote_required %}<li><span class="check">✓</span> Quote-based option for custom resources</li>{% endif %}
+        <li><span class="check">✓</span> {{ plan.included_users }} {{ t('cloud.users_included') }}{% if plan.max_users %} ({{ t('cloud.max') }} {{ plan.max_users }}){% endif %}</li>
+        <li><span class="check">✓</span> {{ plan.included_storage_gb }} {{ t('cloud.storage') }}{% if plan.max_storage_gb %} ({{ t('cloud.max') }} {{ plan.max_storage_gb }} GB){% endif %}</li>
+        <li><span class="check">✓</span> {{ plan.backup_retention_days }}{{ t('cloud.backup_retention') }}</li>
+        <li><span class="check">✓</span> {{ plan.support_level|replace('_',' ') }} {{ t('cloud.support') }}</li>
+        {% if plan.trial_days %}<li><span class="check">✓</span> {{ plan.trial_days }}{{ t('cloud.day_trial') }}{% if plan.is_demo %} {{ t('cloud.demo_limits') }}{% endif %}</li>{% endif %}
+        {% if plan.quote_required %}<li><span class="check">✓</span> {{ t('cloud.quote') }}</li>{% endif %}
       </ul>
-      <a class="btn-hero {% if plan.recommended %}btn-hero--primary{% else %}btn-hero--secondary btn-hero--on-light{% endif %} pricing-cta" href="/cloud/setup/plan">Start Free Trial</a>
+      <a class="btn-hero {% if plan.recommended %}btn-hero--primary{% else %}btn-hero--secondary btn-hero--on-light{% endif %} pricing-cta" href="{{ card.href }}">{{ card.cta }}</a>
     </article>
   {% endfor %}
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("cloud-cycle-form");
+  if (!form) return;
+  form.querySelectorAll('input[name="cycle"]').forEach(function (input) {
+    input.addEventListener("change", function () { form.submit(); });
+  });
+})();
+</script>
 {% endblock %}

@@ -1,0 +1,201 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="cloud-configure">
+  <div class="cloud-configure__main">
+    <form method="post" action="/cloud/setup" class="deploy-form" id="cloud-configure-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="flow-header">
+        <p class="cloud-plan-chip">
+          <strong>{{ setup.plan.name }}</strong>
+          · {{ setup.billing_cycle }}
+          <button type="submit" name="action" value="change_plan" class="link-button">{{ t('cloud.change_plan') }}</button>
+        </p>
+        <h1>{{ t('cloud.choose_how') }}</h1>
+        <p>{{ t('cloud.choose_how_lead') }}</p>
+      </div>
+      <fieldset class="cloud-packages">
+        <legend class="visually-hidden">{{ t('cloud.choose_how') }}</legend>
+        <div class="pricing-grid">
+          {% for pkg in packages %}
+            <label class="pricing-card{% if pkg.recommended %} pricing-card--recommended{% endif %}">
+              {% if pkg.recommended %}<div class="pricing-badge">{{ t('common.recommended') }}</div>{% endif %}
+              <h2>{{ pkg.name }}</h2>
+              <p>{{ pkg.description }}</p>
+              <input type="radio" name="package_id" value="{{ pkg.id }}" {% if setup.package_id == pkg.id or (not setup.package_id and pkg.recommended) %}checked{% endif %} required>
+              <span class="muted">{{ t('cloud.select_package') }} {{ pkg.name }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        {% if errors.package_id %}<small class="field-error">{{ errors.package_id }}</small>{% endif %}
+      </fieldset>
+
+      <h2>{{ t('cloud.company_workspace') }}</h2>
+      <label class="field"><span>{{ t('cloud.legal_name') }}</span>
+        <input type="text" name="legal_company_name" value="{{ form.legal_company_name|default(setup.legal_company_name or '') }}" required autocomplete="organization">
+        {% if errors.legal_company_name %}<small class="field-error">{{ errors.legal_company_name }}</small>{% endif %}
+      </label>
+      <label class="field"><span>{{ t('cloud.workspace_name') }}</span>
+        <input type="text" name="workspace_name" id="workspace_name" value="{{ form.workspace_name|default(setup.workspace_name or '') }}" required>
+        {% if errors.workspace_name %}<small class="field-error">{{ errors.workspace_name }}</small>{% endif %}
+      </label>
+      <label class="field"><span>{{ t('cloud.workspace_url') }}</span>
+        <input type="text" name="requested_subdomain" id="requested_subdomain" value="{{ form.requested_subdomain|default(suggested_subdomain) }}" spellcheck="false">
+        <small class="muted" id="workspace-hostname">{{ hostname }}</small>
+        {% if errors.requested_subdomain %}<small class="field-error">{{ errors.requested_subdomain }}</small>{% endif %}
+      </label>
+      <label class="field"><span>{{ t('cloud.country') }}</span>
+        <select name="country" id="cloud-country" required>
+          {% for c in countries %}
+            <option value="{{ c }}" {% if country == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+        {% if errors.country %}<small class="field-error">{{ errors.country }}</small>{% endif %}
+      </label>
+      <div id="cloud-other-locale" class="cloud-other-locale" {% if not country_editable %}hidden{% endif %}>
+        <label class="field"><span>{{ t('cloud.currency') }}</span>
+          <input type="text" name="currency" id="cloud-currency" value="{{ currency }}" maxlength="3">
+          {% if errors.currency %}<small class="field-error">{{ errors.currency }}</small>{% endif %}
+        </label>
+        <label class="field"><span>{{ t('cloud.timezone') }}</span>
+          <input type="text" name="timezone" id="cloud-timezone" value="{{ timezone }}">
+          {% if errors.timezone %}<small class="field-error">{{ errors.timezone }}</small>{% endif %}
+        </label>
+      </div>
+      <label class="field"><span>{{ t('cloud.language') }}</span>
+        <select name="language">
+          {% for code, label in languages %}
+            <option value="{{ code }}" {% if (form.language|default(setup.language or 'en_US')) == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <details class="cloud-customize" open>
+        <summary>{{ t('cloud.customize_plan') }}</summary>
+        <p class="muted">{{ t('cloud.customize_lead') }}</p>
+        <label class="field"><span>{{ t('cloud.users') }}</span>
+          <input type="number" name="required_users" min="1" {% if setup.plan.max_users %}max="{{ setup.plan.max_users }}"{% endif %} value="{{ form.required_users|default(setup.required_users or setup.plan.included_users) }}" required>
+          {% if errors.required_users %}<small class="field-error">{{ errors.required_users }}</small>{% endif %}
+        </label>
+        <label class="field"><span>{{ t('cloud.storage_gb') }}</span>
+          <input type="number" name="required_storage_gb" min="1" {% if setup.plan.max_storage_gb %}max="{{ setup.plan.max_storage_gb }}"{% endif %} value="{{ form.required_storage_gb|default(setup.required_storage_gb or setup.plan.included_storage_gb) }}" required>
+          {% if errors.required_storage_gb %}<small class="field-error">{{ errors.required_storage_gb }}</small>{% endif %}
+        </label>
+        <fieldset>
+          <legend>{{ t('cloud.optional_addons') }}</legend>
+          <div class="pricing-grid">
+            {% for row in addon_rows %}
+              <label class="pricing-card{% if not row.compatible %} is-disabled{% endif %}">
+                <h2>{{ row.addon.name }}</h2>
+                <p>{{ row.addon.description }}</p>
+                <p class="muted">{{ format_money(row.addon.price_monthly_cents) }}/mo</p>
+                {% if row.compatible %}
+                  <input type="checkbox" name="addon_ids" value="{{ row.addon.id }}" {% if row.selected %}checked{% endif %}>
+                  <span>{{ t('cloud.include_addon') }}</span>
+                {% else %}
+                  <p class="muted">{{ t('cloud.addon_unavailable') }}</p>
+                {% endif %}
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+      </details>
+
+      <div class="flow-actions">
+        <button type="submit" name="action" value="update_quote" class="btn">{{ t('cloud.update_total') }}</button>
+        <button type="submit" name="action" value="continue" class="btn-hero btn-hero--primary">{{ t('cloud.continue') }}</button>
+      </div>
+    </form>
+  </div>
+  <aside class="cloud-quote" id="cloud-quote" aria-live="polite">
+    <h2>{{ t('cloud.your_total') }}</h2>
+    {% if quote and quote.quote_required %}
+      <p class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></p>
+    {% elif quote %}
+      <p class="pricing-price"><strong id="quote-total">{{ quote.total_display }}</strong> <span>/ {{ quote.period_label }}</span></p>
+      {% if quote.billing_cycle == 'annual' %}
+        <p class="muted">{{ t('cloud.yearly_total') }}{% if quote.monthly_equivalent_display %} · {{ t('cloud.equiv_month') }} {{ quote.monthly_equivalent_display }}{% endif %}</p>
+      {% endif %}
+      <ul class="pricing-features" id="quote-lines">
+        {% for line in quote.lines %}
+          {% if line.cents %}
+            <li>{{ line.label }} · {{ format_money(line.cents, quote.currency) }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">{{ t('cloud.quote_after_config') }}</p>
+    {% endif %}
+    <p class="muted">{{ t('cloud.presentation') }} — {{ t('cloud.no_charge') }}</p>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("cloud-configure-form");
+  var country = document.getElementById("cloud-country");
+  var other = document.getElementById("cloud-other-locale");
+  var hostname = document.getElementById("workspace-hostname");
+  var sub = document.getElementById("requested_subdomain");
+  if (country && other) {
+    country.addEventListener("change", function () {
+      other.hidden = country.value !== "Other";
+    });
+  }
+  function slugify(value) {
+    return (value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+  var workspace = document.getElementById("workspace_name");
+  if (workspace && sub && hostname) {
+    workspace.addEventListener("input", function () {
+      if (sub.dataset.touched === "1") return;
+      var slug = slugify(workspace.value);
+      if (slug) {
+        sub.value = slug;
+        hostname.textContent = slug + ".helpers-erp.example";
+      }
+    });
+    sub.addEventListener("input", function () { sub.dataset.touched = "1"; hostname.textContent = (sub.value || "your-company") + ".helpers-erp.example"; });
+  }
+  if (!form) return;
+  function esc(value) {
+    return String(value || "").replace(/[&<>"']/g, function (ch) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+    });
+  }
+  function refreshQuote() {
+    var params = new URLSearchParams();
+    var pkg = form.querySelector('input[name="package_id"]:checked');
+    if (pkg) params.set("package_id", pkg.value);
+    var users = form.querySelector('input[name="required_users"]');
+    var storage = form.querySelector('input[name="required_storage_gb"]');
+    if (users) params.set("required_users", users.value);
+    if (storage) params.set("required_storage_gb", storage.value);
+    form.querySelectorAll('input[name="addon_ids"]:checked').forEach(function (el) {
+      params.append("addon_ids", el.value);
+    });
+    fetch("/cloud/setup/quote?" + params.toString(), { credentials: "same-origin" })
+      .then(function (r) { return r.json().then(function (data) { return { status: r.status, data: data }; }); })
+      .then(function (res) {
+        var data = res.data || {};
+        if (!data.ok) return;
+        var total = document.getElementById("quote-total");
+        var lines = document.getElementById("quote-lines");
+        if (data.quote_required) {
+          if (total) total.textContent = "Custom quote";
+          if (lines) lines.innerHTML = "";
+          return;
+        }
+        if (total) total.textContent = data.total_display;
+        if (lines && Array.isArray(data.lines)) {
+          lines.innerHTML = data.lines.filter(function (line) { return line.cents; }).map(function (line) {
+            return "<li>" + esc(line.label) + " · " + esc(line.display || "") + "</li>";
+          }).join("");
+        }
+      })
+      .catch(function () {});
+  }
+  form.addEventListener("change", refreshQuote);
+})();
+</script>
+{% endblock %}

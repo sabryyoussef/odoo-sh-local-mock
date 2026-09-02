@@ -1,0 +1,61 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>{{ t('cloud.confirm_title') }}</h1>
+  <p><span class="badge badge--warning">{{ t('cloud.presentation') }}</span> {{ t('cloud.no_charge') }}</p>
+</div>
+{% if error_message %}<div class="sub-result sub-result--bad" role="alert" id="form-error-summary" tabindex="-1">{{ error_message }}</div>{% endif %}
+<section class="flow-card">
+  <dl class="kv">
+    <div><dt>{{ t('cloud.customer') }}</dt><dd>{{ user.name }} · {{ user.email }}</dd></div>
+    <div><dt>{{ t('cloud.company') }}</dt><dd>{{ snapshot.company.legal_company_name }}</dd></div>
+    <div><dt>{{ t('cloud.workspace_name') }}</dt><dd>{{ snapshot.company.workspace_name }} ({{ hostname }})</dd></div>
+    <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ snapshot.plan.name }} · {{ snapshot.billing_cycle }}</dd></div>
+    <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ snapshot.package.name }}</dd></div>
+    <div><dt>{{ t('cloud.users') }}</dt><dd>{{ snapshot.users }}</dd></div>
+    <div><dt>{{ t('cloud.storage_gb') }}</dt><dd>{{ snapshot.storage_gb }} GB</dd></div>
+    <div><dt>{{ t('cloud.country') }}</dt><dd>{{ snapshot.company.country }} · {{ snapshot.company.currency }} · {{ snapshot.company.language }}</dd></div>
+    <div><dt>{{ t('cloud.optional_addons') }}</dt><dd>{% for a in snapshot.addons %}{{ a.name }}{% if not loop.last %}, {% endif %}{% else %}{{ t('cloud.none') }}{% endfor %}</dd></div>
+  </dl>
+</section>
+<section class="flow-card">
+  <h2>{{ t('cloud.price_breakdown') }}</h2>
+  {% if quote_required %}
+    <p class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></p>
+    <p class="muted">{{ t('cloud.enterprise_quote_note') }}</p>
+  {% else %}
+    <ul class="pricing-features">
+      {% for line in pricing.lines %}
+        <li>{{ line.label }} · {{ format_money(line.cents, pricing.currency) }}</li>
+      {% endfor %}
+    </ul>
+    <p><strong>{{ t('cloud.total') }} {{ pricing.total_display }} / {{ pricing.period_label }}</strong></p>
+    {% if pricing.billing_cycle == 'annual' %}
+      <p class="muted">{{ t('cloud.yearly_total') }}{% if pricing.monthly_equivalent_display %} · {{ t('cloud.equiv_month') }} {{ pricing.monthly_equivalent_display }}{% endif %}</p>
+    {% endif %}
+  {% endif %}
+</section>
+<form method="post" action="/cloud/setup/confirm" id="cloud-confirm-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup">{{ t('cloud.back') }}</a>
+    <button type="submit" class="btn-hero btn-hero--primary" id="cloud-confirm-cta" data-disable-after-submit="1">
+      {% if quote_required %}{{ t('cloud.submit_enterprise') }}{% else %}{{ t('cloud.place_demo_order') }}{% endif %}
+    </button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("cloud-confirm-form");
+  var btn = document.getElementById("cloud-confirm-cta");
+  if (!form || !btn) return;
+  form.addEventListener("submit", function () {
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+  });
+})();
+</script>
+{% endblock %}

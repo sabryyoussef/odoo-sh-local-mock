@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Sign in · {{ brand.product_name }}{% endblock %}
+{% block title %}{{ t('nav.signin') }} · {{ brand.product_name }}{% endblock %}
 {% block body_class %}body--auth{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="auth-page">
@@ -19,28 +18,28 @@
     </div>
   {% endif %}
   <div class="auth-card">
-    <h1>Continue with GitHub</h1>
-    <p class="auth-lead">Connect your GitHub account to deploy and manage Odoo projects.</p>
+    <h1>{{ t('auth.github_title') }}</h1>
+    <p class="auth-lead">{{ t('auth.github_lead') }}</p>
     <div class="auth-github-icon" aria-hidden="true">GH</div>
     {% if oauth_ready %}
       <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github">
-        Sign in with GitHub
+        {{ t('auth.github_btn') }}
       </a>
-      <p class="auth-note muted">Developer Platform only — GitHub is not used for Helpers ERP Cloud or Ready Solutions.</p>
-      <p class="auth-note muted">Sign in at <code>https://mock-odoo.drpaws.ai</code> or local <code>http://localhost:8000</code>.</p>
-      <hr class="auth-split">
-      <p class="auth-lead">Company ERP without code?</p>
-      <a class="btn-hero btn-hero--secondary auth-btn" href="/cloud/login">Helpers ERP Cloud sign in</a>
-      <p class="auth-note muted"><a href="/cloud/register">Create a Cloud account</a> with email and password.</p>
+      <p class="auth-note muted">{{ t('auth.github_note') }}</p>
+      <p class="auth-note muted">{{ t('auth.signin_hosts') }}</p>
     {% else %}
       <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github" style="opacity:.7">
-        Sign in with GitHub
+        {{ t('auth.github_btn') }}
       </a>
       <p class="auth-note" style="color:#f0ad4e">
-        OAuth not configured. Set GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_CALLBACK_URL in .env
+        {{ t('auth.oauth_missing') }}
       </p>
     {% endif %}
+      <hr class="auth-split">
+      <p class="auth-lead">{{ t('auth.company_q') }}</p>
+      <a class="btn-hero btn-hero--secondary auth-btn" href="/cloud/login">{{ t('auth.cloud_signin') }}</a>
+      <p class="auth-note muted"><a href="/cloud/register">{{ t('auth.create_cloud') }}</a> {{ t('auth.with_email') }}</p>
   </div>
-  <a class="auth-back" href="/">← Back to landing</a>
+  <a class="auth-back" href="/">{{ t('auth.back') }}</a>
 </div>
 {% endblock %}

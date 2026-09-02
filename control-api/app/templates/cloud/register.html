@@ -1,51 +1,42 @@
 {% extends "cloud/base.html" %}
-{% block title %}Create Cloud account{% endblock %}
-{% block cloud_crumb %} · Register{% endblock %}
+{% block title %}{{ t('cloud.register_title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.create_account') }}{% endblock %}
 {% block cloud_content %}
 <div class="flow-header">
-  <h1>Create your Helpers ERP Cloud account</h1>
-  <p>Use your work email. GitHub is not required.</p>
+  <h1>{{ t('cloud.register_title') }}</h1>
+  <p>{{ t('cloud.register_lead') }}</p>
 </div>
-{% if error_message %}<div class="sub-result sub-result--bad">{{ error_message }}</div>{% endif %}
+{% if error_message %}
+  <div class="sub-result sub-result--bad" role="alert" id="form-error-summary" tabindex="-1">{{ error_message }}</div>
+{% endif %}
 <section class="flow-card" style="max-width:640px">
   <form method="post" action="/cloud/register" class="deploy-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="hidden" name="next" value="{{ next }}">
-    <label class="field"><span>Full name</span>
-      <input type="text" name="full_name" value="{{ form.full_name|default('') }}" autocomplete="name" required>
-      {% if errors.full_name %}<small class="field-error">{{ errors.full_name }}</small>{% endif %}
+    <input type="hidden" name="plan" value="{{ plan|default('') }}">
+    <input type="hidden" name="cycle" value="{{ cycle|default('') }}">
+    <label class="field"><span>{{ t('cloud.full_name') }}</span>
+      <input type="text" name="full_name" id="full_name" value="{{ form.full_name|default('') }}" autocomplete="name" required {% if errors.full_name %}aria-invalid="true" aria-describedby="err-full_name"{% endif %}>
+      {% if errors.full_name %}<small class="field-error" id="err-full_name">{{ errors.full_name }}</small>{% endif %}
     </label>
-    <label class="field"><span>Work email</span>
-      <input type="email" name="email" value="{{ form.email|default('') }}" autocomplete="email" required>
-      {% if errors.email %}<small class="field-error">{{ errors.email }}</small>{% endif %}
+    <label class="field"><span>{{ t('cloud.email') }}</span>
+      <input type="email" name="email" id="email" value="{{ form.email|default('') }}" autocomplete="email" required {% if errors.email %}aria-invalid="true" aria-describedby="err-email"{% endif %}>
+      {% if errors.email %}<small class="field-error" id="err-email">{{ errors.email }}</small>{% endif %}
     </label>
-    <label class="field"><span>Phone</span>
-      <input type="tel" name="phone" value="{{ form.phone|default('') }}" autocomplete="tel" required>
-      {% if errors.phone %}<small class="field-error">{{ errors.phone }}</small>{% endif %}
+    <label class="field"><span>{{ t('cloud.password') }}</span>
+      <input type="password" name="password" id="password" autocomplete="new-password" required minlength="8" {% if errors.password %}aria-invalid="true" aria-describedby="err-password"{% endif %}>
+      {% if errors.password %}<small class="field-error" id="err-password">{{ errors.password }}</small>{% endif %}
     </label>
-    <label class="field"><span>Company name</span>
-      <input type="text" name="company_name" value="{{ form.company_name|default('') }}" autocomplete="organization" required>
-      {% if errors.company_name %}<small class="field-error">{{ errors.company_name }}</small>{% endif %}
-    </label>
-    <label class="field"><span>Country</span>
-      <input type="text" name="country" value="{{ form.country|default('') }}" autocomplete="country-name" required>
-      {% if errors.country %}<small class="field-error">{{ errors.country }}</small>{% endif %}
-    </label>
-    <label class="field"><span>Password</span>
-      <input type="password" name="password" autocomplete="new-password" required>
-      {% if errors.password %}<small class="field-error">{{ errors.password }}</small>{% endif %}
-    </label>
-    <label class="field"><span>Confirm password</span>
-      <input type="password" name="password_confirm" autocomplete="new-password" required>
-      {% if errors.password_confirm %}<small class="field-error">{{ errors.password_confirm }}</small>{% endif %}
+    <label class="field"><span>{{ t('cloud.password_confirm') }}</span>
+      <input type="password" name="password_confirm" id="password_confirm" autocomplete="new-password" required minlength="8" {% if errors.password_confirm %}aria-invalid="true" aria-describedby="err-password_confirm"{% endif %}>
+      {% if errors.password_confirm %}<small class="field-error" id="err-password_confirm">{{ errors.password_confirm }}</small>{% endif %}
     </label>
     <label class="field">
-      <span><input type="checkbox" name="terms" value="1" required> I accept the Helpers ERP Cloud terms.</span>
+      <span><input type="checkbox" name="terms" value="1" required {% if form.terms %}checked{% endif %}> {{ t('cloud.terms') }}</span>
       {% if errors.terms %}<small class="field-error">{{ errors.terms }}</small>{% endif %}
     </label>
     <div class="flow-actions">
-      <button type="submit" class="btn-hero btn-hero--primary">Create account</button>
-      <a class="btn" href="/cloud/login">Already have an account?</a>
+      <button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.create_account_btn') }}</button>
+      <a class="btn" href="/cloud/login{% if plan %}?plan={{ plan }}&amp;cycle={{ cycle }}{% endif %}">{{ t('cloud.have_account') }}</a>
     </div>
   </form>
 </section>

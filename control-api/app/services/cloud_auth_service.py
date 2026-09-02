@@ -35,12 +35,12 @@ class CloudAuthError(Exception):
 class RegisterInput:
     full_name: str
     email: str
-    phone: str
-    company_name: str
-    country: str
     password: str
     password_confirm: str
     terms_accepted: bool
+    phone: str = ""
+    company_name: str = ""
+    country: str = ""
 
 
 def hash_password(password: str) -> str:
@@ -92,11 +92,11 @@ def _validate_register_fields(payload: RegisterInput) -> dict[str, str]:
     email = normalize_email(payload.email)
     if not EMAIL_RE.match(email):
         errors["email"] = "Enter a valid work email address."
-    if len((payload.phone or "").strip()) < 6:
+    if payload.phone and len(payload.phone.strip()) < 6:
         errors["phone"] = "Enter a phone number."
-    if len((payload.company_name or "").strip()) < 2:
+    if payload.company_name and len(payload.company_name.strip()) < 2:
         errors["company_name"] = "Enter your company name."
-    if len((payload.country or "").strip()) < 2:
+    if payload.country and len(payload.country.strip()) < 2:
         errors["country"] = "Enter your country."
     if len(payload.password or "") < 8:
         errors["password"] = "Password must be at least 8 characters."

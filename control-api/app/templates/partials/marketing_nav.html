@@ -13,29 +13,42 @@
       {% endif %}
     </span>
   </a>
-  <nav class="mkt-nav__links" aria-label="Primary">
-    <a href="/solutions"{% if path.startswith('/catalog') or path.startswith('/solutions') %} class="is-active"{% endif %}>Ready Solutions</a>
-    <a href="/cloud"{% if path.startswith('/cloud') %} class="is-active"{% endif %}>Helpers ERP Cloud</a>
-    <a href="/platform"{% if path.startswith('/platform') %} class="is-active"{% endif %}>Developer Platform</a>
-    <a href="/pricing"{% if path.startswith('/pricing') or path == '/checkout' %} class="is-active"{% endif %}>Pricing</a>
+  <nav class="mkt-nav__links" aria-label="{{ t('nav.primary') }}">
+    <a href="/solutions"{% if path.startswith('/catalog') or path.startswith('/solutions') %} class="is-active"{% endif %}>{{ t('nav.ready_solutions') }}</a>
+    <a href="/cloud"{% if path.startswith('/cloud') %} class="is-active"{% endif %}>{{ t('nav.cloud') }}</a>
+    <a href="/platform"{% if path.startswith('/platform') %} class="is-active"{% endif %}>{{ t('nav.platform') }}</a>
+    <a href="/pricing"{% if path.startswith('/pricing') or path == '/checkout' %} class="is-active"{% endif %}>{{ t('nav.pricing') }}</a>
   </nav>
   <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="{{ t('lang.switcher') }}">
+      <a href="?lang=en" hreflang="en" lang="en"{% if lang == 'en' %} class="is-active"{% endif %}>{{ t('lang.en') }}</a>
+      <span aria-hidden="true">|</span>
+      <a href="?lang=ar" hreflang="ar" lang="ar"{% if lang == 'ar' %} class="is-active"{% endif %}>{{ t('lang.ar') }}</a>
+    </nav>
     {% if user and user.id %}
       {% if user.github_connected %}
-        <a class="mkt-nav__ghost{% if path.startswith('/projects') or path.startswith('/project/') or path.startswith('/deploy') %} is-active{% endif %}" href="/projects">Projects</a>
-        <a class="mkt-nav__cta" href="/account">Account</a>
-        <a class="mkt-nav__ghost" href="/logout">Logout</a>
+        <a class="mkt-nav__ghost{% if path.startswith('/projects') or path.startswith('/project/') or path.startswith('/deploy') %} is-active{% endif %}" href="/projects">{{ t('nav.projects') }}</a>
+        <a class="mkt-nav__cta" href="/account">{{ t('nav.account') }}</a>
+        <a class="mkt-nav__ghost" href="/logout">{{ t('nav.logout') }}</a>
       {% elif user.cloud_customer %}
-        <a class="mkt-nav__ghost{% if path.startswith('/cloud/instances') %} is-active{% endif %}" href="/cloud/instances">My ERP</a>
+        <a class="mkt-nav__ghost{% if path.startswith('/cloud/instances') %} is-active{% endif %}" href="/cloud/instances">{{ t('nav.my_erp') }}</a>
         <form method="post" action="/cloud/logout" class="inline-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">{{ t('nav.logout') }}</button>
         </form>
       {% else %}
-        <a class="mkt-nav__cta" href="/account">Account</a>
+        <a class="mkt-nav__cta" href="/account">{{ t('nav.account') }}</a>
       {% endif %}
+    {% elif path.startswith('/cloud') %}
+      <a class="mkt-nav__ghost" href="/cloud/login">{{ t('cloud.signin') }}</a>
+      <a class="mkt-nav__cta mkt-nav__try" href="/cloud/pricing">{{ t('nav.try_free') }}</a>
+    {% elif path.startswith('/platform') or path.startswith('/projects') or path.startswith('/project/') or path.startswith('/deploy') or path == '/login' or path.startswith('/checkout') %}
+      <a class="mkt-nav__ghost" href="/login">{{ t('nav.signin') }}</a>
+      <a class="mkt-nav__cta mkt-nav__try" href="/platform">{{ t('nav.try_free') }}</a>
     {% else %}
-      <a class="mkt-nav__cta" href="/login">Sign In</a>
+      <a class="mkt-nav__ghost" href="/cloud/login">{{ t('nav.cloud_signin') }}</a>
+      <a class="mkt-nav__ghost" href="/login">{{ t('nav.developer_signin') }}</a>
+      <a class="mkt-nav__cta mkt-nav__try" href="/cloud">{{ t('nav.try_free') }}</a>
     {% endif %}
   </div>
 </header>

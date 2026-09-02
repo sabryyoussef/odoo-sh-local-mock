@@ -171,5 +171,10 @@ def calculate_cloud_price(
         ],
         "total_display": format_money(total, plan.currency),
         "period_label": "year" if cycle == BILLING_ANNUAL else "month",
+        "annual_is_yearly_total": True,
+        "monthly_equivalent_cents": (total + 6) // 12 if cycle == BILLING_ANNUAL else None,
+        "monthly_equivalent_display": (
+            format_money((total + 6) // 12, plan.currency) if cycle == BILLING_ANNUAL else None
+        ),
     }
     return snapshot

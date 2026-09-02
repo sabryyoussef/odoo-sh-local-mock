@@ -112,3 +112,45 @@ RESERVED_SUBDOMAINS = frozenset(
 BILLING_MONTHLY = "monthly"
 BILLING_ANNUAL = "annual"
 BILLING_CYCLES = (BILLING_MONTHLY, BILLING_ANNUAL)
+
+CLOUD_HOSTNAME_SUFFIX = "helpers-erp.example"
+CLOUD_SUBDOMAIN_MIN = 3
+CLOUD_SUBDOMAIN_MAX = 48
+
+COUNTRY_EGYPT = "Egypt"
+COUNTRY_SAUDI = "Saudi Arabia"
+COUNTRY_UAE = "UAE"
+COUNTRY_OTHER = "Other"
+CLOUD_COUNTRY_CHOICES = (COUNTRY_EGYPT, COUNTRY_SAUDI, COUNTRY_UAE, COUNTRY_OTHER)
+COUNTRY_PRESETS = {
+    COUNTRY_EGYPT: {"currency": "EGP", "timezone": "Africa/Cairo"},
+    COUNTRY_SAUDI: {"currency": "SAR", "timezone": "Asia/Riyadh"},
+    COUNTRY_UAE: {"currency": "AED", "timezone": "Asia/Dubai"},
+    COUNTRY_OTHER: {"currency": "USD", "timezone": "UTC"},
+}
+
+LANGUAGE_EN = "en_US"
+LANGUAGE_AR = "ar_001"
+CLOUD_LANGUAGE_CHOICES = (
+    (LANGUAGE_EN, "English"),
+    (LANGUAGE_AR, "العربية"),
+)
+
+CLOUD_ALLOWED_EXACT = frozenset(
+    {
+        "/cloud",
+        "/cloud/pricing",
+        "/cloud/register",
+        "/cloud/login",
+        "/cloud/setup",
+        "/cloud/setup/confirm",
+        "/cloud/instances",
+        "/cloud/checkout/success",
+    }
+)
+CLOUD_ALLOWED_PREFIXES = (
+    "/cloud/instances/",
+    "/cloud/subscriptions/",
+    "/cloud/provisioning/",
+    "/cloud/checkout/success",
+)

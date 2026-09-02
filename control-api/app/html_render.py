@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app.auth.session import get_csrf_token, pop_flash
 from app.branding import get_brand
+from app.i18n import apply_locale_cookie, template_i18n
 from app.dependencies import oauth_configured
 from app.dummy_data import CURRENT_USER
 
@@ -37,5 +38,7 @@ def render_template(
         "app_name": brand.product_name,
         "csrf_token": get_csrf_token(request),
         **ctx,
+        **template_i18n(request),
     }
-    return templates.TemplateResponse(name, payload, status_code=status_code)
+    response = templates.TemplateResponse(name, payload, status_code=status_code)
+    return apply_locale_cookie(request, response)

@@ -10,6 +10,8 @@ SESSION_USER_KEY = "user_id"
 SESSION_OAUTH_STATE = "oauth_state"
 SESSION_FLASH = "flash"
 SESSION_CSRF_KEY = "csrf_token"
+SESSION_CLOUD_INTENT = "cloud_plan_intent"
+SESSION_CLOUD_IDEMPOTENCY = "cloud_checkout_idempotency"
 
 
 def get_csrf_token(request: Request) -> str:

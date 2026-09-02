@@ -1,6 +1,6 @@
 {% extends "cloud/base.html" %}
 {% block title %}Checkout complete{% endblock %}
-{% block cloud_crumb %} · Checkout{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.order_received_crumb') }}{% endblock %}
 {% block cloud_content %}
 <div class="flow-header">
   <h1>Demo order received</h1>

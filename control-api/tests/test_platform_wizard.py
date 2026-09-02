@@ -70,6 +70,18 @@ def test_modules_step_lists_categories(catalog, db, customer):
     assert isinstance(ctx["categories"], list)
 
 
+def test_plan_step_lists_trial(catalog, db, customer):
+    from app.services.platform_deploy_service import plan_step_context
+
+    ctx = plan_step_context(db, customer.id)
+    codes = {p["code"] for p in ctx["plans"]}
+    assert "trial" in codes
+    trial = next(p for p in ctx["plans"] if p["code"] == "trial")
+    assert trial["name"]
+    assert "description" in trial
+    assert trial["description"]
+
+
 def test_confirm_creates_trial_pending(catalog, db, customer):
     ids = _mod_ids(db, "crm", "sale_management", "stock")
     set_wizard_modules(db, customer.id, ids)

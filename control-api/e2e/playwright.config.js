@@ -28,7 +28,7 @@ const projects = [
   },
   {
     name: "desktop-chromium",
-    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js/,
+    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js/,
     dependencies: ["setup"],
     use: {
       browserName: "chromium",
@@ -44,6 +44,15 @@ const projects = [
       browserName: "chromium",
       ...devices["Pixel 5"],
       storageState: path.join(AUTH_DIR, "user.json"),
+    },
+  },
+  {
+    name: "product-lines-chromium",
+    testMatch: /three-product-lines\.spec\.js/,
+    use: {
+      browserName: "chromium",
+      viewport: { width: 1280, height: 720 },
+      storageState: { cookies: [], origins: [] },
     },
   },
 ];

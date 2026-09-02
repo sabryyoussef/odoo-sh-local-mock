@@ -80,10 +80,22 @@ Playwright `globalTeardown` runs `docker compose -p mosh-e2e-g3a down -v`, delet
 - `control-api/e2e/test-results/` — traces, screenshots, videos on failure/retry
 - `control-api/e2e/.auth/` — runtime credentials and storage state
 
-## G3-A vs G3-B
+## G3-A vs G3-B vs G3-C
 
 - **G3-A (this suite):** isolated SQLite + isolated process. Validates UI, entitlements, review, confirm button, idempotency of queued jobs, and that live G1/G2 resources do not change.
 - **G3-B (later):** live deployment against a dedicated UAT path. Not executed here. Must not reuse this disposable harness as a live worker.
+- **G3-C:** same `mosh-e2e-g3a` isolation as G3-A, plus a test-only UTC clock and fake tenant runtime. Covers DP6 trial lifecycle in Chromium desktop and Pixel 5. Routes `/e2e/clock`, `/e2e/runtime`, and `/e2e/lifecycle/*` exist only on the wrapper app (`e2e.python.server:app`) when `E2E_MODE=1` and `X-E2E-Secret` is present. They are not registered in `app.main`.
+
+## Isolated lifecycle controls (G3-C)
+
+| Control | Behavior |
+|---------|----------|
+| Clock | `POST /e2e/clock` sets or advances a process-global UTC time used by DP6 `now_utc()` inside the wrapper only |
+| Fake runtime | Records stop/start/health/cleanup; never uses Docker, PostgreSQL, or the live filestore |
+| Seed | Dedicated customer, operator, and unrelated user plus disposable `platform_quick` trials |
+| Restore | `POST /e2e/lifecycle/restore` reseeds fixtures and resets clock/runtime between tests |
+
+The fake runtime is installed by `install_isolated_lifecycle_controls()`, which raises if `E2E_MODE` is not `1`. Production `DockerTenantRuntime` is unchanged.
 
 ## CI recommendation
 

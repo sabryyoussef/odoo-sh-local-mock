@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 LABEL_TENANT = "mosh_tenant"
 LABEL_TENANT_ID = "tenant_id"
 LABEL_DEPLOYMENT_JOB = "deployment_job_id"
+LABEL_PROVISIONING_JOB = "provisioning_job_id"
 
 
 def find_tenant_container(name: str) -> docker.models.containers.Container | None:

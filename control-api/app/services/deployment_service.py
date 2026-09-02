@@ -217,32 +217,33 @@ def execute_deployment_job(db: Session, job_id: int) -> DeploymentJob:
     admin_password = generate_admin_password()
     container_name = f"mosh-tenant-{tenant_code}"[:128]
 
-    trial.status = PT_PROVISIONING
-    job.current_step = "reserve_tenant"
-    tenant = Tenant(
-        tenant_code=tenant_code,
-        platform_trial_id=trial.id,
-        deployment_mode=DEPLOYMENT_MODE_PLATFORM_QUICK,
-        database_name=db_name,
-        database_role=role_name,
-        odoo_version=template.odoo_version,
-        solution_version=template.solution_version,
-        status="provisioning",
-        assigned_node=settings.provisioning_worker_id,
-    )
-    db.add(tenant)
-    db.flush()
-    job.tenant_id = tenant.id
-    _audit_job(job, "tenant_reserved", tenant_code=tenant_code)
-    db.commit()
-
-    filestore_container = Path(settings.tenant_root) / tenant_code / "filestore"
-    filestore_host = Path(settings.tenant_host_root) / tenant_code / "filestore"
-    _prepare_tenant_filestore(filestore_container)
-    tenant.filestore_path = str(filestore_container)
-    db.commit()
-
+    tenant = None
     try:
+        trial.status = PT_PROVISIONING
+        job.current_step = "reserve_tenant"
+        tenant = Tenant(
+            tenant_code=tenant_code,
+            platform_trial_id=trial.id,
+            deployment_mode=DEPLOYMENT_MODE_PLATFORM_QUICK,
+            database_name=db_name,
+            database_role=role_name,
+            odoo_version=template.odoo_version,
+            solution_version=template.solution_version,
+            status="provisioning",
+            assigned_node=settings.provisioning_worker_id,
+        )
+        db.add(tenant)
+        db.flush()
+        job.tenant_id = tenant.id
+        _audit_job(job, "tenant_reserved", tenant_code=tenant_code)
+        db.commit()
+
+        filestore_container = Path(settings.tenant_root) / tenant_code / "filestore"
+        filestore_host = Path(settings.tenant_host_root) / tenant_code / "filestore"
+        _prepare_tenant_filestore(filestore_container)
+        tenant.filestore_path = str(filestore_container)
+        db.commit()
+
         job.current_step = DEPLOY_CLONING
         create_tenant_role(role_name, role_password)
         clone_database_from_template(template.postgres_database_name, db_name, role_name)
@@ -254,11 +255,14 @@ def execute_deployment_job(db: Session, job_id: int) -> DeploymentJob:
         extra = [m for m in install_order if m not in BASE_REQUIRED_MODULES and m != "base"]
         if extra:
             job.current_step = DEPLOY_INSTALLING
+            db.commit()
             _install_modules_one_shot(
                 db_name=db_name,
                 modules=extra,
                 odoo_version=template.odoo_version,
                 deployment_job_id=job.id,
+                db_user=role_name,
+                db_password=role_password,
             )
             _audit_job(job, "modules_installed", modules=extra)
 
@@ -328,6 +332,10 @@ def execute_deployment_job(db: Session, job_id: int) -> DeploymentJob:
             meta={"job_uuid": job.job_uuid, "tenant_code": tenant_code},
         )
     except Exception as exc:  # noqa: BLE001
+        db.rollback()
+        job = db.get(DeploymentJob, job_id)
+        if not job:
+            raise
         code = getattr(exc, "code", "step_failed")
         msg = getattr(exc, "message", str(exc))
         _fail_job(db, job, code, msg, trigger_rollback=True)
@@ -347,6 +355,8 @@ def _install_modules_one_shot(
     modules: list[str],
     odoo_version: str,
     deployment_job_id: int,
+    db_user: str,
+    db_password: str,
 ) -> None:
     """Install modules via one-shot Odoo container (-i mod1,mod2)."""
     settings = get_settings()
@@ -355,13 +365,15 @@ def _install_modules_one_shot(
 
     image = odoo_image_for_version(odoo_version)
     ensure_image(image)
-    conf_dir = Path(settings.tenant_root) / ".deploy-install" / str(deployment_job_id)
+    rel = Path(".deploy-install") / str(deployment_job_id)
+    conf_dir = Path(settings.tenant_root) / rel
+    conf_dir_host = Path(settings.tenant_host_root) / rel
     conf_dir.mkdir(parents=True, exist_ok=True)
     write_odoo_conf_file(
         conf_dir / "odoo.conf",
         db_name=db_name,
-        db_user=settings.build_postgres_user,
-        db_password=settings.build_postgres_password,
+        db_user=db_user,
+        db_password=db_password,
         admin_passwd="install-only",
     )
     import docker
@@ -369,6 +381,7 @@ def _install_modules_one_shot(
     client = docker.from_env()
     name = f"mosh-deploy-install-{deployment_job_id}"[:128]
     mod_list = ",".join(modules)
+    init_timeout = max(int(settings.build_health_timeout_sec), 900)
     try:
         try:
             old = client.containers.get(name)
@@ -382,13 +395,13 @@ def _install_modules_one_shot(
             detach=True,
             network=settings.build_docker_network,
             volumes={
-                str(conf_dir / "odoo.conf"): {"bind": "/etc/odoo/odoo.conf", "mode": "ro"},
+                str(conf_dir_host / "odoo.conf"): {"bind": "/etc/odoo/odoo.conf", "mode": "ro"},
             },
             environment={
                 "HOST": settings.build_postgres_host,
                 "PORT": str(settings.build_postgres_port),
-                "USER": settings.build_postgres_user,
-                "PASSWORD": settings.build_postgres_password,
+                "USER": db_user,
+                "PASSWORD": db_password,
             },
             labels={
                 "mock_odoo_sh": "true",
@@ -397,10 +410,10 @@ def _install_modules_one_shot(
             },
             remove=False,
         )
-        result = container.wait(timeout=settings.build_health_timeout_sec)
+        result = container.wait(timeout=init_timeout)
         if result.get("StatusCode", 1) != 0:
-            logs = container.logs(tail=50).decode("utf-8", errors="replace")
-            raise DeploymentError(f"Module install failed: {logs[:500]}", "module_install_failed")
+            logs = container.logs(tail=80).decode("utf-8", errors="replace")
+            raise DeploymentError(f"Module install failed: {logs[-1500:]}", "module_install_failed")
     finally:
         try:
             c = client.containers.get(name)

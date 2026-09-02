@@ -49,8 +49,8 @@ logger = logging.getLogger(__name__)
 
 ELIGIBLE_SUBSCRIPTION_STATUSES = {"trial", "active"}
 
-# Official Odoo image runs as uid/gid 101 (odoo user).
-_ODOO_CONTAINER_UID = 101
+# Official odoo:19.0 image user is uid=100 gid=101 (see `id` in container).
+_ODOO_CONTAINER_UID = 100
 _ODOO_CONTAINER_GID = 101
 
 
@@ -65,6 +65,8 @@ def _prepare_tenant_filestore(filestore_path: Path) -> None:
             os.chown(root, _ODOO_CONTAINER_UID, _ODOO_CONTAINER_GID)
             for d in dirs:
                 os.chown(os.path.join(root, d), _ODOO_CONTAINER_UID, _ODOO_CONTAINER_GID)
+            for f in files:
+                os.chown(os.path.join(root, f), _ODOO_CONTAINER_UID, _ODOO_CONTAINER_GID)
     except OSError:
         # Dev fallback when host cannot chown to container uid.
         os.chmod(filestore_path, 0o777)

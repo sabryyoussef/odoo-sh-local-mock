@@ -60,6 +60,7 @@ def drop_tenant_role(role_name: str) -> None:
 def clone_database_from_template(source_db: str, target_db: str, owner_role: str) -> None:
     if not all(re_fullmatch_safe(n) for n in (source_db, target_db, owner_role)):
         raise PostgresServiceError("Unsafe database or role name rejected")
+    settings = get_settings()
     conn = _admin_connect()
     try:
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
@@ -79,6 +80,65 @@ def clone_database_from_template(source_db: str, target_db: str, owner_role: str
             )
     except Exception as exc:  # noqa: BLE001
         raise PostgresServiceError(f"Failed to clone database: {exc}") from exc
+    finally:
+        conn.close()
+    _reassign_cloned_table_owners(target_db, settings.build_postgres_user, owner_role)
+
+
+def _reassign_cloned_table_owners(db_name: str, from_role: str, to_role: str) -> None:
+    """Change owners of tables/views in this database only.
+
+    Module install needs table ownership (GRANT ALL is not enough for ALTER TABLE).
+    Never use REASSIGN OWNED — it also transfers cluster-level DATABASE ownership.
+    """
+    if from_role == to_role:
+        return
+    if not all(re_fullmatch_safe(n) for n in (db_name, from_role, to_role)):
+        raise PostgresServiceError("Unsafe database or role name rejected")
+    settings = get_settings()
+    conn = psycopg2.connect(
+        host=settings.build_postgres_host,
+        port=settings.build_postgres_port,
+        user=settings.build_postgres_admin_user,
+        password=settings.build_postgres_admin_password,
+        dbname=db_name,
+    )
+    kind_sql = {"r": "TABLE", "p": "TABLE", "v": "VIEW", "m": "MATERIALIZED VIEW"}
+    try:
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        with conn.cursor() as cur:
+            cur.execute(
+                sql.SQL("GRANT ALL ON SCHEMA public TO {}").format(sql.Identifier(to_role))
+            )
+            cur.execute(
+                """
+                SELECT c.relkind, n.nspname, c.relname
+                FROM pg_class c
+                JOIN pg_namespace n ON n.oid = c.relnamespace
+                JOIN pg_roles r ON r.oid = c.relowner
+                WHERE n.nspname = 'public'
+                  AND r.rolname = %s
+                  AND c.relkind IN ('r', 'p', 'v', 'm')
+                """,
+                (from_role,),
+            )
+            for relkind, nsp, name in cur.fetchall():
+                kind = kind_sql[relkind]
+                cur.execute(
+                    sql.SQL("ALTER {} {}.{} OWNER TO {}").format(
+                        sql.SQL(kind),
+                        sql.Identifier(nsp),
+                        sql.Identifier(name),
+                        sql.Identifier(to_role),
+                    )
+                )
+            cur.execute(
+                sql.SQL("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO {}").format(
+                    sql.Identifier(to_role)
+                )
+            )
+    except Exception as exc:  # noqa: BLE001
+        raise PostgresServiceError(f"Failed to reassign cloned tables: {exc}") from exc
     finally:
         conn.close()
 

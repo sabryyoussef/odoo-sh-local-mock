@@ -65,7 +65,11 @@ def ensure_backup_policy_for_tenant(db: Session, tenant: Tenant) -> BackupPolicy
     existing = db.scalar(select(BackupPolicy).where(BackupPolicy.tenant_id == tenant.id))
     if existing:
         return existing
-    sub = db.get(CustomerSubscription, tenant.customer_subscription_id)
+    sub = (
+        db.get(CustomerSubscription, tenant.customer_subscription_id)
+        if tenant.customer_subscription_id
+        else None
+    )
     ent = entitlement_from_subscription(sub) if sub else {}
     from app.services.backup_scheduler import infer_frequency_type, initialize_policy_schedule
 

@@ -111,6 +111,8 @@ def tenant_eligible_for_schedule(db: Session, tenant: Tenant, policy: BackupPoli
         return False, "policy_inactive"
     if not policy.database_backup_enabled and not policy.filestore_backup_enabled:
         return False, "backup_disabled"
+    if not tenant.customer_subscription_id:
+        return False, "no_subscription"
     sub = db.get(CustomerSubscription, tenant.customer_subscription_id)
     if not sub:
         return False, "no_subscription"

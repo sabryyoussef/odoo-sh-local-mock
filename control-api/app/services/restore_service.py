@@ -19,6 +19,7 @@ from app.auth.crypto import protect_token
 from app.config import get_settings
 from app.models import (
     ACTIVE_RESTORE_STATUSES,
+    DEPLOYMENT_MODE_PLATFORM_QUICK,
     RESTORE_FAILED,
     RESTORE_MODE_CLONE,
     RESTORE_MODE_INPLACE,
@@ -28,6 +29,7 @@ from app.models import (
     RESTORE_VERIFYING,
     BACKUP_SUCCEEDED,
     CustomerSubscription,
+    PlatformTrial,
     RestoreJob,
     Tenant,
     TenantBackup,
@@ -54,6 +56,7 @@ from app.services.tenant_postgres_service import (
     create_tenant_role,
     init_empty_template_database,
     prepare_database_for_restore,
+    _reassign_cloned_table_owners,
 )
 
 logger = logging.getLogger(__name__)
@@ -187,8 +190,115 @@ def _extract_filestore(archive: Path, dest: Path) -> None:
             tar.extract(member, path=dest, filter="data")  # type: ignore[call-arg]
 
 
+def execute_platform_clone_restore(
+    db: Session, job: RestoreJob, backup: TenantBackup, source: Tenant
+) -> None:
+    """Clone-restore a Developer Platform tenant without creating a CustomerSubscription."""
+    from app.services.backup_service import ensure_backup_policy_for_platform_tenant
+
+    env_type = "production"
+    if not verify_backup_manifest(source.tenant_code, env_type, backup.backup_uuid):
+        raise RestoreError("Backup verification failed", "manifest_invalid")
+
+    container_path, _ = resolve_backup_dir(source.tenant_code, env_type, backup.backup_uuid)
+    dump_path = resolve_artifact_path(container_path, "database.dump")
+    fs_archive = resolve_artifact_path(container_path, "filestore.tar.gz")
+    if not dump_path.exists():
+        raise RestoreError("Database dump missing", "dump_missing")
+
+    settings = get_settings()
+    tenant_code = generate_tenant_code(source.id, "ptclone")
+    db_name = generate_database_name(settings.tenant_db_prefix, tenant_code)
+    role_name = generate_role_name("mosh_r_", tenant_code)
+    role_password = secrets.token_urlsafe(32)
+    admin_password = generate_admin_password()
+    container_name = f"mosh-tenant-{tenant_code}"[:128]
+
+    new_tenant = Tenant(
+        tenant_code=tenant_code,
+        deployment_mode=DEPLOYMENT_MODE_PLATFORM_QUICK,
+        database_name=db_name,
+        database_role=role_name,
+        odoo_version=source.odoo_version,
+        solution_version=source.solution_version,
+        status="provisioning",
+        container_name=container_name,
+    )
+    db.add(new_tenant)
+    db.flush()
+    job.target_tenant_id = new_tenant.id
+    db.commit()
+
+    filestore_container = Path(settings.tenant_root) / tenant_code / "filestore"
+    filestore_host = Path(settings.tenant_host_root) / tenant_code / "filestore"
+    _prepare_tenant_filestore(filestore_container)
+    new_tenant.filestore_path = str(filestore_container)
+
+    target_ref: Tenant | None = new_tenant
+    try:
+        create_tenant_role(role_name, role_password)
+        init_empty_template_database(db_name, role_name)
+        prepare_database_for_restore(db_name, role_name)
+        _pg_restore(db_name, dump_path)
+        _reassign_cloned_table_owners(db_name, settings.build_postgres_admin_user, role_name)
+        _reassign_cloned_table_owners(db_name, settings.build_postgres_user, role_name)
+        _extract_filestore(fs_archive, filestore_container)
+
+        env = TenantEnvironment(
+            tenant_id=new_tenant.id,
+            environment_type="production",
+            name="Production",
+            status="provisioning",
+        )
+        db.add(env)
+        db.flush()
+        port = allocate_tenant_port(db)
+        new_tenant.http_port = port
+        db.commit()
+
+        run_tenant_odoo_container(
+            name=container_name,
+            tenant_id=new_tenant.id,
+            provisioning_job_id=0,
+            deployment_job_id=0,
+            odoo_version=new_tenant.odoo_version,
+            http_port=port,
+            db_name=db_name,
+            db_user=role_name,
+            db_password=role_password,
+            filestore_container_path=str(filestore_container),
+            filestore_host_path=str(filestore_host),
+            admin_passwd=admin_password,
+        )
+        if not wait_tenant_healthy(container_name, port, settings.build_health_timeout_sec):
+            raise RestoreError("Odoo health check failed", "health_check_failed")
+
+        new_tenant.internal_url = f"http://127.0.0.1:{port}/"
+        new_tenant.admin_password_protected = protect_token(admin_password)
+        trial = db.get(PlatformTrial, source.platform_trial_id) if source.platform_trial_id else None
+        if trial:
+            ensure_backup_policy_for_platform_tenant(db, new_tenant, trial)
+        new_tenant.status = "active"
+        env.status = "active"
+        job.status = RESTORE_VERIFYING
+        job.verification_result = json.dumps(
+            {"clone": True, "platform_quick": True, "http_port": port, "health_ok": True}
+        )
+        job.status = RESTORE_SUCCEEDED
+        job.completed_at = datetime.now(timezone.utc)
+        db.commit()
+    except Exception:
+        if target_ref:
+            rollback_clone_restore(db, job, target_ref)
+        raise
+
+
 def execute_clone_restore(db: Session, job: RestoreJob, backup: TenantBackup, source: Tenant) -> None:
     """Restore backup into a new isolated tenant (source unchanged)."""
+    if source.deployment_mode == DEPLOYMENT_MODE_PLATFORM_QUICK or not source.customer_subscription_id:
+        execute_platform_clone_restore(db, job, backup, source)
+        return
+
     from app.schemas_saas import CustomerSubscriptionCreate
     from app.services.catalog_service import create_customer_subscription
 

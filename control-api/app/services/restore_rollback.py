@@ -70,7 +70,9 @@ def rollback_clone_restore(db: Session, job: RestoreJob, tenant: Tenant | None) 
     tenant.admin_password_protected = None
     db.commit()
 
-    sub = db.get(CustomerSubscription, tenant.customer_subscription_id)
+    sub = None
+    if tenant.customer_subscription_id:
+        sub = db.get(CustomerSubscription, tenant.customer_subscription_id)
     if sub and sub.status == "trial":
         sub.status = "terminated"
         db.commit()

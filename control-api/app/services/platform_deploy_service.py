@@ -157,7 +157,7 @@ def plan_step_context(db: Session, user_id: int) -> dict[str, Any]:
                 "id": p.id,
                 "code": p.code,
                 "name": p.name,
-                "description": p.description,
+                "description": f"{p.price_label} · {str(p.pricing_status or '').replace('_', ' ')}",
                 "selected": trial.platform_plan_id == p.id,
                 "entitlements": entitlements_from_plan(p),
             }

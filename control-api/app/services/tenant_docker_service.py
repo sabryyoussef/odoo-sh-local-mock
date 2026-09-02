@@ -117,3 +117,45 @@ def run_tenant_odoo_container(
 
 def wait_tenant_healthy(container_name: str, http_port: int, timeout_sec: int = 180) -> bool:
     return wait_odoo_healthy(container_name=container_name, http_port=http_port, timeout_sec=timeout_sec)
+
+
+def stop_tenant_container(name: str | None) -> None:
+    """Stop runtime in place. Does not remove the container, database, role, or filestore."""
+    if not name:
+        return
+    c = find_tenant_container(name)
+    if not c:
+        return
+    try:
+        c.reload()
+        if c.status == "running":
+            c.stop(timeout=20)
+    except DockerException as exc:
+        raise DockerServiceError(str(exc)) from exc
+
+
+def start_existing_tenant_container(name: str | None) -> None:
+    if not name:
+        raise DockerServiceError("tenant container name missing")
+    c = find_tenant_container(name)
+    if not c:
+        raise DockerServiceError(f"tenant container not found: {name}")
+    try:
+        c.reload()
+        if c.status != "running":
+            c.start()
+    except DockerException as exc:
+        raise DockerServiceError(str(exc)) from exc
+
+
+def tenant_container_is_running(name: str | None) -> bool:
+    if not name:
+        return False
+    c = find_tenant_container(name)
+    if not c:
+        return False
+    try:
+        c.reload()
+    except DockerException:
+        return False
+    return c.status == "running"

@@ -79,8 +79,11 @@ def isolated_app_db():
     _rebind_engine(engine)
 
     from app.db import Base, init_db
+    import app.models_dp6  # noqa: F401
+    from app.migrate_dp6 import migrate_dp6_schema
 
     init_db()
+    migrate_dp6_schema(engine)
     yield engine
     Base.metadata.drop_all(bind=engine)
     engine.dispose()

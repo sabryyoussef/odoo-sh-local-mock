@@ -12,6 +12,7 @@ from app.db import get_db
 from app.dependencies import require_user_or_redirect
 from app.html_render import render_template
 from app.models import User
+from app.api.platform_lifecycle import router as platform_lifecycle_router
 from app.services.platform_deploy_service import (
     DeployWizardError,
     confirm_wizard,
@@ -26,6 +27,7 @@ from app.services.platform_deploy_service import (
 )
 
 router = APIRouter(tags=["platform-deploy"])
+router.include_router(platform_lifecycle_router)
 
 
 def _require_user(request: Request, db: Session):
@@ -213,6 +215,10 @@ def portal_trial_detail(trial_id: int, request: Request, db: Session = Depends(g
     from app.services.deployment_service import latest_deployment_job_for_trial
 
     job = latest_deployment_job_for_trial(db, trial.id)
+    from app.services.platform_lifecycle_service import countdown_view, get_or_create_lifecycle
+
+    lc = get_or_create_lifecycle(db, trial)
+    lifecycle = countdown_view(trial, lc)
     return render_template(
         request,
         "platform/deploy/trial_status.html",
@@ -221,5 +227,6 @@ def portal_trial_detail(trial_id: int, request: Request, db: Session = Depends(g
             "trial": trial,
             "job": job,
             "quick_deploy_enabled": get_settings().platform_quick_deploy_enabled,
+            "lifecycle": lifecycle,
         },
     )

@@ -2,7 +2,10 @@
 {% block deploy_content %}
 <h1>Trial status</h1>
 <div data-testid="deployment-status">
-<p>Status: <strong data-testid="trial-status">{{ trial.status }}</strong></p>
+<p>Status: <strong data-testid="trial-status">{{ lifecycle.lifecycle_state if lifecycle else trial.status }}</strong></p>
+{% if lifecycle %}
+{% include "platform/deploy/_lifecycle_panel.html" %}
+{% endif %}
 {% if job %}
 <p data-testid="deployment-job-status">Deployment: {{ job.status }} — {{ job.current_step or 'pending' }}</p>
 {% if job.error_summary %}<p class="muted">{{ job.error_summary }}</p>{% endif %}
@@ -10,7 +13,9 @@
 {% if trial.trial_started_at %}
 <p>Trial ends: {{ trial.trial_ends_at }}</p>
 {% endif %}
-{% if trial.tenant and trial.tenant.public_url %}
+{% if lifecycle and lifecycle.access_blocked %}
+<p data-testid="lifecycle-access-blocked">Launch is blocked while this trial is suspended or terminated.</p>
+{% elif trial.tenant and trial.tenant.public_url %}
 <p><a href="{{ trial.tenant.public_url }}" data-testid="tenant-launch">Launch Odoo</a></p>
 {% elif trial.tenant and trial.tenant.status == 'active' %}
 <p>Provisioned — public access pending</p>

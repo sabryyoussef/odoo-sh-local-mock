@@ -313,10 +313,12 @@ def execute_deployment_job(db: Session, job_id: int) -> DeploymentJob:
 
         ensure_backup_policy_for_platform_tenant(db, tenant, trial)
 
-        trial_days = plan.trial_days if plan and plan.trial_days else 14
+        trial_days = plan.trial_days if plan and plan.trial_days else get_settings().platform_trial_days
         now = datetime.now(UTC)
-        trial.trial_started_at = now
-        trial.trial_ends_at = now + timedelta(days=trial_days)
+        if not trial.trial_started_at:
+            trial.trial_started_at = now
+        if not trial.trial_ends_at:
+            trial.trial_ends_at = now + timedelta(days=trial_days)
         trial.status = PT_TRIAL_ACTIVE
 
         job.status = DEPLOY_SUCCEEDED

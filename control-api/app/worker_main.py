@@ -11,10 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.config import get_settings
-from app.db import SessionLocal, init_db
 from app.services.provisioning_service import claim_next_job, execute_provisioning_job, reconcile_stale_running_jobs
 from app.services.deployment_service import claim_next_deployment_job, execute_deployment_job
 from app.services.platform_template_service import claim_next_template_build_job, execute_template_build_job
+from app.migrate_dp6 import migrate_dp6_schema
+from app.db import SessionLocal, init_db, engine as db_engine
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +49,10 @@ def run_worker_loop() -> int:
 
     Path(settings.tenant_root).mkdir(parents=True, exist_ok=True)
     init_db()
+    migrate_dp6_schema(db_engine)
 
     logger.info(
-        "Worker started id=%s poll=%ss (provisioning + platform deploy + templates)",
+        "Worker started id=%s poll=%ss (provisioning + platform deploy + templates + DP6 lifecycle)",
         settings.provisioning_worker_id,
         settings.provisioning_worker_poll_sec,
     )
@@ -96,6 +98,12 @@ def run_worker_loop() -> int:
                     logger.exception("Job execution error: %s", exc)
                 write_heartbeat("idle")
             else:
+                from app.services.platform_lifecycle_service import process_due_lifecycle_tick
+
+                try:
+                    process_due_lifecycle_tick(db)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("Lifecycle tick error: %s", exc)
                 write_heartbeat("idle")
 
         for _ in range(settings.provisioning_worker_poll_sec):

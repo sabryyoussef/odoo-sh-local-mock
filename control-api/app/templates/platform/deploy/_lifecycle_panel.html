@@ -1,0 +1,25 @@
+<div data-testid="lifecycle-panel">
+  <p>Lifecycle: <strong data-testid="lifecycle-state">{{ lifecycle.lifecycle_state }}</strong></p>
+  {% if lifecycle.expires_at %}
+  <p data-testid="lifecycle-countdown">Expires {{ lifecycle.expires_at }}{% if lifecycle.remaining_trial_seconds is not none %} · {{ (lifecycle.remaining_trial_seconds / 3600)|round(1) }} hours remaining{% endif %}</p>
+  {% endif %}
+  {% if lifecycle.warning_near_expiry %}
+  <p role="alert" data-testid="lifecycle-expiry-warning">This trial is close to expiry.</p>
+  {% endif %}
+  {% if lifecycle.lifecycle_state == "grace" %}
+  <p role="alert" data-testid="lifecycle-grace-warning">Grace period is active. Access remains available until {{ lifecycle.grace_ends_at }}.</p>
+  {% endif %}
+  {% if lifecycle.suspended %}
+  <p role="alert" data-testid="lifecycle-suspended-banner">This trial is suspended. Runtime access is blocked. Next action: {{ lifecycle.next_action }}.</p>
+  {% endif %}
+  {% if lifecycle.lifecycle_state == "termination_pending" or lifecycle.lifecycle_state == "terminated" %}
+  <p data-testid="lifecycle-termination-status">Termination status: {{ lifecycle.lifecycle_state }}</p>
+  {% endif %}
+  {% if lifecycle.converted %}
+  <p data-testid="lifecycle-reactivation-status">Converted — lifecycle suspension is disabled.</p>
+  {% elif lifecycle.lifecycle_state == "trial_active" and lifecycle.stored_status == "trial_active" %}
+  <p data-testid="lifecycle-reactivation-status">Active</p>
+  {% else %}
+  <p data-testid="lifecycle-reactivation-status">{{ lifecycle.next_action }}</p>
+  {% endif %}
+</div>

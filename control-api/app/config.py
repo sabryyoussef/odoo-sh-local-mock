@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -99,10 +100,68 @@ class Settings(BaseSettings):
     e2e_user_login: str = "e2e_g3a_user"
     e2e_user_password: str = ""
 
+    # --- DP6 trial lifecycle ---
+    platform_trial_days: int = 7
+    platform_trial_grace_days: int = 3
+    platform_trial_retention_days: int = 30
+    platform_trial_auto_terminate_enabled: bool = False
+    platform_lifecycle_poll_sec: int = 30
+    platform_lifecycle_max_attempts: int = 5
+    platform_lifecycle_backoff_sec: int = 60
+    platform_trial_warn_days: str = "3,1"
+
+    @field_validator("platform_trial_days")
+    @classmethod
+    def _trial_days_bounds(cls, value: int) -> int:
+        if not 1 <= int(value) <= 90:
+            raise ValueError("PLATFORM_TRIAL_DAYS must be between 1 and 90")
+        return int(value)
+
+    @field_validator("platform_trial_grace_days")
+    @classmethod
+    def _grace_days_bounds(cls, value: int) -> int:
+        if not 0 <= int(value) <= 30:
+            raise ValueError("PLATFORM_TRIAL_GRACE_DAYS must be between 0 and 30")
+        return int(value)
+
+    @field_validator("platform_trial_retention_days")
+    @classmethod
+    def _retention_days_bounds(cls, value: int) -> int:
+        if not 1 <= int(value) <= 3650:
+            raise ValueError("PLATFORM_TRIAL_RETENTION_DAYS must be between 1 and 3650")
+        return int(value)
+
+    @field_validator("platform_lifecycle_max_attempts")
+    @classmethod
+    def _attempts_bounds(cls, value: int) -> int:
+        if not 1 <= int(value) <= 50:
+            raise ValueError("PLATFORM_LIFECYCLE_MAX_ATTEMPTS must be between 1 and 50")
+        return int(value)
+
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def parse_trial_warn_days(raw: str | None = None) -> list[int]:
+    text = (raw if raw is not None else get_settings().platform_trial_warn_days) or "3,1"
+    days: list[int] = []
+    for part in text.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        value = int(part)
+        if value < 0 or value > 90:
+            raise ValueError("PLATFORM_TRIAL_WARN_DAYS values must be 0–90")
+        days.append(value)
+    return sorted(set(days), reverse=True)
+
+
+def validate_lifecycle_settings() -> None:
+    settings = get_settings()
+    parse_trial_warn_days(settings.platform_trial_warn_days)
+
 
 
 def operator_logins() -> set[str]:

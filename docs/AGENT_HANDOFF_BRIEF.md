@@ -1,7 +1,7 @@
 # Agent Handoff Brief — Odoo SaaS Control Plane
 
 **For:** AI coding agents joining mid-project  
-**Updated:** 2026-09-01 (DP2 complete)  
+**Updated:** 2026-09-02 (DP1–DP5 code-complete; G1+G2 live PASS; DP6 waiting approval)  
 
 ---
 
@@ -18,7 +18,12 @@
 | Phase 9 portal | `docs/PHASE9_CUSTOMER_PORTAL.md` |
 | Phase 10 backups | `docs/PHASE10_BACKUP_RESTORE.md` |
 | Dual journey | `docs/DUAL_COMMERCIAL_JOURNEY.md` |
-| Developer Platform DP plan | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_ODOO19_TRIAL_MASTER_PLAN.md` |
+| Developer Platform DP plan (historical design) | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_ODOO19_TRIAL_MASTER_PLAN.md` |
+| **Completion master plan (current SoT)** | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_COMPLETION_MASTER_PLAN.md` |
+| Playwright UAT plan | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_PLAYWRIGHT_UAT_PLAN.md` |
+| Final acceptance checklist | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_FINAL_ACCEPTANCE_CHECKLIST.md` |
+| Risk register | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_RISK_REGISTER.md` |
+| Execution sequence | `/opt/project-planning/odoo-sh-local-mock/DEVELOPER_PLATFORM_EXECUTION_SEQUENCE.md` |
 | DP1 module catalog | `docs/DP1_MODULE_CATALOG.md` |
 | DP2 plan entitlements | `docs/DP2_PLATFORM_PLAN_ENTITLEMENTS.md` |
 | DR procedure | `docs/DISASTER_RECOVERY.md` |
@@ -119,14 +124,18 @@ Before first demo provision: validate templates via operator API (`POST /api/ope
 
 ```text
 NEXT_IMMEDIATE_ACTION:
-DP6_TRIAL_LIFECYCLE_GRACE_AND_SUSPENSION
+DP6_PLAYWRIGHT_UAT
 ```
 
-**DP2–DP5 complete:** Quick Deploy wizard, platform base template registry, deployment pipeline, portal trial status. See `docs/DP3_QUICK_DEPLOY_WIZARD.md`, `docs/DP4_PLATFORM_TEMPLATES.md`, `docs/DP5_TRIAL_PROVISIONING.md`.
+**G2 PASS (2026-09-02):** isolated trial for `g2uatdemo` on Odoo 19 Community (CRM+Sales+Inventory). Tenant `pt_trial_1_a89ea9` healthy (`/web/login` 200), trial clock 7 days after health, template DB unchanged (43 modules / 34782231 bytes). Evidence: `data/evidence/G2/g2_live_uat.json`. Pre-G2 backup `data/control.db.backup_20260902_065755_pre_g2`.
 
-**Regression:** 190 passed, 1 skipped (2026-09-02).
+**G1 PASS (2026-09-02):** live template `odoo19-community-base-v1` is `validation_status=ready` (PG `mosh_tpl_odoo19_community_base_v1`). Evidence: `data/evidence/G1/g1_live_build.json`. FET-002 backup `data/control.db.backup_20260902_063807_pre_g1`.
 
-**Before live customer trial:** queue base template build via worker; set `tenant_public_base_url` for launch URLs.
+**DP2–DP5 code-complete; G1+G2 live-verified; DP6 Playwright UAT not started.** Quick Deploy wizard, platform base template registry/job, live deployment pipeline, portal trial status. See `docs/DP3_QUICK_DEPLOY_WIZARD.md`, `docs/DP4_PLATFORM_TEMPLATES.md`, `docs/DP5_TRIAL_PROVISIONING.md`.
+
+**Regression:** 197 passed, 1 skipped, 2 integration deselected (QG-0 after G2).
+
+**Do not start DP6, G3, billing, or DNS until explicit human approval.**
 
 ---
 

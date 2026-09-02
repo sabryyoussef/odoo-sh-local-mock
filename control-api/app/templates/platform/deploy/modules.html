@@ -1,21 +1,30 @@
 {% extends "platform/deploy/_wizard_base.html" %}
 {% block deploy_content %}
 <h1>Select apps</h1>
-<form method="get" action="/platform/deploy/modules" style="margin-bottom:1rem">
-  <input type="search" name="q" value="{{ search }}" placeholder="Search apps">
+{% if entitlement_error %}
+<p role="alert" data-testid="entitlement-error">This plan does not allow that many apps. Reduce the selection and try again.</p>
+{% endif %}
+<p data-testid="selected-module-count">{{ selected_count }}{% if max_selected_apps is not none %} / {{ max_selected_apps }}{% endif %} selected</p>
+<form method="get" action="/platform/deploy/modules" style="margin-bottom:1rem" data-testid="module-search-form">
+  <label>Search apps
+    <input type="search" name="q" value="{{ search }}" placeholder="Search apps" data-testid="module-search">
+  </label>
   <button type="submit">Search</button>
 </form>
-<form method="post" action="/platform/deploy/modules">
+<form method="post" action="/platform/deploy/modules" data-testid="modules-step">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   {% for cat in categories %}
   <h3>{{ cat.name }}</h3>
   {% for m in cat.modules %}
-  <label style="display:block">
+  <label style="display:block" data-testid="module-{{ m.technical_name }}">
     <input type="checkbox" name="module_ids" value="{{ m.id }}" {% if m.selected %}checked{% endif %}>
     {{ m.display_name }}
+    {% if m.depends_on %}
+    <span class="muted" data-testid="module-deps-{{ m.technical_name }}">Requires {{ m.depends_on|join(", ") }}</span>
+    {% endif %}
   </label>
   {% endfor %}
   {% endfor %}
-  <button type="submit" class="btn btn--primary">Review</button>
+  <button type="submit" class="btn btn--primary" data-testid="modules-continue">Review</button>
 </form>
 {% endblock %}

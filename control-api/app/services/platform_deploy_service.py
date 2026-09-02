@@ -157,7 +157,7 @@ def plan_step_context(db: Session, user_id: int) -> dict[str, Any]:
                 "id": p.id,
                 "code": p.code,
                 "name": p.name,
-                "description": f"{p.price_label} · {str(p.pricing_status or '').replace('_', ' ')}",
+                "description": f"{p.price_label or ''} · {str(p.pricing_status or '').replace('_', ' ')}".strip(" ·"),
                 "selected": trial.platform_plan_id == p.id,
                 "entitlements": entitlements_from_plan(p),
             }
@@ -198,21 +198,32 @@ def modules_step_context(db: Session, user_id: int, *, search: str = "") -> dict
             for m in modules
             if q in (m.technical_name or "").lower() or q in (m.display_name or "").lower()
         ]
+    from app.services.platform_entitlements import entitlements_from_plan
+
     by_category: dict[str, list[dict[str, Any]]] = {}
     for m in modules:
         cat = m.category or "Other"
+        depends_on = [
+            d.depends_on_technical_name
+            for d in (m.dependencies or [])
+            if getattr(d, "depends_on_technical_name", None)
+        ]
         by_category.setdefault(cat, []).append(
             {
                 "id": m.id,
                 "technical_name": m.technical_name,
                 "display_name": m.display_name,
                 "selected": m.id in selected_ids,
+                "depends_on": depends_on,
             }
         )
+    entitlements = entitlements_from_plan(trial.platform_plan) if trial.platform_plan else {}
     return {
         "trial_id": trial.id,
         "categories": [{"name": k, "modules": v} for k, v in sorted(by_category.items())],
         "selected_module_ids": selected_ids,
+        "selected_count": len(selected_ids),
+        "max_selected_apps": entitlements.get("max_selected_apps"),
         "search": search,
     }
 

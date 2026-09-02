@@ -111,6 +111,7 @@ def deploy_plan_post(
 def deploy_modules_step(
     request: Request,
     q: str = Query("", alias="q"),
+    error: str = Query(""),
     db: Session = Depends(get_db),
 ):
     from app.dependencies import get_current_user_optional
@@ -122,7 +123,12 @@ def deploy_modules_step(
     return render_template(
         request,
         "platform/deploy/modules.html",
-        {"page_title": "Quick Deploy — Apps", "step": 3, **ctx},
+        {
+            "page_title": "Quick Deploy — Apps",
+            "step": 3,
+            "entitlement_error": bool(error),
+            **ctx,
+        },
     )
 
 

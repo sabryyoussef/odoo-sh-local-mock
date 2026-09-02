@@ -1,14 +1,14 @@
 {% extends "platform/deploy/_wizard_base.html" %}
 {% block deploy_content %}
 <h1>Select Odoo version</h1>
-<form method="post" action="/platform/deploy/version">
+<form method="post" action="/platform/deploy/version" data-testid="version-step">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   {% for v in versions %}
-  <label style="display:block;margin:0.5rem 0">
+  <label style="display:block;margin:0.5rem 0" data-testid="version-option-{{ v.label }}">
     <input type="radio" name="version_id" value="{{ v.id }}" {% if v.selected %}checked{% endif %} {% if not v.selectable %}disabled{% endif %}>
     {{ v.display_name }} ({{ v.label }}){% if v.coming_later %} — Coming later{% endif %}
   </label>
   {% endfor %}
-  <button type="submit" class="btn btn--primary">Continue</button>
+  <button type="submit" class="btn btn--primary" data-testid="version-continue">Continue</button>
 </form>
 {% endblock %}

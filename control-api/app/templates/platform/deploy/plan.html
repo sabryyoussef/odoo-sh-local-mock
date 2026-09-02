@@ -1,14 +1,14 @@
 {% extends "platform/deploy/_wizard_base.html" %}
 {% block deploy_content %}
 <h1>Select plan</h1>
-<form method="post" action="/platform/deploy/plan">
+<form method="post" action="/platform/deploy/plan" data-testid="plan-step">
   <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
   {% for p in plans %}
-  <label style="display:block;margin:0.5rem 0">
+  <label style="display:block;margin:0.5rem 0" data-testid="plan-option-{{ p.code }}">
     <input type="radio" name="plan_id" value="{{ p.id }}" {% if p.selected %}checked{% endif %}>
-    <strong>{{ p.name }}</strong> — {{ p.description }}
+    <strong>{{ p.name }}</strong> — {{ p.description or "" }}
   </label>
   {% endfor %}
-  <button type="submit" class="btn btn--primary">Continue</button>
+  <button type="submit" class="btn btn--primary" data-testid="plan-continue">Continue</button>
 </form>
 {% endblock %}

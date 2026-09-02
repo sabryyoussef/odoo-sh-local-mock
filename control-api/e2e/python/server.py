@@ -1,4 +1,4 @@
-"""Isolated FastAPI entrypoint for G3-A Playwright. Never bind live control.db."""
+"""Isolated FastAPI entrypoint for G3-A/G3-C Playwright. Never bind live control.db."""
 
 from __future__ import annotations
 
@@ -32,11 +32,16 @@ def _preflight() -> None:
 _preflight()
 
 from app.api.e2e_harness import router as e2e_router  # noqa: E402
+from app.api.e2e_lifecycle import router as e2e_lifecycle_router  # noqa: E402
 from app.db import SessionLocal  # noqa: E402
+from app.e2e_isolated import install_isolated_lifecycle_controls, set_e2e_now  # noqa: E402
 from app.main import app  # noqa: E402
 from e2e.python.seed import seed_isolated_catalog  # noqa: E402
+from e2e.python.seed_lifecycle import T0, seed_lifecycle_fixtures  # noqa: E402
 
+install_isolated_lifecycle_controls()
 app.include_router(e2e_router)
+app.include_router(e2e_lifecycle_router)
 
 
 @app.on_event("startup")
@@ -44,3 +49,5 @@ def seed_e2e_catalog() -> None:
     Path("/tmp").mkdir(parents=True, exist_ok=True)
     with SessionLocal() as db:
         seed_isolated_catalog(db)
+        seed_lifecycle_fixtures(db)
+    set_e2e_now(T0)

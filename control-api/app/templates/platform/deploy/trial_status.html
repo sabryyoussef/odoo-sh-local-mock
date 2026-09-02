@@ -14,9 +14,9 @@
 <p>Trial ends: {{ trial.trial_ends_at }}</p>
 {% endif %}
 {% if lifecycle and lifecycle.access_blocked %}
-<p data-testid="lifecycle-access-blocked">Launch is blocked while this trial is suspended or terminated.</p>
+<p data-testid="lifecycle-access-blocked" role="alert" aria-label="Tenant launch blocked">Launch is blocked while this trial is suspended or terminated.</p>
 {% elif trial.tenant and trial.tenant.public_url %}
-<p><a href="{{ trial.tenant.public_url }}" data-testid="tenant-launch">Launch Odoo</a></p>
+<p><a href="{{ trial.tenant.public_url }}" data-testid="tenant-launch" aria-label="Launch tenant">Launch Odoo</a></p>
 {% elif trial.tenant and trial.tenant.status == 'active' %}
 <p>Provisioned — public access pending</p>
 {% endif %}

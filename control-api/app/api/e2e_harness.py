@@ -56,6 +56,30 @@ def _require_secret(request: Request) -> None:
         raise HTTPException(status_code=404, detail="Not found")
 
 
+def _e2e_accounts() -> dict[str, str]:
+    settings = get_settings()
+    accounts: dict[str, str] = {}
+
+    def put(login: str, password: str) -> None:
+        login = (login or "").strip()
+        if login and password:
+            accounts[login] = password
+
+    put(settings.e2e_user_login or os.environ.get("E2E_USER_LOGIN") or "", settings.e2e_user_password or os.environ.get("E2E_USER_PASSWORD") or "")
+    put(os.environ.get("E2E_CUSTOMER_LOGIN") or "", os.environ.get("E2E_CUSTOMER_PASSWORD") or "")
+    put(os.environ.get("E2E_OPERATOR_LOGIN") or "", os.environ.get("E2E_OPERATOR_PASSWORD") or "")
+    put(os.environ.get("E2E_OTHER_LOGIN") or "", os.environ.get("E2E_OTHER_PASSWORD") or "")
+    return accounts
+
+
+_E2E_USER_META = {
+    "e2e_g3a_user": (91001901, "G3-A E2E User", "e2e.g3a@example.test"),
+    "e2e_g3c_customer": (91001902, "G3-C Customer", "e2e.g3c.customer@example.test"),
+    "e2e_g3c_operator": (91001903, "G3-C Operator", "e2e.g3c.operator@example.test"),
+    "e2e_g3c_other": (91001904, "G3-C Other", "e2e.g3c.other@example.test"),
+}
+
+
 @router.get("/e2e/login", response_class=HTMLResponse)
 def e2e_login_get(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     _require_e2e()
@@ -78,15 +102,10 @@ def e2e_login_post(
     db: Session = Depends(get_db),
 ):
     _require_e2e()
-    settings = get_settings()
-    expected_login = (settings.e2e_user_login or os.environ.get("E2E_USER_LOGIN") or "").strip()
-    expected_password = settings.e2e_user_password or os.environ.get("E2E_USER_PASSWORD") or ""
-    ok = (
-        expected_login
-        and expected_password
-        and secrets.compare_digest(login.strip(), expected_login)
-        and secrets.compare_digest(password, expected_password)
-    )
+    submitted_login = login.strip()
+    accounts = _e2e_accounts()
+    expected_password = accounts.get(submitted_login, "")
+    ok = bool(expected_password) and secrets.compare_digest(password, expected_password)
     if not ok:
         return render_template(
             request,
@@ -98,15 +117,16 @@ def e2e_login_post(
             },
             status_code=200,
         )
-    user = db.scalar(select(User).where(User.github_login == expected_login))
+    user = db.scalar(select(User).where(User.github_login == submitted_login))
     if not user:
+        meta = _E2E_USER_META.get(submitted_login, (91001999, "G3 E2E User", "e2e@example.test"))
         user = upsert_github_user(
             db,
             {
-                "id": 91001901,
-                "login": expected_login,
-                "name": "G3-A E2E User",
-                "email": "e2e.g3a@example.test",
+                "id": meta[0],
+                "login": submitted_login,
+                "name": meta[1],
+                "email": meta[2],
                 "avatar_url": None,
             },
             "e2e-placeholder-token",
@@ -129,6 +149,9 @@ def e2e_state(request: Request, db: Session = Depends(get_db)) -> JSONResponse:
     jobs = list(db.scalars(select(DeploymentJob)).all())
     tenants = list(db.scalars(select(Tenant)).all())
     claimed = [j for j in jobs if getattr(j, "claimed_by", None)]
+    seeded = [t for t in tenants if str(getattr(t, "tenant_code", "") or "").startswith("e2e_g3c_")]
+    seeded_ids = {t.id for t in seeded}
+    operational = [t for t in tenants if t.id not in seeded_ids]
     db_url = get_settings().database_url or ""
     return JSONResponse(
         {
@@ -138,12 +161,13 @@ def e2e_state(request: Request, db: Session = Depends(get_db)) -> JSONResponse:
             "job_count": len(jobs),
             "claimed_job_count": len(claimed),
             "job_statuses": [j.status for j in jobs],
-            "tenant_count": len(tenants),
+            "tenant_count": len(operational),
+            "lifecycle_seed_tenant_count": len(seeded),
             "tenant_container_names": [
-                t.container_name for t in tenants if getattr(t, "container_name", None)
+                t.container_name for t in operational if getattr(t, "container_name", None)
             ],
             "tenant_db_names": [
-                t.database_name for t in tenants if getattr(t, "database_name", None)
+                t.database_name for t in operational if getattr(t, "database_name", None)
             ],
         }
     )

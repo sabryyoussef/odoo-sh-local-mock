@@ -17,9 +17,12 @@ def e2e_routes(monkeypatch, isolated_app_db):  # noqa: ARG001
     monkeypatch.setenv("E2E_USER_PASSWORD", "pytest-e2e-password")
     get_settings.cache_clear()
     from app.api.e2e_harness import router
+    from app.api.e2e_lifecycle import router as lifecycle_router
 
     if not any(getattr(r, "path", "") == "/e2e/login" for r in app.routes):
         app.include_router(router)
+    if not any(getattr(r, "path", "") == "/e2e/clock" for r in app.routes):
+        app.include_router(lifecycle_router)
     yield
     get_settings.cache_clear()
 
@@ -70,3 +73,42 @@ def test_e2e_state_requires_secret(e2e_routes, client):
     assert body["job_count"] == 0
     assert body["tenant_count"] == 0
     assert "password" not in str(body).lower()
+
+
+def test_e2e_clock_and_runtime_absent_without_mode(client):
+    assert client.get("/e2e/clock").status_code == 404
+    assert client.post("/e2e/clock", json={"iso": "2026-09-02T12:00:00+00:00"}).status_code == 404
+    assert client.get("/e2e/runtime").status_code == 404
+    assert client.post("/e2e/lifecycle/tick", json={"trial_id": 1}).status_code == 404
+
+
+def test_isolated_controls_refuse_install_without_e2e_mode():
+    from app.e2e_isolated import install_isolated_lifecycle_controls
+
+    with pytest.raises(RuntimeError, match="E2E_MODE"):
+        install_isolated_lifecycle_controls()
+
+
+def test_e2e_clock_requires_secret(e2e_routes, client):
+    missing = client.post("/e2e/clock", json={"iso": "2026-09-02T12:00:00+00:00"})
+    assert missing.status_code == 404
+    ok = client.post(
+        "/e2e/clock",
+        json={"iso": "2026-09-02T12:00:00+00:00"},
+        headers={"x-e2e-secret": "pytest-e2e-secret"},
+    )
+    assert ok.status_code == 200
+    body = ok.json()
+    assert body["frozen"] is True
+    assert "2026-09-02T12:00:00" in body["iso"]
+    assert "password" not in str(body).lower()
+
+    runtime = client.post(
+        "/e2e/runtime",
+        json={"reset": True, "stop_fail": True},
+        headers={"x-e2e-secret": "pytest-e2e-secret"},
+    )
+    assert runtime.status_code == 200
+    snap = runtime.json()
+    assert snap["stop_fail"] is True
+    assert snap["stop_calls"] == 0

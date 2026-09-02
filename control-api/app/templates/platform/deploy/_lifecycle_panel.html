@@ -1,25 +1,27 @@
-<div data-testid="lifecycle-panel">
-  <p>Lifecycle: <strong data-testid="lifecycle-state">{{ lifecycle.lifecycle_state }}</strong></p>
+<div data-testid="lifecycle-panel" aria-label="Trial lifecycle">
+  <p>Lifecycle: <strong data-testid="lifecycle-state" aria-label="Lifecycle state">{{ lifecycle.lifecycle_state }}</strong></p>
   {% if lifecycle.expires_at %}
-  <p data-testid="lifecycle-countdown">Expires {{ lifecycle.expires_at }}{% if lifecycle.remaining_trial_seconds is not none %} · {{ (lifecycle.remaining_trial_seconds / 3600)|round(1) }} hours remaining{% endif %}</p>
+  <p data-testid="lifecycle-countdown" aria-label="Trial countdown">Expires {{ lifecycle.expires_at }}{% if lifecycle.remaining_trial_seconds is not none %} · {{ (lifecycle.remaining_trial_seconds // 86400)|int }} days {{ ((lifecycle.remaining_trial_seconds % 86400) / 3600)|round(1) }} hours remaining{% endif %}</p>
   {% endif %}
   {% if lifecycle.warning_near_expiry %}
-  <p role="alert" data-testid="lifecycle-expiry-warning">This trial is close to expiry.</p>
+  <p role="alert" data-testid="lifecycle-expiry-warning" aria-label="Expiry warning">This trial is close to expiry. Remaining time is also shown in the countdown text.</p>
+  {% elif lifecycle.warning_at_expiry %}
+  <p role="alert" data-testid="lifecycle-expiry-warning" aria-label="Expiry warning">This trial has reached expiry. Remaining active countdown is zero.</p>
   {% endif %}
   {% if lifecycle.lifecycle_state == "grace" %}
-  <p role="alert" data-testid="lifecycle-grace-warning">Grace period is active. Access remains available until {{ lifecycle.grace_ends_at }}.</p>
+  <p role="alert" data-testid="lifecycle-grace-warning" aria-label="Grace period warning">Grace period is active. Access remains available until {{ lifecycle.grace_ends_at }}. This is a grace state, not only a color change.</p>
   {% endif %}
   {% if lifecycle.suspended %}
-  <p role="alert" data-testid="lifecycle-suspended-banner">This trial is suspended. Runtime access is blocked. Next action: {{ lifecycle.next_action }}.</p>
+  <p role="alert" data-testid="lifecycle-suspended-banner" aria-label="Suspended trial banner">This trial is suspended. Runtime access is blocked. Next action: {{ lifecycle.next_action }}. This is a suspended state, not only a color change.</p>
   {% endif %}
   {% if lifecycle.lifecycle_state == "termination_pending" or lifecycle.lifecycle_state == "terminated" %}
-  <p data-testid="lifecycle-termination-status">Termination status: {{ lifecycle.lifecycle_state }}</p>
+  <p data-testid="lifecycle-termination-status" aria-label="Termination status">Termination status: {{ lifecycle.lifecycle_state }}</p>
   {% endif %}
   {% if lifecycle.converted %}
-  <p data-testid="lifecycle-reactivation-status">Converted — lifecycle suspension is disabled.</p>
+  <p data-testid="lifecycle-reactivation-status" aria-label="Reactivation status">Converted — lifecycle suspension is disabled.</p>
   {% elif lifecycle.lifecycle_state == "trial_active" and lifecycle.stored_status == "trial_active" %}
-  <p data-testid="lifecycle-reactivation-status">Active</p>
+  <p data-testid="lifecycle-reactivation-status" aria-label="Reactivation status">Active</p>
   {% else %}
-  <p data-testid="lifecycle-reactivation-status">{{ lifecycle.next_action }}</p>
+  <p data-testid="lifecycle-reactivation-status" aria-label="Reactivation status">{{ lifecycle.next_action }}</p>
   {% endif %}
 </div>

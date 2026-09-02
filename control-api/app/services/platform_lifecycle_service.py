@@ -237,6 +237,7 @@ def countdown_view(trial: PlatformTrial, lc: PlatformTrialLifecycle | None, *, n
     if grace_end:
         remaining_grace = max(int((grace_end - now).total_seconds()), 0)
     warn_expiry = bool(expires and remaining_trial is not None and remaining_trial <= 3 * 86400 and now < expires)
+    warn_at_expiry = bool(expires and now >= expires and display == PT_GRACE)
     return {
         "lifecycle_state": display,
         "stored_status": status,
@@ -246,6 +247,7 @@ def countdown_view(trial: PlatformTrial, lc: PlatformTrialLifecycle | None, *, n
         "remaining_trial_seconds": remaining_trial,
         "remaining_grace_seconds": remaining_grace,
         "warning_near_expiry": warn_expiry and display == PT_TRIAL_ACTIVE,
+        "warning_at_expiry": warn_at_expiry,
         "suspended": display in {PT_SUSPENDED, PT_SUSPENSION_PENDING},
         "access_blocked": display in {PT_SUSPENDED, PT_TERMINATION_PENDING, PT_TERMINATED},
         "next_action": _next_action(display),

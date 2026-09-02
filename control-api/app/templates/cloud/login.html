@@ -1,0 +1,26 @@
+{% extends "cloud/base.html" %}
+{% block title %}Cloud sign in{% endblock %}
+{% block cloud_crumb %} · Sign in{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Sign in to Helpers ERP Cloud</h1>
+  <p>Email and password — GitHub is not required.</p>
+</div>
+{% if error_message %}<div class="sub-result sub-result--bad">{{ error_message }}</div>{% endif %}
+<section class="flow-card" style="max-width:480px">
+  <form method="post" action="/cloud/login">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label class="field"><span>Work email</span>
+      <input type="email" name="email" value="{{ form.email|default('') }}" autocomplete="username" required>
+    </label>
+    <label class="field"><span>Password</span>
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <div class="flow-actions">
+      <button type="submit" class="btn-hero btn-hero--primary">Sign in</button>
+      <a class="btn" href="/cloud/register">Create an account</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

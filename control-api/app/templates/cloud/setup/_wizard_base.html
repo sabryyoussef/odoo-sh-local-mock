@@ -1,0 +1,19 @@
+{% extends "cloud/base.html" %}
+{% block title %}{{ wizard_labels[current_step] }} · Configure your ERP{% endblock %}
+{% block cloud_crumb %} · Configure{% endblock %}
+{% block cloud_content %}
+<ol class="wizard-progress" aria-label="Setup progress">
+  {% for step in wizard_steps %}
+    <li class="{% if step == current_step %}is-current{% endif %}">
+      {% if step == current_step %}
+        <span>{{ loop.index }}. {{ wizard_labels[step] }}</span>
+      {% else %}
+        <a href="/cloud/setup/{{ step }}">{{ loop.index }}. {{ wizard_labels[step] }}</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>
+<p class="muted">{{ managed_by }} · No coding or server administration required.</p>
+{% if error_message %}<div class="sub-result sub-result--bad">{{ error_message }}</div>{% endif %}
+{% block wizard_body %}{% endblock %}
+{% endblock %}

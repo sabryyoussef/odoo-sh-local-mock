@@ -1,0 +1,34 @@
+{% extends "cloud/base.html" %}
+{% block title %}Workspace{% endblock %}
+{% block cloud_crumb %} · Instance{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>{{ instance.workspace_name }}</h1>
+  <p>{{ instance.company_name }} · Helpers ERP Cloud</p>
+</div>
+<section class="flow-card">
+  <dl class="kv">
+    <div><dt>Odoo version</dt><dd>{{ instance.odoo_version_code }}</dd></div>
+    <div><dt>Plan</dt><dd>{{ instance.plan_code }}</dd></div>
+    <div><dt>Package</dt><dd>{{ instance.package_code }}</dd></div>
+    <div><dt>Status</dt><dd>{{ status_labels.get(instance.status, instance.status) }}</dd></div>
+    <div><dt>Users</dt><dd>{{ instance.requested_users }} / {{ instance.included_users }} included</dd></div>
+    <div><dt>Storage</dt><dd>{{ instance.requested_storage_gb }} GB / {{ instance.included_storage_gb }} GB included</dd></div>
+    <div><dt>Backup policy</dt><dd>{{ instance.backup_retention_days }} days</dd></div>
+  </dl>
+  {% if can_open %}
+    <a class="btn-hero btn-hero--primary" href="{{ instance.runtime_url }}">Open Odoo</a>
+  {% else %}
+    <p class="muted">Open Odoo is disabled. This demo workspace does not have a verified live runtime.</p>
+  {% endif %}
+  <h2>Account actions</h2>
+  <ul class="pricing-features">
+    <li><a href="/cloud/subscriptions/{{ instance.subscription_id }}">View subscription</a></li>
+    <li><a href="/cloud/pricing">Upgrade plan</a></li>
+    <li><a href="/cloud/setup/company">Request more users</a></li>
+    <li><a href="/cloud/setup/company">Request more storage</a></li>
+    <li><a href="/cloud/setup/addons">Browse approved add-ons</a></li>
+    <li><a href="mailto:support@helpers-erp.example">Request support</a></li>
+  </ul>
+</section>
+{% endblock %}

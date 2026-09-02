@@ -1,0 +1,39 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Review your Helpers ERP Cloud workspace</h1>
+  <p><span class="badge badge--warning">Presentation Only</span> Totals are calculated on the server. This is not a live subscription until a real payment provider is enabled.</p>
+</div>
+<section class="flow-card">
+  <dl class="kv">
+    <div><dt>Customer</dt><dd>{{ user.name }} · {{ user.email }}</dd></div>
+    <div><dt>Product line</dt><dd>{{ snapshot.product_line_label }}</dd></div>
+    <div><dt>Company</dt><dd>{{ snapshot.company.legal_company_name }}</dd></div>
+    <div><dt>Workspace</dt><dd>{{ snapshot.company.workspace_name }} ({{ snapshot.company.requested_subdomain }})</dd></div>
+    <div><dt>Plan</dt><dd>{{ snapshot.plan.name }} · {{ snapshot.billing_cycle }}</dd></div>
+    <div><dt>Odoo version</dt><dd>{{ snapshot.version.display_name }}</dd></div>
+    <div><dt>Package</dt><dd>{{ snapshot.package.name }}</dd></div>
+    <div><dt>Included Odoo apps</dt><dd>{{ snapshot.standard_modules|join(', ') }}</dd></div>
+    <div><dt>Helpers ERP modules</dt><dd>{{ snapshot.helpers_modules|join(', ') }}</dd></div>
+    <div><dt>Users</dt><dd>{{ snapshot.users }}</dd></div>
+    <div><dt>Storage</dt><dd>{{ snapshot.storage_gb }} GB</dd></div>
+    <div><dt>Backup retention</dt><dd>{{ snapshot.plan.backup_retention_days }} days</dd></div>
+    <div><dt>Support</dt><dd>{{ snapshot.plan.support_level|replace('_',' ') }}</dd></div>
+    <div><dt>Add-ons</dt><dd>{% for a in snapshot.addons %}{{ a.name }}{% if not loop.last %}, {% endif %}{% else %}None{% endfor %}</dd></div>
+  </dl>
+</section>
+<section class="flow-card">
+  <h2>Price breakdown</h2>
+  <ul class="pricing-features">
+    {% for line in pricing.lines %}
+      <li>{{ line.label }} · {{ format_money(line.cents, pricing.currency) }}</li>
+    {% endfor %}
+  </ul>
+  <p><strong>Total {{ pricing.total_display }} / {{ pricing.period_label }}</strong></p>
+  <p class="muted">Demo / payment status: Presentation Only — no real charge.</p>
+</section>
+<div class="flow-actions">
+  <a class="btn" href="/cloud/setup/addons">Back</a>
+  <a class="btn-hero btn-hero--primary" href="/cloud/checkout">Continue to demo checkout</a>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "cloud/base.html" %}
+{% block title %}Demo checkout{% endblock %}
+{% block cloud_crumb %} · Checkout{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Demo Checkout — No Real Charge</h1>
+  <p>This confirms your configuration. Card numbers are not collected or stored.</p>
+  <p><span class="badge badge--warning">Demo Checkout — No Real Charge</span></p>
+</div>
+<section class="flow-card">
+  <h2>{{ snapshot.company.legal_company_name }}</h2>
+  <p>{{ snapshot.plan.name }} · {{ snapshot.package.name }} · {{ snapshot.version.display_name }}</p>
+  <p><strong>{{ pricing.total_display }} / {{ pricing.period_label }}</strong> (server-calculated, presentation only)</p>
+  <form method="post" action="/cloud/checkout">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+    <p class="demo-note">No payment gateway is connected. Submitting creates a demo order and queues provisioning.</p>
+    <div class="flow-actions">
+      <a class="btn" href="/cloud/setup/review">Back to review</a>
+      <button type="submit" class="btn-hero btn-hero--primary">Place demo order</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

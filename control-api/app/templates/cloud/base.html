@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default('Helpers ERP Cloud') }} · {{ app_name }}{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/">Home</a> · <a href="/cloud">Helpers ERP Cloud</a>{% block cloud_crumb %}{% endblock %}</p>
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+    {% block cloud_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

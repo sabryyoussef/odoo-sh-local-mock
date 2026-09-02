@@ -1,0 +1,44 @@
+{% extends "cloud/base.html" %}
+{% block title %}My ERP{% endblock %}
+{% block cloud_crumb %} · Instances{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Your Helpers ERP Cloud workspaces</h1>
+  <p>Managed by Helpers ERP. No coding or server administration required.</p>
+</div>
+{% if instances %}
+  <div class="pricing-grid">
+    {% for inst in instances %}
+      <article class="flow-card">
+        <h2>{{ inst.workspace_name or inst.company_name }}</h2>
+        <dl class="kv">
+          <div><dt>Company</dt><dd>{{ inst.company_name }}</dd></div>
+          <div><dt>Product line</dt><dd>Helpers ERP Cloud</dd></div>
+          <div><dt>Odoo</dt><dd>{{ inst.odoo_version_code }}</dd></div>
+          <div><dt>Plan</dt><dd>{{ inst.plan_code }}</dd></div>
+          <div><dt>Package</dt><dd>{{ inst.package_code }}</dd></div>
+          <div><dt>Status</dt><dd>{{ status_labels.get(inst.status, inst.status) }}</dd></div>
+          <div><dt>Users</dt><dd>{{ inst.requested_users }} requested / {{ inst.included_users }} included</dd></div>
+          <div><dt>Storage</dt><dd>{{ inst.requested_storage_gb }} GB requested / {{ inst.included_storage_gb }} GB included</dd></div>
+          <div><dt>Backups</dt><dd>{{ inst.backup_retention_days }}-day retention</dd></div>
+          <div><dt>Last backup</dt><dd>{% if inst.last_backup_at %}{{ inst.last_backup_at }}{% else %}None yet (demo){% endif %}</dd></div>
+        </dl>
+        {% if can_open[inst.id] %}
+          <a class="btn-hero btn-hero--primary" href="{{ inst.runtime_url }}">Open Odoo</a>
+        {% else %}
+          <p class="muted">Open Odoo is unavailable until this workspace is Ready with a verified address.</p>
+        {% endif %}
+        <div class="flow-actions-row">
+          <a class="btn" href="/cloud/instances/{{ inst.id }}">Workspace details</a>
+          <a class="btn" href="/cloud/subscriptions/{{ inst.subscription_id }}">View subscription</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <section class="flow-card">
+    <p>No Cloud workspaces yet.</p>
+    <a class="btn-hero btn-hero--primary" href="/cloud/setup/plan">Configure Your ERP</a>
+  </section>
+{% endif %}
+{% endblock %}

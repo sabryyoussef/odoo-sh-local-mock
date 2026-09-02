@@ -1,0 +1,41 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Choose a Cloud plan</h1>
+  <p>Toggle billing later on review. Trial is presentation-only with limited users and storage.</p>
+</div>
+<form method="post" action="/cloud/setup/plan">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <fieldset class="seg" style="margin-bottom:16px">
+    <legend class="muted">Billing cycle</legend>
+    <label class="seg__opt{% if setup.billing_cycle != 'annual' %} is-active{% endif %}">
+      <input type="radio" name="billing_cycle" value="monthly" {% if setup.billing_cycle != 'annual' %}checked{% endif %}> Monthly
+    </label>
+    <label class="seg__opt{% if setup.billing_cycle == 'annual' %} is-active{% endif %}">
+      <input type="radio" name="billing_cycle" value="annual" {% if setup.billing_cycle == 'annual' %}checked{% endif %}> Annual
+    </label>
+  </fieldset>
+  <div class="pricing-grid">
+    {% for plan in plans %}
+      <label class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
+        {% if plan.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
+        <h2>{{ plan.name }}</h2>
+        <div class="pricing-price"><strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong><span>/ month</span></div>
+        <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} / year</p>
+        <ul class="pricing-features">
+          <li>{{ plan.included_users }} users included</li>
+          <li>{{ plan.included_storage_gb }} GB storage</li>
+          <li>{{ plan.backup_retention_days }}-day backups</li>
+          <li>{{ plan.support_level|replace('_',' ') }} support</li>
+          {% if plan.is_demo %}<li>Trial limitations · Presentation Only</li>{% endif %}
+        </ul>
+        <input type="radio" name="plan_id" value="{{ plan.id }}" {% if setup.plan_id == plan.id or (not setup.plan_id and plan.recommended) %}checked{% endif %} required>
+        <span class="muted">Select {{ plan.name }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  <div class="flow-actions">
+    <button type="submit" class="btn-hero btn-hero--primary">Continue</button>
+  </div>
+</form>
+{% endblock %}

@@ -33,6 +33,7 @@ from app.dependencies import (
     require_user_or_redirect,
 )
 from app.api.backups import router as backups_router
+from app.api.cloud import router as cloud_router
 from app.api.operator_platform import router as operator_platform_router
 from app.api.platform_deploy import router as platform_deploy_router
 from app.api.catalog import router as catalog_router
@@ -133,6 +134,7 @@ app.include_router(portal_router)
 app.include_router(backups_router)
 app.include_router(operator_platform_router)
 app.include_router(platform_deploy_router)
+app.include_router(cloud_router)
 
 
 @app.on_event("startup")
@@ -259,6 +261,8 @@ def landing(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
 def login_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     user = require_user_or_redirect(request, db)
     if user:
+        if user.password_hash and not user.github_id:
+            return RedirectResponse("/cloud/instances", status_code=302)
         return RedirectResponse("/projects", status_code=302)
     return _render(
         request,

@@ -1,0 +1,21 @@
+{% extends "cloud/base.html" %}
+{% block title %}Provisioning{% endblock %}
+{% block cloud_crumb %} · Provisioning{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Provisioning your company ERP</h1>
+  <p>Helpers ERP is preparing an isolated database. This page never shows developer logs or source code.</p>
+  {% if demo_adapter %}<p><span class="badge badge--warning">Demo provisioning</span> Status is simulated. Odoo is not live until a verified runtime exists.</p>{% endif %}
+</div>
+<section class="flow-card">
+  <p>Request {{ provisioning.request_uuid }}</p>
+  <p>Status: <strong>{{ status_labels.get(provisioning.status, provisioning.status) }}</strong></p>
+  <p>Current step: {{ provisioning.current_step }}</p>
+  {% if provisioning.runtime_verified and provisioning.runtime_url %}
+    <a class="btn-hero btn-hero--primary" href="{{ provisioning.runtime_url }}">Open Odoo</a>
+  {% else %}
+    <p class="muted">Open Odoo is disabled until a verified runtime URL exists. No placeholder address is shown.</p>
+  {% endif %}
+  <a class="btn" href="/cloud/instances">Back to instances</a>
+</section>
+{% endblock %}

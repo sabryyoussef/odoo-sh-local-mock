@@ -53,3 +53,6 @@ def init_db() -> None:
 
         seed_odoo_versions(db)
         seed_platform_plan_module_rules(db)
+        from app.services.cloud_catalog_service import seed_helpers_cloud
+
+        seed_helpers_cloud(db)

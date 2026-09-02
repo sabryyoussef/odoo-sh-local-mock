@@ -1,0 +1,33 @@
+{% extends "cloud/base.html" %}
+{% block title %}Cloud plans · Helpers ERP Cloud{% endblock %}
+{% block cloud_crumb %} · Plans{% endblock %}
+{% block cloud_content %}
+<div class="flow-header" style="text-align:center">
+  <h1>Helpers ERP Cloud plans</h1>
+  <p>Choose a managed plan. Prices below are <strong>Presentation Only</strong> and are calculated on the server when you configure your ERP.</p>
+  <p><span class="badge badge--warning">Presentation Only</span> No real charge will occur.</p>
+</div>
+<div class="pricing-grid">
+  {% for plan in plans %}
+    <article class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
+      {% if plan.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
+      <h2>{{ plan.name }}</h2>
+      <div class="pricing-price">
+        <strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong>
+        <span>/ month</span>
+      </div>
+      <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} / year</p>
+      <p>{{ plan.description }}</p>
+      <ul class="pricing-features">
+        <li><span class="check">✓</span> {{ plan.included_users }} users included{% if plan.max_users %} (max {{ plan.max_users }}){% endif %}</li>
+        <li><span class="check">✓</span> {{ plan.included_storage_gb }} GB storage{% if plan.max_storage_gb %} (max {{ plan.max_storage_gb }} GB){% endif %}</li>
+        <li><span class="check">✓</span> {{ plan.backup_retention_days }}-day backup retention</li>
+        <li><span class="check">✓</span> {{ plan.support_level|replace('_',' ') }} support</li>
+        {% if plan.trial_days %}<li><span class="check">✓</span> {{ plan.trial_days }}-day trial{% if plan.is_demo %} (demo limitations){% endif %}</li>{% endif %}
+        {% if plan.quote_required %}<li><span class="check">✓</span> Quote-based option for custom resources</li>{% endif %}
+      </ul>
+      <a class="btn-hero {% if plan.recommended %}btn-hero--primary{% else %}btn-hero--secondary btn-hero--on-light{% endif %} pricing-cta" href="/cloud/setup/plan">Start Free Trial</a>
+    </article>
+  {% endfor %}
+</div>
+{% endblock %}

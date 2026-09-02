@@ -1,0 +1,52 @@
+{% extends "cloud/base.html" %}
+{% block title %}Create Cloud account{% endblock %}
+{% block cloud_crumb %} · Register{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Create your Helpers ERP Cloud account</h1>
+  <p>Use your work email. GitHub is not required.</p>
+</div>
+{% if error_message %}<div class="sub-result sub-result--bad">{{ error_message }}</div>{% endif %}
+<section class="flow-card" style="max-width:640px">
+  <form method="post" action="/cloud/register" class="deploy-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label class="field"><span>Full name</span>
+      <input type="text" name="full_name" value="{{ form.full_name|default('') }}" autocomplete="name" required>
+      {% if errors.full_name %}<small class="field-error">{{ errors.full_name }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Work email</span>
+      <input type="email" name="email" value="{{ form.email|default('') }}" autocomplete="email" required>
+      {% if errors.email %}<small class="field-error">{{ errors.email }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Phone</span>
+      <input type="tel" name="phone" value="{{ form.phone|default('') }}" autocomplete="tel" required>
+      {% if errors.phone %}<small class="field-error">{{ errors.phone }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Company name</span>
+      <input type="text" name="company_name" value="{{ form.company_name|default('') }}" autocomplete="organization" required>
+      {% if errors.company_name %}<small class="field-error">{{ errors.company_name }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Country</span>
+      <input type="text" name="country" value="{{ form.country|default('') }}" autocomplete="country-name" required>
+      {% if errors.country %}<small class="field-error">{{ errors.country }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Password</span>
+      <input type="password" name="password" autocomplete="new-password" required>
+      {% if errors.password %}<small class="field-error">{{ errors.password }}</small>{% endif %}
+    </label>
+    <label class="field"><span>Confirm password</span>
+      <input type="password" name="password_confirm" autocomplete="new-password" required>
+      {% if errors.password_confirm %}<small class="field-error">{{ errors.password_confirm }}</small>{% endif %}
+    </label>
+    <label class="field">
+      <span><input type="checkbox" name="terms" value="1" required> I accept the Helpers ERP Cloud terms.</span>
+      {% if errors.terms %}<small class="field-error">{{ errors.terms }}</small>{% endif %}
+    </label>
+    <div class="flow-actions">
+      <button type="submit" class="btn-hero btn-hero--primary">Create account</button>
+      <a class="btn" href="/cloud/login">Already have an account?</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

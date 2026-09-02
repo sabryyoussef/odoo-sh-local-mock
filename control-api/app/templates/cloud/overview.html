@@ -1,0 +1,24 @@
+{% extends "cloud/base.html" %}
+{% block title %}Helpers ERP Cloud{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <p class="badge">Managed by Helpers ERP</p>
+  <h1>Helpers ERP Cloud</h1>
+  <p>Fully managed Odoo for your company. No coding or server administration required.</p>
+</div>
+<section class="flow-card">
+  <ul class="pricing-features">
+    <li><span class="check">✓</span> Separate company database and file storage</li>
+    <li><span class="check">✓</span> Approved application packages — not custom code</li>
+    <li><span class="check">✓</span> Helpers ERP modules included in the selected package</li>
+    <li><span class="check">✓</span> Backups and support based on your plan</li>
+    <li><span class="check">✓</span> Easy path to add users, storage, and approved add-ons</li>
+  </ul>
+  <p class="muted">This is a company ERP workspace. It is not a developer build environment.</p>
+  <div class="flow-actions-row">
+    <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/cloud/pricing">View Cloud Plans</a>
+    <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/cloud/register?next=/cloud/setup/plan">Start Free Trial</a>
+    <a class="btn" href="/cloud/setup/plan">Configure Your ERP</a>
+  </div>
+</section>
+{% endblock %}

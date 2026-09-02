@@ -1,0 +1,50 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Company configuration</h1>
+  <p>This workspace will have its own database and file storage.</p>
+</div>
+<form method="post" action="/cloud/setup/company" class="deploy-form" style="max-width:720px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label class="field"><span>Legal company name</span>
+    <input type="text" name="legal_company_name" value="{{ form.legal_company_name|default(setup.legal_company_name or '') }}" required>
+    {% if errors.legal_company_name %}<small class="field-error">{{ errors.legal_company_name }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Workspace name</span>
+    <input type="text" name="workspace_name" value="{{ form.workspace_name|default(setup.workspace_name or '') }}" required>
+    {% if errors.workspace_name %}<small class="field-error">{{ errors.workspace_name }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Requested subdomain</span>
+    <input type="text" name="requested_subdomain" value="{{ form.requested_subdomain|default(setup.requested_subdomain or '') }}" required>
+    {% if errors.requested_subdomain %}<small class="field-error">{{ errors.requested_subdomain }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Country</span>
+    <input type="text" name="country" value="{{ form.country|default(setup.country or '') }}" required>
+    {% if errors.country %}<small class="field-error">{{ errors.country }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Currency</span>
+    <input type="text" name="currency" value="{{ form.currency|default(setup.currency or 'USD') }}" maxlength="3" required>
+    {% if errors.currency %}<small class="field-error">{{ errors.currency }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Language</span>
+    <input type="text" name="language" value="{{ form.language|default(setup.language or 'en_US') }}" required>
+    {% if errors.language %}<small class="field-error">{{ errors.language }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Time zone</span>
+    <input type="text" name="timezone" value="{{ form.timezone|default(setup.timezone or 'Africa/Cairo') }}" required>
+    {% if errors.timezone %}<small class="field-error">{{ errors.timezone }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Required users</span>
+    <input type="number" name="required_users" min="1" value="{{ form.required_users|default(setup.required_users or 1) }}" required>
+    {% if errors.required_users %}<small class="field-error">{{ errors.required_users }}</small>{% endif %}
+  </label>
+  <label class="field"><span>Required storage (GB)</span>
+    <input type="number" name="required_storage_gb" min="1" value="{{ form.required_storage_gb|default(setup.required_storage_gb or 1) }}" required>
+    {% if errors.required_storage_gb %}<small class="field-error">{{ errors.required_storage_gb }}</small>{% endif %}
+  </label>
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup/package">Back</a>
+    <button type="submit" class="btn-hero btn-hero--primary">Continue</button>
+  </div>
+</form>
+{% endblock %}

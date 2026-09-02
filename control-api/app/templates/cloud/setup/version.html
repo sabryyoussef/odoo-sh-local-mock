@@ -1,0 +1,25 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Choose your Odoo version</h1>
+  <p>Only supported versions can be selected. Odoo 19 Community is recommended.</p>
+</div>
+<form method="post" action="/cloud/setup/version">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="pricing-grid">
+    {% for version in versions %}
+      <label class="pricing-card{% if version.recommended %} pricing-card--recommended{% endif %}">
+        {% if version.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
+        <h2>{{ version.display_name }}</h2>
+        <p>{{ version.edition|title }} edition · {{ version.support_status }}</p>
+        <input type="radio" name="version_id" value="{{ version.id }}" {% if setup.version_id == version.id or (not setup.version_id and version.recommended) %}checked{% endif %} required>
+        <span class="muted">Select this version</span>
+      </label>
+    {% endfor %}
+  </div>
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup/plan">Back</a>
+    <button type="submit" class="btn-hero btn-hero--primary">Continue</button>
+  </div>
+</form>
+{% endblock %}

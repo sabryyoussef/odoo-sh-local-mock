@@ -1,0 +1,26 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Choose an application package</h1>
+  <p>These are approved packages. You cannot type module names or upload custom modules.</p>
+</div>
+<form method="post" action="/cloud/setup/package">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="pricing-grid">
+    {% for pkg in packages %}
+      <label class="pricing-card{% if pkg.recommended %} pricing-card--recommended{% endif %}">
+        {% if pkg.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
+        <h2>{{ pkg.name }}</h2>
+        <p>{{ pkg.description }}</p>
+        <p class="muted">Package adjustment {{ format_money(pkg.price_monthly_cents) }}/mo · {{ format_money(pkg.price_annual_cents) }}/yr</p>
+        <input type="radio" name="package_id" value="{{ pkg.id }}" {% if setup.package_id == pkg.id or (not setup.package_id and pkg.recommended) %}checked{% endif %} required>
+        <span class="muted">Select {{ pkg.name }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup/version">Back</a>
+    <button type="submit" class="btn-hero btn-hero--primary">Continue</button>
+  </div>
+</form>
+{% endblock %}

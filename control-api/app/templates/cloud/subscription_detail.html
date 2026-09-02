@@ -1,0 +1,26 @@
+{% extends "cloud/base.html" %}
+{% block title %}Subscription{% endblock %}
+{% block cloud_crumb %} · Subscription{% endblock %}
+{% block cloud_content %}
+<div class="flow-header">
+  <h1>Cloud subscription {{ subscription.code }}</h1>
+  <p><span class="badge badge--warning">Presentation Only</span> Demo subscription — not a live paid contract.</p>
+</div>
+<section class="flow-card">
+  <dl class="kv">
+    <div><dt>Product line</dt><dd>Helpers ERP Cloud</dd></div>
+    <div><dt>Status</dt><dd>{{ subscription.status }}</dd></div>
+    <div><dt>Plan</dt><dd>{{ subscription.plan.name }}</dd></div>
+    <div><dt>Package</dt><dd>{{ subscription.package.name }}</dd></div>
+    <div><dt>Odoo</dt><dd>{{ subscription.version.display_name }}</dd></div>
+    <div><dt>Billing</dt><dd>{{ subscription.billing_cycle }}</dd></div>
+    <div><dt>Users</dt><dd>{{ subscription.requested_users }}</dd></div>
+    <div><dt>Storage</dt><dd>{{ subscription.requested_storage_gb }} GB</dd></div>
+    <div><dt>Renewal</dt><dd>{{ subscription.renewal_at or 'n/a' }}</dd></div>
+  </dl>
+  {% if pricing.total_display %}
+    <p>Snapshot total: {{ pricing.total_display }} / {{ pricing.period_label }}</p>
+  {% endif %}
+  <a class="btn" href="/cloud/instances">Back to instances</a>
+</section>
+{% endblock %}

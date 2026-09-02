@@ -1,0 +1,29 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="flow-header">
+  <h1>Approved add-ons</h1>
+  <p>Optional extras that match your package. Unavailable add-ons stay disabled.</p>
+</div>
+<form method="post" action="/cloud/setup/addons">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <div class="pricing-grid">
+    {% for row in addon_rows %}
+      <label class="pricing-card{% if not row.compatible %} is-disabled{% endif %}">
+        <h2>{{ row.addon.name }}</h2>
+        <p>{{ row.addon.description }}</p>
+        <p class="muted">{{ format_money(row.addon.price_monthly_cents) }}/mo · {{ format_money(row.addon.price_annual_cents) }}/yr</p>
+        {% if row.compatible %}
+          <input type="checkbox" name="addon_ids" value="{{ row.addon.id }}" {% if row.selected %}checked{% endif %}>
+          <span>Include this add-on</span>
+        {% else %}
+          <p class="muted">Not compatible with the selected package or version.</p>
+        {% endif %}
+      </label>
+    {% endfor %}
+  </div>
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup/company">Back</a>
+    <button type="submit" class="btn-hero btn-hero--primary">Continue</button>
+  </div>
+</form>
+{% endblock %}

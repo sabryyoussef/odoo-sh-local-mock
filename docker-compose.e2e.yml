@@ -1,0 +1,61 @@
+# G3-A isolated control-api. Separate compose project — never start workers or mount live data.
+services:
+  control-api-e2e:
+    image: odoo-sh-local-mock-control-api:latest
+    build:
+      context: ./control-api
+    ports:
+      - "127.0.0.1:${E2E_PORT:-18080}:8000"
+    volumes:
+      - ./control-api/app:/app/app
+      - ./control-api/e2e:/app/e2e
+    tmpfs:
+      - /data:mode=1777
+      - /tmp:mode=1777
+    environment:
+      E2E_MODE: "1"
+      APP_ENV: development
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+      DATABASE_URL: "sqlite:////tmp/e2e-control.db"
+      SESSION_SECRET: "${E2E_SESSION_SECRET:?E2E_SESSION_SECRET required}"
+      E2E_AUTH_SECRET: "${E2E_AUTH_SECRET:?E2E_AUTH_SECRET required}"
+      E2E_USER_LOGIN: "${E2E_USER_LOGIN:-e2e_g3a_user}"
+      E2E_USER_PASSWORD: "${E2E_USER_PASSWORD:?E2E_USER_PASSWORD required}"
+      GITHUB_CLIENT_ID: "e2e-github-client"
+      GITHUB_CLIENT_SECRET: "e2e-github-secret"
+      GITHUB_CALLBACK_URL: "http://127.0.0.1:${E2E_PORT:-18080}/auth/github/callback"
+      PLATFORM_QUICK_DEPLOY_ENABLED: "true"
+      BUILD_ROOT: "/tmp/e2e-builds"
+      BUILD_HOST_ROOT: "/tmp/e2e-builds"
+      TENANT_ROOT: "/tmp/e2e-tenants"
+      TENANT_HOST_ROOT: "/tmp/e2e-tenants"
+      BACKUP_ROOT: "/tmp/e2e-backups"
+      BACKUP_HOST_ROOT: "/tmp/e2e-backups"
+      BUILD_PORT_MIN: "8101"
+      BUILD_PORT_MAX: "8105"
+      TENANT_PORT_MIN: "8201"
+      TENANT_PORT_MAX: "8205"
+      BUILD_POSTGRES_HOST: "e2e-postgres-disabled"
+      BUILD_POSTGRES_PORT: "5432"
+      DOCKER_HOST: "unix:///nonexistent/docker.sock"
+      PROVISIONING_HEARTBEAT_PATH: "/tmp/e2e-provisioning-heartbeat.json"
+      BACKUP_HEARTBEAT_PATH: "/tmp/e2e-backup-heartbeat.json"
+    command:
+      [
+        "python",
+        "-m",
+        "uvicorn",
+        "e2e.python.server:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+      ]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 2s
+      timeout: 5s
+      retries: 40
+      start_period: 8s
+    restart: "no"

@@ -93,6 +93,12 @@ class Settings(BaseSettings):
     # --- Developer Platform Quick Deploy (DP3–DP5) ---
     platform_quick_deploy_enabled: bool = True
 
+    # Isolated Playwright / G3-A harness only. Never enable against live control.db.
+    e2e_mode: bool = False
+    e2e_auth_secret: str = ""
+    e2e_user_login: str = "e2e_g3a_user"
+    e2e_user_password: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

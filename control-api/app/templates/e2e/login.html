@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}E2E sign in · {{ app_name }}{% endblock %}
+{% block body_class %}body--auth{% endblock %}
+{% block shell %}
+<main>
+  <h1>E2E sign in</h1>
+  <p class="muted">Isolated Playwright harness only. Not a production login.</p>
+  {% if error %}
+  <p role="alert" data-testid="login-error">{{ error }}</p>
+  {% endif %}
+  <form method="post" action="/e2e/login" data-testid="login-form">
+    <p>
+      <label for="e2e-login">Username
+        <input id="e2e-login" name="login" type="text" autocomplete="username" data-testid="login-input" required>
+      </label>
+    </p>
+    <p>
+      <label for="e2e-password">Password
+        <input id="e2e-password" name="password" type="password" autocomplete="current-password" data-testid="password-input" required>
+      </label>
+    </p>
+    <button type="submit" data-testid="login-submit">Sign in</button>
+  </form>
+</main>
+{% endblock %}

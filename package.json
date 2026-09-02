@@ -2,7 +2,10 @@
   "name": "odoo-sh-local-mock-docs",
   "private": true,
   "scripts": {
-    "screenshots": "node scripts/capture-screenshots.cjs"
+    "screenshots": "node scripts/capture-screenshots.cjs",
+    "test:e2e": "playwright test --config=control-api/e2e/playwright.config.js",
+    "test:e2e:headed": "playwright test --config=control-api/e2e/playwright.config.js --headed",
+    "test:e2e:report": "playwright show-report control-api/e2e/playwright-report"
   },
   "devDependencies": {
     "playwright": "^1.49.1"

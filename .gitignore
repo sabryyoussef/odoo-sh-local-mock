@@ -14,6 +14,16 @@ venv/
 dist/
 .cache/
 
+# Playwright / G3-A isolated browser artifacts
+control-api/e2e/test-results/
+control-api/e2e/playwright-report/
+control-api/e2e/blob-report/
+control-api/e2e/.auth/
+playwright-report/
+test-results/
+blob-report/
+**/*.auth.json
+
 # Runtime artifacts (Phase 8+)
 data/provisioning_worker_heartbeat.json
 data/backup_worker_heartbeat.json

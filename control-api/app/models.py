@@ -22,12 +22,18 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    github_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
-    github_login: Mapped[str] = mapped_column(String(255), index=True)
+    github_id: Mapped[str | None] = mapped_column(String(64), unique=True, index=True, nullable=True)
+    github_login: Mapped[str | None] = mapped_column(String(255), index=True, nullable=True)
     name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     access_token_protected: Mapped[str | None] = mapped_column(Text, nullable=True)
+    password_hash: Mapped[str | None] = mapped_column(Text, nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    company_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    auth_provider: Mapped[str] = mapped_column(String(32), default="github", index=True)
+    terms_accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -35,6 +41,10 @@ class User(Base):
 
     subscriptions: Mapped[list[Subscription]] = relationship(back_populates="user")
     projects: Mapped[list[Project]] = relationship(back_populates="owner")
+    cloud_setups: Mapped[list["CloudSetupSelection"]] = relationship(back_populates="user")
+    cloud_orders: Mapped[list["CloudOrder"]] = relationship(back_populates="user")
+    cloud_subscriptions: Mapped[list["CloudSubscription"]] = relationship(back_populates="user")
+    cloud_instances: Mapped[list["CloudInstance"]] = relationship(back_populates="user")
 
 
 class PlatformPlan(Base):
@@ -101,6 +111,9 @@ class Subscription(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
     code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     subscription_type: Mapped[str] = mapped_column(String(32), default="platform", index=True)
+    product_line: Mapped[str] = mapped_column(
+        String(32), default="developer_platform", index=True
+    )
     platform_plan_id: Mapped[int | None] = mapped_column(
         ForeignKey("platform_plans.id"), nullable=True, index=True
     )
@@ -139,6 +152,10 @@ class Project(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    product_line: Mapped[str] = mapped_column(
+        String(32), default="developer_platform", index=True
     )
 
     owner: Mapped[User] = relationship(back_populates="projects")
@@ -359,6 +376,7 @@ class CustomerSubscription(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     subscription_type: Mapped[str] = mapped_column(String(32), default="solution", index=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="ready_solution", index=True)
     customer_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
     customer_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     customer_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -432,6 +450,7 @@ class Tenant(Base):
         ForeignKey("platform_trials.id"), nullable=True, unique=True, index=True
     )
     deployment_mode: Mapped[str] = mapped_column(String(32), default="solution", index=True)
+    product_line: Mapped[str | None] = mapped_column(String(32), nullable=True, index=True)
     database_name: Mapped[str] = mapped_column(String(128))
     database_role: Mapped[str | None] = mapped_column(String(128), nullable=True)
     filestore_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
@@ -1081,3 +1100,285 @@ class PlatformTemplateBuildJob(Base):
     )
 
     template_database: Mapped[TemplateDatabase] = relationship(back_populates="build_jobs")
+
+
+# ---------------------------------------------------------------------------
+# Helpers ERP Cloud — independent product line (not Ready Solutions, not Platform)
+# ---------------------------------------------------------------------------
+
+
+class CloudPlan(Base):
+    __tablename__ = "cloud_plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str] = mapped_column(Text, default="")
+    price_monthly_cents: Mapped[int] = mapped_column(Integer, default=0)
+    price_annual_cents: Mapped[int] = mapped_column(Integer, default=0)
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    included_users: Mapped[int] = mapped_column(Integer, default=3)
+    max_users: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    price_per_additional_user_monthly_cents: Mapped[int] = mapped_column(Integer, default=0)
+    price_per_additional_user_annual_cents: Mapped[int] = mapped_column(Integer, default=0)
+    included_storage_gb: Mapped[int] = mapped_column(Integer, default=5)
+    max_storage_gb: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    price_per_additional_storage_gb_monthly_cents: Mapped[int] = mapped_column(Integer, default=0)
+    price_per_additional_storage_gb_annual_cents: Mapped[int] = mapped_column(Integer, default=0)
+    backup_retention_days: Mapped[int] = mapped_column(Integer, default=7)
+    support_level: Mapped[str] = mapped_column(String(64), default="basic")
+    trial_days: Mapped[int] = mapped_column(Integer, default=0)
+    quote_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    recommended: Mapped[bool] = mapped_column(Boolean, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=100)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CloudOdooVersion(Base):
+    __tablename__ = "cloud_odoo_versions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    code: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    display_name: Mapped[str] = mapped_column(String(128))
+    edition: Mapped[str] = mapped_column(String(32), default="community")
+    support_status: Mapped[str] = mapped_column(String(32), default="supported", index=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    recommended: Mapped[bool] = mapped_column(Boolean, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=100)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CloudApplicationPackage(Base):
+    __tablename__ = "cloud_application_packages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str] = mapped_column(Text, default="")
+    compatible_version_codes: Mapped[str] = mapped_column(Text, default="19.0")
+    standard_modules_json: Mapped[str] = mapped_column(Text, default="[]")
+    helpers_modules_json: Mapped[str] = mapped_column(Text, default="[]")
+    price_monthly_cents: Mapped[int] = mapped_column(Integer, default=0)
+    price_annual_cents: Mapped[int] = mapped_column(Integer, default=0)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    recommended: Mapped[bool] = mapped_column(Boolean, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=100)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CloudAddon(Base):
+    __tablename__ = "cloud_addons"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str] = mapped_column(Text, default="")
+    supported_version_codes: Mapped[str] = mapped_column(Text, default="19.0")
+    compatible_package_codes: Mapped[str] = mapped_column(Text, default="*")
+    module_dependencies_json: Mapped[str] = mapped_column(Text, default="[]")
+    price_monthly_cents: Mapped[int] = mapped_column(Integer, default=0)
+    price_annual_cents: Mapped[int] = mapped_column(Integer, default=0)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=100)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CloudSetupSelection(Base):
+    __tablename__ = "cloud_setup_selections"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    status: Mapped[str] = mapped_column(String(32), default="draft", index=True)
+    current_step: Mapped[str] = mapped_column(String(32), default="plan")
+    plan_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_plans.id"), nullable=True)
+    billing_cycle: Mapped[str] = mapped_column(String(16), default="monthly")
+    version_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_odoo_versions.id"), nullable=True)
+    package_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_application_packages.id"), nullable=True)
+    legal_company_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    workspace_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    requested_subdomain: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    country: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    currency: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    required_users: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    required_storage_gb: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    arbitrary_module_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User] = relationship(back_populates="cloud_setups")
+    plan: Mapped[CloudPlan | None] = relationship()
+    version: Mapped[CloudOdooVersion | None] = relationship()
+    package: Mapped[CloudApplicationPackage | None] = relationship()
+    addon_links: Mapped[list["CloudSetupAddonSelection"]] = relationship(
+        back_populates="setup", cascade="all, delete-orphan"
+    )
+
+
+class CloudSetupAddonSelection(Base):
+    __tablename__ = "cloud_setup_addon_selections"
+    __table_args__ = (UniqueConstraint("setup_id", "addon_id", name="uq_cloud_setup_addon"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    setup_id: Mapped[int] = mapped_column(ForeignKey("cloud_setup_selections.id"), index=True)
+    addon_id: Mapped[int] = mapped_column(ForeignKey("cloud_addons.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    setup: Mapped[CloudSetupSelection] = relationship(back_populates="addon_links")
+    addon: Mapped[CloudAddon] = relationship()
+
+
+class CloudOrder(Base):
+    __tablename__ = "cloud_orders"
+    __table_args__ = (UniqueConstraint("idempotency_key", name="uq_cloud_order_idempotency"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    setup_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_setup_selections.id"), nullable=True)
+    order_code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), index=True)
+    status: Mapped[str] = mapped_column(String(32), default="demo_paid", index=True)
+    pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    configuration_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    card_last4: Mapped[str | None] = mapped_column(String(4), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User] = relationship(back_populates="cloud_orders")
+    setup: Mapped[CloudSetupSelection | None] = relationship()
+    subscription: Mapped["CloudSubscription | None"] = relationship(
+        back_populates="order", uselist=False
+    )
+
+
+class CloudSubscription(Base):
+    __tablename__ = "cloud_subscriptions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    order_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_orders.id"), nullable=True, unique=True)
+    plan_id: Mapped[int] = mapped_column(ForeignKey("cloud_plans.id"), index=True)
+    version_id: Mapped[int] = mapped_column(ForeignKey("cloud_odoo_versions.id"))
+    package_id: Mapped[int] = mapped_column(ForeignKey("cloud_application_packages.id"))
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    status: Mapped[str] = mapped_column(String(32), default="demo_trial", index=True)
+    billing_cycle: Mapped[str] = mapped_column(String(16), default="monthly")
+    requested_users: Mapped[int] = mapped_column(Integer, default=1)
+    requested_storage_gb: Mapped[int] = mapped_column(Integer, default=1)
+    pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    renewal_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User] = relationship(back_populates="cloud_subscriptions")
+    order: Mapped[CloudOrder | None] = relationship(back_populates="subscription")
+    plan: Mapped[CloudPlan] = relationship()
+    version: Mapped[CloudOdooVersion] = relationship()
+    package: Mapped[CloudApplicationPackage] = relationship()
+    provisioning_requests: Mapped[list["CloudProvisioningRequest"]] = relationship(
+        back_populates="subscription"
+    )
+    instance: Mapped["CloudInstance | None"] = relationship(back_populates="subscription", uselist=False)
+
+
+class CloudProvisioningRequest(Base):
+    __tablename__ = "cloud_provisioning_requests"
+    __table_args__ = (UniqueConstraint("idempotency_key", name="uq_cloud_provision_idempotency"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    subscription_id: Mapped[int] = mapped_column(ForeignKey("cloud_subscriptions.id"), index=True)
+    request_uuid: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), index=True)
+    status: Mapped[str] = mapped_column(String(32), default="queued", index=True)
+    current_step: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    adapter: Mapped[str] = mapped_column(String(32), default="demo")
+    error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    error_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    runtime_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    runtime_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User] = relationship()
+    subscription: Mapped[CloudSubscription] = relationship(back_populates="provisioning_requests")
+    instance: Mapped["CloudInstance | None"] = relationship(
+        back_populates="provisioning_request", uselist=False
+    )
+
+
+class CloudInstance(Base):
+    __tablename__ = "cloud_instances"
+    __table_args__ = (UniqueConstraint("requested_subdomain", name="uq_cloud_instance_subdomain"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    subscription_id: Mapped[int] = mapped_column(
+        ForeignKey("cloud_subscriptions.id"), unique=True, index=True
+    )
+    provisioning_request_id: Mapped[int | None] = mapped_column(
+        ForeignKey("cloud_provisioning_requests.id"), nullable=True
+    )
+    company_name: Mapped[str] = mapped_column(String(255), default="")
+    workspace_name: Mapped[str] = mapped_column(String(128), default="")
+    requested_subdomain: Mapped[str] = mapped_column(String(64), index=True)
+    odoo_version_code: Mapped[str] = mapped_column(String(32), default="19.0")
+    plan_code: Mapped[str] = mapped_column(String(64), default="")
+    package_code: Mapped[str] = mapped_column(String(64), default="")
+    status: Mapped[str] = mapped_column(String(32), default="queued", index=True)
+    requested_users: Mapped[int] = mapped_column(Integer, default=1)
+    included_users: Mapped[int] = mapped_column(Integer, default=1)
+    requested_storage_gb: Mapped[int] = mapped_column(Integer, default=1)
+    included_storage_gb: Mapped[int] = mapped_column(Integer, default=1)
+    backup_retention_days: Mapped[int] = mapped_column(Integer, default=7)
+    last_backup_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    runtime_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    runtime_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User] = relationship(back_populates="cloud_instances")
+    subscription: Mapped[CloudSubscription] = relationship(back_populates="instance")
+    provisioning_request: Mapped[CloudProvisioningRequest | None] = relationship(
+        back_populates="instance"
+    )

@@ -13,7 +13,7 @@
       <p class="helpers-pill" aria-label="Helpers ERP">Helpers ERP</p>
       <h1 class="hero__title">{{ brand.product_name }}</h1>
       <p class="hero__subtitle">{{ brand.tagline }}</p>
-      <p class="hero__pipeline">Branch builds · Real Odoo runtime · Controlled delivery</p>
+      <p class="hero__pipeline">Ready Solutions · Managed Cloud ERP · Developer Platform</p>
       {% if brand.modules %}
         <div class="helpers-modules" aria-label="ERP modules">
           {% for m in brand.modules %}
@@ -29,8 +29,8 @@
     {% endif %}
     <div class="hero__actions">
       <a class="btn-hero btn-hero--primary" href="/solutions">Browse Solutions</a>
+      <a class="btn-hero btn-hero--secondary" href="/cloud">Configure Your ERP</a>
       <a class="btn-hero btn-hero--secondary" href="/platform">Developer Platform</a>
-      <a class="btn-hero btn-hero--secondary" href="/pricing">Pricing</a>
     </div>
     {% if brand.powered_by %}
       <p class="prepared-for">{{ brand.powered_by }}</p>

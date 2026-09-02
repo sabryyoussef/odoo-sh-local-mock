@@ -270,8 +270,11 @@ def create_customer_subscription(
             "enabled_modules": csv_to_modules(pkg.enabled_modules),
             "enabled_features": csv_to_modules(pkg.enabled_features),
         }
+    from app.product_lines import PRODUCT_LINE_READY_SOLUTION
+
     row = CustomerSubscription(
         subscription_type=SUBSCRIPTION_TYPE_SOLUTION,
+        product_line=PRODUCT_LINE_READY_SOLUTION,
         customer_user_id=payload.customer_user_id,
         customer_email=payload.customer_email,
         customer_name=payload.customer_name,

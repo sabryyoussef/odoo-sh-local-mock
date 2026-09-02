@@ -1,3 +1,4 @@
+{% set path = request.url.path if request is defined else '' %}
 <header class="mkt-nav" id="top">
   <a class="mkt-nav__brand brand-mark" href="/">
     {% if brand.logo_mark %}
@@ -12,21 +13,29 @@
       {% endif %}
     </span>
   </a>
-  <nav class="mkt-nav__links" aria-label="Marketing">
-    <a href="/#top">Home</a>
-    <a href="/solutions">Solutions</a>
-    <a href="/platform">Developer Platform</a>
-    <a href="/pricing">Pricing</a>
-    <a href="/portal">Customer Portal</a>
-    <a href="/documentation">Docs</a>
+  <nav class="mkt-nav__links" aria-label="Primary">
+    <a href="/solutions"{% if path.startswith('/catalog') or path.startswith('/solutions') %} class="is-active"{% endif %}>Ready Solutions</a>
+    <a href="/cloud"{% if path.startswith('/cloud') %} class="is-active"{% endif %}>Helpers ERP Cloud</a>
+    <a href="/platform"{% if path.startswith('/platform') %} class="is-active"{% endif %}>Developer Platform</a>
+    <a href="/pricing"{% if path.startswith('/pricing') or path == '/checkout' %} class="is-active"{% endif %}>Pricing</a>
   </nav>
   <div class="mkt-nav__actions">
-    {% if user and user.github_connected %}
-      <a class="mkt-nav__ghost" href="/projects">Projects</a>
-      <a class="mkt-nav__ghost" href="/portal">Portal</a>
-      <a class="mkt-nav__cta" href="/account">Account</a>
+    {% if user and user.id %}
+      {% if user.github_connected %}
+        <a class="mkt-nav__ghost{% if path.startswith('/projects') or path.startswith('/project/') or path.startswith('/deploy') %} is-active{% endif %}" href="/projects">Projects</a>
+        <a class="mkt-nav__cta" href="/account">Account</a>
+        <a class="mkt-nav__ghost" href="/logout">Logout</a>
+      {% elif user.cloud_customer %}
+        <a class="mkt-nav__ghost{% if path.startswith('/cloud/instances') %} is-active{% endif %}" href="/cloud/instances">My ERP</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+        </form>
+      {% else %}
+        <a class="mkt-nav__cta" href="/account">Account</a>
+      {% endif %}
     {% else %}
-      <a class="mkt-nav__ghost" href="/login?next=/portal">Sign in</a>
+      <a class="mkt-nav__cta" href="/login">Sign In</a>
     {% endif %}
   </div>
 </header>

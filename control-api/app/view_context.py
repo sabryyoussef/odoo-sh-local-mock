@@ -30,17 +30,19 @@ def user_to_dict(user: User | None) -> dict:
             "initials": "G",
             "avatar_url": None,
             "github_connected": False,
+            "cloud_customer": False,
         }
-    initials = (user.github_login or user.name or "U")[:1].upper()
+    initials = (user.github_login or user.name or user.email or "U")[:1].upper()
     return {
         "id": user.id,
-        "name": user.name or user.github_login,
-        "display_name": user.github_login,
-        "username": user.github_login,
+        "name": user.name or user.github_login or user.email,
+        "display_name": user.github_login or user.name or user.email,
+        "username": user.github_login or (user.email or "").split("@")[0],
         "email": user.email or "",
         "initials": initials,
         "avatar_url": user.avatar_url,
-        "github_connected": True,
+        "github_connected": bool(user.github_id),
+        "cloud_customer": bool(user.password_hash),
     }
 
 

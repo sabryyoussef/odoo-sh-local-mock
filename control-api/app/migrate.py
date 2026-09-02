@@ -178,6 +178,20 @@ def migrate_schema(engine: Engine) -> None:
     _add_column(engine, "subscriptions", "subscription_type VARCHAR(32) DEFAULT 'platform'")
     _add_column(engine, "subscriptions", "platform_plan_id INTEGER")
 
+    # Three product lines — email/password Cloud customers + explicit discriminator
+    _relax_sqlite_notnull(engine, "users", "github_id")
+    _relax_sqlite_notnull(engine, "users", "github_login")
+    _add_column(engine, "users", "password_hash TEXT")
+    _add_column(engine, "users", "phone VARCHAR(64)")
+    _add_column(engine, "users", "company_name VARCHAR(255)")
+    _add_column(engine, "users", "country VARCHAR(128)")
+    _add_column(engine, "users", "auth_provider VARCHAR(32) DEFAULT 'github'")
+    _add_column(engine, "users", "terms_accepted_at DATETIME")
+    _add_column(engine, "customer_subscriptions", "product_line VARCHAR(32) DEFAULT 'ready_solution'")
+    _add_column(engine, "subscriptions", "product_line VARCHAR(32) DEFAULT 'developer_platform'")
+    _add_column(engine, "projects", "product_line VARCHAR(32) DEFAULT 'developer_platform'")
+    _add_column(engine, "tenants", "product_line VARCHAR(32)")
+
     # DP2 — Platform plan entitlements
     _add_column(engine, "platform_plans", "updated_at DATETIME")
     _add_column(engine, "platform_plans", "trial_days INTEGER")
@@ -251,6 +265,43 @@ def migrate_subscription_data(engine: Engine) -> dict:
             text(
                 "UPDATE subscriptions SET subscription_type = 'platform' "
                 "WHERE subscription_type IS NULL OR subscription_type = ''"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE customer_subscriptions SET product_line = 'ready_solution' "
+                "WHERE product_line IS NULL OR product_line = ''"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE subscriptions SET product_line = 'developer_platform' "
+                "WHERE product_line IS NULL OR product_line = ''"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE projects SET product_line = 'developer_platform' "
+                "WHERE product_line IS NULL OR product_line = ''"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE tenants SET product_line = 'ready_solution' "
+                "WHERE product_line IS NULL AND customer_subscription_id IS NOT NULL"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE tenants SET product_line = 'developer_platform' "
+                "WHERE product_line IS NULL AND platform_trial_id IS NOT NULL"
+            )
+        )
+        db.execute(
+            text(
+                "UPDATE users SET auth_provider = 'github' "
+                "WHERE (auth_provider IS NULL OR auth_provider = '') "
+                "AND github_id IS NOT NULL"
             )
         )
         db.commit()

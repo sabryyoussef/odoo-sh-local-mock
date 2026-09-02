@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from datetime import UTC, datetime
+from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -27,6 +28,13 @@ from app.services.tenant_postgres_service import init_empty_template_database
 logger = logging.getLogger(__name__)
 
 PLATFORM_BASE_TEMPLATE_CODE = "odoo19-community-base-v1"
+
+
+def platform_template_conf_paths(template_code: str | None) -> tuple[Path, Path]:
+    """Container-writable conf dir and host path for Docker volume binds."""
+    settings = get_settings()
+    rel = Path(".platform-tpl-build") / (template_code or "base")
+    return Path(settings.tenant_root) / rel, Path(settings.tenant_host_root) / rel
 
 
 class PlatformTemplateError(Exception):
@@ -171,14 +179,12 @@ def execute_template_build_job(db: Session, job_id: int) -> PlatformTemplateBuil
 
 
 def _run_base_module_init(tpl: TemplateDatabase, pg_name: str) -> None:
-    from pathlib import Path
-
     from app.services.docker_service import ensure_image, write_odoo_conf_file
 
     settings = get_settings()
     image = odoo_image_for_version(tpl.odoo_version)
     ensure_image(image)
-    conf_dir = Path(settings.tenant_root) / ".platform-tpl-build" / (tpl.template_code or "base")
+    conf_dir, conf_dir_host = platform_template_conf_paths(tpl.template_code)
     conf_dir.mkdir(parents=True, exist_ok=True)
     write_odoo_conf_file(
         conf_dir / "odoo.conf",
@@ -192,6 +198,7 @@ def _run_base_module_init(tpl: TemplateDatabase, pg_name: str) -> None:
 
     client = docker.from_env()
     name = f"mosh-pltpl-{tpl.id}"[:128]
+    init_timeout = max(int(settings.build_health_timeout_sec), 900)
     try:
         try:
             old = client.containers.get(name)
@@ -204,7 +211,7 @@ def _run_base_module_init(tpl: TemplateDatabase, pg_name: str) -> None:
             name=name,
             detach=True,
             network=settings.build_docker_network,
-            volumes={str(conf_dir / "odoo.conf"): {"bind": "/etc/odoo/odoo.conf", "mode": "ro"}},
+            volumes={str(conf_dir_host / "odoo.conf"): {"bind": "/etc/odoo/odoo.conf", "mode": "ro"}},
             environment={
                 "HOST": settings.build_postgres_host,
                 "PORT": str(settings.build_postgres_port),
@@ -214,7 +221,7 @@ def _run_base_module_init(tpl: TemplateDatabase, pg_name: str) -> None:
             labels={"mock_odoo_sh": "true", "platform_template_build": "true"},
             remove=False,
         )
-        result = container.wait(timeout=settings.build_health_timeout_sec)
+        result = container.wait(timeout=init_timeout)
         if result.get("StatusCode", 1) != 0:
             raise PlatformTemplateError(container.logs(tail=40).decode("utf-8", errors="replace")[:500])
     finally:

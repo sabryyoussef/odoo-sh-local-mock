@@ -19,7 +19,10 @@ def _existing_columns(engine: Engine, table: str) -> set[str]:
 
 def _add_column(engine: Engine, table: str, column_sql: str) -> None:
     col_name = column_sql.split()[0]
-    existing = _existing_columns(engine, table)
+    insp = inspect(engine)
+    if table not in insp.get_table_names():
+        return
+    existing = {c["name"] for c in insp.get_columns(table)}
     if col_name in existing:
         return
     with engine.begin() as conn:
@@ -27,8 +30,96 @@ def _add_column(engine: Engine, table: str, column_sql: str) -> None:
     logger.info("Added column %s.%s", table, col_name)
 
 
+def _sqlite_table_info(conn, table: str) -> list:
+    return list(conn.execute(text(f"PRAGMA table_info({table})")))
+
+
+def _relax_sqlite_notnull(engine: Engine, table: str, column: str) -> None:
+    """Rebuild a SQLite table so ``column`` may be NULL. No-op if already nullable.
+
+    SQLite cannot DROP NOT NULL in place. Live lab DBs still have NOT NULL from
+    older create_all (template_databases.solution_id, tenants.customer_subscription_id).
+    """
+    if not str(engine.dialect.name).startswith("sqlite"):
+        return
+    with engine.connect() as conn:
+        info = _sqlite_table_info(conn, table)
+        if not info:
+            return
+        target = next((row for row in info if row[1] == column), None)
+        if target is None or int(target[3]) == 0:
+            return
+        fk_rows = list(conn.execute(text(f"PRAGMA foreign_key_list({table})")))
+        idx_rows = list(conn.execute(text(f"PRAGMA index_list({table})")))
+        index_defs: list[tuple[str, int, list[str]]] = []
+        unique_table_clauses: list[str] = []
+        for idx in idx_rows:
+            iname = str(idx[1])
+            unique = int(idx[2])
+            origin = idx[3]
+            if origin == "pk":
+                continue
+            cols = [r[2] for r in conn.execute(text(f"PRAGMA index_info({iname})"))]
+            if not cols:
+                continue
+            # SQLite UNIQUE table constraints become sqlite_autoindex_*; recreating
+            # those names as CREATE INDEX fails ("object name reserved").
+            if iname.startswith("sqlite_"):
+                if origin == "u":
+                    unique_table_clauses.append(f", UNIQUE ({', '.join(cols)})")
+                continue
+            index_defs.append((iname, unique, cols))
+
+    col_sql_parts: list[str] = []
+    col_names: list[str] = []
+    pk_cols: list[str] = []
+    for row in info:
+        _cid, name, ctype, notnull, dflt, pk = row
+        col_names.append(name)
+        nn = 0 if name == column else int(notnull)
+        bits = [name, ctype or "TEXT"]
+        if nn:
+            bits.append("NOT NULL")
+        if dflt is not None:
+            bits.append(f"DEFAULT {dflt}")
+        col_sql_parts.append(" ".join(bits))
+        if int(pk):
+            pk_cols.append(name)
+
+    pk_clause = f", PRIMARY KEY ({', '.join(pk_cols)})" if pk_cols else ""
+    fk_clauses = []
+    for fk in fk_rows:
+        fk_clauses.append(f", FOREIGN KEY({fk[3]}) REFERENCES {fk[2]} ({fk[4]})")
+    tmp = f"{table}__relax_{column}"
+    quoted = ", ".join(col_names)
+    create_sql = (
+        f"CREATE TABLE {tmp} ({', '.join(col_sql_parts)}{pk_clause}"
+        f"{''.join(unique_table_clauses)}{''.join(fk_clauses)})"
+    )
+    logger.info("Rebuilding %s to allow NULL %s", table, column)
+    with engine.begin() as conn:
+        conn.execute(text("PRAGMA foreign_keys=OFF"))
+        conn.execute(text(create_sql))
+        conn.execute(text(f"INSERT INTO {tmp} ({quoted}) SELECT {quoted} FROM {table}"))
+        conn.execute(text(f"DROP TABLE {table}"))
+        conn.execute(text(f"ALTER TABLE {tmp} RENAME TO {table}"))
+        for iname, unique, cols in index_defs:
+            uniq = "UNIQUE " if unique else ""
+            conn.execute(
+                text(f"CREATE {uniq}INDEX IF NOT EXISTS {iname} ON {table} ({', '.join(cols)})")
+            )
+        conn.execute(text("PRAGMA foreign_keys=ON"))
+    logger.info("Rebuilt %s (%s nullable)", table, column)
+
+
 def migrate_schema(engine: Engine) -> None:
     """Apply additive column/table changes without dropping data."""
+    # DP4 live: platform templates have no Solution FK
+    _relax_sqlite_notnull(engine, "template_databases", "solution_id")
+    # DP5 live: platform_quick tenants have no CustomerSubscription FK
+    _relax_sqlite_notnull(engine, "tenants", "customer_subscription_id")
+    _relax_sqlite_notnull(engine, "backup_policies", "customer_subscription_id")
+
     # Project webhook metadata
     _add_column(engine, "projects", "github_webhook_id VARCHAR(64)")
     _add_column(engine, "projects", "github_webhook_url VARCHAR(512)")

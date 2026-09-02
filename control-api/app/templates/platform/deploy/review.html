@@ -1,0 +1,14 @@
+{% extends "platform/deploy/_wizard_base.html" %}
+{% block deploy_content %}
+<h1>Review deployment</h1>
+<p>Plan: <strong>{{ plan_code }}</strong> · Odoo {{ version_label }}</p>
+<p>Apps selected: {{ validation.selected_app_count }}</p>
+<p class="muted">{{ deployment_message }}</p>
+<form method="post" action="/platform/deploy/confirm">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="trial_id" value="{{ trial_id }}">
+  <input type="hidden" name="snapshot_checksum" value="{{ validation.snapshot_checksum }}">
+  <input type="hidden" name="idempotency_key" value="confirm-{{ trial_id }}-{{ validation.snapshot_checksum[:16] }}">
+  <button type="submit" class="btn btn--primary">Confirm</button>
+</form>
+{% endblock %}

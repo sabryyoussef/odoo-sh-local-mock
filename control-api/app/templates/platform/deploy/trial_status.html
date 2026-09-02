@@ -1,0 +1,17 @@
+{% extends "platform/deploy/_wizard_base.html" %}
+{% block deploy_content %}
+<h1>Trial status</h1>
+<p>Status: <strong>{{ trial.status }}</strong></p>
+{% if job %}
+<p>Deployment: {{ job.status }} — {{ job.current_step or 'pending' }}</p>
+{% if job.error_summary %}<p class="muted">{{ job.error_summary }}</p>{% endif %}
+{% endif %}
+{% if trial.trial_started_at %}
+<p>Trial ends: {{ trial.trial_ends_at }}</p>
+{% endif %}
+{% if trial.tenant and trial.tenant.public_url %}
+<p><a href="{{ trial.tenant.public_url }}">Launch Odoo</a></p>
+{% elif trial.tenant and trial.tenant.status == 'active' %}
+<p>Provisioned — public access pending</p>
+{% endif %}
+{% endblock %}

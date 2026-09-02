@@ -1,0 +1,21 @@
+{% extends "platform/deploy/_wizard_base.html" %}
+{% block deploy_content %}
+<h1>Select apps</h1>
+<form method="get" action="/platform/deploy/modules" style="margin-bottom:1rem">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search apps">
+  <button type="submit">Search</button>
+</form>
+<form method="post" action="/platform/deploy/modules">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  {% for cat in categories %}
+  <h3>{{ cat.name }}</h3>
+  {% for m in cat.modules %}
+  <label style="display:block">
+    <input type="checkbox" name="module_ids" value="{{ m.id }}" {% if m.selected %}checked{% endif %}>
+    {{ m.display_name }}
+  </label>
+  {% endfor %}
+  {% endfor %}
+  <button type="submit" class="btn btn--primary">Review</button>
+</form>
+{% endblock %}

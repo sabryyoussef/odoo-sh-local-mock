@@ -17,6 +17,7 @@ dist/
 # Playwright / G3-A isolated browser artifacts
 control-api/e2e/test-results/
 control-api/e2e/playwright-report/
+control-api/e2e/artifacts/
 control-api/e2e/blob-report/
 control-api/e2e/.auth/
 playwright-report/

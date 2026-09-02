@@ -20,6 +20,8 @@ test.describe("Three product lines — isolated UAT", () => {
     await expect(page.getByRole("link", { name: "Developer Platform" }).first()).toHaveAttribute("href", "/platform");
     await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Ready Solutions" })).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Helpers ERP Cloud" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Cloud sign in" })).toHaveAttribute("href", "/cloud/login");
+    await expect(page.getByRole("link", { name: "Developer sign in" })).toHaveAttribute("href", "/login");
     await shot(page, testInfo, "homepage-desktop");
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -51,11 +53,16 @@ test.describe("Three product lines — isolated UAT", () => {
     await page.goto("/platform");
     await expect(page.getByRole("heading", { name: "Developer Platform" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "GitHub integration" })).toBeVisible();
+    await expect(page.locator('.mkt-nav__actions a[href="/login"]')).toBeVisible();
     await expect(page.getByRole("link", { name: /View Developer Plans/ })).toBeVisible();
     await shot(page, testInfo, "developer-platform");
     await page.goto("/platform/pricing");
     await expect(page.getByRole("heading", { name: /Developer Platform plan/ })).toBeVisible();
     await shot(page, testInfo, "developer-platform-pricing");
+    await page.goto("/login");
+    await expect(page.getByRole("link", { name: /Sign in with GitHub/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Helpers ERP Cloud sign in/i })).toHaveAttribute("href", "/cloud/login");
+    await shot(page, testInfo, "developer-github-login");
   });
 
   test("Helpers ERP Cloud demo journey without GitHub", async ({ page }, testInfo) => {
@@ -65,94 +72,66 @@ test.describe("Three product lines — isolated UAT", () => {
     await page.goto("/cloud");
     await expect(page.getByRole("heading", { name: "Helpers ERP Cloud" })).toBeVisible();
     await expect(page.getByText(/No coding or server administration required/)).toBeVisible();
+    await expect(page.getByRole("link", { name: "View plans and start" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Sign in" }).first()).toHaveAttribute("href", "/cloud/login");
     await expect(page.locator("body")).not.toContainText("commit SHA");
     await shot(page, testInfo, "cloud-overview");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/cloud");
+    await shot(page, testInfo, "cloud-overview-mobile");
+    await page.setViewportSize({ width: 1280, height: 720 });
 
     await page.goto("/cloud/pricing");
     await expect(page.getByRole("heading", { name: "Trial" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Starter" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Business" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Enterprise Cloud" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Start free" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Choose Business" })).toBeVisible();
     await expect(page.getByText("Presentation Only").first()).toBeVisible();
     await shot(page, testInfo, "cloud-pricing");
 
-    await page.goto("/cloud/register");
+    await page.getByRole("link", { name: "Choose Business" }).click();
+    await expect(page).toHaveURL(/\/cloud\/register/);
     await page.getByLabel("Full name").fill("UAT Cloud Buyer");
     await page.getByLabel("Work email").fill(email);
-    await page.getByLabel("Phone").fill("+20100000999");
-    await page.getByLabel("Company name").fill("UAT Trading Co");
-    await page.getByLabel("Country").fill("Egypt");
     await page.locator('input[name="password"]').fill("SecurePass1");
     await page.locator('input[name="password_confirm"]').fill("SecurePass1");
     await page.locator('input[name="terms"]').check();
     await shot(page, testInfo, "cloud-register");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/cloud\/setup\/plan/);
-    await expect(page.getByRole("heading", { name: "Choose a Cloud plan" })).toBeVisible();
-    await shot(page, testInfo, "cloud-setup-plan");
+    await expect(page).toHaveURL(/\/cloud\/setup/);
+    await expect(page.getByRole("heading", { name: "Choose how you work" })).toBeVisible();
+    await expect(page.getByText("Business", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Customize your plan")).toBeVisible();
+    await expect(page.locator('input[name="addon_ids"]')).not.toHaveCount(0);
+    await shot(page, testInfo, "cloud-setup-configure");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await shot(page, testInfo, "cloud-setup-configure-mobile");
+    await page.setViewportSize({ width: 1280, height: 720 });
 
-    await page.locator('input[name="billing_cycle"][value="annual"]').check();
-    await page.locator("label.pricing-card").filter({ hasText: "Business" }).locator('input[name="plan_id"]').check();
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page).toHaveURL(/\/cloud\/setup\/version/);
-    await expect(page.getByRole("heading", { name: "Odoo 19 Community" })).toBeVisible();
-    await shot(page, testInfo, "cloud-setup-version");
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page).toHaveURL(/\/cloud\/setup\/package/);
     await page.locator("label.pricing-card").filter({ hasText: "Trading" }).locator('input[name="package_id"]').check();
-    await shot(page, testInfo, "cloud-setup-package");
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page).toHaveURL(/\/cloud\/setup\/company/);
     await page.getByLabel("Legal company name").fill("UAT Trading SAE");
     await page.getByLabel("Workspace name").fill("UAT Trading");
-    await page.getByLabel("Requested subdomain").fill(`uat-trading-${stamp}`);
-    await page.getByLabel("Country").fill("Egypt");
-    await page.getByLabel("Currency").fill("EGP");
-    await page.getByLabel("Language").fill("en_US");
-    await page.getByLabel("Time zone").fill("Africa/Cairo");
-    await page.getByLabel("Required users").fill("8");
-    await page.getByLabel("Required storage (GB)").fill("15");
-    await expect(page.locator('input[name="repository"]')).toHaveCount(0);
-    await expect(page.locator('input[type="file"]')).toHaveCount(0);
-    await shot(page, testInfo, "cloud-setup-company");
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    await expect(page).toHaveURL(/\/cloud\/setup\/addons/);
+    await page.getByLabel(/Workspace (URL|address)/).fill(`uat-trading-${stamp}`);
+    await page.selectOption('select[name="country"]', "Egypt");
+    await page.locator("details.cloud-customize").locator('input[name="required_users"]').fill("8");
+    await page.locator("details.cloud-customize").locator('input[name="required_storage_gb"]').fill("15");
     const egypt = page.locator("label.pricing-card").filter({ hasText: "Egyptian localization" });
     if (await egypt.locator('input[name="addon_ids"]').count()) {
       await egypt.locator('input[name="addon_ids"]').check();
     }
-    await shot(page, testInfo, "cloud-setup-addons");
+    await expect(page.locator('input[name="repository"]')).toHaveCount(0);
+    await expect(page.locator('input[type="file"]')).toHaveCount(0);
     await page.getByRole("button", { name: "Continue" }).click();
 
-    await expect(page).toHaveURL(/\/cloud\/setup\/review/);
-    await expect(page.getByRole("heading", { name: /Review your Helpers ERP Cloud workspace/ })).toBeVisible();
+    await expect(page).toHaveURL(/\/cloud\/setup\/confirm/);
+    await expect(page.getByRole("heading", { name: /Confirm your Helpers ERP Cloud workspace/ })).toBeVisible();
     await expect(page.getByText("Presentation Only").first()).toBeVisible();
-    await expect(page.getByText(/Total /).first()).toBeVisible();
-    await shot(page, testInfo, "cloud-setup-review");
-    await page.getByRole("link", { name: "Continue to demo checkout" }).click();
+    await shot(page, testInfo, "cloud-setup-confirm");
+    await page.getByRole("button", { name: "Place demo order" }).click();
 
-    await expect(page).toHaveURL(/\/cloud\/checkout/);
-    await expect(page.getByRole("heading", { name: /Demo Checkout — No Real Charge/ })).toBeVisible();
-    await expect(page.locator('input[name="card_number"]')).toHaveCount(0);
-    await expect(page.locator('input[name="cvv"]')).toHaveCount(0);
-    await shot(page, testInfo, "cloud-checkout");
-    const idempotency = await page.locator('input[name="idempotency_key"]').inputValue();
-    const csrf = await page.locator('form[action="/cloud/checkout"] input[name="csrf_token"]').inputValue();
-    const first = await page.request.post("/cloud/checkout", {
-      form: { csrf_token: csrf, idempotency_key: idempotency },
-      maxRedirects: 0,
-    });
-    expect([302, 303]).toContain(first.status());
-    const second = await page.request.post("/cloud/checkout", {
-      form: { csrf_token: csrf, idempotency_key: idempotency },
-      maxRedirects: 0,
-    });
-    expect([302, 303]).toContain(second.status());
-    await page.goto("/cloud/checkout/success");
+    await expect(page).toHaveURL(/\/cloud\/checkout\/success/);
     await shot(page, testInfo, "cloud-checkout-success");
 
     await page.goto("/cloud/instances");

@@ -106,5 +106,6 @@ def test_cloud_registration_does_not_replace_github_login(client, db):
     github = client.get("/login")
     assert "Sign in with GitHub" in github.text
     cloud_login = client.get("/cloud/login")
-    assert "GitHub is not required" in cloud_login.text or "no GitHub" in cloud_login.text.lower()
     assert "password" in cloud_login.text.lower()
+    assert "Sign in with GitHub" not in cloud_login.text
+    assert "auth/github" not in cloud_login.text

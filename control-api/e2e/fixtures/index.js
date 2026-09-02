@@ -10,7 +10,7 @@ const test = base.extend({
     await use(runtime.baseURL);
   },
   page: async ({ page, runtime }, use) => {
-    const bag = { console: [], page: [], failed: [], http5xx: [] };
+    const bag = { console: [], page: [], failed: [], http5xx: [], http4xx: [], expected4xx: [] };
     attachErrorCollectors(page, bag, runtime.baseURL);
     await use(page);
     assertNoUnexpectedErrors(bag);

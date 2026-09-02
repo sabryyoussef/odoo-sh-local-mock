@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.db import get_db
 from app.html_render import render_template
 from app.models import (
+    CloudOrder,
     DeploymentJob,
     DeploymentSelection,
     PlatformTrial,
@@ -198,3 +199,21 @@ def e2e_reset_user(request: Request, db: Session = Depends(get_db)) -> JSONRespo
             db.delete(trial)
         db.commit()
     return JSONResponse({"ok": True, "cleared_trials": len(trial_ids)})
+
+
+@router.get("/e2e/cloud/orders")
+def e2e_cloud_orders(request: Request, db: Session = Depends(get_db), email: str = "") -> JSONResponse:
+    _require_e2e()
+    _require_secret(request)
+    user = db.scalar(select(User).where(User.email == email.strip().lower()))
+    if not user:
+        return JSONResponse({"count": 0, "order_codes": [], "idempotency_keys": []})
+    rows = list(db.scalars(select(CloudOrder).where(CloudOrder.user_id == user.id).order_by(CloudOrder.id)))
+    return JSONResponse(
+        {
+            "count": len(rows),
+            "order_codes": [row.order_code for row in rows],
+            "idempotency_keys": [row.idempotency_key for row in rows],
+            "statuses": [row.status for row in rows],
+        }
+    )

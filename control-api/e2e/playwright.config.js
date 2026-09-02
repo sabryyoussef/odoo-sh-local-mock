@@ -7,6 +7,13 @@ const E2E_DIR = __dirname;
 const AUTH_DIR = path.join(E2E_DIR, ".auth");
 const firefoxInstalled = fs.existsSync(path.join(os.homedir(), ".cache", "ms-playwright", "firefox-1538"));
 
+const cloudOnboardingUse = {
+  storageState: { cookies: [], origins: [] },
+  trace: "on",
+  video: "on",
+  screenshot: "only-on-failure",
+};
+
 const projects = [
   {
     name: "setup",
@@ -28,7 +35,7 @@ const projects = [
   },
   {
     name: "desktop-chromium",
-    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js|lifecycle/,
+    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js|lifecycle|cloud-onboarding-full-journey/,
     dependencies: ["setup"],
     use: {
       browserName: "chromium",
@@ -44,6 +51,30 @@ const projects = [
       browserName: "chromium",
       ...devices["Pixel 5"],
       storageState: path.join(AUTH_DIR, "user.json"),
+    },
+  },
+  {
+    name: "cloud-onboarding-chromium",
+    testMatch: /cloud-onboarding-full-journey\.spec\.js/,
+    retries: 0,
+    timeout: 180_000,
+    use: {
+      browserName: "chromium",
+      viewport: { width: 1280, height: 720 },
+      ...cloudOnboardingUse,
+    },
+  },
+  {
+    name: "cloud-onboarding-mobile",
+    testMatch: /cloud-onboarding-full-journey\.spec\.js/,
+    grep: /@cloud-primary/,
+    retries: 0,
+    timeout: 180_000,
+    use: {
+      browserName: "chromium",
+      ...devices["Pixel 5"],
+      viewport: { width: 390, height: 844 },
+      ...cloudOnboardingUse,
     },
   },
   {
@@ -83,6 +114,18 @@ if (firefoxInstalled) {
       browserName: "firefox",
       viewport: { width: 1280, height: 720 },
       storageState: { cookies: [], origins: [] },
+    },
+  });
+  projects.push({
+    name: "cloud-onboarding-firefox",
+    testMatch: /cloud-onboarding-full-journey\.spec\.js/,
+    grep: /@cloud-primary/,
+    retries: 0,
+    timeout: 180_000,
+    use: {
+      browserName: "firefox",
+      viewport: { width: 1280, height: 720 },
+      ...cloudOnboardingUse,
     },
   });
 }

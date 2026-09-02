@@ -30,11 +30,26 @@ def test_homepage_ctas_open_correct_journeys(client, db):
     cloud = client.get("/cloud")
     assert cloud.status_code == 200
     assert "Helpers ERP Cloud" in cloud.text
-    assert "No coding or server administration required" in cloud.text
+    assert "View plans and start" in cloud.text
+    assert 'href="/cloud/login"' in cloud.text
     platform = client.get("/platform")
     assert platform.status_code == 200
     assert "Developer Platform" in platform.text
     assert "GitHub" in platform.text
+    assert 'href="/login"' in platform.text
+
+
+def test_contextual_sign_in_targets(client):
+    home = client.get("/").text
+    assert 'href="/cloud/login"' in home
+    assert "Cloud sign in" in home
+    assert "Developer sign in" in home
+    cloud = client.get("/cloud").text
+    assert 'href="/cloud/login"' in cloud
+    platform = client.get("/platform").text
+    actions = platform.split("mkt-nav__actions", 1)[-1]
+    assert 'href="/login"' in actions
+    assert 'href="/cloud/login"' not in actions
 
 
 def test_nav_lists_three_product_lines_and_sign_in(client):
@@ -43,7 +58,10 @@ def test_nav_lists_three_product_lines_and_sign_in(client):
     assert "Helpers ERP Cloud" in body
     assert "Developer Platform" in body
     assert "Pricing" in body
-    assert "Sign In" in body
+    assert "Cloud sign in" in body
+    assert "Developer sign in" in body
+    assert 'href="/cloud/login"' in body
+    assert 'href="/login"' in body
 
 
 def test_product_positioning_not_mixed_on_cloud_overview(client):
@@ -53,6 +71,8 @@ def test_product_positioning_not_mixed_on_cloud_overview(client):
     assert "branch" not in body.lower()
     assert "CONNECT" not in body
     assert "No coding or server administration required" in body
+    assert "View plans and start" in body
+    assert "Configure Your ERP" not in body
 
 
 def test_developer_platform_keeps_git_language(client):

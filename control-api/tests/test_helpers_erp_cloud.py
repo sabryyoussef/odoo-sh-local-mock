@@ -128,7 +128,9 @@ def test_cloud_overview_and_pricing_routes(client, db):
     overview = client.get("/cloud")
     assert overview.status_code == 200
     assert "Fully managed Odoo" in overview.text or "managed Odoo" in overview.text.lower()
-    assert "View Cloud Plans" in overview.text
+    assert "View plans and start" in overview.text
+    assert "Start Free Trial" not in overview.text
+    assert "Configure Your ERP" not in overview.text
     pricing = client.get("/cloud/pricing")
     assert pricing.status_code == 200
     for name in ("Trial", "Starter", "Business", "Enterprise Cloud"):
@@ -168,13 +170,13 @@ def test_registration_unique_email_and_login(client, db):
         "country": "Egypt",
         "password": "SecurePass1",
         "password_confirm": "SecurePass1",
+        "password_confirm": "SecurePass1",
         "terms": "1",
-        "next": "/cloud/setup/plan",
     }
     created = client.post("/cloud/register", data=data, follow_redirects=False)
     assert created.status_code == 302
-    assert created.headers["location"] == "/cloud/setup/plan"
-    token2 = _csrf(client.get("/cloud/setup/plan").text)
+    assert created.headers["location"] == "/cloud/pricing"
+    token2 = _csrf(client.get("/cloud/register").text)
     data["csrf_token"] = token2
     again = client.post("/cloud/register", data=data)
     assert again.status_code == 400
@@ -199,9 +201,12 @@ def test_cloud_login_rejects_github_only_account(client, db):
 
 
 def test_wizard_requires_cloud_account(client):
-    resp = client.get("/cloud/setup/plan", follow_redirects=False)
+    resp = client.get("/cloud/setup", follow_redirects=False)
     assert resp.status_code == 302
     assert resp.headers["location"].startswith("/cloud/login")
+    plan = client.get("/cloud/setup/plan", follow_redirects=False)
+    assert plan.status_code == 302
+    assert plan.headers["location"].startswith("/cloud/login")
 
 
 def test_wizard_persistence_and_back_next(client, db):
@@ -209,21 +214,19 @@ def test_wizard_persistence_and_back_next(client, db):
     _login_http(client, "wizard@company.example")
     seed_helpers_cloud(db)
     plan = get_plan_by_code(db, "starter")
-    page = client.get("/cloud/setup/plan")
-    assert page.status_code == 200
-    token = _csrf(page.text)
-    client.post(
-        "/cloud/setup/plan",
-        data={"csrf_token": token, "plan_id": str(plan.id), "billing_cycle": "annual"},
-        follow_redirects=False,
-    )
+    page = client.get("/cloud/setup?plan=starter&cycle=annual", follow_redirects=False)
+    assert page.status_code == 302
+    assert page.headers["location"] == "/cloud/setup"
+    configured = client.get("/cloud/setup")
+    assert configured.status_code == 200
+    assert "Choose how you work" in configured.text
     db.expire_all()
     setup = get_or_create_draft_setup(db, user)
     assert setup.plan_id == plan.id
     assert setup.billing_cycle == "annual"
-    back = client.get("/cloud/setup/plan")
+    back = client.get("/cloud/setup")
     assert back.status_code == 200
-    assert str(plan.id) in back.text
+    assert plan.name in back.text
 
 
 def test_supported_version_and_package_compatibility(db):
@@ -405,9 +408,7 @@ def test_cloud_pages_have_no_github_or_module_upload(client, db):
     for path in (
         "/cloud",
         "/cloud/pricing",
-        "/cloud/setup/plan",
-        "/cloud/setup/package",
-        "/cloud/setup/company",
+        "/cloud/setup",
         "/cloud/instances",
     ):
         html = client.get(path).text.lower()
@@ -487,6 +488,7 @@ def test_cloud_login_rejects_open_redirect(client, db):
     assert location.startswith("/")
     assert "evil" not in location
     assert "://" not in location
+    assert location in ("/cloud/pricing", "/cloud/setup", "/cloud/setup/confirm", "/cloud/instances")
 
 
 def test_cloud_login_rejects_protocol_relative_next(client, db):
@@ -503,14 +505,14 @@ def test_cloud_login_rejects_protocol_relative_next(client, db):
         follow_redirects=False,
     )
     assert resp.status_code == 302
-    assert resp.headers["location"] == "/cloud/instances"
+    assert resp.headers["location"] == "/cloud/pricing"
 
 
 def test_checkout_rejects_missing_csrf(client, db):
     user = _register(db, "csrf@company.example")
     _complete_setup(db, user, subdomain="csrf-co")
     _login_http(client, "csrf@company.example")
-    page = client.get("/cloud/checkout")
+    page = client.get("/cloud/setup/confirm")
     assert page.status_code == 200
     key = re.search(r'name="idempotency_key" value="([^"]+)"', page.text)
     assert key
@@ -520,7 +522,7 @@ def test_checkout_rejects_missing_csrf(client, db):
         follow_redirects=False,
     )
     assert resp.status_code == 302
-    assert resp.headers["location"] == "/cloud/checkout"
+    assert resp.headers["location"] == "/cloud/setup/confirm"
     assert db.scalar(select(CloudOrder).where(CloudOrder.user_id == user.id)) is None
 
 

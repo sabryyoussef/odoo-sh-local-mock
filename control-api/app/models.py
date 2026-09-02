@@ -1297,6 +1297,10 @@ class CloudSubscription(Base):
     pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
     github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
     renewal_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    suspended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    grace_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    terminated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -1321,16 +1325,36 @@ class CloudProvisioningRequest(Base):
     product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     subscription_id: Mapped[int] = mapped_column(ForeignKey("cloud_subscriptions.id"), index=True)
+    tenant_id: Mapped[int | None] = mapped_column(ForeignKey("tenants.id"), nullable=True, index=True)
     request_uuid: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     idempotency_key: Mapped[str] = mapped_column(String(128), index=True)
     status: Mapped[str] = mapped_column(String(32), default="queued", index=True)
     current_step: Mapped[str | None] = mapped_column(String(64), nullable=True)
     adapter: Mapped[str] = mapped_column(String(32), default="demo")
+    # Orchestration fields — P1
+    claimed_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=3)
+    next_attempt_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Legacy error fields kept for backward compat — mirrored to last_error_*
     error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
     error_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Template audit
+    template_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    template_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    template_kind: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    # URLs — internal never exposed to customer
+    internal_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    public_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     runtime_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     runtime_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -1338,6 +1362,7 @@ class CloudProvisioningRequest(Base):
 
     user: Mapped[User] = relationship()
     subscription: Mapped[CloudSubscription] = relationship(back_populates="provisioning_requests")
+    tenant: Mapped[Tenant | None] = relationship()
     instance: Mapped["CloudInstance | None"] = relationship(
         back_populates="provisioning_request", uselist=False
     )
@@ -1356,6 +1381,7 @@ class CloudInstance(Base):
     provisioning_request_id: Mapped[int | None] = mapped_column(
         ForeignKey("cloud_provisioning_requests.id"), nullable=True
     )
+    tenant_id: Mapped[int | None] = mapped_column(ForeignKey("tenants.id"), nullable=True, index=True)
     company_name: Mapped[str] = mapped_column(String(255), default="")
     workspace_name: Mapped[str] = mapped_column(String(128), default="")
     requested_subdomain: Mapped[str] = mapped_column(String(64), index=True)
@@ -1369,9 +1395,19 @@ class CloudInstance(Base):
     included_storage_gb: Mapped[int] = mapped_column(Integer, default=1)
     backup_retention_days: Mapped[int] = mapped_column(Integer, default=7)
     last_backup_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # URLs — internal_url never serialized to customer
+    internal_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    public_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     runtime_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     runtime_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    domain: Mapped[str | None] = mapped_column(String(255), nullable=True)
     github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    # Lifecycle
+    suspended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    grace_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deletion_scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -1379,6 +1415,31 @@ class CloudInstance(Base):
 
     user: Mapped[User] = relationship(back_populates="cloud_instances")
     subscription: Mapped[CloudSubscription] = relationship(back_populates="instance")
+    tenant: Mapped[Tenant | None] = relationship()
     provisioning_request: Mapped[CloudProvisioningRequest | None] = relationship(
         back_populates="instance"
+    )
+
+
+class CloudTemplate(Base):
+    """Cloud base template contract — per package, no platform_base fallback."""
+
+    __tablename__ = "cloud_templates"
+    __table_args__ = (
+        UniqueConstraint("package_code", "odoo_version_code", name="uq_cloud_template_package_version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_line: Mapped[str] = mapped_column(String(32), default="helpers_cloud", index=True)
+    package_code: Mapped[str] = mapped_column(String(64), index=True)
+    odoo_version_code: Mapped[str] = mapped_column(String(32), default="19.0", index=True)
+    template_kind: Mapped[str] = mapped_column(String(32), default="cloud_base", index=True)
+    postgres_database_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), default="draft", index=True)
+    health: Mapped[str] = mapped_column(String(32), default="unhealthy", index=True)
+    version: Mapped[str] = mapped_column(String(32), default="1.0.0")
+    checksum: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

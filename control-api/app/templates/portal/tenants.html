@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Environments · Portal{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Environments</h1>
+      <p><a href="/portal">← Portal home</a></p>
+    </div>
+    <div class="settings-grid">
+      {% for t in tenants %}
+        <section class="flow-card">
+          <h2>{{ t.display_name }}</h2>
+          <p><span class="badge">{{ t.status_label }}</span> · Odoo {{ t.odoo_version }}</p>
+          <p class="muted">Storage: {{ t.storage_usage_label }}</p>
+          {% if t.launch.can_launch and t.launch.launch_url %}
+            <a class="btn btn--primary" href="{{ t.launch.launch_url }}" target="_blank" rel="noopener">{{ t.launch.launch_message }}</a>
+          {% elif t.launch.launch_message %}
+            <p class="muted">{{ t.launch.launch_message }}</p>
+          {% endif %}
+          <p><a href="/portal/tenants/{{ t.id }}">Details →</a></p>
+        </section>
+      {% else %}
+        <p class="muted">No environments yet. Start a demo trial from the <a href="/catalog">solution catalog</a>.</p>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+{% endblock %}

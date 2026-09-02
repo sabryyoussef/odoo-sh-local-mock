@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}My portal · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Customer portal</h1>
+      <p>Your subscriptions, environments, and included resources — separated by journey.</p>
+    </div>
+
+    {% if solution_subscriptions %}
+      <section class="account-section">
+        <h2 class="account-section__title">Business Solutions</h2>
+        <div class="settings-grid">
+          {% for sub in solution_subscriptions %}
+            <section class="flow-card">
+              <p class="muted"><span class="badge">Solution subscription</span></p>
+              <h3>{{ sub.solution_name or 'Solution' }}</h3>
+              <p class="muted">{{ sub.package_name }} · <span class="badge">{{ sub.status_label }}</span></p>
+              {% if sub.is_demo %}<span class="badge badge--warning">Demo trial</span>{% endif %}
+              {% if sub.tenant %}
+                <p>Environment: <span class="badge">{{ sub.tenant.status_label }}</span></p>
+              {% elif sub.provisioning %}
+                <p>Provisioning: <span class="badge">{{ sub.provisioning.status_label }}</span></p>
+              {% endif %}
+              {% if sub.launch.can_launch and sub.launch.launch_url %}
+                <p><a class="btn btn--primary" href="{{ sub.launch.launch_url }}" target="_blank" rel="noopener">{{ sub.launch.launch_message }}</a></p>
+              {% elif sub.launch.launch_message %}
+                <p class="muted" role="status">{{ sub.launch.launch_message }}</p>
+              {% endif %}
+              <p><a href="/portal/subscriptions/{{ sub.id }}">View subscription →</a></p>
+            </section>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if platform_subscriptions %}
+      <section class="account-section">
+        <h2 class="account-section__title">Developer Platform</h2>
+        <div class="settings-grid">
+          {% for sub in platform_subscriptions %}
+            <section class="flow-card">
+              <p class="muted"><span class="badge">Platform subscription</span></p>
+              <h3>{{ sub.plan_name }} plan</h3>
+              <p class="muted"><span class="badge">{{ sub.status_label }}</span> · {{ sub.projects_used_label }}</p>
+              <p class="muted">Odoo versions: {{ sub.odoo_versions }}</p>
+              <p><a href="/projects">Manage projects →</a></p>
+            </section>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if not solution_subscriptions and not platform_subscriptions %}
+      <div class="journey-empty">
+        <section class="flow-card">
+          <h2>No subscriptions yet</h2>
+          <p class="muted">Pick the journey that matches what you need. These paths are independent — Solution packages already include hosting.</p>
+        </section>
+        <div class="pricing-grid">
+          <article class="flow-card">
+            <h3>Business Solutions</h3>
+            <p class="muted">Veterinary Clinic, HMS, SIS — ready-to-use systems with included infrastructure.</p>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> One Solution Package subscription</li>
+              <li><span class="check">✓</span> Tenant + backups + entitlements</li>
+              <li><span class="check">✓</span> No Platform Plan required</li>
+            </ul>
+            <a class="btn-hero btn-hero--primary btn-hero--on-light pricing-cta" href="/solutions">Browse Solutions</a>
+          </article>
+          <article class="flow-card">
+            <h3>Developer Platform</h3>
+            <p class="muted">GitHub-backed Odoo projects with builds and environments.</p>
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> Platform Plan for your repos</li>
+              <li><span class="check">✓</span> Branches, builds, and logs</li>
+              <li><span class="check">✓</span> No Solution package required</li>
+            </ul>
+            <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="/platform/pricing">View Developer Plans</a>
+          </article>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if solution_subscriptions %}
+      <p style="margin-top:1rem"><a href="/portal/subscriptions">All solution subscriptions</a> · <a href="/portal/tenants">All environments</a></p>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

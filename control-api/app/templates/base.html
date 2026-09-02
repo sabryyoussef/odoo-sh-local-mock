@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Mock Odoo.sh{% endblock %}</title>
+  <title>{% block title %}{{ brand.product_name if brand is defined else 'Mock Odoo.sh' }}{% endblock %}</title>
   <link rel="stylesheet" href="/static/css/app.css">
+  {% if brand is defined and brand.css_href %}
+    <link rel="stylesheet" href="{{ brand.css_href }}">
+  {% endif %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% if brand is defined and brand.body_theme_class %}{{ brand.body_theme_class }} {% endif %}{% block body_class %}{% endblock %}">
   {% block top %}
     {% if project is defined and project %}
       {% include "partials/top_nav.html" %}

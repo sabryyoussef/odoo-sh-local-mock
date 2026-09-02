@@ -8,6 +8,12 @@
       autocomplete="off"
     >
   </div>
+  {% if real_branches %}
+    <form method="post" action="/project/{{ project.slug }}/sync-branches" style="padding:0 12px 12px">
+      <button type="submit" class="btn" style="width:100%">Sync Branches</button>
+      <p class="muted" style="font-size:12px;margin:6px 0 0">Pulls live branch names &amp; SHAs from GitHub. Deleted upstream branches are removed locally.</p>
+    </form>
+  {% endif %}
 
   {% for env in environments %}
     <section class="sidebar__section" data-env="{{ env.id }}">
@@ -19,10 +25,11 @@
               class="sidebar__branch{% if branch.active %} is-active{% endif %}"
               href="/project/{{ project.slug }}/branches?branch={{ branch.name|urlencode }}"
               data-branch-name="{{ branch.name|lower }}"
+              title="{% if branch.sha %}SHA {{ branch.sha }}{% endif %}"
             >
               <span class="status-dot status-dot--{{ branch.status }}" title="{{ branch.status }}"></span>
               <span class="sidebar__branch-name">{{ branch.name }}</span>
-              <span class="sidebar__branch-version">{{ branch.version }}</span>
+              <span class="sidebar__branch-version">{% if branch.sha %}<code>{{ branch.sha }}</code>{% else %}{{ branch.version }}{% endif %}</span>
             </a>
           </li>
         {% else %}

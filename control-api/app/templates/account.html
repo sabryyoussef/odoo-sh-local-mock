@@ -1,54 +1,108 @@
 {% extends "base.html" %}
-{% block title %}Account · Mock Odoo.sh{% endblock %}
+{% block title %}Account · {{ app_name|default('Helpers ERP') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
 {% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
   {% include "partials/app_topbar.html" %}
-  <main class="flow-main">
+  <main class="flow-main flow-main--full">
     <div class="flow-header">
       <h1>Account</h1>
-      <p>Manage your mock profile and subscription.</p>
+      <p>GitHub identity and your subscriptions — Business Solutions and Developer Platform are shown separately.</p>
     </div>
 
-    <section class="settings-grid">
-      <div class="flow-card">
-        <div class="auth-user-row">
-          <span class="avatar">{{ user.initials }}</span>
-          <div>
-            <strong>{{ user.username }}</strong>
-            <div class="muted">{{ user.email }}</div>
-            <div class="tone tone--valid">GitHub Connected</div>
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+
+    <section class="account-section">
+      <h2 class="account-section__title">Profile</h2>
+      <div class="account-section__grid">
+        <div class="flow-card">
+          <div class="auth-user-row">
+            {% if user.avatar_url %}
+              <img class="avatar" src="{{ user.avatar_url }}" alt="" width="48" height="48" style="border-radius:50%">
+            {% else %}
+              <span class="avatar">{{ user.initials }}</span>
+            {% endif %}
+            <div>
+              <strong>{{ user.username }}</strong>
+              {% if user.name and user.name != user.username %}
+                <div class="muted">{{ user.name }}</div>
+              {% endif %}
+              <div class="muted">{{ user.email or "Email not shared by GitHub" }}</div>
+              <div class="tone tone--valid">GitHub connected</div>
+            </div>
+          </div>
+          <div class="flow-actions-row" style="margin-top:12px">
+            <a class="btn" href="/logout">Logout</a>
+            <a class="btn" href="/portal">Customer portal</a>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="flow-card">
-        <h2>Subscription</h2>
-        <dl class="kv">
-          <div><dt>Plan</dt><dd>{{ subscription.plan }}</dd></div>
-          <div><dt>Subscription Code</dt><dd><code id="account-sub-code">{{ subscription.code }}</code></dd></div>
-          <div><dt>Status</dt><dd class="tone tone--valid">{{ subscription.status }}</dd></div>
-          <div><dt>Expires</dt><dd>{{ subscription.expires }}</dd></div>
-          <div><dt>Projects</dt><dd>{{ subscription.projects_used }} / {{ subscription.projects_allowed }}</dd></div>
-          <div><dt>Odoo Versions</dt><dd>{{ subscription.odoo_versions }}</dd></div>
-        </dl>
-        <div class="flow-actions" style="justify-content:flex-start;margin-top:12px">
-          <button type="button" class="btn" id="copy-sub-code">Copy Subscription Code</button>
-          <button type="button" class="btn" title="Placeholder">Upgrade Plan</button>
-          <button type="button" class="btn" title="Placeholder">Renew Subscription</button>
-        </div>
-      </div>
-
-      <div class="flow-card">
-        <h2>Projects</h2>
-        <ul class="plain-list">
-          {% for p in projects %}
-            <li><a href="/project/{{ p.slug }}/branches">{{ p.name }}</a> · {{ p.odoo_version }} · {{ p.location }}</li>
+    <section class="account-section">
+      <h2 class="account-section__title">Business Solutions</h2>
+      <div class="account-section__grid">
+        {% if solution_subscriptions %}
+          {% for sub in solution_subscriptions %}
+            <div class="flow-card">
+              <h3>{{ sub.solution_name }}</h3>
+              <p class="muted">{{ sub.package_name }} · <span class="badge">{{ sub.status_label }}</span></p>
+              {% if sub.is_demo %}<span class="badge badge--warning">Demo trial</span>{% endif %}
+              <p><a href="/portal/subscriptions/{{ sub.id }}">Manage in portal →</a></p>
+            </div>
           {% endfor %}
-        </ul>
-        <a class="btn-hero btn-hero--primary" href="/projects">View All Projects</a>
+        {% else %}
+          <div class="flow-card">
+            <p class="muted">No Solution subscriptions yet. Packages include hosting — no Platform Plan required.</p>
+            <a class="btn btn--primary" href="/solutions">Browse Solutions</a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="account-section">
+      <h2 class="account-section__title">Developer Platform</h2>
+      <div class="account-section__grid">
+        {% if platform_subscriptions %}
+          {% for sub in platform_subscriptions %}
+            <div class="flow-card">
+              <h3>{{ sub.plan_name }} plan</h3>
+              <p class="muted"><span class="badge">{{ sub.status_label }}</span> · {{ sub.projects_used_label }}</p>
+              <p class="muted">Odoo: {{ sub.odoo_versions }}</p>
+            </div>
+          {% endfor %}
+        {% endif %}
+        <div class="flow-card">
+          <h3>Demo deploy entitlement <span class="badge badge--warning">Demo</span></h3>
+          <p class="muted">Shared demo code for project deploy wizard — not a Solution subscription.</p>
+          <dl class="kv">
+            <div><dt>Plan</dt><dd>{{ demo_deploy.plan }}</dd></div>
+            <div><dt>Deploy code</dt><dd><code id="account-sub-code">{{ demo_deploy.code }}</code></dd></div>
+            <div><dt>Status</dt><dd class="tone tone--valid">{{ demo_deploy.status }}</dd></div>
+            <div><dt>Projects</dt><dd>{{ demo_deploy.projects_used }} / {{ demo_deploy.projects_allowed }}</dd></div>
+            <div><dt>Odoo versions</dt><dd>{{ demo_deploy.odoo_versions }}</dd></div>
+          </dl>
+          <div class="flow-actions-row">
+            <button type="button" class="btn" id="copy-sub-code">Copy deploy code</button>
+            <a class="btn" href="/platform/pricing">Platform plans</a>
+            <a class="btn btn--primary" href="/projects">Projects</a>
+          </div>
+        </div>
+        {% if projects %}
+          <div class="flow-card">
+            <h3>Your projects</h3>
+            <ul class="plain-list">
+              {% for p in projects %}
+                <li><a href="/project/{{ p.slug }}/branches">{{ p.name }}</a> · {{ p.odoo_version }} · {{ p.location }}</li>
+              {% endfor %}
+            </ul>
+            <a class="btn" href="/projects">View all projects</a>
+          </div>
+        {% endif %}
       </div>
     </section>
   </main>

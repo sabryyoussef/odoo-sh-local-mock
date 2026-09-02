@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Subscription · Portal{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <p class="muted"><a href="/portal/subscriptions">← Subscriptions</a></p>
+    <div class="flow-header">
+      <h1>{{ subscription.solution_name }}</h1>
+      <p>{{ subscription.package_name }} · <span class="badge">{{ subscription.status_label }}</span></p>
+      {% if subscription.is_demo %}<span class="badge badge--warning">Demo trial — not a paid subscription</span>{% endif %}
+    </div>
+
+    <section class="flow-card">
+      <h2>Lifecycle</h2>
+      <dl class="kv">
+        <div><dt>Status</dt><dd>{{ subscription.status_label }}</dd></div>
+        <div><dt>Trial started</dt><dd>{{ subscription.trial_started_at[:10] if subscription.trial_started_at else '—' }}</dd></div>
+        <div><dt>Trial ends</dt><dd>{{ subscription.trial_ends_at[:10] if subscription.trial_ends_at else '—' }}</dd></div>
+        <div><dt>Renewal</dt><dd>{{ subscription.renewal_at[:10] if subscription.renewal_at else '—' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="flow-card">
+      <h2>Entitlements</h2>
+      {% set e = subscription.entitlements %}
+      <dl class="kv">
+        <div><dt>Max users</dt><dd>{{ e.max_users or '—' }}</dd></div>
+        <div><dt>Companies</dt><dd>{{ e.max_companies or '—' }}</dd></div>
+        <div><dt>Branches</dt><dd>{{ e.max_branches or '—' }}</dd></div>
+        <div><dt>Filestore quota</dt><dd>{{ e.filestore_quota_mb or '—' }} MB</dd></div>
+        <div><dt>Storage usage</dt><dd>{{ e.filestore_usage_label }}</dd></div>
+        <div><dt>Backup</dt><dd>Every {{ e.backup_frequency_hours or '—' }}h · retain {{ e.backup_retention_days or '—' }}d</dd></div>
+        <div><dt>API access</dt><dd>{% if e.api_enabled %}Yes{% else %}No{% endif %}</dd></div>
+        <div><dt>Staging</dt><dd>{% if e.staging_enabled %}Yes{% else %}No{% endif %}</dd></div>
+        <div><dt>Support SLA</dt><dd>{{ e.support_sla|replace('_', ' ') }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="flow-card">
+      <h2>Application</h2>
+      {% if subscription.tenant %}
+        <p>Environment status: <span class="badge">{{ subscription.tenant.status_label }}</span></p>
+        <p><a href="/portal/tenants/{{ subscription.tenant.id }}">View environment details</a></p>
+      {% elif subscription.provisioning and subscription.provisioning.is_active %}
+        <p role="status">Provisioning in progress: {{ subscription.provisioning.step_label or subscription.provisioning.status_label }}</p>
+        <p><a href="/portal/provisioning/{{ subscription.provisioning.id }}">Track provisioning</a></p>
+      {% elif subscription.provisioning and subscription.provisioning.safe_error %}
+        <p class="muted" role="alert">{{ subscription.provisioning.safe_error }}</p>
+        {% if can_retry %}
+          <form method="post" action="/portal/subscriptions/{{ subscription.id }}/retry-provisioning">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="btn">Request reprovisioning</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <p class="muted">No environment provisioned yet.</p>
+      {% endif %}
+
+      {% if subscription.launch.can_launch and subscription.launch.launch_url %}
+        <p><a class="btn btn--primary" href="{{ subscription.launch.launch_url }}" target="_blank" rel="noopener">{{ subscription.launch.launch_message }}</a></p>
+      {% elif subscription.launch.launch_message %}
+        <p class="muted" role="status">{{ subscription.launch.launch_message }}</p>
+      {% endif %}
+    </section>
+  </main>
+</div>
+{% endblock %}

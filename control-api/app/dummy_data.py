@@ -655,12 +655,31 @@ def subscription_for_plan(plan_id: str | None) -> dict[str, Any]:
     return sub
 
 
-def get_pricing_context() -> dict[str, Any]:
+def get_pricing_hub_context() -> dict[str, Any]:
+    return {
+        "user": deepcopy(CURRENT_USER),
+        "page_title": "Pricing",
+    }
+
+
+def get_platform_pricing_context() -> dict[str, Any]:
     return {
         "user": deepcopy(CURRENT_USER),
         "plans": [deepcopy(p) for p in PLANS.values()],
-        "page_title": "Pricing",
+        "page_title": "Developer Platform plans",
     }
+
+
+def get_platform_landing_context() -> dict[str, Any]:
+    return {
+        "user": deepcopy(CURRENT_USER),
+        "page_title": "Developer Platform",
+    }
+
+
+def get_pricing_context() -> dict[str, Any]:
+    """Legacy alias — use get_platform_pricing_context for Developer Platform plans."""
+    return get_platform_pricing_context()
 
 
 def get_checkout_context(plan_id: str | None) -> dict[str, Any]:

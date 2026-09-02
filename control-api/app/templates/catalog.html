@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Business Solutions · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Business Solutions</h1>
+      <p>Ready-to-use vertical Odoo systems with Solution Packages that include hosting, backups, and entitlements.</p>
+    </div>
+
+    <div class="page-intro">
+      <p><span class="badge">Solution journey</span> Select a vertical, compare packages, start a demo trial — one subscription includes your tenant and infrastructure.</p>
+      <p class="muted">Building your own modules from GitHub? Use the <a href="/platform">Developer Platform</a> instead.</p>
+      <p class="muted"><span class="badge badge--warning">Demo data</span> Prices and trials shown for presentation unless labeled otherwise.</p>
+    </div>
+
+    <div class="solution-grid">
+      {% for solution in solutions %}
+        <article class="solution-card">
+          <h2><a href="/solutions/{{ solution.code }}">{{ solution.name }}</a>
+            {% if solution.is_demo %}<span class="badge badge--warning">Demo</span>{% endif %}
+          </h2>
+          <p class="muted">{{ solution.description }}</p>
+          <dl class="kv solution-card__meta">
+            <div><dt>Odoo</dt><dd>{{ solution.odoo_version }}</dd></div>
+          </dl>
+          <ul class="solution-card__packages plain-list">
+            {% for pkg in solution.packages if pkg.status == 'active' %}
+              <li>
+                <strong>{{ pkg.name }}</strong>
+                · {{ pkg.max_users }} users · {{ pkg.filestore_quota_mb }} MB
+                {% if pkg.is_demo %}<span class="badge badge--warning">Demo trial</span>{% endif %}
+              </li>
+            {% else %}
+              <li class="muted">No active packages</li>
+            {% endfor %}
+          </ul>
+          <div class="solution-card__cta">
+            <a class="btn btn--primary" href="/solutions/{{ solution.code }}">Compare packages</a>
+          </div>
+        </article>
+      {% else %}
+        <p class="muted">No solutions published yet.</p>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+{% endblock %}

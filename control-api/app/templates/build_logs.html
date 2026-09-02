@@ -7,27 +7,40 @@
         <div>
           <a class="crumb-mini" href="/project/{{ project.slug }}/build/{{ build.id }}">← Build #{{ build.number }}</a>
           <h1>Logs</h1>
-          <p class="muted">{{ project.name }} · {{ build.branch }} · {{ build.commit }}</p>
+          <p class="muted">{{ project.name }} · {{ build.branch }} · <code>{{ build.commit_full or build.commit }}</code></p>
+          {% if mock_build %}
+            <span class="badge badge--warning">Demo / Mock</span>
+          {% else %}
+            <span class="badge badge--success">Real build logs</span>
+          {% endif %}
         </div>
-        <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">Connect</a>
+        {% if build.is_running %}
+          <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">CONNECT</a>
+        {% endif %}
       </div>
 
       <nav class="content-tabs">
         <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}">Overview</a>
         <a class="content-tabs__tab is-active" href="/project/{{ project.slug }}/build/{{ build.id }}/logs">Logs</a>
-        <a class="content-tabs__tab" href="/project/{{ project.slug }}/backups">Backups</a>
-        <a class="content-tabs__tab" href="/project/{{ project.slug }}/settings">Settings</a>
+        <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">CONNECT</a>
       </nav>
 
       <section class="tab-body">
-        <div class="log-filters" id="log-filters">
-          <button type="button" class="btn is-filter-active" data-channel="all">All</button>
-          <button type="button" class="btn" data-channel="build">Build</button>
-          <button type="button" class="btn" data-channel="odoo">Odoo</button>
-          <button type="button" class="btn" data-channel="tests">Tests</button>
-        </div>
-        <pre class="terminal" id="log-terminal">{% for row in logs %}<div class="log-line" data-channel="{{ row.channel }}">[{{ row.ts }}] {{ row.line }}</div>
+        {% if real_log_text is defined and real_log_text %}
+          <pre class="terminal" id="log-terminal">{{ real_log_text }}</pre>
+          {% if build.status in ['queued','cloning','building','creating_database','starting_odoo','health_check'] %}
+            <script>setTimeout(function(){ location.reload(); }, 4000);</script>
+          {% endif %}
+        {% else %}
+          <div class="log-filters" id="log-filters">
+            <button type="button" class="btn is-filter-active" data-channel="all">All</button>
+            <button type="button" class="btn" data-channel="build">Build</button>
+            <button type="button" class="btn" data-channel="odoo">Odoo</button>
+            <button type="button" class="btn" data-channel="tests">Tests</button>
+          </div>
+          <pre class="terminal" id="log-terminal">{% for row in logs %}<div class="log-line" data-channel="{{ row.channel }}">[{{ row.ts }}] {{ row.line }}</div>
 {% endfor %}</pre>
+        {% endif %}
       </section>
     </div>
   </main>

@@ -1,0 +1,196 @@
+/* Helpers ERP / Business Sense Corporation — presentation theme */
+
+body.theme-helpers-erp {
+  --nav-bg: #3a3f46;
+  --nav-text: #f5f7fa;
+  --nav-muted: #c5ccd6;
+  --nav-active: #ffffff;
+  --sidebar-bg: #eef2f6;
+  --sidebar-border: #d5dde6;
+  --sidebar-active: #ffffff;
+  --main-bg: #eef3f7;
+  --panel-bg: #ffffff;
+  --text: #2f343a;
+  --text-muted: #5c6670;
+  --border: #d7dee6;
+  --accent: #0b7ec8;
+  --accent-soft: #2a96d8;
+  --success: #1f9d55;
+  --success-bg: #e6f7ed;
+  --warning: #d4a017;
+  --warning-bg: #fff8e6;
+  --danger: #c0392b;
+  --danger-bg: #fdecea;
+  --connect: #1f9d55;
+  --shadow: 0 1px 3px rgba(15, 40, 70, 0.08);
+  --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background:
+    radial-gradient(ellipse at top, #f5f9fc 0%, var(--main-bg) 55%),
+    var(--main-bg);
+}
+
+body.theme-helpers-erp .top-nav,
+body.theme-helpers-erp .projects-topbar {
+  background: var(--nav-bg);
+  border-bottom-color: #2c3138;
+}
+
+body.theme-helpers-erp .btn-hero--primary,
+body.theme-helpers-erp .mkt-nav__cta,
+body.theme-helpers-erp .projects-topbar__cta {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+body.theme-helpers-erp .btn-hero--primary:hover,
+body.theme-helpers-erp .mkt-nav__cta:hover {
+  background: var(--accent-soft);
+}
+
+body.theme-helpers-erp .tone--valid,
+body.theme-helpers-erp .badge--success {
+  color: #0f6b3c;
+}
+
+/* Brand mark in nav */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-mark__logo {
+  width: 28px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-mark__logo--lg {
+  width: 42px;
+  height: 32px;
+}
+
+.brand-mark__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-mark__product {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-mark__powered {
+  font-size: 10px;
+  opacity: 0.75;
+  font-weight: 400;
+}
+
+.helpers-pill {
+  display: inline-block;
+  padding: 0.35rem 1.1rem;
+  border-radius: 999px;
+  background: #3a3f46;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.prepared-for {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(11, 126, 200, 0.1);
+  color: #0b5f96;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.helpers-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.helpers-modules span {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 11px;
+}
+
+body.theme-helpers-erp .hero {
+  background: linear-gradient(180deg, #d9e8f2 0%, #eef3f7 70%);
+}
+
+body.theme-helpers-erp .hero__bg {
+  opacity: 0.35;
+}
+
+body.theme-helpers-erp .hero__title {
+  color: #24303a;
+}
+
+body.theme-helpers-erp .hero__subtitle {
+  color: #3d4a57;
+}
+
+body.theme-helpers-erp .hero__eyebrow {
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+body.theme-helpers-erp .features {
+  background: #f7fafc;
+}
+
+body.theme-helpers-erp .feature-card {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+body.theme-helpers-erp .projects-banner,
+body.theme-helpers-erp .projects-toolbar__title {
+  color: var(--text);
+}
+
+.client-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 0 0 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.client-context__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.client-context__name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.client-context__product {
+  color: var(--accent);
+  font-weight: 600;
+}

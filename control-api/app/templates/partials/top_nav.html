@@ -1,6 +1,11 @@
 <header class="top-nav">
   <nav class="top-nav__left" aria-label="Primary">
-    <a class="top-nav__brand" href="/" title="Mock Odoo.sh home">Mock Odoo.sh</a>
+    <a class="top-nav__brand brand-mark" href="/" title="{{ brand.product_name }}">
+      {% if brand.logo_mark %}
+        <img class="brand-mark__logo" src="{{ brand.logo_mark }}" alt="">
+      {% endif %}
+      <span>{{ brand.short_name }}</span>
+    </a>
     {% for item in nav_items %}
       <a
         class="top-nav__link{% if active_nav == item.id %} is-active{% endif %}"
@@ -33,5 +38,6 @@
       <span class="avatar avatar--sm">{{ (project.user.initials if project.user is defined else user.initials) }}</span>
       <span class="top-nav__user-name">{{ (project.user.name if project.user is defined else user.display_name) }}</span>
     </div>
+    <a class="top-nav__link top-nav__link--muted" href="/logout">Logout</a>
   </div>
 </header>

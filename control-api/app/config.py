@@ -1,0 +1,118 @@
+from __future__ import annotations
+
+from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+    app_name: str = "Mock Odoo.sh"
+    app_env: str = "development"
+    database_url: str = "sqlite:////data/control.db"
+    session_secret: str = "change-me-in-production-please-use-long-random"
+    github_client_id: str = ""
+    github_client_secret: str = ""
+    github_callback_url: str = "http://localhost:8000/auth/github/callback"
+    # Scopes: identity + repo list (includes private repos the user can access).
+    github_oauth_scopes: str = "read:user user:email repo"
+    demo_subscription_code: str = "MOSH-2026-ABCD-1234"
+    base_dir: Path = Path(__file__).resolve().parent
+
+    # --- Build engine (FIRST_REAL_ODOO_BUILD_ENGINE) ---
+    build_root: str = "/data/builds"
+    # Host path for Docker bind mounts when control-api runs in a container.
+    # Docker daemon resolves volume sources on the host, not inside control-api.
+    build_host_root: str = "/opt/projects/active/odoo-sh-local-mock/data/builds"
+    build_port_min: int = 8101
+    # Cap at 8198: host already uses 8199 (unrelated service).
+    build_port_max: int = 8198
+    build_postgres_host: str = "build-postgres"
+    build_postgres_port: int = 5432
+    # Prototype: admin role creates DBs; runtime role is used by Odoo containers.
+    build_postgres_admin_user: str = "mosh_admin"
+    build_postgres_admin_password: str = "change-me-build-pg-admin"
+    build_postgres_user: str = "mosh_odoo"
+    build_postgres_password: str = "change-me-build-pg-odoo"
+    odoo19_image: str = "odoo:19.0"
+    odoo18_image: str = "odoo:18.0"
+    odoo17_image: str = "odoo:17.0"
+    build_docker_network: str = "odoo-sh-local-mock_default"
+    build_container_memory: str = "1536m"
+    build_container_nano_cpus: int = 1_000_000_000  # 1 CPU
+    build_health_timeout_sec: int = 180
+    build_edition: str = "community"
+
+    # --- Webhooks / lifecycle (REAL_BUILD_LIFECYCLE_AND_GITHUB_WEBHOOKS) ---
+    github_webhook_secret: str = ""
+    github_webhook_public_url: str = ""
+    max_concurrent_builds: int = 2
+
+    # --- Demo presentation branding ---
+    # default | helpers_erp
+    demo_theme: str = "default"
+
+    # Comma-separated GitHub logins allowed for operator portal (REQUIRED for operator access).
+    # Empty/missing = fail closed (no operator privileges).
+    operator_github_logins: str = ""
+
+    # --- Phase 8 tenant provisioning ---
+    tenant_root: str = "/data/tenants"
+    tenant_host_root: str = "/opt/projects/active/odoo-sh-local-mock/data/tenants"
+    tenant_port_min: int = 8201
+    tenant_port_max: int = 8298
+    template_db_prefix: str = "mosh_tpl_"
+    tenant_db_prefix: str = "mosh_tnt_"
+    provisioning_max_attempts: int = 3
+    provisioning_worker_poll_sec: int = 5
+    provisioning_worker_id: str = "provisioning-worker-1"
+    provisioning_heartbeat_path: str = "/data/provisioning_worker_heartbeat.json"
+
+    # --- Phase 9 customer portal ---
+    # Future public tenant base (Phase 12). Example: https://apps.example.com
+    tenant_public_base_url: str = ""
+    # Allow localhost internal URLs only when request is from local/dev context.
+    tenant_allow_localhost_launch: bool = True
+
+    # --- Phase 10 backup / restore / quotas ---
+    backup_root: str = "/data/backups"
+    backup_host_root: str = "/opt/projects/active/odoo-sh-local-mock/data/backups"
+    backup_max_attempts: int = 3
+    backup_worker_poll_sec: int = 10
+    backup_worker_id: str = "backup-worker-1"
+    backup_heartbeat_path: str = "/data/backup_worker_heartbeat.json"
+    backup_stale_job_minutes: int = 120
+    # Optional authenticated encryption key (never log or expose). Empty = permissions-only at rest.
+    backup_encryption_key: str = ""
+    quota_warning_threshold: float = 0.8
+    metering_interval_sec: int = 3600
+    backup_schedule_retry_minutes: int = 15
+
+    # --- Developer Platform Quick Deploy (DP3–DP5) ---
+    platform_quick_deploy_enabled: bool = True
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+def operator_logins() -> set[str]:
+    settings = get_settings()
+    if not settings.operator_github_logins.strip():
+        return set()
+    return {x.strip().lower() for x in settings.operator_github_logins.split(",") if x.strip()}
+
+
+def odoo_image_for_version(version: str) -> str:
+    settings = get_settings()
+    major = (version or "19.0").split(".")[0]
+    if major == "19":
+        return settings.odoo19_image
+    if major == "18":
+        return settings.odoo18_image
+    if major == "17":
+        return settings.odoo17_image
+    return settings.odoo19_image

@@ -1,9 +1,13 @@
-<article class="project-card" data-project-name="{{ project.name|lower }}">
+<article class="project-card" data-project-name="{{ (project.display_name or project.name)|lower }}">
   <header class="project-card__head">
     <h2 class="project-card__name">
-      <a href="/project/{{ project.slug }}/branches" title="Open branches">{{ project.name }}</a>
+      <a href="/project/{{ project.slug }}/branches" title="Open branches">{{ project.display_name or project.name }}</a>
     </h2>
-    <button type="button" class="project-card__menu" title="More (placeholder)" aria-label="More">⋮</button>
+    {% if brand is defined and brand.theme_id == 'helpers_erp' and project.slug == 'mosh-odoo19-hello' %}
+      <span class="badge badge--success" title="Primary client demo project">Live Demo</span>
+    {% else %}
+      <button type="button" class="project-card__menu" title="More (placeholder)" aria-label="More">⋮</button>
+    {% endif %}
   </header>
 
   <dl class="project-card__rows">

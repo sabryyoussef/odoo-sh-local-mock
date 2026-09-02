@@ -8,14 +8,32 @@
   </div>
 
   <div class="hero__content">
-    <p class="hero__eyebrow">Local developer platform mock</p>
-    <h1 class="hero__title">Mock Odoo.sh</h1>
-    <p class="hero__subtitle">The Odoo Cloud Platform Mock</p>
-    <p class="hero__pipeline">Development → Staging → Deployment</p>
+    {% if brand.theme_id == 'helpers_erp' %}
+      <p class="hero__eyebrow">{{ brand.prepared_for }}</p>
+      <p class="helpers-pill" aria-label="Helpers ERP">Helpers ERP</p>
+      <h1 class="hero__title">{{ brand.product_name }}</h1>
+      <p class="hero__subtitle">{{ brand.tagline }}</p>
+      <p class="hero__pipeline">Branch builds · Real Odoo runtime · Controlled delivery</p>
+      {% if brand.modules %}
+        <div class="helpers-modules" aria-label="ERP modules">
+          {% for m in brand.modules %}
+            <span>{{ m }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <p class="hero__eyebrow">Local developer platform mock</p>
+      <h1 class="hero__title">{{ brand.product_name }}</h1>
+      <p class="hero__subtitle">{{ brand.tagline }}</p>
+      <p class="hero__pipeline">Development → Staging → Deployment</p>
+    {% endif %}
     <div class="hero__actions">
-      <a class="btn-hero btn-hero--primary" href="/login">Deploy Your Platform</a>
-      <a class="btn-hero btn-hero--secondary" href="/pricing">View Pricing</a>
-      <a class="btn-hero btn-hero--secondary" href="/projects">Open Projects</a>
+      <a class="btn-hero btn-hero--primary" href="/solutions">Browse Solutions</a>
+      <a class="btn-hero btn-hero--secondary" href="/platform">Developer Platform</a>
+      <a class="btn-hero btn-hero--secondary" href="/pricing">Pricing</a>
     </div>
+    {% if brand.powered_by %}
+      <p class="prepared-for">{{ brand.powered_by }}</p>
+    {% endif %}
   </div>
 </section>

@@ -88,13 +88,14 @@
     window.__historyHtml = tabBody.innerHTML;
   }
 
-  // Deploy wizard subscription validation
+  // Deploy wizard — backend subscription validation
   const validateBtn = document.getElementById("validate-sub");
   const codeInput = document.getElementById("subscription-code");
   const subResult = document.getElementById("sub-result");
-  const validCodeEl = document.getElementById("sub-valid-code");
   const deploySubmit = document.getElementById("deploy-submit");
   const sumSub = document.getElementById("sum-sub");
+  const deployRepo = document.getElementById("deploy-repo");
+  const deployName = document.getElementById("deploy-name");
   let subscriptionOk = false;
 
   function syncSummary() {
@@ -108,6 +109,14 @@
     if (document.getElementById("sum-location") && location) document.getElementById("sum-location").textContent = location.value;
   }
 
+  if (deployRepo && deployName) {
+    deployRepo.addEventListener("change", () => {
+      const opt = deployRepo.selectedOptions[0];
+      if (opt && opt.dataset.name) deployName.value = opt.dataset.name;
+      syncSummary();
+    });
+  }
+
   ["deploy-repo", "deploy-name", "deploy-version", "deploy-location"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", syncSummary);
@@ -115,31 +124,55 @@
   });
   syncSummary();
 
-  if (validateBtn && codeInput && subResult && validCodeEl) {
-    validateBtn.addEventListener("click", () => {
-      const expected = (validCodeEl.value || "").trim();
-      const entered = (codeInput.value || "").trim();
-      subResult.hidden = false;
-      if (entered === expected) {
+  async function validateSubscription() {
+    if (!codeInput || !subResult) return false;
+    const code = (codeInput.value || "").trim();
+    const versionEl = document.getElementById("deploy-version");
+    const odooVersion = versionEl ? versionEl.value : null;
+    subResult.hidden = false;
+    subResult.className = "sub-result";
+    subResult.textContent = "Validating…";
+    try {
+      const resp = await fetch("/api/subscriptions/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, odoo_version: odooVersion }),
+      });
+      const data = await resp.json();
+      if (data.valid && data.subscription) {
         subscriptionOk = true;
+        const s = data.subscription;
         subResult.className = "sub-result sub-result--ok";
         subResult.innerHTML = `
           <strong>Subscription Status: Valid</strong>
-          <div>Plan: ${subResult.dataset.plan}</div>
-          <div>Code: ${subResult.dataset.code}</div>
-          <div>Expires: ${subResult.dataset.expires}</div>
-          <div>Projects allowed: ${subResult.dataset.allowed}</div>
-          <div>Projects used: ${subResult.dataset.used}</div>
-          <div>Odoo versions: ${subResult.dataset.versions}</div>
+          <div>Plan: ${s.plan}</div>
+          <div>Status: ${s.status}</div>
+          <div>Code: ${s.code}</div>
+          <div>Expires: ${s.expires || "—"}</div>
+          <div>Projects allowed: ${s.projects_allowed}</div>
+          <div>Allowed versions: ${s.odoo_versions}</div>
         `;
-        if (sumSub) sumSub.textContent = `${subResult.dataset.code} · Valid`;
+        if (sumSub) sumSub.textContent = `${s.code} · Valid`;
       } else {
         subscriptionOk = false;
         subResult.className = "sub-result sub-result--bad";
-        subResult.innerHTML = `<strong>Subscription not recognized</strong><div>Enter ${expected} for the demo.</div>`;
+        subResult.innerHTML = `<strong>${data.message || "Subscription not recognized"}</strong>`;
         if (sumSub) sumSub.textContent = "Not validated";
       }
-      if (deploySubmit) deploySubmit.disabled = !subscriptionOk;
+    } catch (_) {
+      subscriptionOk = false;
+      subResult.className = "sub-result sub-result--bad";
+      subResult.innerHTML = "<strong>Could not validate subscription</strong>";
+    }
+    if (deploySubmit && deployRepo && deployRepo.options.length && deployRepo.value) {
+      deploySubmit.disabled = !subscriptionOk;
+    }
+    return subscriptionOk;
+  }
+
+  if (validateBtn && codeInput && subResult) {
+    validateBtn.addEventListener("click", () => {
+      validateSubscription();
     });
     codeInput.addEventListener("input", () => {
       subscriptionOk = false;
@@ -150,38 +183,40 @@
 
   const deployForm = document.getElementById("deploy-form");
   if (deployForm) {
-    deployForm.addEventListener("submit", (e) => {
-      if (!subscriptionOk) {
-        e.preventDefault();
-        if (validateBtn) validateBtn.click();
-        if (!subscriptionOk) e.preventDefault();
-      }
+    deployForm.addEventListener("submit", async (e) => {
+      if (subscriptionOk) return;
+      e.preventDefault();
+      const ok = await validateSubscription();
+      if (ok) deployForm.submit();
     });
   }
 
-  // Deploy progress animation
+  // Deploy progress animation (skip when server already marked complete)
   const progressList = document.getElementById("progress-list");
   const progressFill = document.getElementById("progress-fill");
   const progressTitle = document.getElementById("progress-title");
   const progressStatus = document.getElementById("progress-status");
   const completeCard = document.getElementById("complete-card");
-  if (progressList && progressFill) {
+  const alreadyDone =
+    progressList &&
+    progressList.querySelectorAll(".progress-item.is-done").length ===
+      progressList.querySelectorAll(".progress-item").length &&
+    progressList.querySelectorAll(".progress-item").length > 0;
+  if (progressList && progressFill && !alreadyDone && completeCard && completeCard.hidden) {
     const items = Array.from(progressList.querySelectorAll(".progress-item"));
     const messages = [
-      "Connecting repository...",
-      "Validating configuration...",
-      "Creating project...",
-      "Detecting branches...",
-      "Preparing environments...",
-      "Finalizing platform...",
-      "Almost done...",
-      "Deployment complete",
+      "Verifying GitHub identity...",
+      "Validating repository...",
+      "Validating subscription...",
+      "Saving project...",
+      "Synchronizing branches...",
+      "Project ready",
     ];
     let i = 0;
     const tick = () => {
       if (i >= items.length) {
-        if (progressTitle) progressTitle.textContent = "Deployment Complete";
-        if (progressStatus) progressStatus.textContent = "Your mock platform is ready.";
+        if (progressTitle) progressTitle.textContent = "Project Ready";
+        if (progressStatus) progressStatus.textContent = "Project saved — no Odoo runtime started.";
         if (completeCard) completeCard.hidden = false;
         progressFill.style.width = "100%";
         return;
@@ -192,9 +227,9 @@
       if (progressStatus) progressStatus.textContent = messages[Math.min(i, messages.length - 1)];
       progressFill.style.width = `${((i + 1) / items.length) * 100}%`;
       i += 1;
-      setTimeout(tick, 550);
+      setTimeout(tick, 400);
     };
-    setTimeout(tick, 400);
+    setTimeout(tick, 200);
   }
 
   // Log filters

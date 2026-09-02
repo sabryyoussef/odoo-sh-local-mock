@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Operator · Backups{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main">
+    <div class="flow-header">
+      <h1>Operator · Backups &amp; Restore</h1>
+      <p>Monitor backup jobs, retention, metering, and restore operations.</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/operator/tenants">Tenants</a>
+        <a class="btn" href="/operator/provisioning">Provisioning</a>
+        <button type="button" class="btn" onclick="fetch('/api/operator/backups/reconcile',{method:'POST',credentials:'same-origin'}).then(r=>r.json()).then(d=>alert('Reconciled: '+d.reconciled))">Reconcile stale</button>
+        <button type="button" class="btn" onclick="fetch('/api/operator/retention/dry-run',{method:'POST',credentials:'same-origin'}).then(r=>r.json()).then(d=>alert(JSON.stringify(d.candidates)))">Retention dry-run</button>
+      </div>
+    </div>
+
+    <section class="flow-card">
+      <h2>Tenant quota states</h2>
+      <table class="data-table">
+        <thead><tr><th>Code</th><th>Status</th><th>Quota</th><th>Metering</th><th>Users</th></tr></thead>
+        <tbody>
+          {% for t in tenants %}
+          <tr>
+            <td>{{ t.tenant_code }}</td>
+            <td>{{ t.status }}</td>
+            <td>{{ t.quota_state }}</td>
+            <td>{{ t.metering_status }}</td>
+            <td>{{ t.active_users if t.active_users is not none else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Backups</h2>
+      <table class="data-table">
+        <thead><tr><th>UUID</th><th>Tenant</th><th>Type</th><th>Status</th><th>Bytes</th><th>Expires</th></tr></thead>
+        <tbody>
+          {% for b in backups %}
+          <tr>
+            <td><code>{{ b.backup_uuid[:8] }}…</code></td>
+            <td>{{ b.tenant_code or b.tenant_id }}</td>
+            <td>{{ b.backup_type }}</td>
+            <td>{{ b.status }}</td>
+            <td>{{ b.total_bytes }}</td>
+            <td>{{ b.expires_at[:10] if b.expires_at else '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="muted">No backups yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Restore jobs</h2>
+      <table class="data-table">
+        <thead><tr><th>UUID</th><th>Mode</th><th>Status</th><th>Backup</th><th>Target tenant</th></tr></thead>
+        <tbody>
+          {% for r in restores %}
+          <tr>
+            <td><code>{{ r.restore_uuid[:8] }}…</code></td>
+            <td>{{ r.restore_mode }}</td>
+            <td>{{ r.status }}</td>
+            <td>{{ r.source_backup_id }}</td>
+            <td>{{ r.target_tenant_id or '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="muted">No restore jobs.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="muted">In-place restore is disabled until additional safety gates are met. Clone restore is the default.</p>
+    </section>
+  </main>
+</div>
+{% endblock %}

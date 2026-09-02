@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs · Mock Odoo.sh{% endblock %}
+{% block shell %}
+  <main class="main-panel main-panel--fullish">
+    <div class="build-page">
+      <div class="build-header">
+        <div>
+          <a class="crumb-mini" href="/projects">← Projects</a>
+          <h1>Audit Logs</h1>
+          <p class="muted">GitHub webhook deliveries and build lifecycle events.</p>
+        </div>
+      </div>
+
+      <section class="tab-body">
+        <h2 class="section-title">Recent events</h2>
+        <table class="data-table">
+          <thead>
+            <tr><th>When</th><th>Type</th><th>Actor</th><th>Message</th><th>Build</th></tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+              <tr>
+                <td>{{ e.created_at }}</td>
+                <td><code>{{ e.event_type }}</code></td>
+                <td>{{ e.actor or '—' }}</td>
+                <td>{{ e.message }}</td>
+                <td>{% if e.build_id %}{{ e.build_id }}{% else %}—{% endif %}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="muted">No audit events yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h2 class="section-title" style="margin-top:28px">Webhook deliveries</h2>
+        <table class="data-table">
+          <thead>
+            <tr><th>Received</th><th>Delivery</th><th>Event</th><th>Repo</th><th>Branch</th><th>SHA</th><th>Action</th><th>Build</th></tr>
+          </thead>
+          <tbody>
+            {% for d in deliveries %}
+              <tr>
+                <td>{{ d.received_at }}</td>
+                <td><code>{{ d.delivery_id[:12] }}…</code></td>
+                <td>{{ d.event }}</td>
+                <td>{{ d.repository_full_name or '—' }}</td>
+                <td>{{ d.branch_name or '—' }}</td>
+                <td><code>{% if d.commit_sha %}{{ d.commit_sha[:7] }}{% else %}—{% endif %}</code></td>
+                <td>{{ d.action or d.status }}</td>
+                <td>{% if d.build_id %}{{ d.build_id }}{% else %}—{% endif %}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="8" class="muted">No webhook deliveries yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+{% endblock %}

@@ -9,22 +9,37 @@
   <main class="flow-main">
     <div class="flow-header">
       <h1>Deploy Project</h1>
-      <p>Configure your GitHub repository and subscription to create a Mock Odoo.sh project.</p>
+      <p>Select a real GitHub repository, validate your subscription, and create a persistent project.</p>
     </div>
 
-    <form class="deploy-form" id="deploy-form" action="/deploy/progress" method="get">
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+    {% if github_error %}
+      <div class="sub-result sub-result--bad">{{ github_error }}</div>
+    {% endif %}
+
+    <form class="deploy-form" id="deploy-form" action="/deploy" method="post">
       <section class="flow-card">
-        <h2>GitHub Repository</h2>
+        <h2>GitHub Repository {% if real_repos %}<span class="badge badge--success">Real</span>{% endif %}</h2>
         <div class="seg">
           <label class="seg__opt is-active"><input type="radio" name="repo_mode" value="existing" checked> Existing Repository</label>
-          <label class="seg__opt"><input type="radio" name="repo_mode" value="new"> New Repository</label>
+          <label class="seg__opt"><input type="radio" name="repo_mode" value="new" disabled> New Repository (later)</label>
         </div>
         <label class="field">
           <span>Repository</span>
-          <select name="repository" id="deploy-repo">
-            {% for repo in repos %}
-              <option value="{{ repo.full_name }}" {% if repo.full_name == default_repo %}selected{% endif %}>{{ repo.full_name }}</option>
-            {% endfor %}
+          <select name="repository" id="deploy-repo" required>
+            {% if repos %}
+              {% for repo in repos %}
+                <option value="{{ repo.full_name }}"
+                        data-name="{{ repo.name }}"
+                        {% if repo.full_name == default_repo %}selected{% endif %}>
+                  {{ repo.full_name }}{% if repo.private %} (private){% endif %}
+                </option>
+              {% endfor %}
+            {% else %}
+              <option value="">No repositories available</option>
+            {% endif %}
           </select>
         </label>
       </section>
@@ -33,7 +48,7 @@
         <h2>Project</h2>
         <label class="field">
           <span>Project Name</span>
-          <input type="text" name="project_name" id="deploy-name" value="{{ default_project }}">
+          <input type="text" name="project_name" id="deploy-name" value="{{ default_project }}" required>
         </label>
         <label class="field">
           <span>Odoo Version</span>
@@ -54,28 +69,23 @@
       </section>
 
       <section class="flow-card">
-        <h2>Subscription Code</h2>
+        <h2>Subscription Code <span class="badge badge--warning">Demo Billing</span></h2>
         <div class="field-row">
           <label class="field field--grow">
             <span>Code</span>
-            <input type="text" name="subscription_code" id="subscription-code" value="{{ prefill_code }}" autocomplete="off">
+            <input type="text" name="subscription_code" id="subscription-code" value="{{ prefill_code }}" autocomplete="off" required>
           </label>
           <button type="button" class="btn-hero btn-hero--primary" id="validate-sub">Validate</button>
         </div>
-        <div id="sub-result" class="sub-result" hidden
-             data-plan="{{ subscription.plan }}"
-             data-code="{{ subscription.code }}"
-             data-expires="{{ subscription.expires }}"
-             data-allowed="{{ subscription.projects_allowed }}"
-             data-used="{{ subscription.projects_used }}"
-             data-versions="{{ subscription.odoo_versions }}"></div>
+        <div id="sub-result" class="sub-result" hidden></div>
         <input type="hidden" id="sub-valid-code" value="{{ valid_code }}">
       </section>
 
       <section class="flow-card">
         <h2>Environment Defaults</h2>
         <dl class="kv">
-          <div><dt>Production branch</dt><dd>main</dd></div>
+          <div><dt>Default branch</dt><dd>main / master (classified as production label)</dd></div>
+          <div><dt>Note</dt><dd class="muted">Builds are isolated — not persistent production DB continuity</dd></div>
           <div><dt>Staging branch</dt><dd>staging</dd></div>
           <div><dt>Other branches</dt><dd>Development</dd></div>
         </dl>
@@ -94,7 +104,7 @@
 
       <div class="flow-actions">
         <a class="btn" href="/projects">Cancel</a>
-        <button type="submit" class="btn-hero btn-hero--primary" id="deploy-submit" disabled>Deploy Platform</button>
+        <button type="submit" class="btn-hero btn-hero--primary" id="deploy-submit" {% if not repos %}disabled{% endif %}>Create Project</button>
       </div>
     </form>
   </main>

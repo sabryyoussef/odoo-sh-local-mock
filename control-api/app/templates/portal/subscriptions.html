@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Subscriptions · Portal{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Subscriptions</h1>
+      <p><a href="/portal">← Portal home</a></p>
+    </div>
+    <table class="data-table" role="table">
+      <thead>
+        <tr><th>Solution</th><th>Package</th><th>Status</th><th>Trial ends</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for sub in subscriptions %}
+          <tr>
+            <td>{{ sub.solution_name }}</td>
+            <td>{{ sub.package_name }}{% if sub.is_demo %} (demo){% endif %}</td>
+            <td><span class="badge">{{ sub.status_label }}</span></td>
+            <td>{{ sub.trial_ends_at[:10] if sub.trial_ends_at else '—' }}</td>
+            <td><a href="/portal/subscriptions/{{ sub.id }}">Open</a></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" class="muted">No subscriptions.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</div>
+{% endblock %}

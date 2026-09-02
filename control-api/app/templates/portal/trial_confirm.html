@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Confirm demo trial{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Confirm demo trial</h1>
+      <p class="badge badge--warning">Demo trial — not a real payment or production subscription</p>
+    </div>
+    <section class="flow-card">
+      <h2>{{ solution.name }}</h2>
+      <p>Package: <strong>{{ package.name }}</strong> ({{ package.trial_days }}-day demo trial)</p>
+      <dl class="kv">
+        <div><dt>Users</dt><dd>Up to {{ package.max_users }}</dd></div>
+        <div><dt>Filestore</dt><dd>{{ package.filestore_quota_mb }} MB</dd></div>
+        <div><dt>Support</dt><dd>{{ package.support_sla|replace('_', ' ') }}</dd></div>
+      </dl>
+      <p class="muted">Starting a trial will queue provisioning of an isolated Odoo environment. This may take a few minutes.</p>
+      <form method="post" action="/portal/trial/start">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="solution_id" value="{{ solution.id }}">
+        <input type="hidden" name="package_id" value="{{ package.id }}">
+        <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+        <label class="field">
+          <span><input type="checkbox" name="confirm" value="1" required> I understand this is a demo trial with no payment.</span>
+        </label>
+        <button type="submit" class="btn btn--primary">Start demo trial &amp; provision</button>
+        <a class="btn" href="/catalog/{{ solution.code }}">Cancel</a>
+      </form>
+    </section>
+  </main>
+</div>
+{% endblock %}

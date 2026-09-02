@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Pricing · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header" style="text-align:center">
+      <h1>Choose how you want to get started</h1>
+      <p>Two independent paths — pick the journey that matches your needs.</p>
+      <p class="muted">
+        <strong>Business Solution packages already include hosting.</strong>
+        You do not need a separate Developer Platform subscription.
+      </p>
+      <p><span class="badge badge--warning">{{ brand.badge_demo if brand is defined else 'Demo Billing' }}</span> <span class="muted">Presentation pricing only — no real charge will occur.</span></p>
+    </div>
+
+    <div class="pricing-grid">
+      <article class="flow-card">
+        <h2>Business Solutions</h2>
+        <p class="muted">Ready-to-use business systems with infrastructure included.</p>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Veterinary Clinic</li>
+          <li><span class="check">✓</span> Hospital Management (HMS)</li>
+          <li><span class="check">✓</span> School Information System (SIS)</li>
+          <li><span class="check">✓</span> Solution Packages with users, storage, backups, and environments</li>
+        </ul>
+        <a class="btn-hero btn-hero--primary pricing-cta" href="/solutions">Browse Solutions</a>
+      </article>
+
+      <article class="flow-card">
+        <h2>Developer Platform</h2>
+        <p class="muted">Host and manage your own GitHub-backed Odoo projects.</p>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Odoo.sh-style builds, branches, and logs</li>
+          <li><span class="check">✓</span> Development, staging, and production environments</li>
+          <li><span class="check">✓</span> GitHub integration and project workflows</li>
+        </ul>
+        <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="/platform/pricing">View Developer Plans</a>
+      </article>
+    </div>
+  </main>
+</div>
+{% endblock %}

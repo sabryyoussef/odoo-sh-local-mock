@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Operator · Solutions{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main">
+    <div class="flow-header">
+      <h1>Operator · Solution Catalog</h1>
+      <p>Manage commercial solutions and packages. Developer Git/build controls remain under Projects.</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/catalog">Public catalog</a>
+        <a class="btn" href="/operator/tenants">Tenants &amp; foundations</a>
+        <a class="btn" href="/operator/platform">Platform catalog</a>
+        <a class="btn" href="/projects">Developer projects</a>
+      </div>
+    </div>
+
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+
+    {% for solution in solutions %}
+      <section class="flow-card" style="margin-bottom:16px">
+        <h2>{{ solution.name }} <code>{{ solution.code }}</code>
+          {% if solution.is_demo %}<span class="badge badge--warning">Demo</span>{% endif %}
+        </h2>
+        <p class="muted">{{ solution.description }}</p>
+        <dl class="kv">
+          <div><dt>Odoo</dt><dd>{{ solution.odoo_version }}</dd></div>
+          <div><dt>GitHub</dt><dd>{{ solution.github_full_name or '—' }}</dd></div>
+          <div><dt>Status</dt><dd>{{ solution.status }}</dd></div>
+        </dl>
+        <h3>Packages</h3>
+        <ul class="plain-list">
+          {% for pkg in solution.packages %}
+            <li><strong>{{ pkg.name }}</strong> ({{ pkg.code }}) — users {{ pkg.max_users }}, staging {% if pkg.staging_enabled %}yes{% else %}no{% endif %}</li>
+          {% else %}
+            <li class="muted">No packages</li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endfor %}
+
+    <section class="flow-card">
+      <h2>Create Solution</h2>
+      <form method="post" action="/operator/solutions/create" class="deploy-form">
+        <label class="field"><span>Name</span><input name="name" required></label>
+        <label class="field"><span>Code</span><input name="code" required placeholder="my-solution"></label>
+        <label class="field"><span>Description</span><textarea name="description" rows="2"></textarea></label>
+        <label class="field"><span>Odoo version</span><input name="odoo_version" value="19.0"></label>
+        <label class="field"><span>GitHub repo</span><input name="github_full_name" placeholder="owner/repo"></label>
+        <label class="field"><span>Required modules (comma-separated)</span><input name="required_modules" placeholder="base,mail,account"></label>
+        <label class="field"><span>Optional modules</span><input name="optional_modules"></label>
+        <button type="submit" class="btn-hero btn-hero--primary">Create Solution</button>
+      </form>
+    </section>
+
+    <section class="flow-card">
+      <h2>Create Package</h2>
+      <form method="post" action="/operator/packages/create" class="deploy-form">
+        <label class="field"><span>Solution</span>
+          <select name="solution_id" required>
+            {% for solution in solutions %}
+              <option value="{{ solution.id }}">{{ solution.name }} ({{ solution.code }})</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="field"><span>Name</span><input name="name" required></label>
+        <label class="field"><span>Code</span><input name="code" required></label>
+        <label class="field"><span>Description</span><textarea name="description" rows="2"></textarea></label>
+        <label class="field"><span>Max users</span><input name="max_users" type="number" value="5"></label>
+        <label class="field"><span>Max branches</span><input name="max_branches" type="number" value="3"></label>
+        <label class="field"><span>Filestore quota (MB)</span><input name="filestore_quota_mb" type="number" value="5120"></label>
+        <label class="field"><span>Backup frequency (hours)</span><input name="backup_frequency_hours" type="number" value="24"></label>
+        <label class="field"><span>Backup retention (days)</span><input name="backup_retention_days" type="number" value="7"></label>
+        <label class="field"><span>Enabled modules</span><input name="enabled_modules" placeholder="base,mail"></label>
+        <label class="field"><span>Enabled features</span><input name="enabled_features"></label>
+        <label class="field"><span><input type="checkbox" name="staging_enabled" value="1"> Staging entitlement</span></label>
+        <label class="field"><span><input type="checkbox" name="api_enabled" value="1"> API entitlement</span></label>
+        <button type="submit" class="btn-hero btn-hero--primary">Create Package</button>
+      </form>
+    </section>
+  </main>
+</div>
+{% endblock %}

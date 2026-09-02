@@ -6,41 +6,24 @@
       <div class="build-header">
         <div>
           <a class="crumb-mini" href="/project/{{ project.slug }}/branches">← Branches</a>
-          <h1>Backups</h1>
+          <h1>Backups <span class="badge badge--warning">{{ brand.badge_coming_soon if brand is defined else 'Coming Soon' }}</span></h1>
           <p class="muted">{{ project.name }}</p>
         </div>
         <a class="btn" href="/project/{{ project.slug }}/settings">Settings</a>
       </div>
 
       <section class="tab-body">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Created</th>
-              <th>Environment</th>
-              <th>Database</th>
-              <th>Size</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for backup in backups %}
-              <tr>
-                <td>{{ backup.created_at }}</td>
-                <td>{{ backup.environment }}</td>
-                <td>{{ backup.database }}</td>
-                <td>{{ backup.size }}</td>
-                <td><span class="tone tone--valid">{{ backup.status }}</span></td>
-                <td class="table-actions">
-                  <button type="button" class="btn btn--sm" title="Placeholder">Restore</button>
-                  <button type="button" class="btn btn--sm" title="Placeholder">Download</button>
-                  <button type="button" class="btn btn--sm" title="Placeholder">Clone to Staging</button>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        {% if flash %}
+          <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+        {% endif %}
+        <div class="flow-card" style="max-width:560px">
+          <h2>Not enabled in this demo</h2>
+          <p class="muted">
+            Production backup and restore are not implemented yet.
+            Current builds use isolated PostgreSQL databases per build — not a persistent production environment.
+          </p>
+          <p class="muted">See the master plan Phase 8 (Backup / Restore Engine).</p>
+        </div>
       </section>
     </div>
   </main>

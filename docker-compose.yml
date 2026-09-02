@@ -6,7 +6,133 @@ services:
       - "8000:8000"
     volumes:
       - ./control-api/app:/app/app
+      - ./control-api/tests:/app/tests
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - APP_HOST=0.0.0.0
-      - APP_PORT=8000
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+      DATABASE_URL: "sqlite:////data/control.db"
+      SESSION_SECRET: "${SESSION_SECRET:-change-me-in-production-please-use-long-random}"
+      GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID:-}"
+      GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET:-}"
+      GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL:-http://localhost:8000/auth/github/callback}"
+      OPERATOR_GITHUB_LOGINS: "${OPERATOR_GITHUB_LOGINS:-}"
+      BUILD_ROOT: "${BUILD_ROOT:-/data/builds}"
+      BUILD_HOST_ROOT: "${BUILD_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/builds}"
+      BUILD_PORT_MIN: "${BUILD_PORT_MIN:-8101}"
+      BUILD_PORT_MAX: "${BUILD_PORT_MAX:-8198}"
+      TENANT_ROOT: "${TENANT_ROOT:-/data/tenants}"
+      TENANT_HOST_ROOT: "${TENANT_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/tenants}"
+      TENANT_PORT_MIN: "${TENANT_PORT_MIN:-8201}"
+      TENANT_PORT_MAX: "${TENANT_PORT_MAX:-8298}"
+      BUILD_POSTGRES_HOST: "${BUILD_POSTGRES_HOST:-build-postgres}"
+      BUILD_POSTGRES_PORT: "${BUILD_POSTGRES_PORT:-5432}"
+      BUILD_POSTGRES_ADMIN_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      BUILD_POSTGRES_ADMIN_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      BUILD_POSTGRES_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      BUILD_POSTGRES_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+      ODOO19_IMAGE: "${ODOO19_IMAGE:-odoo:19.0}"
+      BUILD_DOCKER_NETWORK: "${BUILD_DOCKER_NETWORK:-odoo-sh-local-mock_default}"
+      GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET:-}"
+      GITHUB_WEBHOOK_PUBLIC_URL: "${GITHUB_WEBHOOK_PUBLIC_URL:-}"
+      MAX_CONCURRENT_BUILDS: "${MAX_CONCURRENT_BUILDS:-2}"
+      DEMO_THEME: "${DEMO_THEME:-default}"
+      TENANT_ALLOW_LOCALHOST_LAUNCH: "${TENANT_ALLOW_LOCALHOST_LAUNCH:-true}"
+      BACKUP_ROOT: "${BACKUP_ROOT:-/data/backups}"
+      BACKUP_HOST_ROOT: "${BACKUP_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/backups}"
+      QUOTA_WARNING_THRESHOLD: "${QUOTA_WARNING_THRESHOLD:-0.8}"
+      APP_ENV: "development"
+    depends_on:
+      build-postgres:
+        condition: service_healthy
     restart: unless-stopped
+
+  provisioning-worker:
+    build:
+      context: ./control-api
+    command: ["python", "-m", "app.worker_main"]
+    volumes:
+      - ./control-api/app:/app/app
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DATABASE_URL: "sqlite:////data/control.db"
+      SESSION_SECRET: "${SESSION_SECRET:-change-me-in-production-please-use-long-random}"
+      BUILD_ROOT: "${BUILD_ROOT:-/data/builds}"
+      BUILD_HOST_ROOT: "${BUILD_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/builds}"
+      TENANT_ROOT: "${TENANT_ROOT:-/data/tenants}"
+      TENANT_HOST_ROOT: "${TENANT_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/tenants}"
+      TENANT_PORT_MIN: "${TENANT_PORT_MIN:-8201}"
+      TENANT_PORT_MAX: "${TENANT_PORT_MAX:-8298}"
+      BUILD_POSTGRES_HOST: "${BUILD_POSTGRES_HOST:-build-postgres}"
+      BUILD_POSTGRES_PORT: "${BUILD_POSTGRES_PORT:-5432}"
+      BUILD_POSTGRES_ADMIN_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      BUILD_POSTGRES_ADMIN_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      BUILD_POSTGRES_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      BUILD_POSTGRES_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+      ODOO19_IMAGE: "${ODOO19_IMAGE:-odoo:19.0}"
+      BUILD_DOCKER_NETWORK: "${BUILD_DOCKER_NETWORK:-odoo-sh-local-mock_default}"
+      PROVISIONING_WORKER_POLL_SEC: "${PROVISIONING_WORKER_POLL_SEC:-5}"
+      PROVISIONING_MAX_ATTEMPTS: "${PROVISIONING_MAX_ATTEMPTS:-3}"
+      PROVISIONING_WORKER_ID: "${PROVISIONING_WORKER_ID:-provisioning-worker-1}"
+      PROVISIONING_HEARTBEAT_PATH: "/data/provisioning_worker_heartbeat.json"
+    depends_on:
+      build-postgres:
+        condition: service_healthy
+      control-api:
+        condition: service_started
+    restart: unless-stopped
+
+  backup-worker:
+    build:
+      context: ./control-api
+    command: ["python", "-m", "app.backup_worker_main"]
+    volumes:
+      - ./control-api/app:/app/app
+      - ./data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DATABASE_URL: "sqlite:////data/control.db"
+      BACKUP_ROOT: "${BACKUP_ROOT:-/data/backups}"
+      BACKUP_HOST_ROOT: "${BACKUP_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/backups}"
+      TENANT_ROOT: "${TENANT_ROOT:-/data/tenants}"
+      TENANT_HOST_ROOT: "${TENANT_HOST_ROOT:-/opt/projects/active/odoo-sh-local-mock/data/tenants}"
+      BUILD_POSTGRES_HOST: "${BUILD_POSTGRES_HOST:-build-postgres}"
+      BUILD_POSTGRES_PORT: "${BUILD_POSTGRES_PORT:-5432}"
+      BUILD_POSTGRES_ADMIN_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      BUILD_POSTGRES_ADMIN_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      BUILD_POSTGRES_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      BUILD_POSTGRES_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+      BACKUP_WORKER_POLL_SEC: "${BACKUP_WORKER_POLL_SEC:-10}"
+      BACKUP_MAX_ATTEMPTS: "${BACKUP_MAX_ATTEMPTS:-3}"
+      BACKUP_WORKER_ID: "${BACKUP_WORKER_ID:-backup-worker-1}"
+      BACKUP_HEARTBEAT_PATH: "/data/backup_worker_heartbeat.json"
+      QUOTA_WARNING_THRESHOLD: "${QUOTA_WARNING_THRESHOLD:-0.8}"
+    depends_on:
+      build-postgres:
+        condition: service_healthy
+      control-api:
+        condition: service_started
+    restart: unless-stopped
+
+  build-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      POSTGRES_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      POSTGRES_DB: postgres
+      MOSH_ODOO_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      MOSH_ODOO_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+    volumes:
+      - build_postgres_data:/var/lib/postgresql/data
+      - ./scripts/build-postgres-init.sh:/docker-entrypoint-initdb.d/01-mosh-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  build_postgres_data:

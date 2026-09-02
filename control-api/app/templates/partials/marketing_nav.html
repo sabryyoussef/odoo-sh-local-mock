@@ -1,17 +1,32 @@
 <header class="mkt-nav" id="top">
-  <a class="mkt-nav__brand" href="/">
-    <span class="mkt-nav__mark" aria-hidden="true">◆</span>
-    <span>Mock Odoo.sh</span>
+  <a class="mkt-nav__brand brand-mark" href="/">
+    {% if brand.logo_mark %}
+      <img class="brand-mark__logo" src="{{ brand.logo_mark }}" alt="">
+    {% else %}
+      <span class="mkt-nav__mark" aria-hidden="true">◆</span>
+    {% endif %}
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">{{ brand.short_name }}</span>
+      {% if brand.powered_by %}
+        <span class="brand-mark__powered">{{ brand.powered_by }}</span>
+      {% endif %}
+    </span>
   </a>
   <nav class="mkt-nav__links" aria-label="Marketing">
     <a href="/#top">Home</a>
-    <a href="/#features">Features</a>
+    <a href="/solutions">Solutions</a>
+    <a href="/platform">Developer Platform</a>
     <a href="/pricing">Pricing</a>
+    <a href="/portal">Customer Portal</a>
     <a href="/documentation">Docs</a>
-    <a href="/faq">FAQ</a>
   </nav>
   <div class="mkt-nav__actions">
-    <a class="mkt-nav__ghost" href="/projects">Projects</a>
-    <a class="mkt-nav__cta" href="/login">Sign in</a>
+    {% if user and user.github_connected %}
+      <a class="mkt-nav__ghost" href="/projects">Projects</a>
+      <a class="mkt-nav__ghost" href="/portal">Portal</a>
+      <a class="mkt-nav__cta" href="/account">Account</a>
+    {% else %}
+      <a class="mkt-nav__ghost" href="/login?next=/portal">Sign in</a>
+    {% endif %}
   </div>
 </header>

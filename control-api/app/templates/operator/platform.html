@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Operator · Platform Catalog{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Operator · Developer Platform Catalog</h1>
+      <p>Odoo version registry, module catalog (DP1), plan entitlements &amp; rules (DP2).</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/operator/solutions">Solutions</a>
+        <a class="btn" href="/operator/tenants">Tenants</a>
+        <a class="btn" href="/operator/provisioning">Provisioning</a>
+        <a class="btn" href="/platform">Developer Platform</a>
+      </div>
+    </div>
+
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+
+    <section class="flow-card">
+      <h2>Odoo Versions</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Display</th>
+            <th>Code</th>
+            <th>Status</th>
+            <th>Selectable</th>
+            <th>Scan</th>
+            <th>Modules</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for v in versions %}
+            {% set st = version_stats.get(v.id, {}) %}
+            <tr>
+              <td>{{ v.display_name }}{% if v.is_default %} <span class="badge">Default</span>{% endif %}</td>
+              <td><code>{{ v.code }}</code> / {{ v.edition }}</td>
+              <td>{{ v.status }}</td>
+              <td>{% if v.selectable and v.enabled %}Yes{% else %}No{% endif %}</td>
+              <td>{{ v.catalog_scan_status }}{% if v.catalog_scanned_at %} · {{ v.catalog_scanned_at }}{% endif %}</td>
+              <td>{{ st.get('total_active', 0) }} active · {{ st.get('customer_selectable', 0) }} selectable</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if default_version and default_version.enabled %}
+        <form method="post" action="/operator/platform/scan" style="margin-top:12px">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="version_id" value="{{ default_version.id }}">
+          <button type="submit" class="btn-hero btn-hero--primary">Scan Odoo 19 Community catalog</button>
+        </form>
+      {% endif %}
+    </section>
+
+    <section class="flow-card">
+      <h2>Platform Plans (demo entitlements)</h2>
+      <p class="muted"><span class="badge badge--warning">Demo Billing</span> Presentation pricing — not commercially approved.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Plan</th><th>Apps limit</th><th>Trial</th><th>GitHub</th><th>Effective apps</th><th>Version</th></tr>
+        </thead>
+        <tbody>
+          {% for row in platform_plans %}
+            <tr>
+              <td><strong>{{ row.plan.name }}</strong> <code>{{ row.plan.code }}</code></td>
+              <td>{{ row.entitlements.max_selected_apps }}</td>
+              <td>{{ row.entitlements.trial_days or '—' }}</td>
+              <td>{% if row.entitlements.github_enabled %}Yes{% else %}No{% endif %}</td>
+              <td>{{ row.effective_apps }}</td>
+              <td>v{{ row.plan.entitlement_version }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="muted">Operator API: <code>/api/operator/platform/plans</code>, validate via <code>POST .../validate-selection</code></p>
+    </section>
+
+    {% if default_version %}
+    <section class="flow-card">
+      <h2>Sample selectable applications ({{ default_version.display_name }})</h2>
+      <p class="muted">First 40 customer-selectable modules. Full list via operator API.</p>
+      <ul class="plain-list columns-2">
+        {% for m in selectable_modules %}
+          <li><strong>{{ m.display_name }}</strong> <code>{{ m.technical_name }}</code> · {{ m.category }}</li>
+        {% else %}
+          <li class="muted">No catalog scan yet — run scan above.</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

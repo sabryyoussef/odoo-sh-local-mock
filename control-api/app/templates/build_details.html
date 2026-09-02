@@ -8,61 +8,102 @@
           <a class="crumb-mini" href="/project/{{ project.slug }}/branches">← Branches</a>
           <h1>Build #{{ build.number }}</h1>
           <p class="muted">{{ build.message }}</p>
+          {% if mock_build %}
+            <span class="badge badge--warning">Demo / Mock</span>
+          {% else %}
+            <span class="badge badge--success">{{ brand.badge_real if brand is defined else 'Real build' }}</span>
+          {% endif %}
         </div>
         <div class="build-header__actions">
-          <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">Connect</a>
-          <button type="button" class="btn" title="Placeholder">Rebuild</button>
-          <button type="button" class="btn" title="Placeholder">Stop</button>
-          <button type="button" class="btn btn--danger" title="Placeholder">Delete</button>
+          {% if build.can_connect %}
+            <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">CONNECT</a>
+          {% else %}
+            <button type="button" class="btn" disabled title="Build must be running">CONNECT</button>
+          {% endif %}
+
+          {% if build.can_stop %}
+            <form method="post" action="/project/{{ project.slug }}/build/{{ build.id }}/stop" style="display:inline">
+              <button type="submit" class="btn">Stop</button>
+            </form>
+          {% endif %}
+
+          {% if build.can_restart %}
+            <form method="post" action="/project/{{ project.slug }}/build/{{ build.id }}/restart" style="display:inline">
+              <button type="submit" class="btn">Restart</button>
+            </form>
+          {% endif %}
+
+          {% if build.can_cancel %}
+            <form method="post" action="/project/{{ project.slug }}/build/{{ build.id }}/cancel" style="display:inline"
+                  onsubmit="return confirm('Cancel this build?');">
+              <button type="submit" class="btn">Cancel</button>
+            </form>
+          {% endif %}
+
+          {% if build.can_rebuild %}
+            <form method="post" action="/project/{{ project.slug }}/build/{{ build.id }}/rebuild" style="display:inline">
+              <button type="submit" class="btn">Rebuild</button>
+            </form>
+          {% endif %}
+
+          {% if not mock_build and build.can_delete %}
+            <form method="post" action="/project/{{ project.slug }}/build/{{ build.id }}/delete" style="display:inline"
+                  onsubmit="return confirm('Delete this build, its container, database, and workspace?');">
+              <button type="submit" class="btn btn--danger">Delete</button>
+            </form>
+          {% endif %}
         </div>
       </div>
 
       <nav class="content-tabs">
         <a class="content-tabs__tab {% if active_tab == 'overview' %}is-active{% endif %}" href="/project/{{ project.slug }}/build/{{ build.id }}">Overview</a>
         <a class="content-tabs__tab {% if active_tab == 'logs' %}is-active{% endif %}" href="/project/{{ project.slug }}/build/{{ build.id }}/logs">Logs</a>
-        <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}#database">Database</a>
-        <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}#tests">Tests</a>
-        <a class="content-tabs__tab" href="/project/{{ project.slug }}/build/{{ build.id }}#actions">Actions</a>
+        <a class="content-tabs__tab {% if active_tab == 'connect' %}is-active{% endif %}" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">CONNECT</a>
       </nav>
 
       <section class="tab-body">
+        {% if flash %}
+          <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+        {% endif %}
         <div class="meta-grid">
+          <div><span class="label">Project</span><strong>{{ project.name }}</strong></div>
           <div><span class="label">Branch</span><strong>{{ build.branch }}</strong></div>
-          <div><span class="label">Commit</span><strong><code>{{ build.commit }}</code></strong></div>
-          <div><span class="label">Author</span><strong>{{ build.author }}</strong></div>
-          <div><span class="label">Environment</span><strong>{{ build.environment }}</strong></div>
-          <div><span class="label">Odoo</span><strong>{{ build.odoo_version }}</strong></div>
+          <div><span class="label">Exact Commit SHA</span><strong><code>{{ build.commit_full or build.commit }}</code></strong></div>
+          <div><span class="label">Trigger</span><strong>{{ build.trigger_label or 'Manual' }}{% if build.trigger_actor %} · {{ build.trigger_actor }}{% endif %}{% if build.forced_push %} · Force push{% endif %}</strong></div>
+          <div><span class="label">Commit</span><strong>{{ build.commit_message or '—' }}{% if build.commit_author %} · {{ build.commit_author }}{% endif %}</strong></div>
+          <div><span class="label">Odoo</span><strong>{{ build.odoo_version }} (Community)</strong></div>
           <div><span class="label">Status</span><strong class="tone tone--{{ build.status_tone }}">{{ build.status }}</strong></div>
+          <div><span class="label">Created</span><strong>{{ build.created_at or '—' }}</strong></div>
+          <div><span class="label">Started</span><strong>{{ build.started_at or '—' }}</strong></div>
+          <div><span class="label">Finished</span><strong>{{ build.finished_at or '—' }}</strong></div>
         </div>
 
         <h2 class="section-title">Status timeline</h2>
         <ol class="status-timeline">
-          {% for step in build_steps %}
-            <li class="is-done"><span>✓</span> {{ step }}</li>
+          {% for step in build.steps %}
+            <li class="{% if step in build.steps_done %}is-done{% endif %}">
+              <span>{% if step in build.steps_done %}✓{% else %}·{% endif %}</span> {{ step }}
+            </li>
           {% endfor %}
         </ol>
 
         <div class="meta-grid" id="database">
-          <div><span class="label">Database</span><strong>{{ build.database_name }}</strong></div>
-          <div><span class="label">Container</span><strong>{{ build.container_name }}</strong></div>
-          <div><span class="label">Local URL</span><strong>{{ build.local_url }}</strong></div>
+          <div><span class="label">Database</span><strong>{{ build.database_name or '—' }}</strong></div>
+          <div><span class="label">Container</span><strong>{{ build.container_name or '—' }}</strong></div>
+          <div><span class="label">Port</span><strong>{% if build.http_port %}{{ build.http_port }}{% else %}—{% endif %}</strong></div>
+          <div><span class="label">Local URL</span><strong>{{ build.local_url or '—' }}</strong></div>
+          <div><span class="label">Modules</span><strong>{{ build.installed_modules or '—' }}</strong></div>
         </div>
 
-        <div id="tests" class="flow-card" style="margin-top:16px">
-          <h3>Tests</h3>
-          <p class="muted">All mock tests passed (0 failures).</p>
-        </div>
+        {% if build.error_message %}
+          <div class="sub-result sub-result--bad" style="margin-top:16px">{{ build.error_message }}</div>
+        {% endif %}
 
-        <div id="actions" class="flow-card" style="margin-top:16px">
-          <h3>Actions</h3>
-          <div class="flow-actions" style="justify-content:flex-start">
-            <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ build.id }}/connect">Connect</a>
-            <button type="button" class="btn" title="Placeholder">Rebuild</button>
-            <button type="button" class="btn" title="Placeholder">Stop</button>
-            <button type="button" class="btn btn--danger" title="Placeholder">Delete</button>
-          </div>
-        </div>
+        <p class="muted" style="margin-top:16px">This page auto-refreshes while the build is in progress.</p>
       </section>
     </div>
   </main>
+  {% if build.status in ['queued','cloning','building','creating_database','starting_odoo','health_check','cancel_requested','starting_odoo'] %}
+  <script>setTimeout(function(){ location.reload(); }, 4000);</script>
+  {% endif %}
 {% endblock %}

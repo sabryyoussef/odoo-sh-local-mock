@@ -10,14 +10,43 @@
         </div>
       </div>
 
+      {% if flash %}
+        <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+      {% endif %}
+
       <section class="settings-grid">
         <div class="flow-card">
           <h2>General</h2>
           <label class="field"><span>Project Name</span><input type="text" value="{{ project.name }}" readonly></label>
+          <label class="field"><span>Status</span><input type="text" value="{{ project.status }}" readonly></label>
+          <label class="field"><span>Default Branch</span><input type="text" value="{{ project.default_branch }}" readonly></label>
         </div>
         <div class="flow-card">
           <h2>GitHub</h2>
           <label class="field"><span>Repository</span><input type="text" value="{{ project.github_full_name }}" readonly></label>
+          <label class="field"><span>URL</span><input type="text" value="{{ project.git_repository }}" readonly></label>
+        </div>
+        <div class="flow-card">
+          <h2>Automatic Builds</h2>
+          <p class="muted">GitHub push webhooks trigger real builds using the exact pushed commit SHA.</p>
+          <dl class="kv">
+            <div><dt>Status</dt><dd>{% if project.github_webhook_active %}<span class="tone tone--valid">Enabled</span>{% else %}<span class="tone tone--warn">Disabled</span>{% endif %}</dd></div>
+            <div><dt>Webhook ID</dt><dd><code>{{ project.github_webhook_id or '—' }}</code></dd></div>
+            <div><dt>Webhook URL</dt><dd><code>{{ project.github_webhook_url or '—' }}</code></dd></div>
+          </dl>
+          <div class="flow-actions" style="justify-content:flex-start;margin-top:12px">
+            {% if project.github_webhook_active %}
+              <form method="post" action="/project/{{ project.slug }}/webhooks/disable">
+                <button type="submit" class="btn">Disable Automatic Builds</button>
+              </form>
+            {% else %}
+              <form method="post" action="/project/{{ project.slug }}/webhooks/enable">
+                <button type="submit" class="btn btn--primary">Install GitHub Webhook</button>
+              </form>
+              <p class="muted" style="margin-top:8px">Enable Automatic Builds via a repository webhook (push events).</p>
+            {% endif %}
+          </div>
+          <p class="muted" style="margin-top:12px">Manual Build remains available on the Branches page. Future multi-tenant versions may use per-project webhook secrets.</p>
         </div>
         <div class="flow-card">
           <h2>Odoo</h2>
@@ -28,22 +57,11 @@
           <label class="field"><span>Region</span><input type="text" value="{{ project.location }}" readonly></label>
         </div>
         <div class="flow-card">
-          <h2>Subscription</h2>
+          <h2>Subscription <span class="badge badge--warning">Demo Billing</span></h2>
           <dl class="kv">
             <div><dt>Code</dt><dd><code>{{ project.subscription_code }}</code></dd></div>
-            <div><dt>Status</dt><dd class="tone tone--valid">Valid</dd></div>
+            <div><dt>Status</dt><dd class="tone tone--valid">{{ project.license }}</dd></div>
           </dl>
-        </div>
-        <div class="flow-card">
-          <h2>Environment Variables</h2>
-          <table class="data-table">
-            <thead><tr><th>Key</th><th>Value</th></tr></thead>
-            <tbody>
-              {% for env in project.env_vars %}
-                <tr><td><code>{{ env.key }}</code></td><td>{{ env.value }}</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
         </div>
         <div class="flow-card danger-zone">
           <h2>Danger Zone</h2>

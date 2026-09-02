@@ -4,9 +4,14 @@
       <span class="status-dot status-dot--{{ current_branch.status }} status-dot--lg"></span>
       <h1 class="branch-header__title">{{ current_branch.name }}</h1>
       <span class="branch-header__version">{{ current_branch.version }}</span>
-      <span class="env-pill env-pill--{{ current_branch.environment }}">{{ current_branch.environment }}</span>
+      <span class="env-pill env-pill--{{ current_branch.environment }}" title="Classification label — not persistent production hosting">{{ current_branch.environment }}</span>
     </div>
     <div class="branch-header__actions">
+      {% if current_branch.id %}
+        <form method="post" action="/project/{{ project.slug }}/branch/{{ current_branch.id }}/build" style="display:inline">
+          <button type="submit" class="btn-hero btn-hero--primary">Build</button>
+        </form>
+      {% endif %}
       {% for action in branch_actions %}
         <button
           type="button"
@@ -17,6 +22,14 @@
       {% endfor %}
     </div>
   </div>
+  {% if current_branch.sha %}
+    <p class="muted" style="margin:8px 0 0">
+      Commit <code title="{{ current_branch.sha_full }}">{{ current_branch.sha }}</code>
+      <span class="badge badge--success">Real GitHub</span>
+      <span class="badge">Build environment</span>
+      <span class="muted">· each build uses its own DB (not Odoo.sh production continuity)</span>
+    </p>
+  {% endif %}
   <div class="clone-bar">
     <code class="clone-bar__cmd" id="clone-command">{{ clone_command }}</code>
     <button type="button" class="btn btn--ghost" id="copy-clone" title="Copy">Copy</button>

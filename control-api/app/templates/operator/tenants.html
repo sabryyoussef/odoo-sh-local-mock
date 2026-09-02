@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Operator · Tenants{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main">
+    <div class="flow-header">
+      <h1>Operator · Tenants &amp; Foundations</h1>
+      <p>Phase 6–7 data model (templates, subscriptions, tenants). Provisioning not active yet.</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/operator/solutions">Solution catalog</a>
+      </div>
+    </div>
+
+    <section class="flow-card">
+      <h2>Template Databases <span class="badge badge--warning">Registry only</span></h2>
+      <ul class="plain-list">
+        {% for tpl in templates %}
+          <li><strong>{{ tpl.name }}</strong> — {{ tpl.state }} · {{ tpl.database_source_id }}</li>
+        {% else %}
+          <li class="muted">No templates registered</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="flow-card">
+      <h2>Customer Subscriptions</h2>
+      <ul class="plain-list">
+        {% for sub in subscriptions %}
+          <li>#{{ sub.id }} — {{ sub.status }} · solution {{ sub.solution_id }} / package {{ sub.package_id }}</li>
+        {% else %}
+          <li class="muted">No customer subscriptions yet (use API to create draft records)</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="flow-card">
+      <h2>Tenants</h2>
+      <ul class="plain-list">
+        {% for tenant in tenants %}
+          <li><strong>{{ tenant.tenant_code }}</strong> — {{ tenant.status }} · DB {{ tenant.database_name }}
+            {% if tenant.environments %}
+              · envs: {% for e in tenant.environments %}{{ e.environment_type }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% endif %}
+          </li>
+        {% else %}
+          <li class="muted">No tenants provisioned</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+</div>
+{% endblock %}

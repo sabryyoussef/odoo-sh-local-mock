@@ -1,20 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Sign in · Mock Odoo.sh{% endblock %}
+{% block title %}Sign in · {{ brand.product_name }}{% endblock %}
 {% block body_class %}body--auth{% endblock %}
 {% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="auth-page">
-  <a class="auth-brand" href="/"><span aria-hidden="true">◆</span> Mock Odoo.sh</a>
+  <a class="auth-brand brand-mark" href="/">
+    {% if brand.logo_mark %}
+      <img class="brand-mark__logo" src="{{ brand.logo_mark }}" alt="">
+    {% else %}
+      <span aria-hidden="true">◆</span>
+    {% endif %}
+    {{ brand.short_name }}
+  </a>
+  {% if flash %}
+    <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}" style="max-width:420px">
+      {{ flash.message }}
+    </div>
+  {% endif %}
   <div class="auth-card">
     <h1>Continue with GitHub</h1>
     <p class="auth-lead">Connect your GitHub account to deploy and manage Odoo projects.</p>
     <div class="auth-github-icon" aria-hidden="true">GH</div>
-    <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github/authorize">
-      Sign in with GitHub
-    </a>
-    <a class="auth-secondary" href="/auth/github/authorize">Continue with GitHub</a>
-    <p class="auth-note">Mock authentication only — no real OAuth.</p>
+    {% if oauth_ready %}
+      <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github">
+        Sign in with GitHub
+      </a>
+      <p class="auth-note">Real GitHub OAuth — scopes: read:user, user:email, repo</p>
+      <p class="auth-note muted">Sign in at <code>https://mock-odoo.drpaws.ai</code> or local <code>http://localhost:8000</code>.</p>
+    {% else %}
+      <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github" style="opacity:.7">
+        Sign in with GitHub
+      </a>
+      <p class="auth-note" style="color:#f0ad4e">
+        OAuth not configured. Set GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET / GITHUB_CALLBACK_URL in .env
+      </p>
+    {% endif %}
   </div>
   <a class="auth-back" href="/">← Back to landing</a>
 </div>

@@ -1,11 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Authorize · Mock Odoo.sh{% endblock %}
+{% block title %}Authorize · {{ brand.product_name }}{% endblock %}
 {% block body_class %}body--auth{% endblock %}
 {% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="auth-page">
-  <a class="auth-brand" href="/"><span aria-hidden="true">◆</span> Mock Odoo.sh</a>
+  <a class="auth-brand brand-mark" href="/">
+    {% if brand.logo_mark %}
+      <img class="brand-mark__logo" src="{{ brand.logo_mark }}" alt="">
+    {% else %}
+      <span aria-hidden="true">◆</span>
+    {% endif %}
+    {{ brand.short_name }}
+  </a>
   <div class="auth-card auth-card--wide">
     <div class="auth-user-row">
       <span class="avatar">{{ user.initials }}</span>
@@ -14,8 +21,8 @@
         <div class="muted">{{ user.email }}</div>
       </div>
     </div>
-    <h1>Authorize {{ app_name }}</h1>
-    <p class="auth-lead">{{ app_name }} wants to:</p>
+    <h1>Authorize {{ brand.product_name }}</h1>
+    <p class="auth-lead">{{ brand.product_name }} wants to:</p>
     <ul class="auth-scopes">
       {% for scope in scopes %}
         <li><span class="check">✓</span> {{ scope }}</li>
@@ -23,7 +30,7 @@
     </ul>
     <div class="auth-actions">
       <a class="btn" href="/">Cancel</a>
-      <a class="btn-hero btn-hero--primary" href="/pricing">Authorize Mock Odoo.sh</a>
+      <a class="btn-hero btn-hero--primary" href="/pricing">Authorize {{ brand.short_name }}</a>
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Your Projects · Odoo.sh Mock{% endblock %}
+{% block title %}{{ brand.projects_heading }} · {{ brand.short_name }}{% endblock %}
 {% block body_class %}body--projects{% endblock %}
 {% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
@@ -11,10 +11,27 @@
   {% include "partials/projects_banner.html" %}
 
   <section class="projects-main">
+    {% if brand.company_name %}
+      <div class="client-context">
+        {% if brand.logo_mark %}
+          <img class="brand-mark__logo brand-mark__logo--lg" src="{{ brand.logo_mark }}" alt="">
+        {% endif %}
+        <div>
+          <div class="client-context__label">Prepared for</div>
+          <div class="client-context__name">{{ brand.company_name }}</div>
+          <div class="client-context__product">{{ brand.product_name }}</div>
+        </div>
+      </div>
+    {% endif %}
+
     <div class="projects-toolbar">
-      <h1 class="projects-toolbar__title">Your Projects</h1>
+      <div>
+        <h1 class="projects-toolbar__title">{{ brand.projects_heading }}</h1>
+        {% if brand.projects_subtitle %}
+          <p class="muted" style="margin:4px 0 0">{{ brand.projects_subtitle }}</p>
+        {% endif %}
+      </div>
       <div class="projects-toolbar__controls">
-        <a class="projects-demo-link" href="/project/alzaeem/branches">Open Demo Branches</a>
         <label class="projects-search">
           <span class="projects-search__icon" aria-hidden="true">⌕</span>
           <input
@@ -43,6 +60,14 @@
 
       {% for project in projects %}
         {% include "partials/project_card.html" %}
+      {% else %}
+        <p class="muted" style="grid-column:1/-1;padding:1rem 0">
+          {% if brand.theme_id == 'helpers_erp' %}
+            No projects yet. Deploy the Helpers ERP demo repository to begin.
+          {% else %}
+            No projects yet. Create one from Deploy.
+          {% endif %}
+        </p>
       {% endfor %}
     </div>
   </section>

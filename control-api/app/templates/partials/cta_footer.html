@@ -1,10 +1,15 @@
 <section class="cta-footer">
   <div class="cta-footer__inner">
-    <h2>Start exploring the mock platform</h2>
-    <p>Jump into the projects dashboard or open the alzaeem branches demo.</p>
+    {% if brand.theme_id == 'helpers_erp' %}
+      <h2>Explore the Helpers ERP cloud demo</h2>
+      <p>Sign in with GitHub, open the demo project, and CONNECT to a real Odoo 19 Community runtime.</p>
+    {% else %}
+      <h2>Start exploring the mock platform</h2>
+      <p>Sign in with GitHub, then deploy a project from a real repository.</p>
+    {% endif %}
     <div class="cta-footer__actions">
-      <a class="btn-hero btn-hero--primary" href="/login">Deploy Your Platform</a>
-      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/pricing">View Pricing</a>
+      <a class="btn-hero btn-hero--primary" href="/login">{{ brand.hero_cta_primary }}</a>
+      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/pricing">{{ brand.hero_cta_secondary }}</a>
       <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">Open Projects</a>
     </div>
   </div>

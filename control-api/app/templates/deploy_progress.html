@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Deploying · Mock Odoo.sh{% endblock %}
+{% block title %}Project setup · Mock Odoo.sh{% endblock %}
 {% block body_class %}body--app{% endblock %}
 {% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
@@ -8,30 +8,66 @@
   {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--narrow">
     <div class="flow-header">
-      <h1 id="progress-title">Deploying Platform…</h1>
-      <p id="progress-status">Connecting repository...</p>
+      <h1 id="progress-title">{% if auto_complete %}Project Ready{% else %}Setting up project…{% endif %}</h1>
+      <p id="progress-status">
+        {% if real_progress %}
+          Syncing GitHub identity, repository, and branches — no Odoo runtime is started yet.
+        {% else %}
+          Connecting repository...
+        {% endif %}
+      </p>
     </div>
 
     <section class="flow-card">
       <ul class="progress-list" id="progress-list">
         {% for step in progress_steps %}
-          <li class="progress-item" data-step="{{ loop.index0 }}">
-            <span class="progress-item__mark">○</span>
+          <li class="progress-item {% if auto_complete %}is-done{% endif %}" data-step="{{ loop.index0 }}">
+            <span class="progress-item__mark">{% if auto_complete %}✓{% else %}○{% endif %}</span>
             <span>{{ step }}</span>
           </li>
         {% endfor %}
       </ul>
-      <div class="progress-bar"><div class="progress-bar__fill" id="progress-fill"></div></div>
+      <div class="progress-bar"><div class="progress-bar__fill" id="progress-fill" style="{% if auto_complete %}width:100%{% endif %}"></div></div>
     </section>
 
-    <section class="flow-card complete-card" id="complete-card" hidden>
-      <h2>Deployment Complete</h2>
-      <p>Your mock project <strong>alzaeem</strong> is ready.</p>
+    <section class="flow-card complete-card" id="complete-card" {% if not auto_complete %}hidden{% endif %}>
+      <h2>Project Ready</h2>
+      <p>Your project is saved and branches were synchronized from GitHub.</p>
+      <p class="muted">Odoo build/runtime remains mock until a later phase.</p>
       <div class="flow-actions">
-        <a class="btn-hero btn-hero--primary" href="/project/alzaeem/branches">Open Project</a>
+        {% if project_slug %}
+          <a class="btn-hero btn-hero--primary" href="/project/{{ project_slug }}/branches">Open Project</a>
+        {% endif %}
         <a class="btn" href="/projects">View All Projects</a>
       </div>
     </section>
   </main>
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  (() => {
+    const auto = {{ 'true' if auto_complete else 'false' }};
+    const slug = {{ (project_slug or '')|tojson }};
+    if (auto) return;
+    const items = Array.from(document.querySelectorAll('.progress-item'));
+    const fill = document.getElementById('progress-fill');
+    const complete = document.getElementById('complete-card');
+    let i = 0;
+    const tick = () => {
+      if (i >= items.length) {
+        if (complete) complete.hidden = false;
+        if (fill) fill.style.width = '100%';
+        return;
+      }
+      items[i].classList.add('is-done');
+      const mark = items[i].querySelector('.progress-item__mark');
+      if (mark) mark.textContent = '✓';
+      if (fill) fill.style.width = `${((i + 1) / items.length) * 100}%`;
+      i += 1;
+      setTimeout(tick, 350);
+    };
+    setTimeout(tick, 200);
+  })();
+</script>
 {% endblock %}

@@ -1,16 +1,33 @@
 <header class="projects-topbar">
-  <a class="projects-topbar__brand" href="/">
-    <span class="projects-topbar__mark" aria-hidden="true">◆</span>
-    <span class="projects-topbar__name">Mock Odoo.sh</span>
+  <a class="projects-topbar__brand brand-mark" href="/">
+    {% if brand.logo_mark %}
+      <img class="brand-mark__logo" src="{{ brand.logo_mark }}" alt="">
+    {% else %}
+      <span class="projects-topbar__mark" aria-hidden="true">◆</span>
+    {% endif %}
+    <span class="brand-mark__text">
+      <span class="projects-topbar__name brand-mark__product">{{ brand.short_name }}</span>
+      {% if brand.powered_by %}
+        <span class="brand-mark__powered">{{ brand.powered_by }}</span>
+      {% endif %}
+    </span>
   </a>
   <div class="projects-topbar__right">
     <a class="projects-topbar__home" href="/">Home</a>
     <a class="projects-topbar__home" href="/deploy">Deploy</a>
     <a class="projects-topbar__home" href="/account">Account</a>
-    <a class="projects-topbar__user" href="/account" title="{{ user.email }}">
-      <span class="avatar avatar--sm">{{ user.initials }}</span>
-      <span class="projects-topbar__username">{{ user.display_name }}</span>
-      <span class="projects-topbar__caret" aria-hidden="true">▾</span>
-    </a>
+    {% if user.github_connected %}
+      <a class="projects-topbar__home" href="/logout">Logout</a>
+      <a class="projects-topbar__user" href="/account" title="{{ user.email }}">
+        {% if user.avatar_url %}
+          <img class="avatar avatar--sm" src="{{ user.avatar_url }}" alt="" width="28" height="28" style="border-radius:50%">
+        {% else %}
+          <span class="avatar avatar--sm">{{ user.initials }}</span>
+        {% endif %}
+        <span class="projects-topbar__username">{{ user.display_name }}</span>
+      </a>
+    {% else %}
+      <a class="projects-topbar__home" href="/login">Sign in</a>
+    {% endif %}
   </div>
 </header>

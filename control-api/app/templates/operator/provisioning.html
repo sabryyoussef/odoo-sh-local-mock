@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Operator · Provisioning{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block top %}{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  {% include "partials/app_topbar.html" %}
+  <main class="flow-main">
+    <div class="flow-header">
+      <h1>Operator · Provisioning</h1>
+      <p>Queue and monitor tenant provisioning jobs (dedicated worker process).</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/operator/solutions">Catalog</a>
+        <a class="btn" href="/operator/tenants">Tenants</a>
+        <form method="post" action="/api/operator/provisioning/templates/validate-demo" style="display:inline" onsubmit="event.preventDefault(); fetch(this.action,{method:'POST',credentials:'same-origin'}).then(r=>r.json()).then(d=>alert('Validated: '+d.validated_count)).catch(()=>alert('Failed'));">
+          <button type="submit" class="btn">Validate Demo Templates</button>
+        </form>
+      </div>
+    </div>
+
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+
+    <section class="flow-card">
+      <h2>Queue provisioning</h2>
+      <form id="queue-form" class="deploy-form">
+        <label class="field"><span>Customer subscription ID</span><input name="customer_subscription_id" type="number" required></label>
+        <label class="field"><span>Idempotency key</span><input name="idempotency_key" required placeholder="unique-request-key"></label>
+        <button type="submit" class="btn-hero btn-hero--primary">Queue Job</button>
+      </form>
+      <p class="muted">Subscription must be <code>trial</code> or <code>active</code>. Demo solution/package only.</p>
+    </section>
+
+    <section class="flow-card">
+      <h2>Jobs</h2>
+      <table class="data-table">
+        <thead><tr><th>UUID</th><th>Status</th><th>Step</th><th>Attempts</th><th>Tenant</th><th>Error</th></tr></thead>
+        <tbody>
+          {% for job in jobs %}
+            <tr>
+              <td><code>{{ job.job_uuid[:8] }}…</code></td>
+              <td>{{ job.status }}</td>
+              <td>{{ job.current_step or '—' }}</td>
+              <td>{{ job.attempt_count }}/{{ job.max_attempts }}</td>
+              <td>{% if job.tenant_id %}#{{ job.tenant_id }}{% else %}—{% endif %}</td>
+              <td class="muted">{{ job.error_summary or '—' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="muted">No jobs yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Tenants</h2>
+      <ul class="plain-list">
+        {% for t in tenants %}
+          <li><strong>{{ t.tenant_code }}</strong> — {{ t.status }}
+            {% if t.internal_url %} · <a href="{{ t.internal_url }}" target="_blank" rel="noopener">Open</a>{% endif %}
+          </li>
+        {% else %}
+          <li class="muted">No tenants</li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const form = document.getElementById('queue-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const resp = await fetch('/api/operator/provisioning/queue', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          customer_subscription_id: Number(fd.get('customer_subscription_id')),
+          idempotency_key: fd.get('idempotency_key'),
+        }),
+      });
+      const data = await resp.json();
+      if (resp.ok) {
+        alert('Queued job ' + data.job_uuid);
+        location.reload();
+      } else {
+        alert(data.detail?.message || data.detail || 'Queue failed');
+      }
+    });
+  }
+</script>
+{% endblock %}

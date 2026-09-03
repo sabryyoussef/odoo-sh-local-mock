@@ -236,23 +236,33 @@ def _verify_container_running(container_name: str, run_id: str) -> bool:
     return c.status == "running"
 
 
-def _verify_http_health(http_port: int, timeout_sec: int = 30) -> bool:
-    """Verify HTTP health via loopback."""
+def _verify_http_health(http_port: int, timeout_sec: int = 30, container_name: str | None = None) -> bool:
+    """Verify HTTP health via loopback and in-network candidates."""
+    import socket
     import urllib.error
     import urllib.request
-    url = f"http://127.0.0.1:{http_port}/web/login"
+    candidates = [f"http://127.0.0.1:{http_port}/web/login"]
+    if container_name:
+        candidates.insert(0, f"http://{container_name}:8069/web/login")
+    try:
+        gw = socket.gethostbyname("host.docker.internal")
+        candidates.append(f"http://{gw}:{http_port}/web/login")
+    except Exception:
+        pass
     deadline = time.time() + timeout_sec
     while time.time() < deadline:
-        try:
-            with urllib.request.urlopen(url, timeout=3) as resp:
-                code = getattr(resp, "status", 200)
-                if 200 <= code < 600:
+        for url in candidates:
+            try:
+                with urllib.request.urlopen(url, timeout=3) as resp:
+                    code = getattr(resp, "status", 200)
+                    if 200 <= code < 600:
+                        return True
+            except urllib.error.HTTPError as exc:
+                if exc.code and 200 <= exc.code < 600:
                     return True
-        except urllib.error.HTTPError as exc:
-            if exc.code and 200 <= exc.code < 600:
-                return True
-        except Exception:
-            time.sleep(2)
+            except Exception:
+                pass
+        time.sleep(2)
     return False
 
 
@@ -589,7 +599,7 @@ def provision_cloud_request(
         # 13. Verify container running, HTTP health, DB connectivity, correct DB, filestore exists, Odoo version
         if not _verify_container_running(container_name, run_id):
             raise CloudDockerProvisioningError("Container not running or labels mismatch", "container_not_running")
-        if not _verify_http_health(http_port, timeout_sec=10):
+        if not _verify_http_health(http_port, timeout_sec=30, container_name=container_name):
             raise CloudDockerProvisioningError("HTTP health failed", "http_failed")
         if not _verify_database_connectivity(db_name, role_name, role_password):
             raise CloudDockerProvisioningError("Database connectivity failed", "db_connect_failed")

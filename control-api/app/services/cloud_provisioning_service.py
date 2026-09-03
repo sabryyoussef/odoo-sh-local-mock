@@ -6,7 +6,10 @@ A future real adapter can replace DemoCloudProvisioningAdapter without changing 
 
 from __future__ import annotations
 
+import time
+
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import CloudInstance, CloudProvisioningRequest, CloudSubscription, User
@@ -169,42 +172,80 @@ class CloudProvisioningService:
 
 
 def claim_next_cloud_job(db: Session, worker_id: str) -> CloudProvisioningRequest | None:
-    """SQLite MVP claim for CloudProvisioningRequest.
+    """Atomic claim for CloudProvisioningRequest — SQLite compatible, Postgres-ready.
 
-    Atomic single-worker claim via status check + update.
-    For Postgres/multi-worker: use SELECT ... FOR UPDATE SKIP LOCKED.
-    P1 contract: only queued jobs are claimable, lease 5 minutes, attempt_count incremented.
-    Does not create tenant/database/filestore/container/domain.
+    SQLite MVP: single atomic UPDATE ... WHERE id == (SELECT id ... LIMIT 1).
+    The UPDATE is conditional on the row still being queued/eligible; rowcount==1
+    proves this worker won the race, rowcount==0 means another worker claimed first
+    or no eligible job exists. No SELECT-then-UPDATE race.
+
+    Postgres/multi-worker path (future): replace subquery with
+        SELECT id FROM cloud_provisioning_requests
+        WHERE status='queued' AND product_line='helpers_cloud'
+          AND (next_attempt_at IS NULL OR next_attempt_at <= now())
+        ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 1
+    and UPDATE ... WHERE id == selected_id.
+
+    Bounded retry handles transient SQLite 'database is locked' (OperationalError)
+    without holding a long transaction. Does not create tenant/database/filestore/
+    container/domain. Lease 5 minutes, attempt_count incremented atomically.
     """
     if not worker_id or not worker_id.strip():
         raise CloudProvisioningError("worker_id required", "invalid_worker")
-    # Find oldest queued job
-    job = db.scalar(
-        select(CloudProvisioningRequest)
-        .where(CloudProvisioningRequest.status == CLOUD_PROVISION_QUEUED)
-        .where(CloudProvisioningRequest.product_line == PRODUCT_LINE_HELPERS_CLOUD)
-        .order_by(CloudProvisioningRequest.id)
-        .limit(1)
-    )
-    if not job:
-        return None
-    # Guard: respect next_attempt_at backoff if set
-    now = datetime.now(timezone.utc)
-    if job.next_attempt_at is not None:
-        nxt = job.next_attempt_at
-        if nxt.tzinfo is None:
-            nxt = nxt.replace(tzinfo=timezone.utc)
-        if nxt > now:
+    # Bounded retry for transient SQLite busy errors; each attempt is a short transaction.
+    max_retries = 3
+    for attempt in range(max_retries):
+        now = datetime.now(timezone.utc)
+        # Subquery to find the ID of the oldest eligible job (queued, helpers_cloud, backoff expired)
+        subquery = (
+            select(CloudProvisioningRequest.id)
+            .where(CloudProvisioningRequest.status == CLOUD_PROVISION_QUEUED)
+            .where(CloudProvisioningRequest.product_line == PRODUCT_LINE_HELPERS_CLOUD)
+            .where(
+                (CloudProvisioningRequest.next_attempt_at == None) |
+                (CloudProvisioningRequest.next_attempt_at <= now)
+            )
+            .order_by(CloudProvisioningRequest.id)
+            .limit(1)
+            .scalar_subquery()
+        )
+        try:
+            from sqlalchemy import update
+
+            result = db.execute(
+                update(CloudProvisioningRequest)
+                .where(CloudProvisioningRequest.id == subquery)
+                .values(
+                    status="provisioning",
+                    claimed_by=worker_id,
+                    started_at=now,
+                    lease_expires_at=now + timedelta(minutes=5),
+                    attempt_count=CloudProvisioningRequest.attempt_count + 1,
+                    current_step="provisioning"
+                )
+            )
+            db.commit()
+        except OperationalError:
+            db.rollback()
+            if attempt == max_retries - 1:
+                return None
+            time.sleep(0.01 * (2 ** attempt))
+            continue
+
+        if result.rowcount == 0:
             return None
-    job.status = "provisioning"
-    job.claimed_by = worker_id
-    job.started_at = now
-    job.lease_expires_at = now + timedelta(minutes=5)
-    job.attempt_count = int(job.attempt_count or 0) + 1
-    job.current_step = "provisioning"
-    db.commit()
-    db.refresh(job)
-    return job
+
+        # Refresh only the row this worker just claimed (claimed_by + started_at is unique per claim).
+        job = db.scalar(
+            select(CloudProvisioningRequest)
+            .where(CloudProvisioningRequest.claimed_by == worker_id)
+            .where(CloudProvisioningRequest.status == "provisioning")
+            .where(CloudProvisioningRequest.started_at == now)
+            .order_by(CloudProvisioningRequest.id.desc())
+            .limit(1)
+        )
+        return job
+    return None
 
 
 def reconcile_stale_cloud_jobs(db: Session, *, stale_minutes: int = 5) -> int:

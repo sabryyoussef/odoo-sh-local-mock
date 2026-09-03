@@ -226,3 +226,78 @@ set -o pipefail; git -C /opt/projects/active/odoo-sh-local-mock checkout main 2>
 ---
 
 *End of P1 report — no runtime creation, no tenant/database/filestore/container/domain, trustworthy exit codes, safe git isolation.*
+
+---
+
+## 11. P1.1 — Atomic Cloud Job Claim (2026-09-03)
+
+**Branch:** `p1-cloud-contracts` — new commit on top of `379f76e`
+**Mode:** Code — P1.1 atomic claim only, no runtime creation
+**Inference:** OmniRoute `cursor-free`
+**Worktree:** `/tmp/mosh-p1-atomic-worktree` (isolated, clean)
+
+### Root Cause
+
+`claim_next_cloud_job()` in `379f76e` used `SELECT ... WHERE status=queued ORDER BY id LIMIT 1` followed by Python `UPDATE` to `provisioning`. Two independent workers with separate DB connections could both `SELECT` the same queued row before either `UPDATE` committed, causing double-claim (lost update). Existing `test_cloud_p1_contracts.py` used single-process `StaticPool` in-memory SQLite, so the race was not exercised.
+
+### Implementation
+
+**File:** [`control-api/app/services/cloud_provisioning_service.py`](control-api/app/services/cloud_provisioning_service.py:174)
+
+- Replaced `SELECT`-then-`UPDATE` with single atomic `UPDATE ... WHERE id == (SELECT id ... LIMIT 1)` via `scalar_subquery()`.
+- `UPDATE` sets `status="provisioning"`, `claimed_by=worker_id`, `started_at=now`, `lease_expires_at=now+5min`, `attempt_count=attempt_count+1`, `current_step="provisioning"` in one statement.
+- `rowcount==0` → `None` (no eligible job or another worker won); `rowcount==1` → fetch claimed row via `claimed_by+started_at` (unique per claim) and return.
+- Bounded retry (3 attempts, exponential `0.01*2^attempt` sleep) for transient SQLite `OperationalError: database is locked` without holding long transaction.
+- SQLite compatible; Postgres path documented in docstring: replace subquery with `SELECT ... FOR UPDATE SKIP LOCKED LIMIT 1` and `UPDATE ... WHERE id==selected_id`.
+- No `Tenant`/database/filestore/container/domain creation; lease 5 minutes; respects `next_attempt_at` backoff; `product_line==helpers_cloud` filter preserved.
+
+**Imports added:** `time`, `sqlalchemy.exc.OperationalError`.
+
+### Concurrency Tests
+
+**New file:** [`control-api/tests/test_cloud_p1_atomic_concurrency.py`](control-api/tests/test_cloud_p1_atomic_concurrency.py:1) — 5 tests, all `PYTEST_EXIT:0` in isolated worktree via `docker run` mounting worktree (not dirty container):
+
+| Test | Assertion |
+|------|-----------|
+| `test_p1_1_atomic_claim_single_job_race_two_workers_file_backed` | Two independent file-backed SQLite engines/sessions racing for same queued job: exactly one claims, other `None`, `attempt_count==1`, `claimed_by` winner, one `provisioning` transition, no `Tenant` |
+| `test_p1_1_atomic_claim_two_jobs_two_workers_no_duplication` | Two queued jobs, two workers each claim distinct job, no duplication, no queued left |
+| `test_p1_1_atomic_claim_future_next_attempt_not_claimable` | Future `next_attempt_at` blocks claim for both workers; after backoff expires claimable |
+| `test_p1_1_atomic_claim_losing_session_usable_and_stale_not_overwrite_valid_lease` | Losing race leaves session usable (can query and claim second job); `reconcile_stale_cloud_jobs` returns 0 for valid future lease, does not overwrite |
+| `test_p1_1_no_runtime_created_on_concurrent_claim` | Concurrent claim creates no `Tenant`, `tenant_id`/`internal_url`/`public_url` stay `None` |
+
+**Design:** Temporary file-backed SQLite (`tempfile.NamedTemporaryFile`, `PRAGMA journal_mode=WAL`, `busy_timeout=5000`), independent `create_engine` per worker, `threading.Barrier(2)` to synchronize race, `threading.Thread` per worker.
+
+### Test Evidence (Isolated Worktree, Not Dirty Container)
+
+```bash
+set -o pipefail; docker run --rm -v /tmp/mosh-p1-atomic-worktree/control-api/app:/app/app:ro -v /tmp/mosh-p1-atomic-worktree/control-api/tests:/app/tests:ro -v /tmp/mosh-p1-atomic-worktree/control-api/pytest.ini:/app/pytest.ini:ro odoo-sh-local-mock-control-api:latest python -m pytest tests/test_cloud_p1_contracts.py tests/test_cloud_p1_atomic_concurrency.py -v 2>&1; echo "EXIT:$?"
+# 23 passed, 2 warnings, EXIT:0 (21.28s)
+```
+
+```bash
+set -o pipefail; docker run --rm -v /tmp/mosh-p1-atomic-worktree/control-api/app:/app/app:ro -v /tmp/mosh-p1-atomic-worktree/control-api/tests:/app/tests:ro -v /tmp/mosh-p1-atomic-worktree/control-api/pytest.ini:/app/pytest.ini:ro odoo-sh-local-mock-control-api:latest python -m pytest -m "not integration" -q 2>&1; echo "EXIT:$?"
+# 306 passed, 7 failed, 1 skipped, 2 deselected, 2249 warnings, EXIT:1 (184.07s)
+# 7 failures are pre-existing P1-vs-dirty-main i18n drift (missing `template_i18n` in P1 branch `main.py`/`base.html`/`translations.py`), not introduced by P1.1.
+# Verified: stashing P1.1 changes and re-running same 2 tests still fails (EXIT:1), proving failures exist on 379f76e itself.
+# P1.1 concurrency fix does not touch templates/i18n/branding; dirty main's 7 tests pass on dirty main (314 passed baseline).
+```
+
+**Proof isolated-worktree (not dirty container):** `docker run` mounts `/tmp/mosh-p1-atomic-worktree/control-api/*` read-only, not `/opt/projects/active/odoo-sh-local-mock/control-api/*` (dirty main). `docker inspect odoo-sh-local-mock-control-api-1` mounts dirty main; `docker run` mounts worktree — distinct.
+
+### No Runtime Created
+
+- `Tenant` count 0 before and after concurrent claim (verified in tests).
+- Live `control.db` not touched by isolated worktree tests (file-backed temp DB).
+- No `mosh-tenant-*` container modified (15 preserved).
+
+### Git
+
+- P1.1 commit on `p1-cloud-contracts` only, does not amend `379f76e`.
+- Message: `fix(cloud): make provisioning claim atomic`
+- Files: `control-api/app/services/cloud_provisioning_service.py` (73 insertions, 32 deletions), `control-api/tests/test_cloud_p1_atomic_concurrency.py` (new, 21K), `planning/HELPERS_ERP_CLOUD_P1_REPORT.md` (this addendum).
+
+### Decision
+
+**P1.1_PASS** — atomic conditional claim with `rowcount==1` verification, genuine independent-connection concurrency tests, no runtime creation, isolated-worktree proof.
+
+

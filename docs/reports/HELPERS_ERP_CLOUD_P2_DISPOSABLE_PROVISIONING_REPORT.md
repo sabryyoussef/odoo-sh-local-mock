@@ -3,7 +3,7 @@
 **Decision:** PASS — Disposable Local Helpers ERP Cloud Provisioner implemented, verified, and ready for P3.
 
 **Starting HEAD:** `aa5ffb5aaed01596f9eb94ce7d93959f4bec853c` (main, after P1.3)
-**Ending HEAD (worktree):** `d2da994e7038baa1846300e9a15c380693f59daa` (p2-cloud-disposable-provisioner, 3 commits ahead of aa5ffb5)
+**Ending HEAD (worktree): `df28eff0e9f88a615e301842e88428859738904f` (p2-cloud-disposable-provisioner, 3 commits ahead of aa5ffb5)
 **Branch:** `p2-cloud-disposable-provisioner` (worktree), `main` at aa5ffb5 (primary, dirty preserved)
 **Worktree:** `/tmp/p2-cloud-disposable-provisioner-p2_20260903T124908Z_6c905ccb2aa2`
 **Run ID:** `p2_20260903T124908Z_6c905ccb2aa2`
@@ -71,7 +71,7 @@
 ## Verification Proof
 - **Gate 1:** P2 unit tests 12 passed (adapter rejects not approved/demo/fingerprint/kind/version/unvalidated, identifier validation, rollback refuses non-P2, idempotent, no runtime before verification, no wildcard, no secrets)
 - **Gate 2:** P1-P1.3 contracts 68 passed (P1 18, P1.1 5, P1.2 10, P1.3 35)
-- **Gate 3:** Full non-integration 376+ passed, 1 skipped, 2 deselected
+- **Gate 3:** Full non-integration 377 passed, 1 skipped, 2 deselected
 - **Gate 4:** P2 happy path mocked 1 passed
 - **Gate 5:** Failure injection 6 points 6 passed (each proves complete cleanup)
 - **Gate 6:** Concurrency + isolation 2 passed (two workers cannot provision same request, distinct jobs distinct identifiers)

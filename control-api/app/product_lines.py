@@ -207,6 +207,17 @@ CLOUD_MAX_ATTEMPTS_DEFAULT = 3
 CLOUD_LEASE_SEC_DEFAULT = 300
 CLOUD_RETRY_BACKOFF_BASE_SEC = 10
 
+# Real-provisioning adapters (demo is never eligible)
+CLOUD_REAL_PROVISIONING_ADAPTERS = frozenset({CLOUD_ADAPTER_LOCAL_DOCKER})
+
+# Subscription statuses eligible for real runtime provisioning (fail-closed).
+# Demo checkout uses demo_trial / demo_active — those remain presentation-only.
+CLOUD_REAL_SUBSCRIPTION_STATUSES = frozenset({"active", "trial", "paid"})
+
+# CloudTemplate.status values that may back a real provision
+CLOUD_TEMPLATE_VALIDATED_STATUSES = frozenset({"validated", "active"})
+
+
 RESERVED_SUBDOMAINS = frozenset(
     {
         "www",

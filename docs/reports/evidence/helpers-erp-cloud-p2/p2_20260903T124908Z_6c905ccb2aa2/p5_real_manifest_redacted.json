@@ -1,0 +1,31 @@
+{
+  "run_id": "p2_20260903T161101Z_1469ca5b",
+  "run_slug": "p2_20260903t161101z_1469",
+  "request_id": 2,
+  "request_id2": 3,
+  "manifest": {
+    "tenant_code": "p2_p2_20260903t161101z_1469_2_94fb07",
+    "db_name": "mosh_tnt_p2_p2_20260903t161101z_1469_94fb07",
+    "role_name": "mosh_r_p2_p2_20260903t161101z_1469_94fb07_role",
+    "container_name": "mosh-tenant-p2-p2_20260903t161101z_1469-2-94fb07",
+    "filestore_path": "/data/tenants/.p2_filestore_p2_20260903T161101Z_1469ca5b/p2_p2_20260903t161101z_1469_2_94fb07/filestore",
+    "http_port": 8220,
+    "internal_url": "http://127.0.0.1:8220"
+  },
+  "baseline_before": {
+    "pg_dbs": 29,
+    "pg_roles": 18,
+    "mosh_containers": 16,
+    "p2_containers": [],
+    "p2_filestore": []
+  },
+  "baseline_after": {
+    "pg_dbs": 29,
+    "pg_roles": 18,
+    "mosh_containers": 16,
+    "p2_containers": [],
+    "p2_filestore": []
+  },
+  "free_port": 8220,
+  "free_port2": 8221
+}

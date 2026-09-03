@@ -503,7 +503,13 @@ def provision_cloud_request(
 
         # Write odoo.conf for P2 tenant
         runtime_container = Path(filestore_path).parent / "runtime"
-        runtime_host = Path(filestore_path).parent / "runtime"
+        # Host path for Docker mount (host sees tenant_host_root, container sees tenant_root)
+        if str(filestore_path).startswith(settings.tenant_root):
+            runtime_host = Path(str(filestore_path).replace(settings.tenant_root, settings.tenant_host_root, 1)).parent / "runtime"
+            filestore_host_path = str(filestore_path).replace(settings.tenant_root, settings.tenant_host_root, 1)
+        else:
+            runtime_host = Path(filestore_path).parent / "runtime"
+            filestore_host_path = filestore_path
         runtime_container.mkdir(parents=True, exist_ok=True)
         write_odoo_conf_file(
             runtime_container / "odoo.conf",
@@ -551,7 +557,7 @@ def provision_cloud_request(
             },
             ports={"8069/tcp": ("127.0.0.1", int(http_port))},
             volumes={
-                filestore_path: {"bind": "/var/lib/odoo", "mode": "rw"},
+                filestore_host_path: {"bind": "/var/lib/odoo", "mode": "rw"},
                 str(runtime_host): {"bind": "/mnt/runtime", "mode": "ro"},
             },
             mem_limit=1536 * 1024 * 1024,

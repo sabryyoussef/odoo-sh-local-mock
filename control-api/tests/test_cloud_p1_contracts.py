@@ -30,7 +30,8 @@ from app.services.cloud_checkout_service import checkout_demo
 from app.services.cloud_provisioning_service import (
     CloudProvisioningError,
     CloudProvisioningService,
-    claim_next_cloud_job,
+    claim_next_demo_cloud_job,
+    claim_next_real_cloud_job,
     reconcile_stale_cloud_jobs,
     retry_failed_cloud_job,
     validate_cloud_transition,
@@ -271,7 +272,7 @@ def test_p1_claim_next_cloud_job_atomic(db):
     _clear_queued_cloud_jobs(db, keep_req_id=req.id)
     db.refresh(req)
     assert req.status == CLOUD_PROVISION_QUEUED
-    claimed = claim_next_cloud_job(db, "worker-1")
+    claimed = claim_next_demo_cloud_job(db, "worker-1")
     assert claimed is not None
     assert claimed.id == req.id
     assert claimed.status == "provisioning"
@@ -279,7 +280,7 @@ def test_p1_claim_next_cloud_job_atomic(db):
     assert claimed.attempt_count == 1
     assert claimed.lease_expires_at is not None
     # Second claim should get None (no queued jobs left)
-    second = claim_next_cloud_job(db, "worker-2")
+    second = claim_next_demo_cloud_job(db, "worker-2")
     assert second is None
     # Verify DB state
     db.refresh(req)
@@ -297,11 +298,11 @@ def test_p1_claim_respects_next_attempt_at_backoff(db):
     req.next_attempt_at = datetime.now(timezone.utc) + timedelta(minutes=10)
     db.commit()
     # Should not be claimable yet
-    assert claim_next_cloud_job(db, "worker-1") is None
+    assert claim_next_demo_cloud_job(db, "worker-1") is None
     # After backoff expires, claimable
     req.next_attempt_at = datetime.now(timezone.utc) - timedelta(seconds=1)
     db.commit()
-    claimed = claim_next_cloud_job(db, "worker-1")
+    claimed = claim_next_demo_cloud_job(db, "worker-1")
     assert claimed is not None
     assert claimed.id == req.id
 
@@ -310,10 +311,10 @@ def test_p1_claim_requires_worker_id(db):
     user = _register(db, "p1h@company.example")
     _checkout(db, user, "p1h-co", "p1-key-h-001")
     with pytest.raises(CloudProvisioningError) as exc:
-        claim_next_cloud_job(db, "")
+        claim_next_demo_cloud_job(db, "")
     assert exc.value.code == "invalid_worker"
     with pytest.raises(CloudProvisioningError):
-        claim_next_cloud_job(db, "   ")
+        claim_next_demo_cloud_job(db, "   ")
 
 
 def test_p1_double_worker_concurrency(db):
@@ -331,20 +332,20 @@ def test_p1_double_worker_concurrency(db):
     assert db.get(CloudProvisioningRequest, req2.id) is not None
     db.refresh(req1)
     db.refresh(req2)
-    c1 = claim_next_cloud_job(db, "worker-A")
-    c2 = claim_next_cloud_job(db, "worker-B")
+    c1 = claim_next_demo_cloud_job(db, "worker-A")
+    c2 = claim_next_demo_cloud_job(db, "worker-B")
     assert c1 is not None and c2 is not None
     assert c1.id != c2.id
     assert {c1.id, c2.id} == {req1.id, req2.id}
     # No more queued
-    assert claim_next_cloud_job(db, "worker-C") is None
+    assert claim_next_demo_cloud_job(db, "worker-C") is None
 
 
 def test_p1_reconcile_stale_requeues_and_respects_max_attempts(db):
     _clear_queued_cloud_jobs(db)
     user = _register(db, "p1j@company.example")
     _order, _sub, req, _inst = _checkout(db, user, "p1j-co", "p1-key-j-001")
-    claimed = claim_next_cloud_job(db, "worker-1")
+    claimed = claim_next_demo_cloud_job(db, "worker-1")
     assert claimed.status == "provisioning"
     # Make lease expired
     claimed.lease_expires_at = datetime.now(timezone.utc) - timedelta(minutes=1)
@@ -361,7 +362,7 @@ def test_p1_reconcile_stale_requeues_and_respects_max_attempts(db):
     claimed.next_attempt_at = datetime.now(timezone.utc) - timedelta(seconds=1)
     db.commit()
     # Now exceed max_attempts
-    claimed2 = claim_next_cloud_job(db, "worker-1")
+    claimed2 = claim_next_demo_cloud_job(db, "worker-1")
     claimed2.lease_expires_at = datetime.now(timezone.utc) - timedelta(minutes=1)
     claimed2.attempt_count = 3
     claimed2.max_attempts = 3
@@ -466,7 +467,7 @@ def test_p1_no_runtime_created_on_claim(db):
     from app.models import Tenant
 
     before_tenants = list(db.scalars(select(Tenant)).all())
-    claimed = claim_next_cloud_job(db, "worker-1")
+    claimed = claim_next_demo_cloud_job(db, "worker-1")
     after_tenants = list(db.scalars(select(Tenant)).all())
     assert len(before_tenants) == len(after_tenants) == 0
     assert claimed is not None

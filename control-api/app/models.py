@@ -1355,17 +1355,32 @@ class CloudProvisioningRequest(Base):
     runtime_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     github_repository: Mapped[str | None] = mapped_column(String(255), nullable=True)
     version: Mapped[int] = mapped_column(Integer, default=1)
+    # P1.3 — Durable provisioning approval (fail-closed)
+    provisioning_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    provisioning_approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    provisioning_approved_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    provisioning_approval_fingerprint: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    # P1.3 — Persistent Enterprise quote approval (operator-controlled)
+    quote_approved: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    quote_approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    quote_approved_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    user: Mapped[User] = relationship()
+    user: Mapped[User] = relationship(foreign_keys=[user_id])
     subscription: Mapped[CloudSubscription] = relationship(back_populates="provisioning_requests")
     tenant: Mapped[Tenant | None] = relationship()
     instance: Mapped["CloudInstance | None"] = relationship(
         back_populates="provisioning_request", uselist=False
     )
+    approved_by_user: Mapped[User | None] = relationship(foreign_keys=[provisioning_approved_by_user_id])
+    quote_approved_by_user: Mapped[User | None] = relationship(foreign_keys=[quote_approved_by_user_id])
 
 
 class CloudInstance(Base):

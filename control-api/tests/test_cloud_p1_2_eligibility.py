@@ -31,10 +31,14 @@ from app.services.cloud_auth_service import RegisterInput, register_cloud_custom
 from app.services.cloud_catalog_service import get_plan_by_code, list_published_cloud_packages, seed_helpers_cloud
 from app.services.cloud_checkout_service import checkout_demo
 from app.services.cloud_provisioning_service import (
-    claim_next_cloud_job,
+    approve_cloud_request_for_real_provisioning,
+    approve_cloud_request_quote,
+    claim_next_demo_cloud_job,
+    claim_next_real_cloud_job,
     cloud_request_eligibility_reasons,
     is_cloud_request_eligible_for_real_provisioning,
 )
+from app.services.project_service import upsert_github_user
 from app.services.cloud_setup_service import (
     get_or_create_draft_setup,
     save_company,
@@ -46,9 +50,26 @@ from app.services.cloud_setup_service import (
 
 @pytest.fixture(autouse=True)
 def _reset_auth_limits():
+    import os
+    from app.config import get_settings
+    os.environ["OPERATOR_GITHUB_LOGINS"] = "operator"
+    get_settings.cache_clear()
     reset_rate_limit_for_tests()
     yield
     reset_rate_limit_for_tests()
+    get_settings.cache_clear()
+
+
+def _operator(db, login: str = "operator") -> User:
+    import os
+    from app.config import get_settings
+    os.environ["OPERATOR_GITHUB_LOGINS"] = "operator"
+    get_settings.cache_clear()
+    return upsert_github_user(
+        db,
+        {"id": 9000 if login == "operator" else 9001, "login": login, "name": "Operator", "email": f"{login}@test.example", "avatar_url": None},
+        "tok-op",
+    )
 
 
 def _register(db, email: str) -> User:
@@ -223,7 +244,7 @@ def test_manual_demo_style_request_remains_ineligible(db):
     assert req.runtime_verified is False
     assert is_cloud_request_eligible_for_real_provisioning(req, subscription=sub, plan=sub.plan) is False
     _clear_queued(db, keep={req.id})
-    assert claim_next_cloud_job(db, "real-worker", for_real_provisioning=True) is None
+    assert claim_next_real_cloud_job(db, "real-worker") is None
     db.refresh(req)
     assert req.status == CLOUD_PROVISION_QUEUED
     assert req.claimed_by is None
@@ -237,14 +258,22 @@ def test_enterprise_without_quote_approval_ineligible(db):
     plan.quote_required = True
     db.commit()
     tpl = db.get(CloudTemplate, req.template_id)
+    # Persisted quote_approved is authoritative; caller flag is ignored
     assert is_cloud_request_eligible_for_real_provisioning(
-        req, subscription=sub, plan=plan, template=tpl, quote_approved=False
+        req, subscription=sub, plan=plan, template=tpl
     ) is False
     assert "quote_not_approved" in cloud_request_eligibility_reasons(
-        req, subscription=sub, plan=plan, template=tpl, quote_approved=False
+        req, subscription=sub, plan=plan, template=tpl
     )
+    # After persistent operator quote approval, eligible
+    op = _operator(db)
+    approve_cloud_request_quote(db, req.id, op)
+    db.refresh(req)
+    sub = db.get(CloudSubscription, req.subscription_id)
+    plan = db.get(CloudPlan, sub.plan_id)
+    tpl = db.get(CloudTemplate, req.template_id)
     assert is_cloud_request_eligible_for_real_provisioning(
-        req, subscription=sub, plan=plan, template=tpl, quote_approved=True
+        req, subscription=sub, plan=plan, template=tpl
     ) is True
 
 
@@ -334,7 +363,10 @@ def test_real_claim_skips_demo_rows(db):
     _o, _s, demo_req, _i = _checkout_demo(db, user, "elig-skip", "elig-skip-key-001")
     eligible = _make_eligible_request(db, email="elig-skip2@company.example", subdomain="elig-skip2")
     _clear_queued(db, keep={demo_req.id, eligible.id})
-    claimed = claim_next_cloud_job(db, "real-1", for_real_provisioning=True)
+    # P1.3: durable approval required for real claim
+    op = _operator(db)
+    approve_cloud_request_for_real_provisioning(db, eligible.id, op)
+    claimed = claim_next_real_cloud_job(db, "real-1")
     assert claimed is not None
     assert claimed.id == eligible.id
     assert claimed.adapter == CLOUD_ADAPTER_LOCAL_DOCKER
@@ -348,11 +380,14 @@ def test_two_eligible_jobs_retain_atomic_claim(db):
     a = _make_eligible_request(db, email="elig-a@company.example", subdomain="elig-a")
     b = _make_eligible_request(db, email="elig-b@company.example", subdomain="elig-b")
     _clear_queued(db, keep={a.id, b.id})
-    c1 = claim_next_cloud_job(db, "worker-A", for_real_provisioning=True)
-    c2 = claim_next_cloud_job(db, "worker-B", for_real_provisioning=True)
+    op = _operator(db)
+    approve_cloud_request_for_real_provisioning(db, a.id, op)
+    approve_cloud_request_for_real_provisioning(db, b.id, op)
+    c1 = claim_next_real_cloud_job(db, "worker-A")
+    c2 = claim_next_real_cloud_job(db, "worker-B")
     assert {c1.id, c2.id} == {a.id, b.id}
     assert c1.claimed_by != c2.claimed_by
-    assert claim_next_cloud_job(db, "worker-C", for_real_provisioning=True) is None
+    assert claim_next_real_cloud_job(db, "worker-C") is None
 
 
 def test_eligibility_creates_no_runtime_resources(db):
@@ -366,7 +401,7 @@ def test_eligibility_creates_no_runtime_resources(db):
     assert is_cloud_request_eligible_for_real_provisioning(
         req, subscription=sub, plan=plan, template=tpl
     )
-    claim_next_cloud_job(db, "real-rt", for_real_provisioning=True)
+    claim_next_real_cloud_job(db, "real-rt")
     after = {t.id for t in db.scalars(select(Tenant)).all()}
     assert after == before_ids
     assert req.runtime_url is None

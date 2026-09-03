@@ -24,7 +24,7 @@ from app.product_lines import CLOUD_PROVISION_QUEUED, PRODUCT_LINE_HELPERS_CLOUD
 from app.services.cloud_auth_service import RegisterInput, register_cloud_customer, reset_rate_limit_for_tests
 from app.services.cloud_catalog_service import get_plan_by_code, list_published_cloud_packages
 from app.services.cloud_checkout_service import checkout_demo
-from app.services.cloud_provisioning_service import claim_next_cloud_job, reconcile_stale_cloud_jobs
+from app.services.cloud_provisioning_service import claim_next_demo_cloud_job, claim_next_real_cloud_job, reconcile_stale_cloud_jobs
 from app.services.cloud_setup_service import get_or_create_draft_setup, save_addons, save_company, save_package, save_plan, save_version
 from app.config import get_settings
 
@@ -180,7 +180,7 @@ def test_p1_1_atomic_claim_single_job_race_two_workers_file_backed():
             db = SessionLocal()
             try:
                 barrier.wait(timeout=5)
-                claimed = claim_next_cloud_job(db, name)
+                claimed = claim_next_demo_cloud_job(db, name)
                 results[key] = claimed.id if claimed else None
                 # Also record claimed_by for winner
                 if claimed:
@@ -279,7 +279,7 @@ def test_p1_1_atomic_claim_two_jobs_two_workers_no_duplication():
             db = SessionLocal()
             try:
                 barrier.wait(timeout=5)
-                claimed = claim_next_cloud_job(db, name)
+                claimed = claim_next_demo_cloud_job(db, name)
                 results[key] = claimed.id if claimed else None
             except Exception as e:
                 results[key] = f"error:{e}"
@@ -348,7 +348,7 @@ def test_p1_1_atomic_claim_future_next_attempt_not_claimable():
             db = SessionLocal()
             try:
                 barrier.wait(timeout=5)
-                claimed = claim_next_cloud_job(db, name)
+                claimed = claim_next_demo_cloud_job(db, name)
                 results[key] = claimed.id if claimed else None
             finally:
                 db.close()
@@ -369,7 +369,7 @@ def test_p1_1_atomic_claim_future_next_attempt_not_claimable():
         s2.close()
 
         s3 = SessionA()
-        claimed = claim_next_cloud_job(s3, "worker-C")
+        claimed = claim_next_demo_cloud_job(s3, "worker-C")
         assert claimed is not None and claimed.id == req.id
         s3.close()
 
@@ -417,14 +417,14 @@ def test_p1_1_atomic_claim_losing_session_usable_and_stale_not_overwrite_valid_l
             db = SessionLocal()
             try:
                 barrier.wait(timeout=5)
-                claimed = claim_next_cloud_job(db, name)
+                claimed = claim_next_demo_cloud_job(db, name)
                 results[key] = claimed.id if claimed else None
                 # Losing session should still be usable: try to query
                 cnt = db.scalar(select(CloudProvisioningRequest).where(CloudProvisioningRequest.id == id1))
                 results[key + "_usable"] = cnt is not None
                 # If lost, try to claim second job
                 if claimed is None:
-                    second = claim_next_cloud_job(db, name + "-retry")
+                    second = claim_next_demo_cloud_job(db, name + "-retry")
                     results[key + "_second"] = second.id if second else None
             finally:
                 db.close()
@@ -499,7 +499,7 @@ def test_p1_1_no_runtime_created_on_concurrent_claim():
         engine_a = create_engine(f"sqlite:///{path}", connect_args={"check_same_thread": False, "timeout": 10})
         SessionA = sessionmaker(bind=engine_a, autoflush=False, autocommit=False, expire_on_commit=False)
         db = SessionA()
-        claimed = claim_next_cloud_job(db, "worker-1")
+        claimed = claim_next_demo_cloud_job(db, "worker-1")
         assert claimed is not None
         assert claimed.tenant_id is None
         assert claimed.internal_url is None

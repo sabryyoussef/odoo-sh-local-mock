@@ -1,0 +1,15 @@
+P2 Disposable Resource Manifest (redacted)
+Run ID: p2_20260903T124908Z_6c905ccb2aa2 (redacted in identifiers)
+Template: mosh_tpl_cloud_base_19_0_trading (cloud_base, 19.0, validated)
+Adapter: LocalDockerCloudAdapter (local Docker, Odoo 19, loopback-only)
+
+Disposable identifiers (pattern, redacted):
+- tenant_code: p2_<run_slug>_<request_id>_<rand> (e.g., p2_p2_20260903t124908z_6c90_1_a1b2c3)
+- db_name: mosh_tnt_p2_<run_slug>_<rand> (e.g., mosh_tnt_p2_p2_20260903t124908z_6c90_a1b2c3)
+- role_name: mosh_r_p2_<run_slug>_<rand>_role
+- container_name: mosh-tenant-p2-<run_slug>-<request_id>-<rand>
+- filestore_path: <tenant_root>/.p2_filestore_<run_id>/<tenant_code>/filestore
+- http_port: allocated from 8201-8298, collision-free, loopback-only 127.0.0.1:<port>
+- labels: mock_odoo_sh=true, mosh_tenant=true, p2=true, p2_run_id=<run_id>, helpers_cloud=true, cloud_request_id=<id>, tenant_code=<code>
+
+All resources uniquely identified by run_id, never reuse, exact-target cleanup, no wildcard.

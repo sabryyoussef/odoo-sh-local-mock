@@ -1,0 +1,8 @@
+{
+  "run_id": "p2_20260903T124908Z_6c905ccb2aa2",
+  "head": "aa5ffb5aaed01596f9eb94ce7d93959f4bec853c",
+  "branch": "main",
+  "timestamp": "2026-09-03T12:49:08Z",
+  "backup": "data/control.db.backup.20260903T124800Z_p2_preflight",
+  "sha256": "ab6195c2a1583bc66ce75373d4a876b1a49523f83fc81e196f477813f78b8855"
+}

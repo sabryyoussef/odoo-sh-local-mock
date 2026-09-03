@@ -1,0 +1,11 @@
+cloud_base template contract:
+- package_code: trading
+- odoo_version_code: 19.0
+- template_kind: cloud_base
+- postgres_database_name: mosh_tpl_cloud_base_19_0_trading (dedicated, not mosh_tnt_)
+- status: validated
+- health: healthy
+- checksum: sha256 of base modules
+- validation: ensure_cloud_template_validated() verifies DB exists, ir_module_module base installed, Odoo init via docker odoo -i base --stop-after-init, checksum, no customer data
+- never uses tenant DB as template
+- re-validates if DB inaccessible

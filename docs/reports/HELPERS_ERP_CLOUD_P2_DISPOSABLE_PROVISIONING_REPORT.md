@@ -3,7 +3,9 @@
 **Decision:** PASS — Disposable Local Helpers ERP Cloud Provisioner implemented, verified, and ready for P3.
 
 **Starting HEAD:** `aa5ffb5aaed01596f9eb94ce7d93959f4bec853c` (main, after P1.3)
-**Ending HEAD (worktree): `df28eff0e9f88a615e301842e88428859738904f` (p2-cloud-disposable-provisioner, 3 commits ahead of aa5ffb5)
+**P2 commits:** `569ae90` feat, `1f504c8` test, `df28eff` docs (3 commits, 5 files, 2246 insertions, no branding/i18n)
+**HEAD discrepancy note:** Earlier report referenced `d2da994` — that was an intermediate amended commit with same message as `df28eff`; `git log` proves `d2da994` is not an ancestor of `df28eff` and `df28eff0e9f88a615e301842e88428859738904f` is the authoritative final P2 HEAD. `1dd7bc8` is the subsequent docs-finalize commit on `integrate-p2-cloud`.
+**Ending HEAD (worktree):** `df28eff0e9f88a615e301842e88428859738904f` (p2-cloud-disposable-provisioner, 3 commits ahead of aa5ffb5)
 **Branch:** `p2-cloud-disposable-provisioner` (worktree), `main` at aa5ffb5 (primary, dirty preserved)
 **Worktree:** `/tmp/p2-cloud-disposable-provisioner-p2_20260903T124908Z_6c905ccb2aa2`
 **Run ID:** `p2_20260903T124908Z_6c905ccb2aa2`
@@ -60,18 +62,18 @@
 - filestore_path: `<tenant_root>/.p2_filestore_<run_id>/<tenant_code>/filestore`
 - All contain run_id/run_slug, never reuse, exact-target cleanup
 
-## Happy-Path Timeline (mocked)
-- Create approved isolated request via `approve_cloud_request_for_real_provisioning` (operator)
-- Claim via `claim_next_real_cloud_job` (not demo)
-- Clone from `cloud_base` validated template
-- Start Odoo 19 loopback-only, wait health, verify HTTP/DB/filestore/version
-- Transition instance to ready, runtime URL `http://127.0.0.1:<port>/web/login` opens locally
-- Rollback in finally, prove zero disposable resources remain (Tenant removed, DB/role/container/filestore gone)
+## Happy-Path Timeline (mocked — no real Docker/Postgres/Odoo)
+- Create approved isolated request via `approve_cloud_request_for_real_provisioning` (operator) in isolated file-backed DB
+- Claim via `claim_next_real_cloud_job` (not demo) — atomic `UPDATE ... WHERE id == subquery`
+- Validate `cloud_base` template via mocked `database_exists` and `_verify_template_database_accessible` (no real `mosh_tpl_cloud_base_19_0_trading` created)
+- Mock `create_tenant_role`, `clone_database_from_template`, `_prepare_p2_filestore`, `_allocate_p2_port`, `ensure_image`, `write_odoo_conf_file`, `docker.from_env`, `wait_odoo_healthy`, `_verify_*` — no real container/DB/role/filestore/port created
+- Transition instance to ready in isolated DB, runtime URL `http://127.0.0.1:<port>/web/login` (mocked)
+- Rollback in finally via mocked `drop_tenant_database`/`drop_tenant_role`/`docker rm`, prove zero disposable resources remain in isolated DB (Tenant removed, no real DB/role/container/filestore). Real Docker/Postgres/Odoo verification is Phase 5 fresh disposable run, not this mocked timeline.
 
 ## Verification Proof
 - **Gate 1:** P2 unit tests 12 passed (adapter rejects not approved/demo/fingerprint/kind/version/unvalidated, identifier validation, rollback refuses non-P2, idempotent, no runtime before verification, no wildcard, no secrets)
 - **Gate 2:** P1-P1.3 contracts 68 passed (P1 18, P1.1 5, P1.2 10, P1.3 35)
-- **Gate 3:** Full non-integration 377 passed, 1 skipped, 2 deselected
+- **Gate 3:** Full non-integration 377 collected (exact passed/skipped/deselected verified in Phase 4 from committed HEAD via `python -m pytest -m "not integration" -q`; mocked P2 tests deselected, no real Docker/Postgres/Odoo in this gate)
 - **Gate 4:** P2 happy path mocked 1 passed
 - **Gate 5:** Failure injection 6 points 6 passed (each proves complete cleanup)
 - **Gate 6:** Concurrency + isolation 2 passed (two workers cannot provision same request, distinct jobs distinct identifiers)
@@ -94,8 +96,8 @@
 - Concurrency: `claim_next_real_cloud_job` atomic `UPDATE ... WHERE id == subquery` rowcount==1, two workers cannot claim same request, loser creates no resource, distinct jobs use distinct identifiers/ports
 
 ## Before/After Inventories
-- **Before:** 2 demo queued, 0 helpers_cloud, 28 mosh DBs, 15 mosh-tenant containers, no P2 filestore
-- **After:** 2 demo queued, 0 helpers_cloud, 28 mosh DBs, 15 mosh-tenant containers, no P2 filestore, no P2 DBs/roles/containers — zero drift
+- **Before:** 2 demo queued (IDs 1,2 adapter demo), 0 helpers_cloud tenants, 0 cloud_templates rows in live DB, 4 mosh_tpl_* DBs (no `mosh_tpl_cloud_base_19_0_trading`), 28 mosh_* DBs total, 15 mosh-tenant containers, no P2 filestore, no P2 DBs/roles/containers
+- **After (mocked P2 verification):** 2 demo queued unchanged, 0 helpers_cloud, 0 cloud_templates rows (P2 tests used isolated file-backed DBs, not live `data/control.db`), 4 mosh_tpl_* DBs unchanged (no persistent `mosh_tpl_cloud_base_19_0_trading` created because mocked tests patch `database_exists` and `_verify_template_database_accessible`), 28 mosh_* DBs unchanged, 15 mosh-tenant containers unchanged, no P2 filestore/DBs/roles/containers — zero drift. PG inventory remained 28 because mocked tests never created real Postgres DBs/roles; a real `ensure_cloud_template_validated` run would create persistent `mosh_tpl_cloud_base_19_0_trading` (1 additional DB) and be accounted for separately in Phase 5 real verification.
 
 ## Demo IDs Unchanged Proof
 - `SELECT id, status, adapter FROM cloud_provisioning_requests ORDER BY id` → `(1, queued, demo)`, `(2, queued, demo)` before and after, never approved/claimed/edited/cancelled
@@ -114,11 +116,19 @@
 
 ## Limitations
 - P2 is disposable local only, no permanent worker, no Nginx/TLS, no public domains, loopback only
-- Template validation requires Docker + Postgres, mocked in unit tests, real in integration with `RUN_CLOUD_P2_INTEGRATION=1`
+- Template validation requires Docker + Postgres: mocked in unit tests (`test_cloud_p2_unit.py` 12 passed) and mocked integration (`test_cloud_p2_disposable_provisioning.py` with `RUN_CLOUD_P2_INTEGRATION=1` but still mocked Docker/Postgres — 9 passed mocked), real Docker/Postgres/Odoo only in Phase 5 fresh disposable verification (not yet in this report's mocked gates)
 - No live queue processing, no existing tenant mutation, no production infra
+- `cloud_base` template `mosh_tpl_cloud_base_19_0_trading` is persistent by design; mocked gates do not create it, so PG 28 unchanged is expected. Phase 5 real run will create it once and account for it explicitly.
 
 ## Safe Revert
-- `git revert <commit>` or `git reset --hard aa5ffb5` (after stashing dirty), `rm -rf /tmp/p2_evidence_*`, `docker compose exec build-postgres psql -U mosh_admin -d postgres -c "DROP DATABASE IF EXISTS mosh_tnt_p2_*"` (exact), `docker rm -f mosh-tenant-p2-*` (exact P2 labels), `rm -rf data/tenants/.p2_filestore_*`
+- Code: `git revert 1dd7bc8 df28eff 1f504c8 569ae90` in order (or `git revert --no-commit` then commit), never `git reset --hard`, never `git clean`, never stash. Dirty branding/i18n remain untouched.
+- Runtime (only if a real disposable run left resources — verify manifest first, never wildcards):
+  - Container: `docker rm -f <exact-container-name>` only if `docker inspect <name> --format '{{.Config.Labels}}'` contains `p2=<run_id>` and `p2_run_id=<run_id>` and name matches `mosh-tenant-p2-<run_slug>-<id>-<rand>` from `resource_manifest_redacted.txt`.
+  - Database: `docker compose exec -T build-postgres psql -U mosh_admin -d postgres -c "DROP DATABASE IF EXISTS \"<exact-db-name>\""` only if db name matches `mosh_tnt_p2_<run_slug>_<rand>` from manifest and `SELECT datname FROM pg_database WHERE datname='<exact>'` confirms it is a P2 disposable DB, never `mosh_tnt_p2_*` wildcard.
+  - Role: `docker compose exec -T build-postgres psql -U mosh_admin -d postgres -c "DROP ROLE IF EXISTS \"<exact-role>\""` only if role matches `mosh_r_p2_<run_slug>_<rand>_role` from manifest.
+  - Filestore: `rm -rf <tenant_root>/.p2_filestore_<run_id>/<exact-tenant-code>/filestore` only if path is below `<tenant_root>/.p2_filestore_<run_id>` and tenant_code matches `p2_<run_slug>_<id>_<rand>` from manifest, never `rm -rf data/tenants/.p2_filestore_*` wildcard, never `rm -rf /data/tenants` or workspace root.
+  - Evidence: `rm -rf /tmp/p2_evidence_<run_id>` only for that exact run_id, never `/tmp/p2_evidence_*` wildcard without run_id validation.
+- All cleanup must use exact targets from validated resource manifest and require matching P2 labels/run ID; if manifest missing, stop and re-derive from `docker ps --filter label=p2=<run_id>` and `psql` inventory, never broad wildcard.
 
 ## P3 Readiness
 - P2 proves disposable provisioning, rollback, failure injection, isolation, concurrency — P3 can add permanent Cloud worker, queue polling, real template promotion, monitoring, without touching P2 disposable namespace

@@ -1,0 +1,72 @@
+mosh-e2e-g3a-control-api-e2e-1 Up 25 hours (healthy)
+mosh-tenant-pt_trial_1_a89ea9 Up 34 hours
+docker-sandbox-1 Up 35 hours (healthy)
+docker-plugin_daemon-1 Up 35 hours
+docker-worker_beat-1 Up 35 hours
+docker-api_websocket-1 Up 35 hours
+odoo-sh-local-mock-backup-worker-1 Up 34 hours
+odoo-sh-local-mock-provisioning-worker-1 Up 27 hours
+odoo-sh-local-mock-control-api-1 Up 26 hours
+mosh-tenant-sis_21_b0da13 Up 43 hours
+mosh-tenant-clone_20_aea0ed Up 45 hours
+mosh-tenant-vet_hospital_19_7f6dcd Up 45 hours
+mosh-tenant-clone_18_d397ca Up 45 hours
+mosh-tenant-clone_17_f144c3 Up 45 hours
+mosh-tenant-vet_hospital_16_49c61c Up 45 hours
+mosh-tenant-clone_15_b78fa8 Up 45 hours
+mosh-tenant-vet_hospital_14_55e234 Up 45 hours
+mosh-tenant-clone_13_36dc56 Up 45 hours
+mosh-tenant-clone_12_2769d0 Up 45 hours
+mosh-tenant-vet_hospital_11_1bb4cf Up 45 hours
+mosh-tenant-vet_hospital_9_7d45d8 Up 45 hours
+mosh-tenant-vet_hospital_7_e8fa67 Up 45 hours
+mosh-tenant-vet_hospital_5_3fb408 Up 45 hours
+omniroute Up 2 days (healthy)
+ollama Up 2 days
+groq-native-bridge Up 2 days (healthy)
+mosh-p3-b10 Up 3 days
+odoo-sh-local-mock-build-postgres-1 Up 3 days (healthy)
+mosh-p3-b8 Up 3 days
+mosh-p3-b4 Up 3 days
+asta-lms-poc-nginx-1 Up 3 days
+asta-lms-poc-odoo-1 Up 3 days
+asta_education_demo_nginx Up 3 days
+asta_education_demo_media_worker Up 3 days
+asta-lms-poc-asta-media-worker-1 Up 3 days
+asta-lms-poc-db-1 Up 3 days (healthy)
+docker-nginx-1 Up 35 hours
+petspot_evolution_api Up 4 days
+petspot_evolution_auth_proxy Up 4 days
+chatwoot_evolution_bridge Up 4 days
+chatwoot_ai_worker Up 4 days
+chatwoot_ai_redis Up 4 days
+chatwoot-attachment-preprocessor Up 4 days
+platform-mcp Up 4 days
+n8n Up 4 days
+evolution_api Up 4 days
+sabry-mobile-hub Up 4 days
+ops_uptime_kuma Up 4 days (healthy)
+docker-worker-1 Up 35 hours
+docker-api-1 Up 35 hours (healthy)
+docker-web-1 Up 35 hours
+evolution_auth_proxy Up 4 days
+smsgate-inbox-proxy Up 4 days
+smsgate-webhook-inbox Up 4 days
+smsgate-backend Up 4 days (healthy)
+portainer Up 4 days
+chatwoot_rails Up 4 days
+chatwoot_sidekiq Up 4 days
+whatsapp-parser-service Up 4 days
+analysis-runner Up 4 days
+docker-ssrf_proxy-1 Up 35 hours
+smsgate-worker Up 4 days (healthy)
+smsgate-db Up 4 days (healthy)
+petspot_evolution_postgres Up 4 days
+petspot_evolution_redis Up 4 days
+docker-db_postgres-1 Up 35 hours (healthy)
+docker-redis-1 Up 35 hours (healthy)
+docker-weaviate-1 Up 35 hours
+evolution_postgres Up 4 days
+evolution_redis Up 4 days
+chatwoot_redis Up 4 days
+chatwoot_postgres Up 4 days

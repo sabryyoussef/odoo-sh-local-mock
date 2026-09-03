@@ -1,0 +1,15 @@
+P2 Verification Gates Summary
+Run ID: p2_20260903T124908Z_6c905ccb2aa2
+HEAD: aa5ffb5aaed01596f9eb94ce7d93959f4bec853c
+Backup: data/control.db.backup.20260903T124800Z_p2_preflight SHA256 ab6195c2a1583bc66ce75373d4a876b1a49523f83fc81e196f477813f78b8855
+
+Gate 1: P2 unit tests — 12 passed
+Gate 2: P1-P1.3 contracts — 68 passed
+Gate 3: Full non-integration — passed (376+ tests, 1 skipped)
+Gate 4: P2 happy path mocked — 1 passed
+Gate 5: Failure injection 6 points — 6 passed
+Gate 6: Concurrency + isolation — 2 passed
+Gate 7: Full non-integration after cleanup — passed
+Gate 8: Final inventory diff — no drift, demo IDs 1,2 unchanged, helpers_cloud 0, no P2 filestore, no P2 containers/DBs/roles
+
+All gates PASS

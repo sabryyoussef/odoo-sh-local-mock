@@ -1,0 +1,4 @@
+1|trial|1|1|0
+2|starter|1|0|0
+3|business|1|0|0
+4|enterprise|1|0|1

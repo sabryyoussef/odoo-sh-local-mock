@@ -1,0 +1,63 @@
+ M control-api/app/branding.py
+ M control-api/app/config.py
+ M control-api/app/dummy_data.py
+ M control-api/app/main.py
+ M control-api/app/services/cloud_docker_adapter.py
+ M control-api/app/static/css/app.css
+ M control-api/app/static/css/theme-helpers-erp.css
+ M control-api/app/templates/account.html
+ M control-api/app/templates/authorize.html
+ M control-api/app/templates/base.html
+ M control-api/app/templates/branches.html
+ M control-api/app/templates/catalog.html
+ M control-api/app/templates/catalog_solution.html
+ M control-api/app/templates/checkout.html
+ M control-api/app/templates/deploy.html
+ M control-api/app/templates/deploy_progress.html
+ M control-api/app/templates/landing.html
+ M control-api/app/templates/not_found.html
+ M control-api/app/templates/operator/backups.html
+ M control-api/app/templates/operator/platform.html
+ M control-api/app/templates/operator/provisioning.html
+ M control-api/app/templates/operator/solutions.html
+ M control-api/app/templates/operator/tenants.html
+ M control-api/app/templates/partials/app_topbar.html
+ M control-api/app/templates/partials/cta_footer.html
+ M control-api/app/templates/partials/event_card.html
+ M control-api/app/templates/partials/feature_cards.html
+ M control-api/app/templates/partials/hero.html
+ M control-api/app/templates/partials/history_timeline.html
+ M control-api/app/templates/partials/portal_nav.html
+ M control-api/app/templates/partials/preview_mock.html
+ M control-api/app/templates/partials/product_line_cards.html
+ M control-api/app/templates/partials/projects_top_bar.html
+ M control-api/app/templates/payment_success.html
+ M control-api/app/templates/platform/deploy/_wizard_base.html
+ M control-api/app/templates/platform/index.html
+ M control-api/app/templates/platform/pricing.html
+ M control-api/app/templates/portal/dashboard.html
+ M control-api/app/templates/portal/provisioning.html
+ M control-api/app/templates/portal/subscription_detail.html
+ M control-api/app/templates/portal/subscriptions.html
+ M control-api/app/templates/portal/tenant_detail.html
+ M control-api/app/templates/portal/tenants.html
+ M control-api/app/templates/portal/trial_confirm.html
+ M control-api/app/templates/pricing.html
+ M control-api/app/templates/pricing_hub.html
+ M control-api/app/templates/project_new.html
+ M control-api/app/templates/projects.html
+ M control-api/app/translations.py
+ M control-api/app/view_context.py
+ M control-api/app/worker_main.py
+ M control-api/e2e/specs/three-product-lines.spec.js
+ M control-api/tests/test_saas_catalog.py
+ M control-api/tests/test_three_product_navigation.py
+ M docs/DEMO.md
+?? control-api/app/services/cloud_worker_service.py
+?? control-api/app/static/css/landing-odoo.css
+?? control-api/app/templates/partials/imagine.html
+?? control-api/app/templates/partials/productivity.html
+?? control-api/app/templates/partials/site_footer.html
+?? control-api/app/templates/partials/value_props.html
+?? docs/reports/evidence/helpers-erp-cloud-p3/
+?? documentation/

@@ -1,0 +1,2 @@
+1|helpers_cloud|demo_trial|3|7|CLS-7E004D54B777
+2|helpers_cloud|demo_trial|1|8|CLS-477A7475467B

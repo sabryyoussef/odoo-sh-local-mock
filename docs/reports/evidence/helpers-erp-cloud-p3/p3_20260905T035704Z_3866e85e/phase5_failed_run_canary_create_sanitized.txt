@@ -1,0 +1,19 @@
+RUN_ID=p3_20260905T054700Z_9340f78e
+Template id=1 db=mosh_tpl_cloud_base_19_0_trading status=validated health=healthy
+Creating user p3-canary-9d5576dd@test.example
+User id=9 email=p3-canary-9d5576dd@test.example
+Plan id=3 code=business active=True is_demo=False quote_required=False
+Version id=1 code=19.0
+Package id=2 code=trading
+Order id=3 code=CLO-966F70A2
+Subscription id=3 code=CLS-9DF41E71 status=active
+Request id=3 uuid=374242ca0f3723c020b32c33d5ec3071 adapter=local_docker template_id=1
+Instance id=3 subdomain=p3-canary-49df00
+Operator id=10 login=sabryyoussef
+Approved request id=3 provisioning_approved=True fingerprint=abeff4ddc2c87c92
+Final request status=queued adapter=local_docker template_id=1 provisioning_approved=True
+Queued count=3
+  id=1 adapter=demo template_id=None eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible'] approved=False
+  id=2 adapter=demo template_id=None eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo'] approved=False
+  id=3 adapter=local_docker template_id=1 eligible=True reasons=[] approved=True
+MANIFEST_JSON:{"run_id": "p3_20260905T054700Z_9340f78e", "request_id": 3, "request_uuid": "374242ca0f3723c020b32c33d5ec3071", "user_id": 9, "subscription_id": 3, "template_id": 1, "template_db": "mosh_tpl_cloud_base_19_0_trading", "instance_id": 3, "subdomain": "p3-canary-49df00", "product_line": "helpers_cloud", "adapter": "local_docker", "status": "queued", "provisioning_approved": true, "community_edition": true, "disposable": true, "authorized": true}

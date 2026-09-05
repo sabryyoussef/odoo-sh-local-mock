@@ -1,0 +1,288 @@
+P3 Phase 5 — Preflight
+======================
+Run ID: p3_20260905T035704Z_3866e85e
+P3 HEAD: 52e0d44d0676b1e351129053a4784bf4eb51a2a7
+Main HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+Branch: p3-helpers-erp-cloud-controlled-activation
+Date (UTC): 2026-09-05T05:40:24Z
+
+Checks:
+- P3 worktree exists at /tmp/p3-helpers-erp-cloud-p3
+- Branch p3-helpers-erp-cloud-controlled-activation
+- HEAD 52e0d44 matches expected
+- Main 73e75b9 matches expected
+- P3 NOT merged into main (merge-base --is-ancestor fails)
+- Phase 4 evidence exists (5 files)
+- Phase 4 commit 52e0d44 exists
+
+--- Cloud Requests ---
+1|queued|helpers_cloud|demo||0|0|
+2|queued|helpers_cloud|demo||0|0|
+
+--- Worker Heartbeat ---
+{"status": "idle", "worker_id": "provisioning-worker-1", "timestamp": "2026-09-05T05:46:00.726415+00:00"}
+--- Containers (mosh-tenant) ---
+mosh-tenant-pt_trial_1_a89ea9 Up 3 days 8071-8072/tcp, 127.0.0.1:8215->8069/tcp
+mosh-tenant-sis_21_b0da13 Up 3 days 8071-8072/tcp, 127.0.0.1:8214->8069/tcp
+mosh-tenant-clone_20_aea0ed Up 3 days 8071-8072/tcp, 127.0.0.1:8213->8069/tcp
+mosh-tenant-vet_hospital_19_7f6dcd Up 3 days 8071-8072/tcp, 127.0.0.1:8212->8069/tcp
+mosh-tenant-clone_18_d397ca Up 3 days 8071-8072/tcp, 127.0.0.1:8211->8069/tcp
+mosh-tenant-clone_17_f144c3 Up 3 days 8071-8072/tcp, 127.0.0.1:8210->8069/tcp
+mosh-tenant-vet_hospital_16_49c61c Up 3 days 8071-8072/tcp, 127.0.0.1:8209->8069/tcp
+mosh-tenant-clone_15_b78fa8 Up 3 days 8071-8072/tcp, 127.0.0.1:8208->8069/tcp
+mosh-tenant-vet_hospital_14_55e234 Up 3 days 8071-8072/tcp, 127.0.0.1:8207->8069/tcp
+mosh-tenant-clone_13_36dc56 Up 3 days 8071-8072/tcp, 127.0.0.1:8206->8069/tcp
+mosh-tenant-clone_12_2769d0 Up 3 days 8071-8072/tcp, 127.0.0.1:8205->8069/tcp
+mosh-tenant-vet_hospital_11_1bb4cf Up 3 days 8071-8072/tcp, 127.0.0.1:8204->8069/tcp
+mosh-tenant-vet_hospital_9_7d45d8 Up 3 days 8071-8072/tcp, 127.0.0.1:8203->8069/tcp
+mosh-tenant-vet_hospital_7_e8fa67 Up 3 days 8071-8072/tcp, 127.0.0.1:8202->8069/tcp
+mosh-tenant-vet_hospital_5_3fb408 Up 3 days 8071-8072/tcp, 127.0.0.1:8201->8069/tcp
+
+--- PG Roles ---
+              rolname               
+------------------------------------
+ mosh_admin
+ mosh_odoo
+ mosh_r_clone_12_2769d0_role
+ mosh_r_clone_13_36dc56_role
+ mosh_r_clone_15_b78fa8_role
+ mosh_r_clone_17_f144c3_role
+ mosh_r_clone_18_d397ca_role
+ mosh_r_clone_20_aea0ed_role
+ mosh_r_pt_trial_1_a89ea9_role
+ mosh_r_sis_21_b0da13_role
+ mosh_r_vet_hospital_11_1bb4cf_role
+ mosh_r_vet_hospital_14_55e234_role
+ mosh_r_vet_hospital_16_49c61c_role
+ mosh_r_vet_hospital_19_7f6dcd_role
+ mosh_r_vet_hospital_5_3fb408_role
+ mosh_r_vet_hospital_7_e8fa67_role
+ mosh_r_vet_hospital_9_7d45d8_role
+ mosh_r_vet_hospital_debug_role
+(18 rows)
+
+
+--- PG Databases ---
+              datname              
+-----------------------------------
+ mosh_p3_b1
+ mosh_p3_b10
+ mosh_p3_b2
+ mosh_p3_b4
+ mosh_p3_b5
+ mosh_p3_b7
+ mosh_p3_b8
+ mosh_p3_b9
+ mosh_tnt_clone_12_2769d0
+ mosh_tnt_clone_13_36dc56
+ mosh_tnt_clone_15_b78fa8
+ mosh_tnt_clone_17_f144c3
+ mosh_tnt_clone_18_d397ca
+ mosh_tnt_clone_20_aea0ed
+ mosh_tnt_pt_trial_1_a89ea9
+ mosh_tnt_sis_21_b0da13
+ mosh_tnt_vet_hospital_11_1bb4cf
+ mosh_tnt_vet_hospital_14_55e234
+ mosh_tnt_vet_hospital_16_49c61c
+ mosh_tnt_vet_hospital_19_7f6dcd
+ mosh_tnt_vet_hospital_5_3fb408
+ mosh_tnt_vet_hospital_7_e8fa67
+ mosh_tnt_vet_hospital_9_7d45d8
+ mosh_tnt_vet_hospital_debug
+ mosh_tpl_cloud_base_19_0_trading
+ mosh_tpl_hms_v1_0_0_demo
+ mosh_tpl_odoo19_community_base_v1
+ mosh_tpl_sis_v1_0_0_demo
+ mosh_tpl_vet_hospital_v1_0_0_demo
+(29 rows)
+
+
+--- Ports ---
+LISTEN 0      4096                     127.0.0.1:18081      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18080      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18088      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:34671      0.0.0.0:*    users:(("node",pid=2617094,fd=21))                                                                                                                      
+LISTEN 0      4096                     127.0.0.1:631        0.0.0.0:*                                                                                                                                                            
+LISTEN 0      5                        127.0.0.1:20129      0.0.0.0:*    users:(("python3",pid=371563,fd=3))                                                                                                                     
+LISTEN 0      4096                     127.0.0.1:20128      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:36823      0.0.0.0:*    users:(("node",pid=2617032,fd=21))                                                                                                                      
+LISTEN 0      4096                     127.0.0.1:20241      0.0.0.0:*    users:(("cloudflared",pid=3483356,fd=9))                                                                                                                
+LISTEN 0      4096                     127.0.0.1:3000       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:3055       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18443      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:5678       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:6060       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      128                      127.0.0.1:38397      0.0.0.0:*    users:(("code-08d4889f9e",pid=8498,fd=11))                                                                                                              
+LISTEN 0      200                      127.0.0.1:5432       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:5003       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8099       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8101       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8103       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8102       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8080       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8088       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8091       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8090       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8093       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8092       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8094       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8069       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      128                      127.0.0.1:8033       0.0.0.0:*    users:(("python3",pid=21969,fd=4))                                                                                                                      
+LISTEN 0      511                      127.0.0.1:8035       0.0.0.0:*    users:(("node",pid=20122,fd=21))                                                                                                                        
+LISTEN 0      4096                     127.0.0.1:8043       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:8044       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:8026       0.0.0.0:*    users:(("node",pid=20119,fd=21))                                                                                                                        
+LISTEN 0      128                      127.0.0.1:8031       0.0.0.0:*    users:(("python3",pid=21965,fd=4))                                                                                                                      
+LISTEN 0      511                      127.0.0.1:39201      0.0.0.0:*    users:(("node",pid=527055,fd=21))                                                                                                                       
+LISTEN 0      4096                     127.0.0.1:8791       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8209       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8208       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8211       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8210       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8213       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8212       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8215       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8214       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8199       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8201       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8203       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8202       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8205       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8204       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8207       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8206       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:60601      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:11434      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:43311      0.0.0.0:*                                                                                                                                                            
+
+--- Tenant Dirs ---
+clone_12_2769d0
+clone_13_36dc56
+clone_15_b78fa8
+clone_17_f144c3
+clone_18_d397ca
+clone_20_aea0ed
+debug-health
+hms_22_581dda
+hms_23_6dc3bb
+net-test
+pt_trial_1_001749
+pt_trial_1_06191b
+pt_trial_1_062196
+pt_trial_1_09a6a0
+pt_trial_1_0bacac
+pt_trial_1_16011e
+pt_trial_1_1ab888
+pt_trial_1_1aff44
+pt_trial_1_1d012e
+pt_trial_1_1e2cb0
+pt_trial_1_203c68
+pt_trial_1_24f02b
+pt_trial_1_253849
+pt_trial_1_2c98bb
+pt_trial_1_2fa69c
+pt_trial_1_339a2e
+pt_trial_1_3c2209
+pt_trial_1_3c2d01
+pt_trial_1_3ee841
+pt_trial_1_3f4569
+pt_trial_1_42a405
+pt_trial_1_45fa6d
+pt_trial_1_46fba2
+pt_trial_1_4c04ca
+pt_trial_1_4d0201
+pt_trial_1_4d9221
+pt_trial_1_547015
+pt_trial_1_55662b
+pt_trial_1_56e575
+pt_trial_1_5812e3
+pt_trial_1_58f4d2
+pt_trial_1_5ba62b
+pt_trial_1_69824d
+pt_trial_1_7054af
+pt_trial_1_7062d7
+pt_trial_1_723a1b
+pt_trial_1_7561a2
+pt_trial_1_75df87
+pt_trial_1_7b9db5
+pt_trial_1_7df4b1
+pt_trial_1_803c9e
+pt_trial_1_809c29
+pt_trial_1_82364b
+pt_trial_1_842f2f
+pt_trial_1_862dba
+pt_trial_1_8bfd61
+pt_trial_1_8c4166
+pt_trial_1_8c7602
+pt_trial_1_8ecfb7
+pt_trial_1_8f3cff
+pt_trial_1_91e92d
+pt_trial_1_92bbac
+pt_trial_1_934ed2
+pt_trial_1_94b295
+pt_trial_1_9d81a9
+pt_trial_1_9f7401
+pt_trial_1_a10284
+pt_trial_1_a4cbe8
+pt_trial_1_a58f63
+pt_trial_1_a89ea9
+pt_trial_1_a985ba
+pt_trial_1_aa8998
+pt_trial_1_aac284
+pt_trial_1_ac0c3e
+pt_trial_1_b10497
+pt_trial_1_b33aaa
+pt_trial_1_b8d373
+pt_trial_1_bc7427
+pt_trial_1_c46201
+pt_trial_1_c4e9ff
+pt_trial_1_c60a59
+pt_trial_1_c6329d
+pt_trial_1_c82894
+pt_trial_1_c8c7ec
+pt_trial_1_ca8ee8
+pt_trial_1_ccda3f
+pt_trial_1_d39643
+pt_trial_1_d813a8
+pt_trial_1_df3e11
+pt_trial_1_e36d35
+pt_trial_1_e3c7ef
+pt_trial_1_e416e3
+pt_trial_1_e4bbe8
+pt_trial_1_e66032
+pt_trial_1_e6c30b
+pt_trial_1_e840dc
+pt_trial_1_e94707
+pt_trial_1_e95e0b
+pt_trial_1_f26c8d
+pt_trial_1_f358fe
+
+--- Filestores ---
+no p2 filestore
+no p3 filestore
+
+--- Demo Requests Ineligible Check ---
+Two demo requests id 1,2 adapter demo template_id null provisioning_approved false -> ineligible (adapter_not_real, template_missing)
+
+--- P3 Canary Check ---
+No p3_ tenant_code, no p3_ DB with timestamp, no p3_ container with run_id, no p3 filestore
+ datname 
+---------
+(0 rows)
+
+
+--- P2 Template Ready ---
+             datname              
+----------------------------------
+ mosh_tpl_cloud_base_19_0_trading
+(1 row)
+
+CloudTemplate row count:
+0
+
+--- Unrestricted Worker Check ---
+HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=false, HELPERS_CLOUD_WORKER_MAX_JOBS=0 (fail-closed)
+not set (fail-closed)
+
+--- Resource Identity Check ---
+All resource identities are exact-target with run_id, no wildcards, cleanup ownership unambiguous

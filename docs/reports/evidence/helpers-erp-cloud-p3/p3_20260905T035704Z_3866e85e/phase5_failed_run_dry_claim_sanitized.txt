@@ -1,0 +1,84 @@
+Queued count: 3
+  id=1 adapter=demo template_id=None product_line=helpers_cloud status=queued eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible'] approved=False
+  id=2 adapter=demo template_id=None product_line=helpers_cloud status=queued eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo'] approved=False
+  id=3 adapter=local_docker template_id=1 product_line=helpers_cloud status=queued eligible=True reasons=[] approved=True
+Dry claim result: claimed_id=3 before=[1, 2, 3] after=[1, 2, 3] before_count=3 after_count=3
+Matrix: [
+  {
+    "id": 1,
+    "adapter": "demo",
+    "product_line": "helpers_cloud",
+    "status": "queued",
+    "eligible": false,
+    "reasons": [
+      "adapter_not_real",
+      "template_missing",
+      "subscription_ineligible"
+    ],
+    "approved": false,
+    "tenant_id": null
+  },
+  {
+    "id": 2,
+    "adapter": "demo",
+    "product_line": "helpers_cloud",
+    "status": "queued",
+    "eligible": false,
+    "reasons": [
+      "adapter_not_real",
+      "template_missing",
+      "subscription_ineligible",
+      "plan_is_demo"
+    ],
+    "approved": false,
+    "tenant_id": null
+  },
+  {
+    "id": 3,
+    "adapter": "local_docker",
+    "product_line": "helpers_cloud",
+    "status": "queued",
+    "eligible": true,
+    "reasons": [],
+    "approved": true,
+    "tenant_id": null
+  }
+]
+Dry claim completed without resource creation
+Checking no resources created...
+Containers:
+none
+PG DBs:
+ datname 
+---------
+(0 rows)
+
+PG Roles:
+ rolname 
+---------
+(0 rows)
+
+Filestores:
+no p2 filestore
+no p3 filestore
+Ports:
+LISTEN 0      511                      127.0.0.1:36823      0.0.0.0:*    users:(("node",pid=2617032,fd=21))                                                                                                                      
+LISTEN 0      4096                     127.0.0.1:8209       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8208       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8211       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8210       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8213       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8212       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8215       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8214       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8201       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8203       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8202       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8205       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8204       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8207       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8206       0.0.0.0:*                                                                                                                                                            
+Requests:
+1|queued|demo||0|
+2|queued|demo||0|
+3|queued|local_docker|1|1|

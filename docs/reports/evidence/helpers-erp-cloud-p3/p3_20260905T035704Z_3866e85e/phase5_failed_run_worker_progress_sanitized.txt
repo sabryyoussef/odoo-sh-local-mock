@@ -1,0 +1,2 @@
+Cloud provisioning failed
+Cloud job execution failed

@@ -1,0 +1,100 @@
+provisioning-worker-1  | 2026-09-02 03:51:23,269 INFO Executing template build job cb8debc6-38b3-4c70-8931-a6c6eb18d1ad
+provisioning-worker-1  | 2026-09-02 03:58:14,548 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 03:58:14,761 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 03:58:16,283 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 03:58:16,482 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:01:31,768 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:01:31,875 ERROR Deployment job error: (sqlite3.IntegrityError) NOT NULL constraint failed: tenants.customer_subscription_id
+provisioning-worker-1  | [SQL: INSERT INTO tenants (tenant_code, customer_subscription_id, platform_trial_id, deployment_mode, database_name, database_role, filestore_path, container_name, http_port, internal_url, public_url, admin_password_protected, odoo_version, solution_version, assigned_node, domain, status, storage_used_mb, filestore_bytes, database_bytes, backup_storage_bytes, active_users, metering_status, metering_error, last_metered_at, quota_state, last_backup_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, created_at, updated_at]
+provisioning-worker-1  | [parameters: ('pt_trial_1_af2dc6', None, 1, 'platform_quick', 'mosh_tnt_pt_trial_1_af2dc6', 'mosh_r_pt_trial_1_af2dc6_role', None, None, None, None, None, None, '19.0', '1.0.0', 'provisioning-worker-1', None, 'provisioning', 0, 0, 0, 0, None, 'unknown', None, None, 'unknown', None)]
+provisioning-worker-1  | (Background on this error at: https://sqlalche.me/e/20/gkpj)
+provisioning-worker-1  | Traceback (most recent call last):
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+provisioning-worker-1  |     self.dialect.do_execute(
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+provisioning-worker-1  |     cursor.execute(statement, parameters)
+provisioning-worker-1  | sqlite3.IntegrityError: NOT NULL constraint failed: tenants.customer_subscription_id
+provisioning-worker-1  | 
+provisioning-worker-1  | The above exception was the direct cause of the following exception:
+provisioning-worker-1  | 
+provisioning-worker-1  | Traceback (most recent call last):
+provisioning-worker-1  |   File "/app/app/worker_main.py", line 83, in run_worker_loop
+provisioning-worker-1  |     execute_deployment_job(db, job.id)
+provisioning-worker-1  |   File "/app/app/services/deployment_service.py", line 234, in execute_deployment_job
+provisioning-worker-1  |     db.flush()
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4352, in flush
+provisioning-worker-1  |     self._flush(objects)
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4487, in _flush
+provisioning-worker-1  |     with util.safe_reraise():
+provisioning-worker-1  |          ^^^^^^^^^^^^^^^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+provisioning-worker-1  |     raise exc_value.with_traceback(exc_tb)
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4448, in _flush
+provisioning-worker-1  |     flush_context.execute()
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+provisioning-worker-1  |     rec.execute(self)
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+provisioning-worker-1  |     util.preloaded.orm_persistence.save_obj(
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+provisioning-worker-1  |     _emit_insert_statements(
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+provisioning-worker-1  |     result = connection.execute(
+provisioning-worker-1  |              ^^^^^^^^^^^^^^^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+provisioning-worker-1  |     return meth(
+provisioning-worker-1  |            ^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+provisioning-worker-1  |     return connection._execute_clauseelement(
+provisioning-worker-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+provisioning-worker-1  |     ret = self._execute_context(
+provisioning-worker-1  |           ^^^^^^^^^^^^^^^^^^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+provisioning-worker-1  |     return self._exec_single_context(
+provisioning-worker-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+provisioning-worker-1  |     self._handle_dbapi_exception(
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+provisioning-worker-1  |     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+provisioning-worker-1  |     self.dialect.do_execute(
+provisioning-worker-1  |   File "/usr/local/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+provisioning-worker-1  |     cursor.execute(statement, parameters)
+provisioning-worker-1  | sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: tenants.customer_subscription_id
+provisioning-worker-1  | [SQL: INSERT INTO tenants (tenant_code, customer_subscription_id, platform_trial_id, deployment_mode, database_name, database_role, filestore_path, container_name, http_port, internal_url, public_url, admin_password_protected, odoo_version, solution_version, assigned_node, domain, status, storage_used_mb, filestore_bytes, database_bytes, backup_storage_bytes, active_users, metering_status, metering_error, last_metered_at, quota_state, last_backup_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, created_at, updated_at]
+provisioning-worker-1  | [parameters: ('pt_trial_1_af2dc6', None, 1, 'platform_quick', 'mosh_tnt_pt_trial_1_af2dc6', 'mosh_r_pt_trial_1_af2dc6_role', None, None, None, None, None, None, '19.0', '1.0.0', 'provisioning-worker-1', None, 'provisioning', 0, 0, 0, 0, None, 'unknown', None, None, 'unknown', None)]
+provisioning-worker-1  | (Background on this error at: https://sqlalche.me/e/20/gkpj)
+provisioning-worker-1  | 2026-09-02 04:03:14,572 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:03:15,022 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:04:21,690 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:04:21,890 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:04:21,907 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:05:57,934 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:05:58,305 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:05:59,784 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:05:59,985 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:06:00,001 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:09:11,251 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:09:12,109 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:09:15,871 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:09:16,065 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:09:16,082 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:10:24,471 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:10:24,812 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:10:26,419 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:10:26,615 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:10:26,630 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:11:11,788 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:11:12,324 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:11:13,945 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:11:14,142 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 04:11:14,158 INFO Executing deployment job 1769876a-902e-471c-a394-ab0badf4ad82
+provisioning-worker-1  | 2026-09-02 04:12:44,290 INFO audit event=deployment.succeeded project_id=None build_id=None actor=provisioning-worker-1
+provisioning-worker-1  | 2026-09-02 04:18:57,040 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 04:18:57,808 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 04:20:51,752 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 04:20:51,947 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates)
+provisioning-worker-1  | 2026-09-02 11:15:53,912 INFO Shutdown signal received (15)
+provisioning-worker-1  | 2026-09-02 11:15:53,938 INFO Provisioning worker stopped
+provisioning-worker-1  | 2026-09-02 11:15:55,446 INFO Schema migration complete
+provisioning-worker-1  | 2026-09-02 11:15:55,730 INFO Worker started id=provisioning-worker-1 poll=5s (provisioning + platform deploy + templates + DP6 lifecycle)

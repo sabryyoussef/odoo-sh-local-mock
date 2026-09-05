@@ -41,6 +41,31 @@ def write_heartbeat(status: str = "ok", extra: dict | None = None) -> None:
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
+def _should_process_cloud() -> bool:
+    """Fail-closed: only process Helpers Cloud if explicitly enabled and bounded."""
+    settings = get_settings()
+    enabled = bool(getattr(settings, "helpers_cloud_real_provisioning_enabled", False))
+    max_jobs = int(getattr(settings, "helpers_cloud_worker_max_jobs", 0) or 0)
+    # Bounded: max_jobs >0 means enabled for bounded processing; 0 = disabled
+    # For continuous loop, we allow processing if enabled, but still bounded per iteration (one at a time)
+    # Permanent unrestricted processing remains disabled pending P4 (max_jobs controls canary)
+    return enabled and max_jobs > 0
+
+
+def run_bounded_cloud_worker(max_jobs: int = 1, run_id: str | None = None, worker_id: str | None = None) -> int:
+    """Bounded cloud worker: process at most max_jobs and exit (for P3 canary).
+
+    - Fail-closed if not enabled
+    - Bounded (never unrestricted)
+    - No resource creation during import/startup (only on provision)
+    - Delegates to cloud_worker_service
+    """
+    # Lazy import to ensure no resource creation at module import time
+    from app.services.cloud_worker_service import run_bounded_cloud_worker as _run
+
+    return _run(max_jobs=max_jobs, worker_id=worker_id, run_id=run_id)
+
+
 def run_worker_loop() -> int:
     settings = get_settings()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -65,6 +90,14 @@ def run_worker_loop() -> int:
                 reconcile_stale_running_jobs(db, stale_minutes=60)
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Reconciliation error: %s", exc)
+
+            # Reconcile stale Helpers Cloud jobs (no resource creation, fail-closed)
+            try:
+                from app.services.cloud_provisioning_service import reconcile_stale_cloud_jobs
+
+                reconcile_stale_cloud_jobs(db, stale_minutes=5)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Cloud reconciliation error: %s", exc)
 
             job = claim_next_template_build_job(db, settings.provisioning_worker_id)
             if job:
@@ -97,14 +130,37 @@ def run_worker_loop() -> int:
                 except Exception as exc:  # noqa: BLE001
                     logger.exception("Job execution error: %s", exc)
                 write_heartbeat("idle")
-            else:
-                from app.services.platform_lifecycle_service import process_due_lifecycle_tick
+                continue
 
+            # Helpers ERP Cloud (P3) — fail-closed, bounded, no impact on other product lines
+            # Only if explicitly enabled; otherwise skip (no resource creation, no claim)
+            if _should_process_cloud():
                 try:
-                    process_due_lifecycle_tick(db)
+                    from app.services.cloud_worker_service import claim_and_execute_one, generate_p3_run_id
+
+                    run_id = generate_p3_run_id()
+                    # Redacted structured logging (no secrets)
+                    logger.info("Checking Helpers Cloud queue (bounded)", extra={"worker_id": settings.provisioning_worker_id, "run_id": run_id})
+                    claimed = claim_and_execute_one(db, settings.provisioning_worker_id, run_id)
+                    if claimed:
+                        logger.info("Helpers Cloud job processed", extra={"worker_id": settings.provisioning_worker_id, "run_id": run_id})
+                        write_heartbeat("cloud", {"run_id": run_id})
+                        continue
                 except Exception as exc:  # noqa: BLE001
-                    logger.warning("Lifecycle tick error: %s", exc)
-                write_heartbeat("idle")
+                    logger.warning("Helpers Cloud provisioning error: %s", exc)
+                    # Failure-stage already recorded in cloud_worker_service; continue to lifecycle
+            else:
+                # Fail-closed: no cloud processing, no resource creation
+                pass
+
+            # DP6 lifecycle (only if no other job claimed)
+            from app.services.platform_lifecycle_service import process_due_lifecycle_tick
+
+            try:
+                process_due_lifecycle_tick(db)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Lifecycle tick error: %s", exc)
+            write_heartbeat("idle")
 
         for _ in range(settings.provisioning_worker_poll_sec):
             if _shutdown:
@@ -117,6 +173,22 @@ def run_worker_loop() -> int:
 
 
 def main() -> None:
+    # Bounded mode for P3 canary: python -m app.worker_main --cloud-bounded 1 --run-id p3_...
+    if "--cloud-bounded" in sys.argv:
+        try:
+            idx = sys.argv.index("--cloud-bounded")
+            max_jobs = int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else 1
+        except Exception:
+            max_jobs = 1
+        run_id = None
+        if "--run-id" in sys.argv:
+            try:
+                run_id = sys.argv[sys.argv.index("--run-id") + 1]
+            except Exception:
+                run_id = None
+        # Ensure provisioning is enabled for bounded run (fail-closed otherwise)
+        # Caller must set HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true and HELPERS_CLOUD_WORKER_MAX_JOBS
+        sys.exit(run_bounded_cloud_worker(max_jobs=max_jobs, run_id=run_id))
     sys.exit(run_worker_loop())
 
 

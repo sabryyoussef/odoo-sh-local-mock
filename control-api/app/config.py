@@ -71,6 +71,13 @@ class Settings(BaseSettings):
     provisioning_worker_id: str = "provisioning-worker-1"
     provisioning_heartbeat_path: str = "/data/provisioning_worker_heartbeat.json"
 
+    # --- Helpers ERP Cloud (P3 controlled activation) ---
+    # Fail-closed by default: real provisioning disabled unless explicitly enabled.
+    helpers_cloud_real_provisioning_enabled: bool = False
+    # Bounded mode: 0 = disabled, 1 = single canary, N = bounded batch (never unrestricted)
+    helpers_cloud_worker_max_jobs: int = 0
+    helpers_cloud_run_id_prefix: str = "p3_"
+
     # --- Phase 9 customer portal ---
     # Future public tenant base (Phase 12). Example: https://apps.example.com
     tenant_public_base_url: str = ""

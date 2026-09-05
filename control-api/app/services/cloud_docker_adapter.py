@@ -1,4 +1,4 @@
-"""P2 — Disposable Local Helpers ERP Cloud Provisioner (local Docker, Odoo 19).
+"""P2/P3 — Disposable Local Helpers ERP Cloud Provisioner (local Docker, Odoo 19).
 
 Strictly disposable, uniquely identified P2 test resources only.
 Every resource has unique run ID and explicit Helpers/P2 labels.
@@ -59,8 +59,19 @@ FAIL_POINTS = frozenset({
     "after_health_check_before_ready",
 })
 
-# Dedicated P2 filestore root (below tenant_root, but isolated)
+# Dedicated P2/P3 filestore root (below tenant_root, but isolated)
 P2_FILESTORE_PREFIX = ".p2_filestore_"
+P3_FILESTORE_PREFIX = ".p3_filestore_"
+DISPOSABLE_FILESTORE_PREFIXES = (P2_FILESTORE_PREFIX, P3_FILESTORE_PREFIX)
+DISPOSABLE_RUN_PREFIXES = ("p2_", "p3_")
+
+def _is_valid_run_id(run_id: str) -> bool:
+    """Check run_id is disposable (p2_ or p3_ prefix)."""
+    return bool(run_id) and any(prefix in run_id for prefix in DISPOSABLE_RUN_PREFIXES)
+
+def _filestore_contains_disposable_prefix(path: str) -> bool:
+    """Check filestore path contains disposable prefix."""
+    return any(prefix in path for prefix in DISPOSABLE_FILESTORE_PREFIXES) or any(prefix in path for prefix in DISPOSABLE_RUN_PREFIXES)
 
 class CloudDockerProvisioningError(Exception):
     def __init__(self, message: str, code: str = "cloud_docker_provisioning"):
@@ -70,45 +81,45 @@ class CloudDockerProvisioningError(Exception):
 
 
 def _is_p2_tenant(tenant: Tenant, run_id: str | None = None) -> bool:
-    """Validate tenant is P2-owned. Refuse non-P2, Developer Platform, Ready Solutions."""
+    """Validate tenant is P2/P3-owned. Refuse non-P2, Developer Platform, Ready Solutions."""
     if not tenant:
         return False
     if tenant.product_line != PRODUCT_LINE_HELPERS_CLOUD:
         return False
-    # Must have p2 prefix in tenant_code or deployment_mode
+    # Must have p2/p3 prefix in tenant_code or deployment_mode
     code = (tenant.tenant_code or "")
-    if not code.startswith("p2_"):
+    if not (code.startswith("p2_") or code.startswith("p3_")):
         return False
     if run_id:
         run_slug = sanitize_slug(run_id, max_len=24)
         if run_id not in code and run_slug not in code:
             # For strict validation, run_id or sanitized slug must be in tenant_code
             return False
-    # Deployment mode must be helpers_cloud or p2_disposable
-    if tenant.deployment_mode not in ("helpers_cloud", "p2_disposable", "p2_test"):
+    # Deployment mode must be helpers_cloud or p2_disposable/p3_disposable
+    if tenant.deployment_mode not in ("helpers_cloud", "p2_disposable", "p2_test", "p3_disposable", "p3_test"):
         # Allow but log — strict check is tenant_code prefix
         pass
-    # Filestore must be under P2 root or contain run_id
+    # Filestore must be under P2/P3 root or contain run_id
     fs = tenant.filestore_path or ""
-    if P2_FILESTORE_PREFIX not in fs and "p2_" not in fs:
-        # For backward compat, allow if tenant_code is p2_
-        if not code.startswith("p2_"):
+    if not _filestore_contains_disposable_prefix(fs):
+        # For backward compat, allow if tenant_code is p2_/p3_
+        if not (code.startswith("p2_") or code.startswith("p3_")):
             return False
     return True
 
 
 def _validate_identifiers(tenant_code: str, db_name: str, role_name: str, container_name: str, filestore_path: str, run_id: str) -> None:
-    """Reject unsafe names. Every P2 resource must have unique run ID."""
-    if not run_id or "p2_" not in run_id:
+    """Reject unsafe names. Every P2/P3 resource must have unique run ID."""
+    if not _is_valid_run_id(run_id):
         raise CloudDockerProvisioningError(f"Invalid run_id: {run_id!r}", "invalid_run_id")
     # Use sanitized run_slug for identifier checks (identifiers are sanitized)
     run_slug = sanitize_slug(run_id, max_len=24)
     if run_slug not in tenant_code and run_id not in tenant_code:
         raise CloudDockerProvisioningError(f"tenant_code must contain run_id: {tenant_code!r}", "invalid_tenant_code")
-    if run_slug not in db_name and run_id not in db_name and "p2_" not in db_name:
-        raise CloudDockerProvisioningError(f"db_name must contain run_id or p2_: {db_name!r}", "invalid_db_name")
-    if run_slug not in role_name and run_id not in role_name and "p2_" not in role_name:
-        raise CloudDockerProvisioningError(f"role_name must contain run_id or p2_: {role_name!r}", "invalid_role_name")
+    if run_slug not in db_name and run_id not in db_name and not any(p in db_name for p in DISPOSABLE_RUN_PREFIXES):
+        raise CloudDockerProvisioningError(f"db_name must contain run_id or p2_/p3_: {db_name!r}", "invalid_db_name")
+    if run_slug not in role_name and run_id not in role_name and not any(p in role_name for p in DISPOSABLE_RUN_PREFIXES):
+        raise CloudDockerProvisioningError(f"role_name must contain run_id or p2_/p3_: {role_name!r}", "invalid_role_name")
     if run_slug not in container_name and run_id not in container_name:
         raise CloudDockerProvisioningError(f"container_name must contain run_id: {container_name!r}", "invalid_container_name")
     if run_id not in filestore_path and run_slug not in filestore_path:
@@ -118,10 +129,10 @@ def _validate_identifiers(tenant_code: str, db_name: str, role_name: str, contai
     assert_safe_identifier(db_name)
     assert_safe_identifier(role_name)
     # Container name: allow hyphens, but validate via sanitize
-    if not container_name.startswith("mosh-tenant-p2-") and not container_name.startswith("p2-"):
-        # Must be mosh-tenant-p2-*
-        if "p2_" not in container_name:
-            raise CloudDockerProvisioningError(f"container_name must be p2-owned: {container_name!r}", "invalid_container_name")
+    if not container_name.startswith("mosh-tenant-p2-") and not container_name.startswith("mosh-tenant-p3-") and not container_name.startswith("p2-") and not container_name.startswith("p3-"):
+        # Must be mosh-tenant-p2-* or p3-*
+        if not any(p in container_name for p in DISPOSABLE_RUN_PREFIXES):
+            raise CloudDockerProvisioningError(f"container_name must be p2/p3-owned: {container_name!r}", "invalid_container_name")
     # Filestore path must be below dedicated P2 root
     fs_path = Path(filestore_path)
     # Must be under tenant_root and contain P2 prefix
@@ -133,13 +144,13 @@ def _validate_identifiers(tenant_code: str, db_name: str, role_name: str, contai
         # Allow /tmp for tests
         if not str(fs_path).startswith("/tmp"):
             raise CloudDockerProvisioningError(f"filestore_path must be under tenant_root or /tmp: {filestore_path!r}", "invalid_filestore_path")
-    if P2_FILESTORE_PREFIX not in str(fs_path) and "p2_" not in str(fs_path):
-        raise CloudDockerProvisioningError(f"filestore_path must be P2 isolated: {filestore_path!r}", "invalid_filestore_path")
+    if not _filestore_contains_disposable_prefix(str(fs_path)):
+        raise CloudDockerProvisioningError(f"filestore_path must be P2/P3 isolated: {filestore_path!r}", "invalid_filestore_path")
 
 
 def _generate_p2_identifiers(request: CloudProvisioningRequest, run_id: str) -> dict:
-    """Generate unique Helpers Cloud tenant identifiers with run ID."""
-    # Sanitize run_id for identifiers (keep p2_ prefix)
+    """Generate unique Helpers Cloud tenant identifiers with run ID (p2_ or p3_)."""
+    # Sanitize run_id for identifiers (keep p2_/p3_ prefix)
     run_slug = sanitize_slug(run_id, max_len=24)
     # Use request id + random suffix for uniqueness
     rand = secrets.token_hex(3)
@@ -157,10 +168,12 @@ def _generate_p2_identifiers(request: CloudProvisioningRequest, run_id: str) -> 
     db_name = assert_safe_identifier(sanitize_slug(f"{settings.tenant_db_prefix}{db_suffix}", max_len=63))
     # Role name: mosh_r_p2_<run_slug>_<rand>_role
     role_name = assert_safe_identifier(sanitize_slug(f"mosh_r_{db_suffix}_role", max_len=63))
-    # Container name: mosh-tenant-p2-<run_slug>-<request_id>-<rand> (docker name, allow hyphens)
-    container_name = f"mosh-tenant-p2-{run_slug}-{request.id}-{rand}"[:128]
-    # Filestore path: <tenant_root>/.p2_filestore_<run_id>/<tenant_code>/filestore
-    filestore_path = str(Path(settings.tenant_root) / f"{P2_FILESTORE_PREFIX}{run_id}" / tenant_code / "filestore")
+    # Container name: mosh-tenant-p2/p3-<run_slug>-<request_id>-<rand> (docker name, allow hyphens)
+    prefix = "p3" if "p3_" in run_id else "p2"
+    container_name = f"mosh-tenant-{prefix}-{run_slug}-{request.id}-{rand}"[:128]
+    # Filestore path: <tenant_root>/.p2_filestore_<run_id> or .p3_filestore_<run_id>/<tenant_code>/filestore
+    prefix = P3_FILESTORE_PREFIX if "p3_" in run_id else P2_FILESTORE_PREFIX
+    filestore_path = str(Path(settings.tenant_root) / f"{prefix}{run_id}" / tenant_code / "filestore")
     # For tests with isolated DB, allow override via env? No, keep deterministic
     return {
         "tenant_code": tenant_code,
@@ -333,8 +346,8 @@ def provision_cloud_request(
     """
     if fail_at and fail_at not in FAIL_POINTS:
         raise CloudDockerProvisioningError(f"Invalid fail_at: {fail_at!r}", "invalid_fail_point")
-    if not run_id or "p2_" not in run_id:
-        raise CloudDockerProvisioningError(f"run_id must be P2: {run_id!r}", "invalid_run_id")
+    if not _is_valid_run_id(run_id):
+        raise CloudDockerProvisioningError(f"run_id must be P2/P3: {run_id!r}", "invalid_run_id")
 
     # 1. Validate request eligibility and durable approval
     request = db.get(CloudProvisioningRequest, request_id)
@@ -669,7 +682,7 @@ def rollback_cloud_request(db: Session, request_id: int, run_id: str) -> None:
     drop DB, drop role, remove filestore, release port, remove/mark Tenant,
     transition request/instance to rolled_back, persist audit without secrets.
     """
-    if not run_id or "p2_" not in run_id:
+    if not _is_valid_run_id(run_id):
         raise CloudDockerProvisioningError(f"Invalid run_id for rollback: {run_id!r}", "invalid_run_id")
 
     request = db.get(CloudProvisioningRequest, request_id)
@@ -743,7 +756,7 @@ def rollback_cloud_request(db: Session, request_id: int, run_id: str) -> None:
     # 4. Drop exact disposable database
     if tenant and tenant.database_name:
         db_name = tenant.database_name
-        if run_id not in db_name and "p2_" not in db_name:
+        if run_id not in db_name and not any(p in db_name for p in DISPOSABLE_RUN_PREFIXES):
             errors.append(f"database: run_id mismatch, refusing {db_name!r}")
         else:
             try:
@@ -756,7 +769,7 @@ def rollback_cloud_request(db: Session, request_id: int, run_id: str) -> None:
     # 5. Drop exact disposable role
     if tenant and tenant.database_role:
         role_name = tenant.database_role
-        if run_id not in role_name and "p2_" not in role_name:
+        if run_id not in role_name and not any(p in role_name for p in DISPOSABLE_RUN_PREFIXES):
             errors.append(f"role: run_id mismatch, refusing {role_name!r}")
         else:
             try:
@@ -779,18 +792,21 @@ def rollback_cloud_request(db: Session, request_id: int, run_id: str) -> None:
                 settings = get_settings()
                 tenant_root = Path(settings.tenant_root)
                 is_under_p2_root = False
-                try:
-                    p.relative_to(tenant_root / f"{P2_FILESTORE_PREFIX}{run_id}")
-                    is_under_p2_root = True
-                except ValueError:
-                    pass
+                # Check both P2 and P3 prefixes
+                for prefix in DISPOSABLE_FILESTORE_PREFIXES:
+                    try:
+                        p.relative_to(tenant_root / f"{prefix}{run_id}")
+                        is_under_p2_root = True
+                        break
+                    except ValueError:
+                        pass
                 if str(p).startswith("/tmp") and run_id in str(p):
                     is_under_p2_root = True
                 if not is_under_p2_root:
                     # Also allow if parent contains run_id and is under tenant_root
                     try:
                         p.relative_to(tenant_root)
-                        if run_id in str(p) and P2_FILESTORE_PREFIX in str(p):
+                        if run_id in str(p) and _filestore_contains_disposable_prefix(str(p)):
                             is_under_p2_root = True
                     except ValueError:
                         pass
@@ -816,10 +832,14 @@ def rollback_cloud_request(db: Session, request_id: int, run_id: str) -> None:
                         try:
                             if parent.exists() and not any(parent.iterdir()):
                                 parent.rmdir()
-                            # Also try to remove P2 root if empty
-                            p2_root = tenant_root / f"{P2_FILESTORE_PREFIX}{run_id}"
-                            if p2_root.exists() and not any(p2_root.iterdir()):
-                                p2_root.rmdir()
+                            # Also try to remove P2/P3 root if empty
+                            for prefix in DISPOSABLE_FILESTORE_PREFIXES:
+                                p2_root = tenant_root / f"{prefix}{run_id}"
+                                if p2_root.exists() and not any(p2_root.iterdir()):
+                                    try:
+                                        p2_root.rmdir()
+                                    except Exception:
+                                        pass
                         except Exception:
                             pass
                         logger.info("P2 rollback removed filestore %s", fs_path)

@@ -234,8 +234,7 @@ def main() -> None:
                 print(f"  Succeeded: {', '.join(provisioned)}")
             if failed:
                 print(f"  Failed: {', '.join(failed)}", file=sys.stderr)
-            # Show status
-            from app.services.cloud_manual_uat_service import get_manual_uat_status
+            # Show status (use already-imported get_manual_uat_status)
             status = get_manual_uat_status(db)
             print()
             print("Post-provision status:")

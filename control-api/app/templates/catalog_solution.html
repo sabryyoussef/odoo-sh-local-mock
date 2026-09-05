@@ -1,58 +1,56 @@
 {% extends "base.html" %}
-{% block title %}{{ solution.name }} · Solutions{% endblock %}
+{% block title %}{{ solution.name }} · {{ t('catalog.title') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
-    <p class="muted"><a href="/solutions">← All solutions</a></p>
+    <p class="muted"><a href="/solutions">{{ t('catalog.back') }}</a></p>
     <div class="flow-header">
       <h1>{{ solution.name }}
-        {% if solution.is_demo %}<span class="badge badge--warning">Demo</span>{% endif %}
+        {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
       </h1>
       <p>{{ solution.description }}</p>
       <dl class="kv">
-        <div><dt>Odoo version</dt><dd>{{ solution.odoo_version }}</dd></div>
-        <div><dt>Release</dt><dd>{{ solution.current_version }}</dd></div>
+        <div><dt>{{ t('catalog.erp_version') }}</dt><dd>{{ solution.odoo_version }}</dd></div>
+        <div><dt>{{ t('catalog.release') }}</dt><dd>{{ solution.current_version }}</dd></div>
       </dl>
     </div>
 
-    <h2>Packages</h2>
+    <h2>{{ t('catalog.packages') }}</h2>
     <div class="settings-grid">
       {% for pkg in solution.packages if pkg.status == 'active' %}
         <section class="flow-card">
           <h3>{{ pkg.name }} <span class="muted">({{ pkg.code }})</span></h3>
-          {% if pkg.is_demo %}<span class="badge badge--warning">Demo trial</span>{% endif %}
+          {% if pkg.is_demo %}<span class="badge badge--warning">{{ t('common.demo_trial') }}</span>{% endif %}
           <p class="muted">{{ pkg.description }}</p>
           <dl class="kv">
-            <div><dt>Price</dt><dd>{% if pkg.is_demo or not pkg.price_monthly %}Demo package — contact sales for production{% else %}{{ pkg.price_monthly }} {{ pkg.currency }}/mo{% endif %}</dd></div>
-            <div><dt>Trial</dt><dd>{{ pkg.trial_days }} days (demo)</dd></div>
-            <div><dt>Odoo version</dt><dd>{{ solution.odoo_version }}</dd></div>
-            <div><dt>Modules</dt><dd><code>{{ pkg.enabled_modules or '—' }}</code></dd></div>
-            <div><dt>Features</dt><dd>{{ pkg.enabled_features or '—' }}</dd></div>
-            <div><dt>Branches</dt><dd>Up to {{ pkg.max_branches }}</dd></div>
-            <div><dt>Companies</dt><dd>Up to {{ pkg.max_companies }}</dd></div>
-            <div><dt>Users</dt><dd>Up to {{ pkg.max_users }}</dd></div>
-            <div><dt>Filestore</dt><dd>{{ pkg.filestore_quota_mb }} MB quota</dd></div>
-            <div><dt>Backup</dt><dd>Every {{ pkg.backup_frequency_hours }}h · {{ pkg.backup_retention_days }}d retention</dd></div>
-            <div><dt>API</dt><dd>{% if pkg.api_enabled %}Included{% else %}Not included{% endif %}</dd></div>
-            <div><dt>Staging</dt><dd>{% if pkg.staging_enabled %}Included{% else %}Not included{% endif %}</dd></div>
-            <div><dt>Support</dt><dd>{{ pkg.support_sla|replace('_', ' ') }}</dd></div>
+            <div><dt>{{ t('catalog.price') }}</dt><dd>{% if pkg.is_demo or not pkg.price_monthly %}{{ t('catalog.price_demo') }}{% else %}{{ pkg.price_monthly }} {{ pkg.currency }}/mo{% endif %}</dd></div>
+            <div><dt>{{ t('catalog.trial') }}</dt><dd>{{ pkg.trial_days }} {{ t('catalog.trial_days') }}</dd></div>
+            <div><dt>{{ t('catalog.erp_version') }}</dt><dd>{{ solution.odoo_version }}</dd></div>
+            <div><dt>{{ t('catalog.modules') }}</dt><dd><code>{{ pkg.enabled_modules or '—' }}</code></dd></div>
+            <div><dt>{{ t('catalog.features') }}</dt><dd>{{ pkg.enabled_features or '—' }}</dd></div>
+            <div><dt>{{ t('catalog.branches') }}</dt><dd>{{ t('catalog.up_to') }} {{ pkg.max_branches }}</dd></div>
+            <div><dt>{{ t('catalog.companies') }}</dt><dd>{{ t('catalog.up_to') }} {{ pkg.max_companies }}</dd></div>
+            <div><dt>{{ t('catalog.users_label') }}</dt><dd>{{ t('catalog.up_to') }} {{ pkg.max_users }}</dd></div>
+            <div><dt>{{ t('catalog.filestore') }}</dt><dd>{{ pkg.filestore_quota_mb }} {{ t('common.mb') }} {{ t('catalog.quota') }}</dd></div>
+            <div><dt>{{ t('catalog.backup') }}</dt><dd>{{ pkg.backup_frequency_hours }}h · {{ pkg.backup_retention_days }}d {{ t('catalog.retention') }}</dd></div>
+            <div><dt>{{ t('catalog.api') }}</dt><dd>{% if pkg.api_enabled %}{{ t('common.included') }}{% else %}{{ t('common.not_included') }}{% endif %}</dd></div>
+            <div><dt>{{ t('catalog.staging') }}</dt><dd>{% if pkg.staging_enabled %}{{ t('common.included') }}{% else %}{{ t('common.not_included') }}{% endif %}</dd></div>
+            <div><dt>{{ t('catalog.support') }}</dt><dd>{{ pkg.support_sla|replace('_', ' ') }}</dd></div>
           </dl>
           {% if pkg.is_demo and solution.is_demo %}
             {% if user.github_connected %}
-              <a class="btn btn--primary" href="/portal/trial/confirm?solution_id={{ solution.id }}&amp;package_id={{ pkg.id }}">Start demo trial</a>
+              <a class="btn btn--primary" href="/portal/trial/confirm?solution_id={{ solution.id }}&amp;package_id={{ pkg.id }}">{{ t('catalog.start_trial') }}</a>
             {% else %}
-              <a class="btn" href="/login?next=/solutions/{{ solution.code }}">Sign in to start demo trial</a>
+              <a class="btn" href="/login?next=/solutions/{{ solution.code }}">{{ t('catalog.signin_trial') }}</a>
             {% endif %}
           {% else %}
-            <p class="muted">Contact sales for this package.</p>
+            <p class="muted">{{ t('catalog.contact_sales') }}</p>
           {% endif %}
         </section>
       {% else %}
-        <p class="muted">No active packages for this solution.</p>
+        <p class="muted">{{ t('catalog.no_active_packages') }}</p>
       {% endfor %}
     </div>
   </main>

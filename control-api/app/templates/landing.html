@@ -2,16 +2,24 @@
 
 {% block title %}{{ brand.product_name }}{% endblock %}
 {% block body_class %}body--landing{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=3">
+{% endblock %}
 
 {% block shell %}
 <div class="landing">
-  {% include "partials/marketing_nav.html" %}
   {% include "partials/hero.html" %}
+  {% include "partials/imagine.html" %}
   {% include "partials/product_line_cards.html" %}
+  {% include "partials/productivity.html" %}
   {% include "partials/preview_mock.html" %}
+  {% include "partials/value_props.html" %}
   {% include "partials/feature_cards.html" %}
   {% include "partials/cta_footer.html" %}
+  {% include "partials/site_footer.html" %}
 </div>
 {% endblock %}

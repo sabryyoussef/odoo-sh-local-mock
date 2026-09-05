@@ -1,14 +1,29 @@
 <section class="features" id="features">
   <div class="features__inner">
-    <h2 class="features__title">{{ brand.feature_title }}</h2>
-    <p class="features__lead">{{ brand.feature_lead }}</p>
+    <h2 class="features__title">{% if lang == 'ar' %}{{ t('features.title') }}{% else %}{{ brand.feature_title }}{% endif %}</h2>
+    <p class="features__lead">{% if lang == 'ar' %}{{ t('features.lead') }}{% else %}{{ brand.feature_lead }}{% endif %}</p>
     <div class="features__grid">
-      {% for card in brand.features %}
+      {% if lang == 'ar' %}
         <article class="feature-card">
-          <h3>{{ card.title }}</h3>
-          <p>{{ card.body }}</p>
+          <h3>{{ t('features.1.title') }}</h3>
+          <p>{{ t('features.1.body') }}</p>
         </article>
-      {% endfor %}
+        <article class="feature-card">
+          <h3>{{ t('features.2.title') }}</h3>
+          <p>{{ t('features.2.body') }}</p>
+        </article>
+        <article class="feature-card">
+          <h3>{{ t('features.3.title') }}</h3>
+          <p>{{ t('features.3.body') }}</p>
+        </article>
+      {% else %}
+        {% for card in brand.features %}
+          <article class="feature-card">
+            <h3>{{ card.title }}</h3>
+            <p>{{ card.body }}</p>
+          </article>
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
 </section>

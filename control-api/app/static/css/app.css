@@ -325,18 +325,43 @@ input {
 }
 
 .tab-body {
-  padding: 20px;
+  padding: 16px 20px 28px;
   flex: 1;
+  min-height: 0;
+}
+
+.history-note {
+  margin: 0 0 14px;
+}
+
+.history-empty {
+  max-width: 640px;
+  margin: 8px 0 0;
+  padding: 28px 24px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+}
+
+.history-empty h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.history-empty p {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 /* ——— History timeline ——— */
 .history-timeline {
   position: relative;
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 880px;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .event-card {
@@ -419,6 +444,21 @@ input {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.event-card__build {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.event-card__build a {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.event-card__sha code {
+  font-size: 12px;
 }
 
 .event-card__title {
@@ -1157,7 +1197,6 @@ input {
   background: rgba(255, 255, 255, 0.2);
 }
 
-
 .mkt-nav__links a.is-active,
 .mkt-nav__ghost.is-active {
   color: #fff;
@@ -1175,7 +1214,6 @@ body:not(.body--landing) .projects-page,
 body:not(.body--landing) .auth-page {
   min-height: calc(100vh - 72px);
 }
-
 
 .hero {
   position: relative;
@@ -1681,6 +1719,22 @@ body:not(.body--landing) .auth-page {
 
 .projects-topbar__home:hover {
   background: rgba(0, 0, 0, 0.12);
+  color: #fff;
+}
+
+.projects-topbar__cta {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 650;
+}
+
+.projects-topbar__cta:hover {
+  background: rgba(255, 255, 255, 0.24);
   color: #fff;
 }
 
@@ -2266,6 +2320,11 @@ a.content-tabs__tab {
   font-weight: 600;
 }
 
+.badge--danger {
+  background: var(--danger-bg);
+  color: #a71d2a;
+}
+
 a.btn--connect {
   display: inline-flex;
   align-items: center;
@@ -2694,7 +2753,6 @@ a.icon-btn {
   font: inherit;
 }
 
-
 .lang-switcher {
   display: inline-flex;
   align-items: center;
@@ -2735,7 +2793,6 @@ a.icon-btn {
   font-size: 13px;
   color: var(--text-muted, #5c6670);
 }
-
 
 .visually-hidden {
   position: absolute;
@@ -2800,7 +2857,6 @@ a.icon-btn {
   cursor: pointer;
   font-weight: 700;
 }
-
 
 @media (max-width: 900px) {
   .product-lines__grid {

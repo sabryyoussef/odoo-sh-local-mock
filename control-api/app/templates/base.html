@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang|default('en') }}" dir="{{ html_dir|default('ltr') }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ brand.product_name if brand is defined else 'Mock Odoo.sh' }}{% endblock %}</title>
+  <title>{% block title %}{{ brand.product_name if brand is defined else 'Helpers ERP' }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/app.css">
   {% if brand is defined and brand.css_href %}
     <link rel="stylesheet" href="{{ brand.css_href }}">
   {% endif %}
+  {% block extra_head %}{% endblock %}
 </head>
 <body class="{% if brand is defined and brand.body_theme_class %}{{ brand.body_theme_class }} {% endif %}{% block body_class %}{% endblock %}">
   {% block top %}
-    {% if project is defined and project %}
-      {% include "partials/top_nav.html" %}
-    {% endif %}
+    {% include "partials/marketing_nav.html" %}
   {% endblock %}
   <div class="{% block shell_class %}app-shell{% endblock %}">
     {% block shell %}{% endblock %}

@@ -599,6 +599,8 @@ def get_project_page(
         "active_tab": active_tab,
         "projects_url": "/projects",
         "latest_build_id": current.get("latest_build_id", "21"),
+        "mock_history": True,
+        "real_builds": [],
     }
 
 

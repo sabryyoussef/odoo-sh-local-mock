@@ -13,46 +13,13 @@
     {% include "partials/branch_header.html" %}
     {% include "partials/tabs.html" %}
     <section class="tab-body" id="tab-body">
-      {% if real_builds %}
-        <div class="flow-card" style="margin-bottom:16px">
-          <h2 class="section-title">Real builds <span class="badge badge--success">Live</span></h2>
-          <table class="meta-grid" style="width:100%">
-            <thead>
-              <tr>
-                <th align="left">Build</th>
-                <th align="left">Branch</th>
-                <th align="left">SHA</th>
-                <th align="left">Status</th>
-                <th align="left">Port</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for b in real_builds %}
-                <tr>
-                  <td><a href="/project/{{ project.slug }}/build/{{ b.id }}">#{{ b.number }}</a></td>
-                  <td>{{ b.branch }}</td>
-                  <td><code title="{{ b.commit_full }}">{{ b.commit }}</code></td>
-                  <td><span class="tone tone--{{ b.status_tone }}">{{ b.status }}</span></td>
-                  <td>{% if b.http_port %}{{ b.http_port }}{% else %}—{% endif %}</td>
-                  <td>
-                    <a class="btn" href="/project/{{ project.slug }}/build/{{ b.id }}">Open</a>
-                    {% if b.is_running %}
-                      <a class="btn-hero btn-hero--primary" href="/project/{{ project.slug }}/build/{{ b.id }}/connect">CONNECT</a>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% endif %}
-
       {% if active_tab == "history" %}
-        <p class="muted" style="margin:0 0 12px">
-          <span class="badge badge--warning">Demo / Mock</span>
-          Timeline below remains simulated. Use <strong>Build</strong> above for a real Odoo engine run.
-        </p>
+        {% if mock_history %}
+          <p class="muted history-note">
+            <span class="badge badge--warning">Demo / Mock</span>
+            Timeline below remains simulated. Use <strong>Build</strong> above for a real Odoo engine run.
+          </p>
+        {% endif %}
         {% include "partials/history_timeline.html" %}
       {% else %}
         <div class="placeholder-panel">

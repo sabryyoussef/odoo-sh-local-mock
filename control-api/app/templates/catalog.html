@@ -1,50 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Business Solutions · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block title %}{{ t('catalog.title') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
     <div class="flow-header">
-      <h1>Business Solutions</h1>
-      <p>Ready-to-use vertical Odoo systems with Solution Packages that include hosting, backups, and entitlements.</p>
+      <h1>{{ t('catalog.title') }}</h1>
+      <p>{{ t('catalog.lead') }}</p>
     </div>
 
     <div class="page-intro">
-      <p><span class="badge">Solution journey</span> Select a vertical, compare packages, start a demo trial — one subscription includes your tenant and infrastructure.</p>
-      <p class="muted">Building your own modules from GitHub? Use the <a href="/platform">Developer Platform</a> instead. Need a general-purpose company ERP without industry templates? <a href="/cloud">Configure Helpers ERP Cloud</a>.</p>
-      <p class="muted"><span class="badge badge--warning">Demo data</span> Prices and trials shown for presentation unless labeled otherwise.</p>
+      <p><span class="badge">{{ t('catalog.badge') }}</span> {{ t('catalog.intro') }}</p>
+      <p class="muted">{{ t('catalog.alt') }} <a href="/platform">{{ t('nav.platform') }}</a> {{ t('catalog.alt_instead') }} <a href="/cloud">{{ t('catalog.configure_cloud') }}</a>.</p>
+      <p class="muted"><span class="badge badge--warning">{{ t('common.demo_data') }}</span> {{ t('catalog.demo_note') }}</p>
     </div>
 
     <div class="solution-grid">
       {% for solution in solutions %}
         <article class="solution-card">
           <h2><a href="/solutions/{{ solution.code }}">{{ solution.name }}</a>
-            {% if solution.is_demo %}<span class="badge badge--warning">Demo</span>{% endif %}
+            {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
           </h2>
           <p class="muted">{{ solution.description }}</p>
           <dl class="kv solution-card__meta">
-            <div><dt>Odoo</dt><dd>{{ solution.odoo_version }}</dd></div>
+            <div><dt>{{ t('catalog.erp_version') }}</dt><dd>{{ solution.odoo_version }}</dd></div>
           </dl>
           <ul class="solution-card__packages plain-list">
             {% for pkg in solution.packages if pkg.status == 'active' %}
               <li>
                 <strong>{{ pkg.name }}</strong>
-                · {{ pkg.max_users }} users · {{ pkg.filestore_quota_mb }} MB
-                {% if pkg.is_demo %}<span class="badge badge--warning">Demo trial</span>{% endif %}
+                · {{ pkg.max_users }} {{ t('common.users') }} · {{ pkg.filestore_quota_mb }} {{ t('common.mb') }}
+                {% if pkg.is_demo %}<span class="badge badge--warning">{{ t('common.demo_trial') }}</span>{% endif %}
               </li>
             {% else %}
-              <li class="muted">No active packages</li>
+              <li class="muted">{{ t('catalog.no_packages') }}</li>
             {% endfor %}
           </ul>
           <div class="solution-card__cta">
-            <a class="btn btn--primary" href="/solutions/{{ solution.code }}">Compare packages</a>
+            <a class="btn btn--primary" href="/solutions/{{ solution.code }}">{{ t('catalog.compare') }}</a>
           </div>
         </article>
       {% else %}
-        <p class="muted">No solutions published yet.</p>
+        <p class="muted">{{ t('catalog.empty') }}</p>
       {% endfor %}
     </div>
   </main>

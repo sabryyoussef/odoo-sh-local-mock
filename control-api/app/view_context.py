@@ -190,7 +190,11 @@ def project_page_context(project: Project, user: User, active_branch: str | None
     ]
 
     history = []
-    for b in builds[:30]:
+    current_name = current["name"]
+    branch_builds = [
+        b for b in builds if getattr(getattr(b, "branch", None), "name", None) == current_name
+    ]
+    for b in branch_builds[:30]:
         view = build_to_view(b)
         trigger = view["trigger_label"]
         actor = view["trigger_actor"] or view["author"] or "system"
@@ -198,7 +202,7 @@ def project_page_context(project: Project, user: User, active_branch: str | None
         status = view["status"]
         status_map = {
             "running": ("success", "Running"),
-            "failed": ("danger", "Failed"),
+            "failed": ("failed", "Failed"),
             "stopped": ("warning", "Stopped"),
             "cancelled": ("warning", "Cancelled"),
             "queued": ("warning", "Queued"),
@@ -214,20 +218,20 @@ def project_page_context(project: Project, user: User, active_branch: str | None
         ):
             badge, label = "warning", status.replace("_", " ").title()
         initials = (actor[:1] or "B").upper()
+        commit_message = (view.get("commit_message") or "").strip()
         history.append(
             {
                 "id": f"build-{b.id}",
                 "kind": "build",
-                "build_id": str(b.id),
+                "build_id": str(view["number"]),
+                "build_number": view["number"],
+                "commit": view["commit"],
                 "author": actor,
-                "author_label": f"{trigger} · {actor}",
+                "author_label": f"{trigger} - {actor}",
                 "avatar_initials": initials,
                 "relative_time": view["created_at"] or view["triggered_at"] or "",
-                "title": f"Build #{view['number']} · {view['commit']}",
-                "body": (
-                    f"{view['branch']} · {view['odoo_version']} · {trigger}{force}"
-                    + (f"\n{view['commit_message']}" if view.get("commit_message") else "")
-                ),
+                "title": commit_message or f"Build #{view['number']}",
+                "body": f"{view['branch']} · {view['odoo_version']} · {trigger}{force}",
                 "status": badge,
                 "status_label": label,
                 "action": "CONNECT" if view["can_connect"] else view["status"],

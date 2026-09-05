@@ -1,28 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Developer Platform plans · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block title %}{{ t('platform.plans_title') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
     <div class="flow-header" style="text-align:center">
-      <p class="muted"><a href="/platform">← Developer Platform</a> · <a href="/pricing">All pricing options</a></p>
-      <h1>Choose your Developer Platform plan</h1>
-      <p>Start with the resources you need and upgrade anytime.</p>
+      <p class="muted"><a href="/platform">{{ t('platform.title') }}</a> · <a href="/pricing">{{ t('platform.all_pricing') }}</a></p>
+      <h1>{{ t('platform.plans_title') }}</h1>
+      <p>{{ t('platform.plans_lead') }}</p>
       <p class="muted">
-        These plans are for developers hosting their own Odoo projects.
-        Looking for a ready-to-use business system? <a href="/solutions">Browse Solutions</a>.
+        {{ t('platform.plans_for') }} <a href="/solutions">{{ t('platform.browse_solutions_short') }}</a>.
       </p>
-      <p><span class="badge badge--warning">{{ brand.badge_demo if brand is defined else 'Demo Billing' }}</span> <span class="muted">Presentation/demo pricing — no real charge will occur unless explicitly approved.</span></p>
+      <p><span class="badge badge--warning">{{ brand.badge_demo if brand is defined else 'Demo Billing' }}</span> <span class="muted">{{ t('platform.demo_note') }}</span></p>
     </div>
 
     <div class="pricing-grid">
       {% for plan in plans %}
         <article class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
           {% if plan.recommended %}
-            <div class="pricing-badge">Recommended</div>
+            <div class="pricing-badge">{{ t('common.recommended') }}</div>
           {% endif %}
           <h2>{{ plan.name }}</h2>
           <div class="pricing-price">
@@ -34,9 +31,9 @@
               <li><span class="check">✓</span> {{ feature }}</li>
             {% endfor %}
             {% if plan.entitlements %}
-              <li><span class="check">✓</span> Up to {{ plan.entitlements.max_selected_apps.value or 'unlimited' if plan.entitlements.max_selected_apps.meaning == 'unlimited' else plan.entitlements.max_selected_apps.value }} apps</li>
-              {% if plan.entitlements.trial_days %}<li><span class="check">✓</span> {{ plan.entitlements.trial_days }}-day trial</li>{% endif %}
-              {% if plan.entitlements.github_enabled %}<li><span class="check">✓</span> GitHub projects</li>{% endif %}
+              <li><span class="check">✓</span> {{ t('platform.up_to') }} {{ plan.entitlements.max_selected_apps.value or 'unlimited' if plan.entitlements.max_selected_apps.meaning == 'unlimited' else plan.entitlements.max_selected_apps.value }} {{ t('platform.apps') }}</li>
+              {% if plan.entitlements.trial_days %}<li><span class="check">✓</span> {{ plan.entitlements.trial_days }}{{ t('platform.day_trial') }}</li>{% endif %}
+              {% if plan.entitlements.github_enabled %}<li><span class="check">✓</span> {{ t('platform.github_projects') }}</li>{% endif %}
             {% endif %}
           </ul>
           {% if user.github_connected %}

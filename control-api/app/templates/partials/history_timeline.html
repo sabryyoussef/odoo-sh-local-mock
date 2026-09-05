@@ -1,5 +1,12 @@
 <div class="history-timeline" role="list">
-  {% for event in history_events %}
-    {% include "partials/event_card.html" %}
-  {% endfor %}
+  {% if history_events %}
+    {% for event in history_events %}
+      {% include "partials/event_card.html" %}
+    {% endfor %}
+  {% else %}
+    <div class="history-empty">
+      <h2>No builds on this branch</h2>
+      <p>History is empty for <strong>{{ current_branch.name }}</strong>. Use <strong>Build</strong> to start a real Odoo engine run.</p>
+    </div>
+  {% endif %}
 </div>

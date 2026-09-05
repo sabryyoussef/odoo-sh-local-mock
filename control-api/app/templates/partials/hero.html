@@ -1,37 +1,51 @@
-<section class="hero" aria-label="Hero">
-  <div class="hero__bg" aria-hidden="true">
-    <div class="hero__stars"></div>
-    <div class="hero__glow hero__glow--a"></div>
-    <div class="hero__glow hero__glow--b"></div>
-    <div class="hero__grid"></div>
-    <div class="hero__orb"></div>
+{% set app_tiles = [
+  {"key": "app.accounting", "letter": "A", "color": "#5B899E", "pos": "left: 4%; top: 12%;", "delay": "0s"},
+  {"key": "app.crm", "letter": "C", "color": "#3CA3B4", "pos": "left: 3%; top: 58%;", "delay": "0.4s"},
+  {"key": "app.sales", "letter": "S", "color": "#E85D4C", "pos": "right: 5%; top: 10%;", "delay": "0.2s"},
+  {"key": "app.inventory", "letter": "I", "color": "#8B74B0", "pos": "right: 3%; top: 56%;", "delay": "0.7s"},
+  {"key": "app.purchase", "letter": "P", "color": "#4A8FBD", "pos": "left: 9%; top: 80%;", "delay": "0.3s"},
+  {"key": "app.manufacturing", "letter": "M", "color": "#C9A227", "pos": "right: 8%; top: 80%;", "delay": "0.6s"},
+  {"key": "app.project", "letter": "J", "color": "#4B7BEC", "pos": "left: 14%; top: 34%;", "delay": "0.1s"},
+  {"key": "app.employees", "letter": "E", "color": "#E39A3C", "pos": "right: 14%; top: 34%;", "delay": "0.5s"},
+  {"key": "app.pos", "letter": "$", "color": "#2F3A4A", "pos": "left: 7%; top: 38%;", "delay": "0.8s"},
+  {"key": "app.website", "letter": "W", "color": "#1D7AAD", "pos": "right: 7%; top: 38%;", "delay": "0.15s"},
+  {"key": "app.ecommerce", "letter": "€", "color": "#5BA85A", "pos": "left: 22%; bottom: 6%;", "delay": "0.35s"},
+  {"key": "app.sign", "letter": "✓", "color": "#3D6B8A", "pos": "right: 22%; bottom: 6%;", "delay": "0.55s"},
+] %}
+<section class="hero" aria-label="{{ t('hero.aria') }}">
+  <div class="hero__stage" aria-hidden="true">
+    {% for tile in app_tiles %}
+      <span class="odoo-app" style="{{ tile.pos }} --app-color: {{ tile.color }}; animation-delay: {{ tile.delay }};">
+        <span class="odoo-app__icon">{{ tile.letter }}</span>
+        <span class="odoo-app__label">{{ t(tile.key) }}</span>
+      </span>
+    {% endfor %}
   </div>
 
   <div class="hero__content">
     {% if brand.theme_id == 'helpers_erp' %}
-      <p class="hero__eyebrow">{{ brand.prepared_for }}</p>
-      <p class="helpers-pill" aria-label="Helpers ERP">Helpers ERP</p>
-      <h1 class="hero__title">{{ brand.product_name }}</h1>
-      <p class="hero__subtitle">{{ brand.tagline }}</p>
-      <p class="hero__pipeline">Ready Solutions · Managed Cloud ERP · Developer Platform</p>
-      {% if brand.modules %}
-        <div class="helpers-modules" aria-label="ERP modules">
-          {% for m in brand.modules %}
-            <span>{{ m }}</span>
-          {% endfor %}
-        </div>
-      {% endif %}
+      <p class="hero__eyebrow">{{ t('hero.eyebrow') }}</p>
     {% else %}
-      <p class="hero__eyebrow">Local developer platform mock</p>
-      <h1 class="hero__title">{{ brand.product_name }}</h1>
-      <p class="hero__subtitle">{{ brand.tagline }}</p>
-      <p class="hero__pipeline">Development → Staging → Deployment</p>
+      <p class="hero__eyebrow">{{ t('hero.eyebrow_default') }}</p>
     {% endif %}
+    <h1 class="hero__title">{{ t('hero.title') }}</h1>
+    <p class="hero__subtitle">
+      {{ t('hero.subtitle') }}
+      <strong>{{ t('hero.price') }}</strong>
+    </p>
     <div class="hero__actions">
-      <a class="btn-hero btn-hero--primary" href="/solutions">Browse Solutions</a>
-      <a class="btn-hero btn-hero--secondary" href="/cloud">Configure Your ERP</a>
-      <a class="btn-hero btn-hero--secondary" href="/platform">Developer Platform</a>
+      <a class="btn-hero btn-hero--primary" href="/cloud">{{ t('hero.cta_primary') }}</a>
+      <a class="btn-hero btn-hero--secondary" href="/solutions">{{ t('hero.cta_browse') }}</a>
     </div>
+    <p class="hero__pipeline">{{ t('hero.pipeline') }}</p>
+    {% if brand.theme_id == 'helpers_erp' and brand.modules %}
+      <div class="helpers-modules sr-only" aria-label="{{ t('hero.modules') }}">
+        {% for m in brand.modules %}
+          <span>{{ m }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <a class="hero__all-apps" href="/solutions">{{ t('hero.all_apps') }}</a>
     {% if brand.powered_by %}
       <p class="prepared-for">{{ brand.powered_by }}</p>
     {% endif %}

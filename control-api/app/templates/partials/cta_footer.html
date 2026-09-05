@@ -1,16 +1,16 @@
 <section class="cta-footer">
   <div class="cta-footer__inner">
     {% if brand.theme_id == 'helpers_erp' %}
-      <h2>Explore the Helpers ERP cloud demo</h2>
-      <p>Sign in with GitHub, open the demo project, and CONNECT to a real Odoo 19 Community runtime.</p>
+      <h2>{{ t('cta.title') }}</h2>
+      <p>{{ t('cta.body') }}</p>
     {% else %}
-      <h2>Start exploring the mock platform</h2>
-      <p>Sign in with GitHub, then deploy a project from a real repository.</p>
+      <h2>{{ t('cta.title_default') }}</h2>
+      <p>{{ t('cta.body_default') }}</p>
     {% endif %}
     <div class="cta-footer__actions">
-      <a class="btn-hero btn-hero--primary" href="/login">{{ brand.hero_cta_primary }}</a>
-      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/pricing">{{ brand.hero_cta_secondary }}</a>
-      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">Open Projects</a>
+      <a class="btn-hero btn-hero--primary" href="/cloud">{{ t('hero.cta_primary') }}</a>
+      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/pricing">{{ t('cta.view_plans') }}</a>
+      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">{{ t('cta.open_projects') }}</a>
     </div>
   </div>
 </section>

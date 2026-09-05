@@ -22,6 +22,7 @@ from app.auth.session import (
     validate_csrf,
 )
 from app.branding import brand_project_name, get_brand
+from app.i18n import apply_locale_cookie, template_i18n
 from app.config import get_settings
 from app.db import SessionLocal, get_db, init_db
 from app.dependencies import (
@@ -169,8 +170,10 @@ def _render(
         "app_name": brand.product_name,
         "csrf_token": get_csrf_token(request),
         **ctx,
+        **template_i18n(request),
     }
-    return templates.TemplateResponse(name, payload, status_code=status_code)
+    response = templates.TemplateResponse(name, payload, status_code=status_code)
+    return apply_locale_cookie(request, response)
 
 
 def _not_found(request: Request, title: str, message: str) -> HTMLResponse:

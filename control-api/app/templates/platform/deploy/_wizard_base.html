@@ -3,7 +3,6 @@
 {% block body_class %}body--app{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
     <p class="muted">Quick Deploy · Step {{ step }} of 4</p>
     {% block deploy_content %}{% endblock %}

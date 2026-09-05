@@ -30,6 +30,9 @@ class BrandProfile:
     badge_coming_soon: str = "Planned Capability"
     hero_cta_primary: str = "Start Demo"
     hero_cta_secondary: str = "View Plans"
+    hero_headline: str = "Build and ship Odoo from Git."
+    hero_subhead: str = "A local developer platform that mirrors the Odoo.sh workflow."
+    hero_price_line: str = "Sign in with GitHub and deploy a real Community runtime."
     projects_heading: str = "Your Projects"
     projects_subtitle: str = ""
 
@@ -68,14 +71,14 @@ HELPERS_ERP_BRAND = BrandProfile(
     short_name="Helpers ERP",
     tagline="A hosted ERP deployment and build platform demo for Helpers ERP",
     prepared_for="Prepared for Business Sense Corporation",
-    powered_by="Powered by Mock Odoo.sh",
+    powered_by="",
     logo_mark="/static/branding/helpers_erp/bsc-mark.svg",
     logo_lockup="/static/branding/helpers_erp/bsc-icon-transparent.png",
-    css_href="/static/css/theme-helpers-erp.css",
+    css_href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1",
     body_theme_class="theme-helpers-erp",
     feature_title="Designed for ERP delivery workflows",
     feature_lead=(
-        "Branch-based deployment, controlled builds, real Odoo runtime, "
+        "Branch-based deployment, controlled builds, a real Helpers ERP runtime, "
         "project isolation, and auditability — tailored for Helpers ERP."
     ),
     features=(
@@ -85,7 +88,7 @@ HELPERS_ERP_BRAND = BrandProfile(
         },
         {
             "title": "Controlled real builds",
-            "body": "Automatic GitHub webhooks and manual rebuilds with real Odoo 19 Community.",
+            "body": "Automatic GitHub webhooks and manual rebuilds with a live Helpers ERP runtime.",
         },
         {
             "title": "Finance & operations ready",
@@ -112,8 +115,11 @@ HELPERS_ERP_BRAND = BrandProfile(
     badge_real="Live Demo",
     badge_demo="Presentation Only",
     badge_coming_soon="Planned Capability",
-    hero_cta_primary="Open Cloud Demo",
-    hero_cta_secondary="View Plans",
+    hero_cta_primary="Start now — it's free",
+    hero_cta_secondary="Browse Solutions",
+    hero_headline="Your whole company, one ERP.",
+    hero_subhead="Simple, efficient, yet affordable.",
+    hero_price_line="Start free — then pick a cloud plan that fits.",
     projects_heading="Helpers ERP Projects",
     projects_subtitle="Hosted ERP build environments prepared for Business Sense Corporation",
 )

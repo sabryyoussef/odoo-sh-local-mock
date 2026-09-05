@@ -1,40 +1,41 @@
-<section class="product-lines" aria-label="Choose a Helpers ERP product">
+<section class="product-lines" aria-label="{{ t('products.aria') }}">
   <div class="product-lines__inner">
-    <h2 class="product-lines__title">Three independent ways to run Odoo</h2>
-    <p class="product-lines__lead">Pick the path that matches how you work. You do not need more than one.</p>
+    <p class="product-lines__kicker">{{ t('products.kicker') }}</p>
+    <h2 class="product-lines__title">{{ t('products.title') }}</h2>
+    <p class="product-lines__lead">{{ t('products.lead') }}</p>
     <div class="product-lines__grid">
       <article class="product-card">
-        <p class="product-card__kicker">Industry systems</p>
-        <h3>Ready Business Solutions</h3>
-        <p>Launch a preconfigured ERP designed for your industry.</p>
+        <p class="product-card__kicker">{{ t('products.card1.kicker') }}</p>
+        <h3>{{ t('products.card1.title') }}</h3>
+        <p>{{ t('products.card1.body') }}</p>
         <ul>
-          <li>Veterinary, hospital, school, and more</li>
-          <li>Preconfigured workflows and reports</li>
-          <li>No coding or server administration required</li>
+          <li>{{ t('products.card1.li1') }}</li>
+          <li>{{ t('products.card1.li2') }}</li>
+          <li>{{ t('products.card1.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/solutions">Browse Solutions</a>
+        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/solutions">{{ t('products.card1.cta') }}</a>
       </article>
       <article class="product-card product-card--featured">
-        <p class="product-card__kicker">Managed ERP</p>
-        <h3>Build Your ERP</h3>
-        <p>Choose your Odoo version, business applications, users, storage, and managed cloud plan.</p>
+        <p class="product-card__kicker">{{ t('products.card2.kicker') }}</p>
+        <h3>{{ t('products.card2.title') }}</h3>
+        <p>{{ t('products.card2.body') }}</p>
         <ul>
-          <li>Your company database, hosted by Helpers ERP</li>
-          <li>Approved applications and add-ons</li>
-          <li>Backups and support according to your plan</li>
+          <li>{{ t('products.card2.li1') }}</li>
+          <li>{{ t('products.card2.li2') }}</li>
+          <li>{{ t('products.card2.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/cloud">Configure Your ERP</a>
+        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/cloud">{{ t('products.card2.cta') }}</a>
       </article>
       <article class="product-card">
-        <p class="product-card__kicker">For developers</p>
-        <h3>Ship Custom Odoo from Git</h3>
-        <p>Build and run custom Odoo projects directly from GitHub.</p>
+        <p class="product-card__kicker">{{ t('products.card3.kicker') }}</p>
+        <h3>{{ t('products.card3.title') }}</h3>
+        <p>{{ t('products.card3.body') }}</p>
         <ul>
-          <li>Branches, commits, and build logs</li>
-          <li>CONNECT to a real Odoo runtime</li>
-          <li>For implementation partners and software teams</li>
+          <li>{{ t('products.card3.li1') }}</li>
+          <li>{{ t('products.card3.li2') }}</li>
+          <li>{{ t('products.card3.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/platform">Developer Platform</a>
+        <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/platform">{{ t('products.card3.cta') }}</a>
       </article>
     </div>
   </div>

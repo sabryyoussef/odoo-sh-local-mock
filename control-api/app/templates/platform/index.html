@@ -1,50 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Developer Platform · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block title %}{{ t('platform.title') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
     <div class="flow-header">
-      <h1>Developer Platform</h1>
-      <p>Host and manage your own GitHub-backed Odoo projects — builds, branches, logs, and environments.</p>
+      <h1>{{ t('platform.title') }}</h1>
+      <p>{{ t('platform.lead') }}</p>
     </div>
 
     <div class="page-intro">
-      <p><span class="badge">Developer journey</span> These plans are for teams shipping custom Odoo modules from Git.</p>
-      <p class="muted">Looking for a ready-to-use business system (Vet, HMS, SIS)? <a href="/solutions">Browse Business Solutions</a> — packages include hosting; no separate platform subscription required. Need managed Odoo without Git? <a href="/cloud">Helpers ERP Cloud</a>.</p>
+      <p><span class="badge">{{ t('platform.badge') }}</span> {{ t('platform.intro') }}</p>
+      <p class="muted">{{ t('platform.looking') }} <a href="/solutions">{{ t('platform.browse_solutions') }}</a> {{ t('platform.looking_tail') }} <a href="/cloud">{{ t('nav.cloud') }}</a>.</p>
     </div>
 
     <div class="platform-feature-grid">
       <article class="platform-feature">
-        <h3>GitHub integration</h3>
-        <p>Connect repositories, sync branches, and trigger builds from pushes or manually.</p>
+        <h3>{{ t('platform.feat1.title') }}</h3>
+        <p>{{ t('platform.feat1.body') }}</p>
       </article>
       <article class="platform-feature">
-        <h3>Build engine</h3>
-        <p>Real Odoo Community containers, workspace logs, rebuild, stop, and restart workflows.</p>
+        <h3>{{ t('platform.feat2.title') }}</h3>
+        <p>{{ t('platform.feat2.body') }}</p>
       </article>
       <article class="platform-feature">
-        <h3>Environments</h3>
-        <p>Development, staging, and production tiers depending on your Platform Plan.</p>
+        <h3>{{ t('platform.feat3.title') }}</h3>
+        <p>{{ t('platform.feat3.body') }}</p>
       </article>
     </div>
 
     <section class="flow-card">
-      <h2>Get started</h2>
-      <p class="muted">Choose a Platform Plan, connect GitHub, then create your first project.</p>
+      <h2>{{ t('platform.get_started') }}</h2>
+      <p class="muted">{{ t('platform.get_started_lead') }}</p>
       <div class="flow-actions-row">
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/platform/pricing">View Developer Plans</a>
+        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/platform/pricing">{{ t('platform.view_plans') }}</a>
         {% if user.github_connected %}
-          <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">Open Projects</a>
-          <a class="btn" href="/deploy">Deploy new project</a>
+          <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">{{ t('platform.open_projects') }}</a>
+          <a class="btn" href="/deploy">{{ t('platform.deploy') }}</a>
         {% else %}
-          <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/login?next=/projects">Sign in with GitHub</a>
+          <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/login?next=/projects">{{ t('platform.signin_github') }}</a>
         {% endif %}
       </div>
-      <p class="muted" style="margin-top:14px;margin-bottom:0"><span class="badge badge--warning">Demo pricing</span> Plans shown for presentation — no real charge unless explicitly approved.</p>
+      <p class="muted" style="margin-top:14px;margin-bottom:0"><span class="badge badge--warning">{{ t('platform.demo_pricing') }}</span> {{ t('platform.demo_note') }}</p>
     </section>
   </main>
 </div>

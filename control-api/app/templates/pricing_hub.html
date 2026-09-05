@@ -1,56 +1,54 @@
 {% extends "base.html" %}
-{% block title %}Pricing · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block title %}{{ t('nav.pricing') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
 {% block body_class %}body--app{% endblock %}
-{% block top %}{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
 <div class="app-flow">
-  {% include "partials/app_topbar.html" %}
   <main class="flow-main flow-main--full">
     <div class="flow-header" style="text-align:center">
-      <h1>Choose how you want to get started</h1>
-      <p>Three independent product lines — pick the journey that matches your needs.</p>
+      <h1>{{ t('pricing.title') }}</h1>
+      <p>{{ t('pricing.lead') }}</p>
       <p class="muted">
-        <strong>Ready Solution packages already include hosting.</strong>
-        Helpers ERP Cloud is managed Odoo for your company.
-        Developer Platform is only for teams shipping custom code from Git.
+        <strong>{{ t('pricing.hosting') }}</strong>
+        {{ t('pricing.cloud_line') }}
+        {{ t('pricing.dev_line') }}
       </p>
-      <p><span class="badge badge--warning">{{ brand.badge_demo if brand is defined else 'Demo Billing' }}</span> <span class="muted">Presentation pricing only — no real charge will occur.</span></p>
+      <p><span class="badge badge--warning">{{ brand.badge_demo if brand is defined else 'Demo Billing' }}</span> <span class="muted">{{ t('pricing.presentation') }}</span></p>
     </div>
 
     <div class="pricing-grid">
       <article class="flow-card">
-        <h2>Ready Solutions</h2>
-        <p class="muted">Ready-to-use Business Solutions with infrastructure included.</p>
+        <h2>{{ t('nav.ready_solutions') }}</h2>
+        <p class="muted">{{ t('pricing.solutions_lead') }}</p>
         <ul class="pricing-features">
-          <li><span class="check">✓</span> Veterinary Clinic</li>
-          <li><span class="check">✓</span> Hospital Management (HMS)</li>
-          <li><span class="check">✓</span> School Information System (SIS)</li>
-          <li><span class="check">✓</span> Solution Packages with users, storage, backups, and environments</li>
+          <li><span class="check">✓</span> {{ t('pricing.vet') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.hms') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.sis') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.packages') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary pricing-cta" href="/solutions">Browse Solutions</a>
+        <a class="btn-hero btn-hero--primary pricing-cta" href="/solutions">{{ t('hero.cta_browse') }}</a>
       </article>
 
       <article class="flow-card">
-        <h2>Helpers ERP Cloud</h2>
-        <p class="muted">General-purpose managed Odoo. No servers, no code.</p>
+        <h2>{{ t('nav.cloud') }}</h2>
+        <p class="muted">{{ t('pricing.cloud_lead') }}</p>
         <ul class="pricing-features">
-          <li><span class="check">✓</span> Choose plan, Odoo version, and approved applications</li>
-          <li><span class="check">✓</span> Users, storage, backups, and support by plan</li>
-          <li><span class="check">✓</span> Isolated company database hosted by Helpers ERP</li>
+          <li><span class="check">✓</span> {{ t('pricing.cloud_f1') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.cloud_f2') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.cloud_f3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary pricing-cta" href="/cloud/pricing">View Cloud Plans</a>
+        <a class="btn-hero btn-hero--primary pricing-cta" href="/cloud/pricing">{{ t('cloud.view_plans') }}</a>
       </article>
 
       <article class="flow-card">
-        <h2>Developer Platform</h2>
-        <p class="muted">Host and manage your own GitHub-backed Odoo projects.</p>
+        <h2>{{ t('nav.platform') }}</h2>
+        <p class="muted">{{ t('pricing.dev_lead') }}</p>
         <ul class="pricing-features">
-          <li><span class="check">✓</span> Odoo.sh-style builds, branches, and logs</li>
-          <li><span class="check">✓</span> Development, staging, and production environments</li>
-          <li><span class="check">✓</span> GitHub integration and project workflows</li>
+          <li><span class="check">✓</span> {{ t('pricing.dev_f1') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.dev_f2') }}</li>
+          <li><span class="check">✓</span> {{ t('pricing.dev_f3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="/platform/pricing">View Developer Plans</a>
+        <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="/platform/pricing">{{ t('platform.view_plans') }}</a>
       </article>
     </div>
   </main>

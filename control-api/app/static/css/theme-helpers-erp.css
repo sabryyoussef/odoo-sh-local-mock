@@ -1,15 +1,18 @@
-/* Helpers ERP / Business Sense Corporation — presentation theme */
+/* Helpers ERP / Business Sense Corporation — presentation theme.
+   Applied to every view so catalog, portal, projects, and branch chrome
+   match the light landing page instead of the leftover Odoo.sh purple/dark bars. */
 
+html:has(body.theme-helpers-erp),
 body.theme-helpers-erp {
-  --nav-bg: #3a3f46;
-  --nav-text: #f5f7fa;
-  --nav-muted: #c5ccd6;
-  --nav-active: #ffffff;
-  --sidebar-bg: #eef2f6;
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --nav-text: #24303a;
+  --nav-muted: #4a5560;
+  --nav-active: #0b7ec8;
+  --sidebar-bg: rgba(255, 255, 255, 0.72);
   --sidebar-border: #d5dde6;
   --sidebar-active: #ffffff;
-  --main-bg: #eef3f7;
-  --panel-bg: #ffffff;
+  --main-bg: transparent;
+  --panel-bg: rgba(255, 255, 255, 0.86);
   --text: #2f343a;
   --text-muted: #5c6670;
   --border: #d7dee6;
@@ -22,29 +25,137 @@ body.theme-helpers-erp {
   --danger: #c0392b;
   --danger-bg: #fdecea;
   --connect: #1f9d55;
-  --shadow: 0 1px 3px rgba(15, 40, 70, 0.08);
+  --shadow: 0 10px 30px rgba(15, 40, 70, 0.08);
   --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  background:
-    radial-gradient(ellipse at top, #f5f9fc 0%, var(--main-bg) 55%),
-    var(--main-bg);
+  --helpers-glass: rgba(255, 255, 255, 0.78);
+  --helpers-nav-border: rgba(215, 222, 230, 0.95);
+  --helpers-canvas:
+    radial-gradient(ellipse at 50% -10%, #eef6fc 0%, transparent 55%),
+    radial-gradient(ellipse at 12% 18%, rgba(176, 168, 214, 0.32), transparent 42%),
+    radial-gradient(ellipse at 88% 8%, rgba(11, 126, 200, 0.18), transparent 38%),
+    linear-gradient(180deg, #d7e7f3 0%, #e8eef5 42%, #f3f7fb 100%);
+  color: var(--text);
+  background: var(--helpers-canvas);
+  background-attachment: fixed;
 }
 
+body.theme-helpers-erp.body--landing,
+body.theme-helpers-erp.body--app,
+body.theme-helpers-erp.body--projects,
+body.theme-helpers-erp.body--auth,
+body.theme-helpers-erp .landing,
+body.theme-helpers-erp .app-flow,
+body.theme-helpers-erp .projects-page,
+body.theme-helpers-erp .projects-page--plain {
+  background: transparent;
+  color: var(--text);
+}
+
+/* ——— Shared chrome: landing nav + app topbar + project top-nav ——— */
+body.theme-helpers-erp .mkt-nav,
 body.theme-helpers-erp .top-nav,
 body.theme-helpers-erp .projects-topbar {
-  background: var(--nav-bg);
-  border-bottom-color: #2c3138;
+  background: var(--helpers-glass);
+  backdrop-filter: blur(16px);
+  color: var(--nav-text);
+  border-bottom: 1px solid var(--helpers-nav-border);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+body.theme-helpers-erp.body--landing .mkt-nav {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 1px solid var(--helpers-nav-border);
+  box-shadow: none;
+}
+
+body.theme-helpers-erp:not(.body--landing) .mkt-nav,
+body.theme-helpers-erp .projects-topbar,
+body.theme-helpers-erp .top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+body.theme-helpers-erp .mkt-nav__brand,
+body.theme-helpers-erp .mkt-nav__links a,
+body.theme-helpers-erp .mkt-nav__ghost,
+body.theme-helpers-erp .projects-topbar__brand,
+body.theme-helpers-erp .projects-topbar__name,
+body.theme-helpers-erp .projects-topbar__home,
+body.theme-helpers-erp .projects-topbar__username,
+body.theme-helpers-erp .projects-topbar__mark,
+body.theme-helpers-erp .brand-mark__product,
+body.theme-helpers-erp .brand-mark__powered,
+body.theme-helpers-erp .top-nav__brand,
+body.theme-helpers-erp .top-nav__link,
+body.theme-helpers-erp .top-nav__user-name,
+body.theme-helpers-erp .top-nav__crumb-link,
+body.theme-helpers-erp .top-nav__project {
+  color: var(--nav-text);
+}
+
+body.theme-helpers-erp .brand-mark__powered,
+body.theme-helpers-erp .top-nav__link--muted {
+  color: var(--nav-muted);
+  opacity: 1;
+}
+
+body.theme-helpers-erp .mkt-nav__links a:hover,
+body.theme-helpers-erp .mkt-nav__ghost:hover,
+body.theme-helpers-erp .projects-topbar__home:hover,
+body.theme-helpers-erp .top-nav__link:hover,
+body.theme-helpers-erp .top-nav__brand:hover {
+  color: var(--accent);
+  background: rgba(11, 126, 200, 0.08);
+}
+
+body.theme-helpers-erp .top-nav__link.is-active,
+body.theme-helpers-erp .mkt-nav__links a.is-active,
+body.theme-helpers-erp .mkt-nav__ghost.is-active {
+  color: var(--nav-active);
+  font-weight: 650;
+}
+
+body.theme-helpers-erp .top-nav__project,
+body.theme-helpers-erp .top-nav__user,
+body.theme-helpers-erp .projects-topbar__user {
+  background: rgba(11, 126, 200, 0.08);
+  color: var(--nav-text);
 }
 
 body.theme-helpers-erp .btn-hero--primary,
 body.theme-helpers-erp .mkt-nav__cta,
 body.theme-helpers-erp .projects-topbar__cta {
   background: var(--accent);
-  border-color: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-weight: 650;
 }
 
 body.theme-helpers-erp .btn-hero--primary:hover,
-body.theme-helpers-erp .mkt-nav__cta:hover {
+body.theme-helpers-erp .mkt-nav__cta:hover,
+body.theme-helpers-erp .projects-topbar__cta:hover {
   background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  color: #fff;
+}
+
+body.theme-helpers-erp .btn-hero--secondary,
+body.theme-helpers-erp .btn-hero--on-light {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: #c5d0da;
+  color: #2f343a;
+  border-radius: 999px;
+}
+
+body.theme-helpers-erp .btn-hero--secondary:hover,
+body.theme-helpers-erp .btn-hero--on-light:hover {
+  background: #fff;
+  color: var(--accent);
 }
 
 body.theme-helpers-erp .tone--valid,
@@ -118,6 +229,7 @@ body.theme-helpers-erp .badge--success {
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 1rem;
+  justify-content: center;
 }
 
 .helpers-modules span {
@@ -130,15 +242,16 @@ body.theme-helpers-erp .badge--success {
 }
 
 body.theme-helpers-erp .hero {
-  background: linear-gradient(180deg, #d9e8f2 0%, #eef3f7 70%);
+  background: transparent;
 }
 
 body.theme-helpers-erp .hero__bg {
-  opacity: 0.35;
+  opacity: 0.22;
 }
 
 body.theme-helpers-erp .hero__title {
   color: #24303a;
+  text-shadow: none;
 }
 
 body.theme-helpers-erp .hero__subtitle {
@@ -152,18 +265,216 @@ body.theme-helpers-erp .hero__eyebrow {
   letter-spacing: 0.02em;
 }
 
-body.theme-helpers-erp .features {
-  background: #f7fafc;
+body.theme-helpers-erp .hero__pipeline {
+  color: #4a6a82;
 }
 
-body.theme-helpers-erp .feature-card {
+body.theme-helpers-erp .features,
+body.theme-helpers-erp .cta-footer {
+  background: transparent;
+  border-color: transparent;
+}
+
+body.theme-helpers-erp .feature-card,
+body.theme-helpers-erp .flow-card,
+body.theme-helpers-erp .solution-card,
+body.theme-helpers-erp .platform-feature,
+body.theme-helpers-erp .placeholder-page,
+body.theme-helpers-erp .placeholder-panel {
   border-color: var(--border);
   box-shadow: var(--shadow);
+  border-radius: 14px;
+}
+
+body.theme-helpers-erp .feature-card h3 {
+  color: var(--accent);
+}
+
+body.theme-helpers-erp .cta-footer {
+  background: transparent;
+  border-top-color: rgba(215, 222, 230, 0.6);
+}
+
+body.theme-helpers-erp .page-intro {
+  background: linear-gradient(135deg, #f4f9fc 0%, #e6f1f8 100%);
+  border-color: var(--border);
+  border-radius: 14px;
+}
+
+body.theme-helpers-erp .btn {
+  border-radius: 999px;
+  border-color: var(--border);
+}
+
+body.theme-helpers-erp .btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+body.theme-helpers-erp .btn--primary:hover {
+  background: var(--accent-soft);
+}
+
+body.theme-helpers-erp .seg__opt.is-active,
+body.theme-helpers-erp .seg__opt:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(11, 126, 200, 0.08);
+}
+
+body.theme-helpers-erp .projects-banner {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+body.theme-helpers-erp .projects-banner__overlay,
+body.theme-helpers-erp .projects-banner__motif {
+  opacity: 0.25;
 }
 
 body.theme-helpers-erp .projects-banner,
 body.theme-helpers-erp .projects-toolbar__title {
   color: var(--text);
+}
+
+body.theme-helpers-erp .auth-page {
+  background: transparent;
+  color: var(--text);
+}
+
+body.theme-helpers-erp .auth-brand,
+body.theme-helpers-erp .auth-back {
+  color: var(--text);
+}
+
+body.theme-helpers-erp .auth-back:hover {
+  color: var(--accent);
+}
+
+body.theme-helpers-erp .auth-card {
+  box-shadow: 0 16px 40px rgba(15, 40, 70, 0.12);
+  border: 1px solid var(--border);
+}
+
+body.theme-helpers-erp .sidebar__search-input:focus {
+  border-color: var(--accent-soft);
+  box-shadow: 0 0 0 2px rgba(11, 126, 200, 0.18);
+}
+
+body.theme-helpers-erp .sidebar__branch.is-active {
+  border-left-color: var(--accent);
+}
+
+/* ——— Branch console + landing preview: same canvas as marketing pages ——— */
+body.theme-helpers-erp .app-shell {
+  background: transparent;
+  min-height: calc(100vh - 72px);
+  gap: 16px;
+  padding: 16px 20px 24px;
+  box-sizing: border-box;
+}
+
+body.theme-helpers-erp .sidebar {
+  background: var(--helpers-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+body.theme-helpers-erp .sidebar__search-input,
+body.theme-helpers-erp .clone-bar {
+  border-radius: 999px;
+  background: #fff;
+}
+
+body.theme-helpers-erp .main-panel {
+  background: var(--helpers-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+body.theme-helpers-erp .branch-header,
+body.theme-helpers-erp .content-tabs,
+body.theme-helpers-erp .tab-body {
+  background: transparent;
+}
+
+body.theme-helpers-erp .event-card,
+body.theme-helpers-erp .preview-card {
+  border-radius: 14px;
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+body.theme-helpers-erp .preview-section {
+  margin-top: -48px;
+}
+
+body.theme-helpers-erp .preview-frame {
+  background: var(--helpers-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(15, 40, 70, 0.12);
+}
+
+body.theme-helpers-erp .preview-frame__chrome {
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid var(--border);
+}
+
+body.theme-helpers-erp .preview-frame__url {
+  color: var(--text-muted);
+}
+
+body.theme-helpers-erp .preview-app__top {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--nav-text);
+  border-bottom: 1px solid var(--border);
+}
+
+body.theme-helpers-erp .preview-app__pill {
+  background: rgba(11, 126, 200, 0.1);
+  color: var(--accent);
+}
+
+body.theme-helpers-erp .preview-app__body,
+body.theme-helpers-erp .preview-side,
+body.theme-helpers-erp .preview-main {
+  background: transparent;
+}
+
+body.theme-helpers-erp .preview-side {
+  border-right-color: var(--border);
+}
+
+body.theme-helpers-erp .preview-side__item.is-active {
+  background: #fff;
+  border-left-color: var(--accent);
+}
+
+body.theme-helpers-erp .preview-side__search,
+body.theme-helpers-erp .preview-main__btns span {
+  border-radius: 999px;
+  border-color: var(--border);
+  background: #fff;
+}
+
+body.theme-helpers-erp .preview-connect,
+body.theme-helpers-erp .btn--connect {
+  border-radius: 999px;
+}
+
+body.theme-helpers-erp .preview-main__tabs .is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+body.theme-helpers-erp .flow-header h1,
+body.theme-helpers-erp .projects-toolbar__title {
+  color: #24303a;
 }
 
 .client-context {
@@ -193,4 +504,31 @@ body.theme-helpers-erp .projects-toolbar__title {
 .client-context__product {
   color: var(--accent);
   font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  body.theme-helpers-erp .mkt-nav {
+    position: relative;
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+html[dir="rtl"] body.theme-helpers-erp {
+  font-family: "Cairo", "Segoe UI", Tahoma, sans-serif;
+}
+
+html[dir="rtl"] .flow-header h1,
+html[dir="rtl"] .app-flow h1,
+html[dir="rtl"] .app-flow h2,
+html[dir="rtl"] .app-flow h3 {
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .kv dt {
+  text-align: start;
+}
+
+html[dir="rtl"] .pricing-features,
+html[dir="rtl"] .plain-list {
+  padding-inline-start: 0;
 }

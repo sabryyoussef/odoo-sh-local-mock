@@ -1,0 +1,46 @@
+RUN_ID=p3_20260905T071700Z_d1938642 WORKER_ID=p3-dry-worker-p3_20260905T071700Z_d1938642
+Total requests: 4
+  id=1 status=queued adapter=demo template_id=None eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible'] approved=False tenant_id=None claimed_by=None
+  id=2 status=queued adapter=demo template_id=None eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo'] approved=False tenant_id=None claimed_by=None
+  id=3 status=rolled_back adapter=local_docker template_id=1 eligible=False reasons=[] approved=True tenant_id=None claimed_by=None
+  id=4 status=queued adapter=local_docker template_id=1 eligible=True reasons=[] approved=True tenant_id=None claimed_by=None
+ID 1 correctly ineligible: ['adapter_not_real', 'template_missing', 'subscription_ineligible']
+ID 2 correctly ineligible: ['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo']
+ID 3 correctly not eligible: status=rolled_back eligible=False (rolled_back, not queued)
+ID 4 correctly eligible
+Eligible IDs (queued + approved): [4]
+Attempting dry claim with worker p3-dry-worker-p3_20260905T071700Z_d1938642
+Before queued IDs: [1, 2, 4]
+Dry claim result: claimed_id=4
+  claimed job id=4 status=provisioning claimed_by=p3-dry-worker-p3_20260905T071700Z_d1938642 lease=2026-09-05 07:28:35.623773+00:00
+Reverted dry claim for id=4
+After queued IDs: [1, 2, 4]
+Dry claim verified: before==after, no resources should be created
+Tenants count: 26
+  tenant 1 code=vet_hospital_1_81e62f db=mosh_tnt_vet_hospital_1_81e62f status=failed
+  tenant 2 code=vet_hospital_2_ba8805 db=mosh_tnt_vet_hospital_2_ba8805 status=failed
+  tenant 3 code=vet_hospital_3_208fdd db=mosh_tnt_vet_hospital_3_208fdd status=failed
+  tenant 4 code=vet_hospital_4_cdcf1c db=mosh_tnt_vet_hospital_4_cdcf1c status=failed
+  tenant 5 code=vet_hospital_5_3fb408 db=mosh_tnt_vet_hospital_5_3fb408 status=active
+  tenant 6 code=vet_hospital_7_e8fa67 db=mosh_tnt_vet_hospital_7_e8fa67 status=active
+  tenant 7 code=clone_8_bff2ac db=mosh_tnt_clone_8_bff2ac status=failed
+  tenant 8 code=vet_hospital_9_7d45d8 db=mosh_tnt_vet_hospital_9_7d45d8 status=active
+  tenant 9 code=clone_10_45c4fb db=mosh_tnt_clone_10_45c4fb status=failed
+  tenant 10 code=vet_hospital_11_1bb4cf db=mosh_tnt_vet_hospital_11_1bb4cf status=active
+  tenant 11 code=clone_12_2769d0 db=mosh_tnt_clone_12_2769d0 status=active
+  tenant 12 code=clone_13_36dc56 db=mosh_tnt_clone_13_36dc56 status=active
+  tenant 13 code=vet_hospital_14_55e234 db=mosh_tnt_vet_hospital_14_55e234 status=active
+  tenant 14 code=clone_15_b78fa8 db=mosh_tnt_clone_15_b78fa8 status=active
+  tenant 15 code=vet_hospital_16_49c61c db=mosh_tnt_vet_hospital_16_49c61c status=active
+  tenant 16 code=clone_17_f144c3 db=mosh_tnt_clone_17_f144c3 status=active
+  tenant 17 code=clone_18_d397ca db=mosh_tnt_clone_18_d397ca status=active
+  tenant 18 code=vet_hospital_19_7f6dcd db=mosh_tnt_vet_hospital_19_7f6dcd status=active
+  tenant 19 code=clone_20_aea0ed db=mosh_tnt_clone_20_aea0ed status=active
+  tenant 20 code=sis_21_b0da13 db=mosh_tnt_sis_21_b0da13 status=active
+  tenant 21 code=hms_22_581dda db=mosh_tnt_hms_22_581dda status=failed
+  tenant 22 code=hms_23_6dc3bb db=mosh_tnt_hms_23_6dc3bb status=failed
+  tenant 23 code=vet_hospital_24_dc0fb8 db=mosh_tnt_vet_hospital_24_dc0fb8 status=failed
+  tenant 24 code=pt_trial_1_a89ea9 db=mosh_tnt_pt_trial_1_a89ea9 status=active
+  tenant 25 code=ptclone_24_702764 db=mosh_tnt_ptclone_24_702764 status=failed
+  tenant 26 code=pt_trial_3_4ed6ab db=mosh_tnt_pt_trial_3_4ed6ab status=failed
+No resources created by dry claim - PASS

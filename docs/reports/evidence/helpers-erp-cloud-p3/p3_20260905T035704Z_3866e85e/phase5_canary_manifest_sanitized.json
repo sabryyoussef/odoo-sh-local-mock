@@ -1,0 +1,21 @@
+{
+  "run_id": "p3_20260905T071700Z_d1938642",
+  "request_id": 4,
+  "request_uuid": "0be12838a81319cb86c0c15b0c14908f",
+  "user_id": 11,
+  "subscription_id": 4,
+  "template_id": 1,
+  "template_db": "mosh_tpl_cloud_base_19_0_trading",
+  "instance_id": 4,
+  "subdomain": "p3-canary-df416a",
+  "product_line": "helpers_cloud",
+  "adapter": "local_docker",
+  "status": "queued",
+  "provisioning_approved": true,
+  "community_edition": true,
+  "disposable": true,
+  "authorized": true,
+  "company_name": "P3 Canary Co df416a51",
+  "order_code": "CLO-31FB003B",
+  "subscription_code": "CLS-4B97FB0F"
+}

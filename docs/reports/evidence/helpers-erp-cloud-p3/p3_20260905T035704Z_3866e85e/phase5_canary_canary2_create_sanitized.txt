@@ -1,0 +1,17 @@
+RUN_ID=p3_20260905T071700Z_d1938642
+Template id=1 db=mosh_tpl_cloud_base_19_0_trading status=validated health=healthy
+Creating user p3-canary2-132f26bf@test.example company P3 Canary2 Co 132f26bf subdomain p3-canary2-132f26
+User id=12
+Plan id=3 code=business active=True is_demo=False
+Order id=5
+Subscription id=5
+Request id=5 uuid=4e7b2a081d4459058b138ddf01b2492d
+Instance id=5 subdomain=p3-canary2-132f26
+Approved request id=5 fingerprint=b32625c2e46629a8
+Final request status=queued provisioning_approved=True
+Queued count=3
+  id=1 adapter=demo eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible']
+  id=2 adapter=demo eligible=False reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo']
+  id=5 adapter=local_docker eligible=True reasons=[]
+MANIFEST_JSON:{"run_id": "p3_20260905T071700Z_d1938642", "request_id": 5, "request_uuid": "4e7b2a081d4459058b138ddf01b2492d", "user_id": 12, "subscription_id": 5, "template_id": 1, "template_db": "mosh_tpl_cloud_base_19_0_trading", "instance_id": 5, "subdomain": "p3-canary2-132f26", "product_line": "helpers_cloud", "adapter": "local_docker", "status": "queued", "provisioning_approved": true, "community_edition": true, "disposable": true, "authorized": true, "company_name": "P3 Canary2 Co 132f26bf", "order_code": "CLO-852D1387", "subscription_code": "CLS-34DFBD88"}
+Created canary2 request 5

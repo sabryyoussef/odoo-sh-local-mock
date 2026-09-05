@@ -1,0 +1,10 @@
+=== ROLLBACK ATTEMPT 1 for request 5 run_id p3_20260905T071700Z_d1938642 ===
+rollback attempt 1 succeeded
+request 5 after: (5, 'rolled_back', None, 'p3-canary-worker2-p3_20260905T071700Z_d1938642')
+tenant 27 after: None
+tenant 27 count: 0
+=== ROLLBACK ATTEMPT 2 for request 5 run_id p3_20260905T071700Z_d1938642 ===
+rollback attempt 2 succeeded
+request 5 after: (5, 'rolled_back', None, 'p3-canary-worker2-p3_20260905T071700Z_d1938642')
+tenant 27 after: None
+tenant 27 count: 0

@@ -1,0 +1,74 @@
+P3 Phase 5 — Security After Inventory
+====================================
+Date (UTC): 2026-09-05T08:56:28.344818+00:00
+Run ID: p3_20260905T071700Z_d1938642
+Evidence Dir: p3_20260905T035704Z_3866e85e
+Main HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+P3 HEAD: 56d3647a4054ac51e9fdfcf57f7cfd06d92d7116 (before closeout commits)
+Manual-UAT patch: /tmp/manual-uat-patch-20260905T061500Z.patch SHA 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d
+
+Preflight Inventory (Before Cleanup)
+-------------------------------------
+- provisioning-worker: exited (0) since 2026-09-05T05:53:30Z, kept stopped
+- backup-worker: running (healthy)
+- ps aux: only backup_worker_main, no provisioning worker
+- docker ps: 15 mosh-tenant-* (no p3), 2 build-postgres (healthy), control-api running
+- ports 8301-8302: none
+- PG template: mosh_tpl_cloud_base_19_0_trading present (live), 0 in P3 (expected)
+- requests: 1 queued demo, 2 queued demo, 3 rolled_back ready local_docker
+- cloud_instances: 1 demo-cloud-7 queued, 2 petsy queued, 3 p3-canary-49df00 rolled_back
+- live control.db hash: a2cdbd65de2b5d08b06767c838de1bd94cfe15b1453b0aaf752dc4b0feaeda05 (08:39)
+- canary control.db hash: ceff22105801a2d824a40313c5aef0b97dbd4b7a0985d9fc79e916aef9d5a514 (isolated, before removal)
+- live_hash.txt: 9d049d433dc0562c86524dc1a78255978d086dfe443446300c75bc400bc951f9 (07:17)
+- isolated_hash_before: 9d049d433dc0562c86524dc1a78255978d086dfe443446300c75bc400bc951f9
+- integrity live: ok, isolated: ok
+- tenant dirs: 256
+- canary tenants: 0 (empty)
+- PG DBs for canary: 0 rows
+- PG roles for canary: 0 rows
+- main untracked: 64 P3-related + 5 branding + documentation
+- p3 untracked: 15 files (baseline + sanitized)
+- Manual-UAT SHA: 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d
+
+After Inventory (After Cleanup)
+--------------------------------
+- provisioning-worker: still exited (0), not restarted
+- backup-worker: still running
+- No canary containers, DBs, roles, ports, tenant dirs, filestores
+- Canary dir: removed (/tmp/p3-canary-p3_20260905T071700Z_d1938642 → No such file)
+- P3 worktree: preserved (/tmp/p3-helpers-erp-cloud-p3)
+- Manual-UAT patch: preserved, SHA matches
+- Main untracked P3-related: 29 (unique, not duplicates) + 5 branding + documentation
+- Main HEAD unchanged: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+- P3 HEAD: will be updated with closeout commits (see below)
+- Live control.db hash: 0a29ac2ac6235f524cd4b45341ee037aa87934acd07daafb91a86b5f1b726e74 (08:53, metering drift)
+- Isolated DB: removed, sanitized evidence preserved, integrity ok before removal
+- Template: still present, healthy
+- Requests 1-3: unchanged (1 queued, 2 queued, 3 rolled_back)
+- No requests 4/5 runtime resources
+- Worker remains stopped
+- Evidence complete and sanitized
+
+Secret Exposure After
+---------------------
+- Complete passwords in evidence: 0 (was 6)
+- New passwords in evidence: 0
+- Old passwords valid via network: No (FATAL)
+- New passwords valid via network: Yes (1 row)
+- Roo log perms: 0600 (was 0664)
+- Sanitized copy: phase5_roo_ui_messages_sanitized.json (600, 41 <REDACTED>)
+- Canary report: sanitized (<REDACTED>, 1 per file)
+- Regression test: 4 passed
+
+Hashes
+------
+- phase5_canary_manifest_sanitized.json: be9655806f29abfaec352f1f8e0407961c0a5caa62715f708b34fd87146eaf18
+- phase5_canary_manifest2_sanitized.json: b6885d49709df8ced7cc9ac175a68ff96560237d601f4fa091db1ae019eb332e
+- isolated control.db: ceff22105801a2d824a40313c5aef0b97dbd4b7a0985d9fc79e916aef9d5a514
+- live control.db (after): 0a29ac2ac6235f524cd4b45341ee037aa87934acd07daafb91a86b5f1b726e74
+- backup preflight: 8d16985c88f956a22c41aff8e7a6d719d61d06ceeff7a4a5bf9195b4343a58cd
+- Manual-UAT patch: 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d
+
+Decision
+--------
+P3_PHASE5_SECURITY_CLOSEOUT_PASS (pending final verification)

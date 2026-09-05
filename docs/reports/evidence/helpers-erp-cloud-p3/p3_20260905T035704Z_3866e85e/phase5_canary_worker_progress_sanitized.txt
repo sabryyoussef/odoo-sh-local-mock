@@ -1,0 +1,18 @@
+Cloud provisioning failed
+Cloud job execution failed
+[2026-09-05T07:24:23.497348+00:00] Starting bounded worker RUN_ID=p3_20260905T071700Z_d1938642 WORKER_ID=p3-canary-worker-p3_20260905T071700Z_d1938642 MAX_JOBS=1
+[2026-09-05T07:24:23.497380+00:00] DATABASE_URL=sqlite:////data/control.db
+[2026-09-05T07:24:23.497388+00:00] TENANT_ROOT=/data/canary/tenants TENANT_HOST_ROOT=/tmp/p3-canary-p3_20260905T071700Z_d1938642/tenants
+[2026-09-05T07:24:23.497396+00:00] BUILD_POSTGRES_HOST=odoo-sh-local-mock-build-postgres-1
+[2026-09-05T07:24:24.409137+00:00] Calling run_bounded_cloud_worker(max_jobs=1, worker_id=p3-canary-worker-p3_20260905T071700Z_d1938642, run_id=p3_20260905T071700Z_d1938642)
+[2026-09-05T07:24:24.690036+00:00] Bounded worker finished processed=1
+WORKER_PROCESSED_COUNT=1
+REQUEST id=1 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None
+REQUEST id=2 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None
+REQUEST id=3 status=rolled_back claimed_by=None tenant_id=None current_step=ready attempt=1 lease=None
+REQUEST id=4 status=rolled_back claimed_by=p3-canary-worker-p3_20260905T071700Z_d1938642 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 07:29:24.595856
+TENANT id=26 code=pt_trial_3_4ed6ab db=mosh_tnt_pt_trial_3_4ed6ab role=mosh_r_pt_trial_3_4ed6ab_role container=mosh-tenant-pt_trial_3_4ed6ab port=8217 status=failed filestore=/data/tenants/pt_trial_3_4ed6ab/filestore
+TENANT id=25 code=ptclone_24_702764 db=mosh_tnt_ptclone_24_702764 role=mosh_r_ptclone_24_702764_role container=mosh-tenant-ptclone_24_702764 port=8216 status=failed filestore=/data/tenants/ptclone_24_702764/filestore
+TENANT id=24 code=pt_trial_1_a89ea9 db=mosh_tnt_pt_trial_1_a89ea9 role=mosh_r_pt_trial_1_a89ea9_role container=mosh-tenant-pt_trial_1_a89ea9 port=8215 status=active filestore=/data/tenants/pt_trial_1_a89ea9/filestore
+TENANT id=23 code=vet_hospital_24_dc0fb8 db=mosh_tnt_vet_hospital_24_dc0fb8 role=mosh_r_vet_hospital_24_dc0fb8_role container=mosh-tenant-vet_hospital_24_dc0fb8 port=8215 status=failed filestore=/data/tenants/vet_hospital_24_dc0fb8/filestore
+TENANT id=22 code=hms_23_6dc3bb db=mosh_tnt_hms_23_6dc3bb role=mosh_r_hms_23_6dc3bb_role container=mosh-tenant-hms_23_6dc3bb port=8215 status=failed filestore=/data/tenants/hms_23_6dc3bb/filestore

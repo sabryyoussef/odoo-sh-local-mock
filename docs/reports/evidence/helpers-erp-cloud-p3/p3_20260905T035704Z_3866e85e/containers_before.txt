@@ -1,0 +1,21 @@
+mosh-tenant-pt_trial_1_a89ea9 Up 3 days 8071-8072/tcp, 127.0.0.1:8215->8069/tcp
+mosh-tenant-sis_21_b0da13 Up 3 days 8071-8072/tcp, 127.0.0.1:8214->8069/tcp
+mosh-tenant-clone_20_aea0ed Up 3 days 8071-8072/tcp, 127.0.0.1:8213->8069/tcp
+mosh-tenant-vet_hospital_19_7f6dcd Up 3 days 8071-8072/tcp, 127.0.0.1:8212->8069/tcp
+mosh-tenant-clone_18_d397ca Up 3 days 8071-8072/tcp, 127.0.0.1:8211->8069/tcp
+mosh-tenant-clone_17_f144c3 Up 3 days 8071-8072/tcp, 127.0.0.1:8210->8069/tcp
+mosh-tenant-vet_hospital_16_49c61c Up 3 days 8071-8072/tcp, 127.0.0.1:8209->8069/tcp
+mosh-tenant-clone_15_b78fa8 Up 3 days 8071-8072/tcp, 127.0.0.1:8208->8069/tcp
+mosh-tenant-vet_hospital_14_55e234 Up 3 days 8071-8072/tcp, 127.0.0.1:8207->8069/tcp
+mosh-tenant-clone_13_36dc56 Up 3 days 8071-8072/tcp, 127.0.0.1:8206->8069/tcp
+mosh-tenant-clone_12_2769d0 Up 3 days 8071-8072/tcp, 127.0.0.1:8205->8069/tcp
+mosh-tenant-vet_hospital_11_1bb4cf Up 3 days 8071-8072/tcp, 127.0.0.1:8204->8069/tcp
+mosh-tenant-vet_hospital_9_7d45d8 Up 3 days 8071-8072/tcp, 127.0.0.1:8203->8069/tcp
+mosh-tenant-vet_hospital_7_e8fa67 Up 3 days 8071-8072/tcp, 127.0.0.1:8202->8069/tcp
+mosh-tenant-vet_hospital_5_3fb408 Up 3 days 8071-8072/tcp, 127.0.0.1:8201->8069/tcp
+mosh-tenant-vet_hospital_debug Exited (2) 3 days ago 
+NAME                                       IMAGE                                    COMMAND                  SERVICE               CREATED      STATUS                PORTS
+odoo-sh-local-mock-backup-worker-1         odoo-sh-local-mock-backup-worker         "python -m app.backu…"   backup-worker         3 days ago   Up 3 days             8000/tcp
+odoo-sh-local-mock-build-postgres-1        postgres:16-alpine                       "docker-entrypoint.s…"   build-postgres        4 days ago   Up 4 days (healthy)   5432/tcp
+odoo-sh-local-mock-control-api-1           odoo-sh-local-mock-control-api           "uvicorn app.main:ap…"   control-api           3 days ago   Up 2 days             0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+odoo-sh-local-mock-provisioning-worker-1   odoo-sh-local-mock-provisioning-worker   "python -m app.worke…"   provisioning-worker   3 days ago   Up 2 days             8000/tcp

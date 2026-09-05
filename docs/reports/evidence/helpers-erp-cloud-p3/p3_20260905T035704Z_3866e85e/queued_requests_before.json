@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "status": "queued",
+    "product_line": "helpers_cloud",
+    "adapter": "demo",
+    "template_id": null,
+    "provisioning_approved": false,
+    "quote_approved": false,
+    "tenant_id": null
+  },
+  {
+    "id": 2,
+    "status": "queued",
+    "product_line": "helpers_cloud",
+    "adapter": "demo",
+    "template_id": null,
+    "provisioning_approved": false,
+    "quote_approved": false,
+    "tenant_id": null
+  }
+]

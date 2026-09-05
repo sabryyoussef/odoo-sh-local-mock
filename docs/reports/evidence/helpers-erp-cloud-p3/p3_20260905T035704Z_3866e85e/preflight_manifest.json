@@ -1,0 +1,100 @@
+{
+  "run_id": "p3_20260905T035704Z_3866e85e",
+  "timestamp_utc": "2026-09-05T03:57:24.436872+00:00",
+  "branch": "main",
+  "head": "73e75b9b5882e1e6db66b66cde5c63a35f8127b9",
+  "head_short": "73e75b9",
+  "worktree_status": "M control-api/app/branding.py\n M control-api/app/dummy_data.py\n M control-api/app/main.py\n M control-api/app/static/css/app.css\n M control-api/app/static/css/theme-helpers-erp.css\n M control-api/app/templates/account.html\n M control-api/app/templates/authorize.html\n M control-api/app/templates/base.html\n M control-api/app/templates/branches.html\n M control-api/app/templates/catalog.html\n M control-api/app/templates/catalog_solution.html\n M control-api/app/templates/checkout.html\n M control-api/app/templates/deploy.html\n M control-api/app/templates/deploy_progress.html\n M control-api/app/templates/landing.html\n M control-api/app/templates/not_found.html\n M control-api/app/templates/operator/backups.html\n M control-api/app/templates/operator/platform.html\n M control-api/app/templates/operator/provisioning.html\n M control-api/app/templates/operator/solutions.html\n M control-api/app/templates/operator/tenants.html\n M control-api/app/templates/partials/app_topbar.html\n M control-api/app/templates/partials/cta_footer.html\n M control-api/app/templates/partials/event_card.html\n M control-api/app/templates/partials/feature_cards.html\n M control-api/app/templates/partials/hero.html\n M control-api/app/templates/partials/history_timeline.html\n M control-api/app/templates/partials/portal_nav.html\n M control-api/app/templates/partials/preview_mock.html\n M control-api/app/templates/partials/product_line_cards.html\n M control-api/app/templates/partials/projects_top_bar.html\n M control-api/app/templates/payment_success.html\n M control-api/app/templates/platform/deploy/_wizard_base.html\n M control-api/app/templates/platform/index.html\n M control-api/app/templates/platform/pricing.html\n M control-api/app/templates/portal/dashboard.html\n M control-api/app/templates/portal/provisioning.html\n M control-api/app/templates/portal/subscription_detail.html\n M control-api/app/templates/portal/subscriptions.html\n M control-api/app/templates/portal/tenant_detail.html\n M control-api/app/templates",
+  "diff_stat": "control-api/app/branding.py                        |  18 +-\n control-api/app/dummy_data.py                      |   2 +\n control-api/app/main.py                            |   5 +-\n control-api/app/static/css/app.css                 |  74 +-\n control-api/app/static/css/theme-helpers-erp.css   | 380 +++++++-\n control-api/app/templates/account.html             |   2 -\n control-api/app/templates/authorize.html           |   1 -\n control-api/app/templates/base.html                |  12 +-\n control-api/app/templates/branches.html            |  45 +-\n control-api/app/templates/catalog.html             |  28 +-\n control-api/app/templates/catalog_solution.html    |  50 +-\n control-api/app/templates/checkout.html            |   2 -\n control-api/app/templates/deploy.html              |   2 -\n control-api/app/templates/deploy_progress.html     |   2 -\n control-api/app/templates/landing.html             |  12 +-\n control-api/app/templates/not_found.html           |   2 -\n control-api/app/templates/operator/backups.html    |   2 -\n control-api/app/templates/operator/platform.html   |   2 -\n .../app/templates/operator/provisioning.html       |   2 -\n control-api/app/templates/operator/solutions.html  |   2 -\n control-api/app/templates/operator/tenants.html    |   2 -\n control-api/app/templates/partials/app_topbar.html |  38 +-\n control-api/app/templates/partials/cta_footer.html |  14 +-\n control-api/app/templates/partials/event_card.html |  11 +-\n .../app/templates/partials/feature_cards.html      |  27 +-\n control-api/app/templates/partials/hero.html       |  66 +-\n .../app/templates/partials/history_timeline.html   |  13 +-\n control-api/app/templates/partials/portal_nav.html |  26 +-\n .../app/templates/partials/preview_mock.html       |  19 +-\n .../app/templates/partials/product_line_cards.html |  49 +-\n .../app/templates/partials/projects_top_bar.html   |  34 +-\n control-api/app/templates/payment_success.html     |   2 -\n .../templates/platform/deploy/_wizard_base.html    |   ",
+  "recent_log": "73e75b9 docs(cloud): correct final HEAD reference to 5982b89\n5982b89 docs(cloud): finalize P2 integration report\n4a8349a docs(cloud): record real disposable verification and evidence\n0ef63b7 fix(cloud): verify HTTP health via in-network and loopback candidates\n7423ba6 fix(cloud): correct P2 host mount path for Docker",
+  "integrity_check": "ok",
+  "checksums": {
+    "live": "8d16985c88f956a2***REDACTED***",
+    "backup": "8d16985c88f956a2***REDACTED***",
+    "backup_path": "data/control.db.backup.20260905T035704Z_p3_preflight"
+  },
+  "tables": [
+    "audit_events",
+    "backup_policies",
+    "branches",
+    "builds",
+    "cloud_addons",
+    "cloud_application_packages",
+    "cloud_instances",
+    "cloud_odoo_versions",
+    "cloud_orders",
+    "cloud_plans",
+    "cloud_provisioning_requests",
+    "cloud_setup_addon_selections",
+    "cloud_setup_selections",
+    "cloud_subscriptions",
+    "cloud_templates",
+    "customer_subscriptions",
+    "deployment_jobs",
+    "deployment_selection_modules",
+    "deployment_selections",
+    "odoo_module_catalog",
+    "odoo_module_dependencies",
+    "odoo_versions",
+    "packages",
+    "platform_plan_module_rules",
+    "platform_plans",
+    "platform_template_build_jobs",
+    "platform_trial_lifecycle_events",
+    "platform_trial_lifecycles",
+    "platform_trials",
+    "projects",
+    "provisioning_jobs",
+    "restore_jobs",
+    "solutions",
+    "subscriptions",
+    "template_databases",
+    "tenant_backups",
+    "tenant_environments",
+    "tenants",
+    "users",
+    "webhook_deliveries"
+  ],
+  "counts": {
+    "cloud_provisioning_requests": 2,
+    "tenants": 26,
+    "cloud_templates": 0,
+    "cloud_subscriptions": 2,
+    "cloud_instances": 2
+  },
+  "req_status": [
+    [
+      "queued",
+      2
+    ]
+  ],
+  "req_product_line": [
+    [
+      "helpers_cloud",
+      2
+    ]
+  ],
+  "req_adapter": [
+    [
+      "demo",
+      2
+    ]
+  ],
+  "queued": 2,
+  "tenant_product_line": [
+    [
+      null,
+      1
+    ],
+    [
+      "developer_platform",
+      2
+    ],
+    [
+      "ready_solution",
+      23
+    ]
+  ],
+  "template_status": [],
+  "rollback_instructions": "cp -a data/control.db.backup.20260905T035704Z_p3_preflight data/control.db && docker compose restart control-api provisioning-worker"
+}

@@ -1,0 +1,22 @@
+              rolname               
+------------------------------------
+ mosh_admin
+ mosh_odoo
+ mosh_r_clone_12_2769d0_role
+ mosh_r_clone_13_36dc56_role
+ mosh_r_clone_15_b78fa8_role
+ mosh_r_clone_17_f144c3_role
+ mosh_r_clone_18_d397ca_role
+ mosh_r_clone_20_aea0ed_role
+ mosh_r_pt_trial_1_a89ea9_role
+ mosh_r_sis_21_b0da13_role
+ mosh_r_vet_hospital_11_1bb4cf_role
+ mosh_r_vet_hospital_14_55e234_role
+ mosh_r_vet_hospital_16_49c61c_role
+ mosh_r_vet_hospital_19_7f6dcd_role
+ mosh_r_vet_hospital_5_3fb408_role
+ mosh_r_vet_hospital_7_e8fa67_role
+ mosh_r_vet_hospital_9_7d45d8_role
+ mosh_r_vet_hospital_debug_role
+(18 rows)
+

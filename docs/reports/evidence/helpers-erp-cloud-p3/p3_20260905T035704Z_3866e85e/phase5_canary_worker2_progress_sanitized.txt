@@ -1,0 +1,14 @@
+[2026-09-05T07:26:51.800271+00:00] Starting bounded worker2 RUN_ID=p3_20260905T071700Z_d1938642 WORKER_ID=p3-canary-worker2-p3_20260905T071700Z_d1938642
+[2026-09-05T07:26:52.713822+00:00] Calling run_bounded_cloud_worker(max_jobs=1, worker_id=p3-canary-worker2-p3_20260905T071700Z_d1938642, run_id=p3_20260905T071700Z_d1938642)
+[2026-09-05T07:27:03.434784+00:00] Bounded worker2 finished processed=1
+WORKER_PROCESSED_COUNT=1
+REQUEST id=1 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None
+REQUEST id=2 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None
+REQUEST id=3 status=rolled_back claimed_by=None tenant_id=None current_step=ready attempt=1 lease=None last_error=None
+REQUEST id=4 status=rolled_back claimed_by=p3-canary-worker-p3_20260905T071700Z_d1938642 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 07:29:24.595856 last_error=provision_failed
+REQUEST id=5 status=ready claimed_by=p3-canary-worker2-p3_20260905T071700Z_d1938642 tenant_id=27 current_step=ready attempt=1 lease=2026-09-05 07:31:52.909986 last_error=None
+TENANT id=27 code=p2_p3_20260905t071700z_d193_5_3d46d9 db=mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 role=mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role container=mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9 port=8301 status=active
+TENANT id=26 code=pt_trial_3_4ed6ab db=mosh_tnt_pt_trial_3_4ed6ab role=mosh_r_pt_trial_3_4ed6ab_role container=mosh-tenant-pt_trial_3_4ed6ab port=8217 status=failed
+TENANT id=25 code=ptclone_24_702764 db=mosh_tnt_ptclone_24_702764 role=mosh_r_ptclone_24_702764_role container=mosh-tenant-ptclone_24_702764 port=8216 status=failed
+TENANT id=24 code=pt_trial_1_a89ea9 db=mosh_tnt_pt_trial_1_a89ea9 role=mosh_r_pt_trial_1_a89ea9_role container=mosh-tenant-pt_trial_1_a89ea9 port=8215 status=active
+TENANT id=23 code=vet_hospital_24_dc0fb8 db=mosh_tnt_vet_hospital_24_dc0fb8 role=mosh_r_vet_hospital_24_dc0fb8_role container=mosh-tenant-vet_hospital_24_dc0fb8 port=8215 status=failed

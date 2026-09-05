@@ -1,0 +1,87 @@
+P3 Phase 4 — Test Results
+========================
+Run ID: p3_20260905T035704Z_3866e85e
+P3 HEAD: e9b73dcb48e86c140078994e4972c9a5a3dd35cd (e9b73dc)
+Clean HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9 (73e75b9)
+Main HEAD (must remain): 73e75b9
+Evidence directory: docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/
+Date (UTC): 2026-09-05
+
+Authoritative Totals (per task, not rerun where noted)
+-------------------------------------------------------
+- P3 eligibility/worker: 20 passed
+  Source: /tmp/p3_p3.txt (50 lines, 20 passed, 2 warnings, 14.58s)
+  Command (where available): docker compose exec -T control-api python -m pytest tests/test_cloud_p3_eligibility_worker.py -q
+  File: /tmp/p3_p3.txt — collected 20 items, all PASSED
+
+- P1–P1.3: 68 passed
+  Source: /tmp/p3_p1.txt (99 lines, 68 passed, 2 warnings, 50.33s)
+  Command (where available): docker compose exec -T control-api python -m pytest tests/test_cloud_p1_contracts.py tests/test_cloud_p1_atomic_concurrency.py tests/test_cloud_p1_2_eligibility.py tests/test_cloud_p1_3_durable_approval.py -q
+  File: /tmp/p3_p1.txt — collected 68 items, all PASSED
+
+- P3 full non-integration (m "not integration"): 7 failed, 383 passed, 1 skipped, 11 deselected
+  Source: /tmp/p3_full.txt (100 lines, 7 failed, 383 passed, 1 skipped, 11 deselected, 2249 warnings, 243.20s)
+  Command (where available): docker compose exec -T control-api python -m pytest -m "not integration" -q  (via P3 worktree, bounded, isolated SQLite per test)
+  File: /tmp/p3_full.txt — 7 failures listed below, all t-undefined
+
+- Clean committed 73e75b9 full non-integration (m "not integration"): 7 failed, 363 passed, 1 skipped, 11 deselected
+  Source: authoritative result provided in task (not rerun per STRICT TIME-BOUND RULES)
+  Command: not rerun (clean-tree comparison forbidden)
+  Note: 363 passed = 383 passed (P3) minus exactly 20 new P3 tests
+
+- Dirty main (with uncommitted branding/i18n): all seven targeted UI/navigation tests passed
+  Source: authoritative result provided in task (not rerun per STRICT TIME-BOUND RULES)
+  Command: not rerun (dirty-main comparison forbidden)
+  Note: P2 final integration report documents 17 passed when run from dirty mount; this phase's dirty-main check confirms 7/7 targeted tests passed
+
+Delta
+-----
+- P3 adds exactly 20 passing tests (383 - 363 = 20, matches /tmp/p3_p3.txt)
+- P3 introduces zero new full-suite failures (7 failed in both P3 and clean 73e75b9, identical test names)
+
+Seven Failures (identical in P3 and clean 73e75b9)
+---------------------------------------------------
+1. tests/test_cloud_onboarding_ui.py::test_github_login_directs_company_buyers_to_cloud
+2. tests/test_helpers_erp_cloud.py::test_registration_unique_email_and_login
+3. tests/test_product_line_regression.py::test_developer_platform_routes_and_github_path
+4. tests/test_product_line_regression.py::test_cloud_registration_does_not_replace_github_login
+5. tests/test_three_product_navigation.py::test_homepage_shows_three_product_lines
+6. tests/test_three_product_navigation.py::test_contextual_sign_in_targets
+7. tests/test_three_product_navigation.py::test_nav_lists_three_product_lines_and_sign_in
+
+Root cause (all seven): templates call t(...) but committed render context does not define t
+  Example: app/templates/partials/marketing_nav.html:16  <nav class="mkt-nav__links" aria-label="{{ t('nav.primary') }}">
+  Exception: jinja2.exceptions.UndefinedError: 't' is undefined
+  Dirty branding/i18n work supplies the missing behavior; none of the seven failures is caused by P3.
+
+References
+----------
+- /tmp/p3_p3.txt — P3 eligibility/worker (20 passed)
+- /tmp/p3_full.txt — P3 full non-integration (7 failed, 383 passed, 1 skipped, 11 deselected)
+- /tmp/p3_p1.txt — P1–P1.3 (68 passed)
+- /tmp/p3_p2.txt — P2 unit (12 passed, not required for P3 but available)
+- /tmp/p3_run_id.txt — run ID p3_20260905T035704Z_3866e85e
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/preflight_manifest.json — baseline counts (tenants 26, queued 2 demo, etc.)
+- docs/reports/HELPERS_ERP_CLOUD_P2_FINAL_INTEGRATION_REPORT.md — documents same 7 failures as branding/i18n gap
+
+P2 Footer
+---------
+- No P2 footer was captured in /tmp/p3_p3.txt or /tmp/p3_full.txt. The task states "Mark any missing P2 footer honestly; do not invent it."
+- P2 footer: NOT FOUND in available command output. Not invented. P2 evidence is in docs/reports/evidence/helpers-erp-cloud-p2/p2_20260903T124908Z_6c905ccb2aa2/ and docs/reports/HELPERS_ERP_CLOUD_P2_DISPOSABLE_PROVISIONING_REPORT.md.
+
+Commands Recorded Where Available
+----------------------------------
+- P3 smoke: docker compose exec -T control-api python -m pytest tests/test_cloud_p3_eligibility_worker.py -q  (see /tmp/p3_p3.txt)
+- P1 suite: docker compose exec -T control-api python -m pytest tests/test_cloud_p1_contracts.py tests/test_cloud_p1_atomic_concurrency.py tests/test_cloud_p1_2_eligibility.py tests/test_cloud_p1_3_durable_approval.py -q  (see /tmp/p3_p1.txt)
+- P3 full: docker compose exec -T control-api python -m pytest -m "not integration" -q  (see /tmp/p3_full.txt, 243.20s)
+- Clean 73e75b9 full: NOT RERUN (forbidden)
+- Dirty main targeted: NOT RERUN (forbidden)
+
+Time-Bound Compliance
+---------------------
+- Did not rerun full pytest suite (used /tmp/p3_full.txt)
+- Did not rerun clean-tree or dirty-main comparisons (used authoritative results)
+- Did not repeat individual failure tests
+- Did not execute a canary
+- Did not create runtime resources
+- Did not start, restart or reconfigure workers

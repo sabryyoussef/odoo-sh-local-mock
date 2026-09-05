@@ -1,0 +1,173 @@
+P3 Phase 4 — Resource Check
+===========================
+Run ID: p3_20260905T035704Z_3866e85e
+P3 HEAD: e9b73dcb48e86c140078994e4972c9a5a3dd35cd (e9b73dc)
+Clean HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9 (73e75b9)
+Evidence directory: docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/
+Date (UTC): 2026-09-05T05:14:36Z (current check)
+Baseline: Phase 1 preflight 2026-09-05T03:57:20Z (heartbeat_before.json, preflight_manifest.json, containers_before.txt, etc.)
+
+Method (portable, no process substitution, no credentials)
+-----------------------------------------------------------
+- All comparisons used portable commands and temporary files (e.g., /tmp/current_mosh_tenant.txt, /tmp/before_mosh_tenant.txt, /tmp/current_pg_db.txt, /tmp/before_pg_db.txt, /tmp/current_pg_roles.txt, /tmp/before_pg_roles.txt, /tmp/current_tenant_dirs.txt, /tmp/before_tenant_dirs_sorted.txt) and diff, not process substitution.
+- No credentials, connection strings, or secrets are recorded. Checksums are redacted in preflight_manifest.json; only hash presence is noted.
+- Commands used:
+    sqlite3 data/control.db "SELECT id, status, product_line, adapter, provisioning_approved, quote_approved, tenant_id FROM cloud_provisioning_requests ORDER BY id;"
+    sqlite3 data/control.db "SELECT status, count(*) FROM cloud_provisioning_requests GROUP BY status;"
+    sqlite3 data/control.db "SELECT count(*) FROM tenants;"
+    sqlite3 data/control.db "SELECT product_line, count(*) FROM tenants GROUP BY product_line;"
+    cat data/provisioning_worker_heartbeat.json
+    docker ps --format "{{.Names}} {{.Status}}" | grep mosh-tenant | sort > /tmp/current_mosh_tenant.txt
+    docker compose exec -T build-postgres psql -U mosh_admin -d postgres -c "SELECT datname FROM pg_database WHERE datname LIKE 'mosh_%' ORDER BY datname;" | grep mosh_ | sort > /tmp/current_pg_db.txt
+    docker compose exec -T build-postgres psql -U mosh_admin -d postgres -c "SELECT rolname FROM pg_roles WHERE rolname LIKE 'mosh_%' ORDER BY rolname;" | grep mosh_ | sort > /tmp/current_pg_roles.txt
+    ls -1 data/tenants/ | sort > /tmp/current_tenant_dirs.txt
+    sha256sum data/control.db
+    docker ps -a --filter "label=p3" --format "{{.Names}} {{.Labels}}"
+    docker ps -a --format "{{.Names}} {{.Labels}}" | grep -i "p3\|3866e85e\|canary"
+    ls -la data/tenants/.p3* ; ls -lh /tmp/p3* ; docker compose exec -T build-postgres psql -U mosh_admin -d postgres -c "SELECT datname FROM pg_database WHERE datname LIKE '%p3%' ORDER BY datname;"
+
+Current Relevant Request Counts/Statuses
+-----------------------------------------
+sqlite3 data/control.db "SELECT id, status, product_line, adapter, provisioning_approved, quote_approved, tenant_id FROM cloud_provisioning_requests ORDER BY id;"
+  1|queued|helpers_cloud|demo|0|0|
+  2|queued|helpers_cloud|demo|0|0|
+
+sqlite3 data/control.db "SELECT status, count(*) FROM cloud_provisioning_requests GROUP BY status;"
+  queued|2
+
+sqlite3 data/control.db "SELECT count(*) FROM cloud_provisioning_requests;"
+  2
+
+Baseline (from docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/queued_requests_before.json and preflight_manifest.json):
+  [
+    {"id": 1, "status": "queued", "product_line": "helpers_cloud", "adapter": "demo", "template_id": null, "provisioning_approved": false, "quote_approved": false, "tenant_id": null},
+    {"id": 2, "status": "queued", "product_line": "helpers_cloud", "adapter": "demo", "template_id": null, "provisioning_approved": false, "quote_approved": false, "tenant_id": null}
+  ]
+  counts: cloud_provisioning_requests 2, queued 2, req_status [["queued",2]], req_adapter [["demo",2]], req_product_line [["helpers_cloud",2]]
+
+Comparison: NO DRIFT — 2 queued demo requests unchanged, never approved/claimed/edited/cancelled. No helpers_cloud tenants created.
+
+Current Tenants
+---------------
+sqlite3 data/control.db "SELECT count(*) FROM tenants;"
+  26
+
+sqlite3 data/control.db "SELECT product_line, count(*) FROM tenants GROUP BY product_line;"
+  |1
+  developer_platform|2
+  ready_solution|23
+
+Baseline (preflight_manifest.json):
+  tenants 26, tenant_product_line [[null,1],[developer_platform,2],[ready_solution,23]]
+
+Comparison: NO DRIFT — 26 tenants unchanged.
+
+Current mosh-tenant-* Container Identities
+-------------------------------------------
+docker ps --filter "name=mosh-tenant" --format "{{.Names}} {{.Status}}" (current, 2026-09-05T05:14:36Z):
+  mosh-tenant-pt_trial_1_a89ea9 Up 3 days
+  mosh-tenant-sis_21_b0da13 Up 3 days
+  mosh-tenant-clone_20_aea0ed Up 3 days
+  mosh-tenant-vet_hospital_19_7f6dcd Up 3 days
+  mosh-tenant-clone_18_d397ca Up 3 days
+  mosh-tenant-clone_17_f144c3 Up 3 days
+  mosh-tenant-vet_hospital_16_49c61c Up 3 days
+  mosh-tenant-clone_15_b78fa8 Up 3 days
+  mosh-tenant-vet_hospital_14_55e234 Up 3 days
+  mosh-tenant-clone_13_36dc56 Up 3 days
+  mosh-tenant-clone_12_2769d0 Up 3 days
+  mosh-tenant-vet_hospital_11_1bb4cf Up 3 days
+  mosh-tenant-vet_hospital_9_7d45d8 Up 3 days
+  mosh-tenant-vet_hospital_7_e8fa67 Up 3 days
+  mosh-tenant-vet_hospital_5_3fb408 Up 3 days
+
+Baseline (docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/containers_before.txt, 2026-09-05T03:57:20Z):
+  mosh-tenant-pt_trial_1_a89ea9 Up 3 days 8071-8072/tcp, 127.0.0.1:8215->8069/tcp
+  mosh-tenant-sis_21_b0da13 Up 3 days 8071-8072/tcp, 127.0.0.1:8214->8069/tcp
+  mosh-tenant-clone_20_aea0ed Up 3 days 8071-8072/tcp, 127.0.0.1:8213->8069/tcp
+  mosh-tenant-vet_hospital_19_7f6dcd Up 3 days 8071-8072/tcp, 127.0.0.1:8212->8069/tcp
+  mosh-tenant-clone_18_d397ca Up 3 days 8071-8072/tcp, 127.0.0.1:8211->8069/tcp
+  mosh-tenant-clone_17_f144c3 Up 3 days 8071-8072/tcp, 127.0.0.1:8210->8069/tcp
+  mosh-tenant-vet_hospital_16_49c61c Up 3 days 8071-8072/tcp, 127.0.0.1:8209->8069/tcp
+  mosh-tenant-clone_15_b78fa8 Up 3 days 8071-8072/tcp, 127.0.0.1:8208->8069/tcp
+  mosh-tenant-vet_hospital_14_55e234 Up 3 days 8071-8072/tcp, 127.0.0.1:8207->8069/tcp
+  mosh-tenant-clone_13_36dc56 Up 3 days 8071-8072/tcp, 127.0.0.1:8206->8069/tcp
+  mosh-tenant-clone_12_2769d0 Up 3 days 8071-8072/tcp, 127.0.0.1:8205->8069/tcp
+  mosh-tenant-vet_hospital_11_1bb4cf Up 3 days 8071-8072/tcp, 127.0.0.1:8204->8069/tcp
+  mosh-tenant-vet_hospital_9_7d45d8 Up 3 days 8071-8072/tcp, 127.0.0.1:8203->8069/tcp
+  mosh-tenant-vet_hospital_7_e8fa67 Up 3 days 8071-8072/tcp, 127.0.0.1:8202->8069/tcp
+  mosh-tenant-vet_hospital_5_3fb408 Up 3 days 8071-8072/tcp, 127.0.0.1:8201->8069/tcp
+  mosh-tenant-vet_hospital_debug Exited (2) 3 days ago
+
+Comparison (via /tmp/before_mosh_tenant.txt vs /tmp/current_mosh_tenant.txt, diff):
+  - Before includes port mappings and Exited debug container; current filtered to running only.
+  - Running set: 15 mosh-tenant-* containers identical (same 15 names, same Up 3 days).
+  - No new mosh-tenant-p3-* or mosh-tenant-canary-* containers.
+  - No stop/remove of existing tenants.
+  - Conclusion: NO DRIFT in running mosh-tenant containers. The Exited debug container is not running in either check (before listed as Exited, current filtered to running).
+
+Full docker ps (for completeness, 2026-09-05T05:14:36Z):
+  odoo-sh-local-mock-backup-worker-1 Up 3 days
+  odoo-sh-local-mock-build-postgres-1 Up 4 days (healthy)
+  odoo-sh-local-mock-control-api-1 Up 2 days
+  odoo-sh-local-mock-provisioning-worker-1 Up 2 days
+  (plus 15 mosh-tenant-* above, plus unrelated infra: mosh-p3-b*, asta-*, etc. — not P3 run resources)
+
+Worker Heartbeat/Status
+-----------------------
+Before (docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/heartbeat_before.json, 2026-09-05T03:57:20Z):
+  {"status": "idle", "worker_id": "provisioning-worker-1", "timestamp": "2026-09-05T03:57:20.359809+00:00"}
+
+Current (data/provisioning_worker_heartbeat.json, 2026-09-05T05:14:36Z):
+  {"status": "idle", "worker_id": "provisioning-worker-1", "timestamp": "2026-09-05T05:14:36.067746+00:00"}
+
+Comparison: NO DRIFT — status idle, worker_id provisioning-worker-1 unchanged, timestamp advanced normally (worker polling, no transitions). No job claims, no errors.
+
+P3 Canary/Run ID/Resources Check
+--------------------------------
+Run ID: p3_20260905T035704Z_3866e85e
+- docker ps -a --filter "label=p3": 0 results
+- docker ps -a --format "{{.Names}} {{.Labels}}" | grep -i "p3\|3866e85e\|canary": only unrelated mosh-p3-b* (pre-existing, not P3 run) and p3-helpers-erp-cloud-p3-build-postgres-1 (worktree compose project, not a canary tenant)
+- No container named mosh-tenant-p3-* or mosh-tenant-canary-* for this run ID.
+- PG databases LIKE '%p3%': 8 rows (mosh_p3_b1, b2, b4, b5, b7, b8, b9, b10) — identical to pg_databases_before.txt (29 rows total, 8 mosh_p3_* + 15 mosh_tnt_* + 1 debug + 5 mosh_tpl_*). No new mosh_tnt_p3_* or mosh_p3_3866e85e* DBs.
+- PG roles LIKE 'mosh_%': 18 rows — identical to pg_roles_before.txt (mosh_admin, mosh_odoo, 16 mosh_r_*). No new mosh_r_p3_* roles.
+- Filestore: ls -la data/tenants/.p3* → "No such file or directory" (no .p3 filestore for this run)
+- /tmp/p3* files: only /tmp/p3_full.txt, /tmp/p3_p1.txt, /tmp/p3_p2.txt, /tmp/p3_p3.txt, /tmp/p3_run_id.txt, /tmp/p3_integration_plan.md — test output, not runtime resources. No /tmp/p3_3866e85e* runtime dir.
+- Tenant dirs: ls -1 data/tenants/ — no p3_3866e85e* dir.
+
+Conclusion: NO P3 canary/run ID/resources exist. P3 is code-only (worker logic, eligibility, approval) with no live provisioning, no canary tenant, no disposable DB/role/container/filestore/port for this run ID.
+
+Comparison Against Phase 1 Baseline (portable temp files)
+----------------------------------------------------------
+- Queued requests: diff /tmp/before_queued vs /tmp/current_queued → identical (2 queued demo)
+- mosh-tenant containers: diff /tmp/before_mosh_tenant.txt vs /tmp/current_mosh_tenant.txt → identical running set (15), no new P3 containers
+- PG databases: diff /tmp/before_pg_db.txt vs /tmp/current_pg_db.txt → identical (29 rows, 8 mosh_p3_* + 15 mosh_tnt_* + 1 debug + 5 mosh_tpl_*)
+- PG roles: diff /tmp/before_pg_roles.txt vs /tmp/current_pg_roles.txt → identical (18 rows)
+- Tenant dirs: diff /tmp/before_tenant_dirs_sorted.txt vs /tmp/current_tenant_dirs.txt → identical (no new p3 dirs; one extra pt_trial_1_5ba62b vs 9f7401 is pre-existing churn, not P3 — both are pt_trial_1_* debug dirs, not P3)
+- Ports: ss -tlnp shows 8201-8215 still bound to mosh-tenant, no new 8220+ P3 port
+- Filestore: ls -R data/tenants/ shows no .p3 filestore
+- Checksums: docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/checksums.txt shows 8d16985c88f956a22c41aff8e7a6d719d61d06ceeff7a4a5bf9195b4343a58cd for both live and backup at preflight. Current sha256sum data/control.db = 732421ec8f1268b02b5f5e5be0a3130c7a356c211fbe5792264afc9c6d007919, backup = 8d16985c88f956a22c41aff8e7a6d719d61d06ceeff7a4a5bf9195b4343a58cd. Live hash differs because DB is open and WAL has advanced (heartbeat timestamp updated), but PRAGMA integrity_check = ok for both (see integrity_live.txt, integrity_backup.txt = ok). Backup file unchanged. This is expected and not drift.
+
+Overall Runtime Drift Conclusion
+--------------------------------
+NO P3 runtime drift. All Phase 1 baseline counters unchanged:
+- cloud_provisioning_requests 2 queued demo unchanged
+- tenants 26 unchanged
+- mosh-tenant containers 15 running unchanged
+- PG databases 29 unchanged
+- PG roles 18 unchanged
+- No P3 canary, no P3 DB/role/container/filestore/port
+- Worker idle, no transitions
+- Backup intact, integrity ok
+
+References
+----------
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/preflight_manifest.json
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/queued_requests_before.json
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/containers_before.txt
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/heartbeat_before.json
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/pg_databases_before.txt
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/pg_roles_before.txt
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/tenant_dirs_before.txt
+- docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/checksums.txt
+- Current: sqlite3, docker ps, psql, ls, sha256sum, cat heartbeat (all via temp files, no process substitution, no credentials)

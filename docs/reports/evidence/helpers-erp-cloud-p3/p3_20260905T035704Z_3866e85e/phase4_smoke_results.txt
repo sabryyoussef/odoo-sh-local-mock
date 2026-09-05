@@ -1,0 +1,78 @@
+P3 Phase 4 — Smoke Results
+==========================
+Run ID: p3_20260905T035704Z_3866e85e
+P3 HEAD: e9b73dcb48e86c140078994e4972c9a5a3dd35cd (e9b73dc)
+Clean HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9 (73e75b9)
+Evidence directory: docs/reports/evidence/helpers-erp-cloud-p3/p3_20260905T035704Z_3866e85e/
+Date (UTC): 2026-09-05
+
+Search for Authoritative Smoke Command
+---------------------------------------
+Searched existing P2/DP6 documentation for an authoritative smoke command:
+
+- docs/DP6_CONTROLLED_ACTIVATION_FINAL.md:156 — focused safe pytest on isolated SQLite:
+    docker compose exec -T control-api python -m pytest \
+      tests/test_platform_lifecycle.py \
+      tests/test_platform_lifecycle_api.py \
+      -q --tb=short -m "not integration"
+  Result: 23 passed (DP6 lifecycle, not P3).
+
+- docs/reports/HELPERS_ERP_CLOUD_P2_FINAL_INTEGRATION_REPORT.md:66 — Smoke (final main):
+    tests/test_cloud_p2_unit.py + P1 suite — 80 passed
+  Command (inferred): docker compose run --rm ... control-api python -m pytest tests/test_cloud_p2_unit.py tests/test_cloud_p1_contracts.py tests/test_cloud_p1_atomic_concurrency.py tests/test_cloud_p1_2_eligibility.py tests/test_cloud_p1_3_durable_approval.py -q
+  This is P2 smoke, not P3.
+
+- docs/reports/HELPERS_ERP_CLOUD_P2_DISPOSABLE_PROVISIONING_REPORT.md:88 — Gate 3: Full non-integration via python -m pytest -m "not integration" -q (not a smoke subset).
+
+- No distinct P3 smoke command is documented in P2/DP6 docs beyond the P3 eligibility/worker suite itself. The task's authoritative results list "P3 eligibility/worker: 20 passed" as the P3 smoke.
+
+Conclusion: No distinct P3 smoke command exists in P2/DP6 documentation. Per instructions, running the smallest documented smoke subset once: the P3 eligibility/worker suite (bounded, isolated SQLite, no permanent resources).
+
+Smoke Command Executed (bounded, no permanent resources)
+---------------------------------------------------------
+Command:
+  docker compose run --rm -v /tmp/p3-helpers-erp-cloud-p3/control-api/app:/app/app:ro -v /tmp/p3-helpers-erp-cloud-p3/control-api/tests:/app/tests:ro control-api python -m pytest tests/test_cloud_p3_eligibility_worker.py -q
+
+Working directory: /opt/projects/active/odoo-sh-local-mock
+Image: odoo-sh-local-mock-control-api (read-only mounts from P3 worktree, no live DB mutation)
+Isolation: tests/conftest.py rebinds disposable in-memory SQLite per test; no Docker/Postgres/Odoo resources created; no canary; no worker restart.
+
+Execution:
+  START: 2026-09-05T05:13:55Z (epoch 1788585171)
+  END:   2026-09-05T05:14:58Z (epoch 1788585234)
+  Duration: 63s wall (14.07s pytest)
+  Exit code: 0
+
+Output (truncated to summary):
+  ....................                                                     [100%]
+  20 passed, 2 warnings in 14.07s
+
+Warnings (2):
+  /app/app/main.py:140: DeprecationWarning: on_event is deprecated, use lifespan event handlers instead.
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: on_event is deprecated ...
+
+Totals:
+  20 passed, 0 failed, 0 skipped, 0 deselected, 2 warnings
+
+Comparison to Authoritative Result
+-----------------------------------
+- Authoritative P3 smoke (from /tmp/p3_p3.txt): 20 passed, 2 warnings, 14.58s
+- This run: 20 passed, 2 warnings, 14.07s
+- Match: YES — identical pass count, same warnings, no new failures.
+
+Time-Bound Compliance
+---------------------
+- Ran only this bounded smoke command once.
+- Did not run full pytest suite.
+- Did not run clean-tree or dirty-main comparisons.
+- Did not repeat individual failure tests.
+- Did not execute a canary.
+- Did not create runtime resources.
+- Did not start, restart or reconfigure workers.
+
+References
+----------
+- /tmp/p3_p3.txt — authoritative 20 passed (14.58s)
+- This file — live smoke run 20 passed (14.07s), exit 0
+- docs/DP6_CONTROLLED_ACTIVATION_FINAL.md:156 — DP6 smoke reference
+- docs/reports/HELPERS_ERP_CLOUD_P2_FINAL_INTEGRATION_REPORT.md:66 — P2 smoke reference

@@ -1,0 +1,89 @@
+name: p3-helpers-erp-cloud-windows-uat
+services:
+  uat-control-api:
+    build:
+      context: ./control-api
+    container_name: p3-uat-control-api
+    ports:
+      - "127.0.0.1:8001:8000"
+      - "100.76.217.35:8001:8000"
+      - "192.168.100.66:8001:8000"
+    volumes:
+      - ./control-api/app:/app/app
+      - ./control-api/tests:/app/tests
+      - ./data-uat:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+      DATABASE_URL: "sqlite:////data/control.db"
+      SESSION_SECRET: "${SESSION_SECRET:-change-me-in-production-please-use-long-random}"
+      GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID:-}"
+      GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET:-}"
+      GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL:-http://localhost:8000/auth/github/callback}"
+      OPERATOR_GITHUB_LOGINS: "${OPERATOR_GITHUB_LOGINS:-}"
+      BUILD_ROOT: "/data/builds"
+      BUILD_HOST_ROOT: "${BUILD_HOST_ROOT:-/tmp/p3-helpers-erp-cloud-windows-uat/data-uat/builds}"
+      BUILD_PORT_MIN: "8101"
+      BUILD_PORT_MAX: "8198"
+      TENANT_ROOT: "/data/tenants"
+      TENANT_HOST_ROOT: "/tmp/p3-helpers-erp-cloud-windows-uat/data-uat/tenants"
+      TENANT_PORT_MIN: "8301"
+      TENANT_PORT_MAX: "8398"
+      BUILD_POSTGRES_HOST: "uat-build-postgres"
+      BUILD_POSTGRES_PORT: "5432"
+      BUILD_POSTGRES_ADMIN_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      BUILD_POSTGRES_ADMIN_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      BUILD_POSTGRES_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      BUILD_POSTGRES_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+      ODOO19_IMAGE: "${ODOO19_IMAGE:-odoo:19.0}"
+      BUILD_DOCKER_NETWORK: "p3-helpers-erp-cloud-windows-uat_default"
+      GITHUB_WEBHOOK_SECRET: "${GITHUB_WEBHOOK_SECRET:-}"
+      GITHUB_WEBHOOK_PUBLIC_URL: "${GITHUB_WEBHOOK_PUBLIC_URL:-}"
+      MAX_CONCURRENT_BUILDS: "2"
+      DEMO_THEME: "helpers_erp"
+      TENANT_ALLOW_LOCALHOST_LAUNCH: "true"
+      BACKUP_ROOT: "/data/backups"
+      BACKUP_HOST_ROOT: "/tmp/p3-helpers-erp-cloud-windows-uat/data-uat/backups"
+      QUOTA_WARNING_THRESHOLD: "0.8"
+      APP_ENV: "development"
+      HELPERS_CLOUD_MANUAL_UAT_ENABLED: "true"
+      HELPERS_CLOUD_MANUAL_UAT_ALLOWED_HOSTS: "127.0.0.1,::1,100.76.217.35,192.168.100.66,master,master.tailcf9988.ts.net"
+      HELPERS_CLOUD_MANUAL_UAT_TAILSCALE_HOSTNAME: "master.tailcf9988.ts.net"
+      HELPERS_CLOUD_REAL_PROVISIONING_ENABLED: "false"
+      HELPERS_CLOUD_WORKER_MAX_JOBS: "0"
+    depends_on:
+      uat-build-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - default
+
+  uat-build-postgres:
+    image: postgres:16-alpine
+    container_name: p3-uat-build-postgres
+    environment:
+      POSTGRES_USER: "${BUILD_POSTGRES_ADMIN_USER:-mosh_admin}"
+      POSTGRES_PASSWORD: "${BUILD_POSTGRES_ADMIN_PASSWORD:-change-me-build-pg-admin}"
+      POSTGRES_DB: postgres
+      MOSH_ODOO_USER: "${BUILD_POSTGRES_USER:-mosh_odoo}"
+      MOSH_ODOO_PASSWORD: "${BUILD_POSTGRES_PASSWORD:-change-me-build-pg-odoo}"
+    volumes:
+      - uat_build_postgres_data:/var/lib/postgresql/data
+      - ./scripts/build-postgres-init.sh:/docker-entrypoint-initdb.d/01-mosh-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    networks:
+      - default
+    # No host port - internal only (UAT access limited to Docker/private network)
+
+volumes:
+  uat_build_postgres_data:
+
+networks:
+  default:
+    name: p3-helpers-erp-cloud-windows-uat_default

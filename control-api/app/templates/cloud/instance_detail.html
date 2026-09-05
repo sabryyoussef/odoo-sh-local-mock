@@ -16,8 +16,10 @@
     <div><dt>Storage</dt><dd>{{ instance.requested_storage_gb }} GB / {{ instance.included_storage_gb }} GB included</dd></div>
     <div><dt>Backup policy</dt><dd>{{ instance.backup_retention_days }} days</dd></div>
   </dl>
-  {% if can_open %}
-    <a class="btn-hero btn-hero--primary" href="{{ instance.runtime_url }}">Open Odoo</a>
+  {% if can_open and external_url %}
+    <a class="btn-hero btn-hero--primary" href="{{ external_url }}" target="_blank" rel="noopener">Open Odoo</a>
+  {% elif can_open and not external_url %}
+    <p class="muted">Open Odoo is ready but external access is not configured. Contact support.</p>
   {% else %}
     <p class="muted">Open Odoo is disabled. This demo workspace does not have a verified live runtime.</p>
   {% endif %}

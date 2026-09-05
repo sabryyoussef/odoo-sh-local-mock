@@ -73,6 +73,7 @@ from app.services.cloud_setup_service import (
     trial_forces_monthly,
     workspace_hostname,
 )
+from app.services.cloud_external_url import build_external_odoo_url, build_external_odoo_url_for_instance, get_external_host_and_scheme
 from app.view_context import user_to_dict
 
 router = APIRouter(tags=["helpers-erp-cloud"])
@@ -799,6 +800,39 @@ def cloud_instances(request: Request, db: Session = Depends(get_db)):
         return redirect
     seed_helpers_cloud(db)
     instances = _provisioning.list_instances(db, user)
+    # Build Windows-accessible external URLs from trusted config (never trust Host header)
+    external_urls: dict[int, str | None] = {}
+    can_open_external: dict[int, bool] = {}
+    for inst in instances:
+        ext = build_external_odoo_url_for_instance(inst)
+        # Fallback: try to get tenant port/db directly if instance helper failed
+        if not ext:
+            try:
+                from app.models import Tenant
+                tenant = None
+                if getattr(inst, "tenant_id", None):
+                    tenant = db.get(Tenant, inst.tenant_id)
+                if tenant and tenant.http_port and tenant.database_name:
+                    ext = build_external_odoo_url(tenant.database_name, tenant.http_port)
+                elif getattr(inst, "requested_subdomain", None) in ("user1","user2","user3","user4"):
+                    # Derive from subdomain
+                    db_name = f"helpers_demo_{inst.requested_subdomain}"
+                    # Try to get port from tenant or instance
+                    port = getattr(tenant, "http_port", None) if tenant else None
+                    if not port:
+                        # Parse from runtime_url
+                        import re
+                        url = getattr(inst, "runtime_url", "") or ""
+                        m = re.search(r":(\d+)", url)
+                        if m:
+                            port = int(m.group(1))
+                    if port:
+                        ext = build_external_odoo_url(db_name, port)
+            except Exception:
+                ext = None
+        external_urls[inst.id] = ext
+        # can_open requires ready + verified + external URL available (fail-closed)
+        can_open_external[inst.id] = bool(_provisioning.can_open_odoo(inst) and ext)
     return render_template(
         request,
         "cloud/instances.html",
@@ -807,7 +841,9 @@ def cloud_instances(request: Request, db: Session = Depends(get_db)):
             {
                 "instances": instances,
                 "status_labels": CLOUD_PROVISION_STATUS_LABELS,
-                "can_open": {i.id: _provisioning.can_open_odoo(i) for i in instances},
+                "can_open": can_open_external,
+                "external_urls": external_urls,
+                "external_host_configured": get_external_host_and_scheme()[0] is not None,
             },
         ),
     )
@@ -822,6 +858,16 @@ def cloud_instance_detail(request: Request, instance_id: int, db: Session = Depe
     if not inst:
         set_flash(request, "Instance not found.", "error")
         return RedirectResponse("/cloud/instances", status_code=302)
+    ext = build_external_odoo_url_for_instance(inst)
+    if not ext:
+        try:
+            from app.models import Tenant
+            tenant = db.get(Tenant, inst.tenant_id) if getattr(inst, "tenant_id", None) else None
+            if tenant and tenant.http_port and tenant.database_name:
+                ext = build_external_odoo_url(tenant.database_name, tenant.http_port)
+        except Exception:
+            ext = None
+    can_open_ext = bool(_provisioning.can_open_odoo(inst) and ext)
     return render_template(
         request,
         "cloud/instance_detail.html",
@@ -829,7 +875,9 @@ def cloud_instance_detail(request: Request, instance_id: int, db: Session = Depe
             user,
             {
                 "instance": inst,
-                "can_open": _provisioning.can_open_odoo(inst),
+                "can_open": can_open_ext,
+                "external_url": ext,
+                "external_host_configured": get_external_host_and_scheme()[0] is not None,
                 "status_labels": CLOUD_PROVISION_STATUS_LABELS,
             },
         ),

@@ -23,8 +23,10 @@
           <div><dt>Backups</dt><dd>{{ inst.backup_retention_days }}-day retention</dd></div>
           <div><dt>Last backup</dt><dd>{% if inst.last_backup_at %}{{ inst.last_backup_at }}{% else %}None yet (demo){% endif %}</dd></div>
         </dl>
-        {% if can_open[inst.id] %}
-          <a class="btn-hero btn-hero--primary" href="{{ inst.runtime_url }}">Open Odoo</a>
+        {% if can_open[inst.id] and external_urls[inst.id] %}
+          <a class="btn-hero btn-hero--primary" href="{{ external_urls[inst.id] }}" target="_blank" rel="noopener">Open Odoo</a>
+        {% elif can_open[inst.id] and not external_urls[inst.id] %}
+          <p class="muted">Open Odoo is ready but external access is not configured. Contact support.</p>
         {% else %}
           <p class="muted">Open Odoo is unavailable until this workspace is Ready with a verified address.</p>
         {% endif %}

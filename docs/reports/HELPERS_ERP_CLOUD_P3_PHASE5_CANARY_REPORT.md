@@ -89,7 +89,7 @@ See `phase5_retry_eligibility.md` and `phase5_retry_dry_claim.txt`.
 
 - Ran exactly one worker with `HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true` `HELPERS_CLOUD_WORKER_MAX_JOBS=1` constrained to isolated DB/project
 - First worker (request 4) with default password failed: `password authentication failed for mosh_admin` → rolled_back — expected, proves fail-closed
-- Second worker (request 5) with correct passwords (`Tbx34n7Mr0WLH_eq6P6Z8Q9l2nLcf5FU` / `KeXx7TtVlrI6ueL-wUPIi1dGDo7PckRD`) succeeded: processed 1, request 5 status ready, claimed_by `p3-canary-worker2-p3_20260905T071700Z_d1938642`, tenant_id 27, tenant code `p2_p3_20260905t071700z_d193_5_3d46d9`, db `mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9`, role `mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role`, container `mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9`, port 8301, status active
+- Second worker (request 5) with correct passwords (`<REDACTED>` / `<REDACTED>`) succeeded: processed 1, request 5 status ready, claimed_by `p3-canary-worker2-p3_20260905T071700Z_d1938642`, tenant_id 27, tenant code `p2_p3_20260905t071700z_d193_5_3d46d9`, db `mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9`, role `mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role`, container `mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9`, port 8301, status active
 - Worker exited after one job (WORKER_PROCESSED_COUNT=1, no continuous loop) — PASS
 - Never saw or modified live queue — PASS
 

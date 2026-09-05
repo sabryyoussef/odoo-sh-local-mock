@@ -148,15 +148,15 @@ EXPECTED_PACKAGE_MODULES: dict[str, dict[str, list[str]]] = {
         "helpers": ["helpers_base"],
     },
     "trading": {
-        "standard": ["contacts", "crm", "sale_management", "purchase", "stock", "account", "accountant"],
+        "standard": ["contacts", "crm", "sale_management", "purchase", "stock", "account"],
         "helpers": ["helpers_base", "helpers_trading"],
     },
     "operations": {
-        "standard": ["purchase", "stock", "stock_barcode", "maintenance", "hr"],
+        "standard": ["purchase", "stock", "maintenance", "hr", "mrp", "account"],
         "helpers": ["helpers_base", "helpers_operations"],
     },
     "full_erp": {
-        "standard": ["crm", "sale_management", "purchase", "stock", "account", "hr", "project", "helpdesk"],
+        "standard": ["contacts", "crm", "sale_management", "purchase", "stock", "account", "hr", "project", "maintenance", "mrp"],
         "helpers": ["helpers_base", "helpers_trading", "helpers_finance", "helpers_operations"],
     },
 }

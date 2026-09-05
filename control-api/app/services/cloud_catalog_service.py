@@ -284,7 +284,7 @@ def _seed_packages(db: Session) -> None:
             description="Buy, stock, and sell with accounting.",
             compatible_version_codes="19.0",
             standard_modules_json=_json_list(
-                ["contacts", "crm", "sale_management", "purchase", "stock", "account", "accountant"]
+                ["contacts", "crm", "sale_management", "purchase", "stock", "account"]
             ),
             helpers_modules_json=_json_list(["helpers_base", "helpers_trading"]),
             price_monthly_cents=2000,
@@ -295,9 +295,9 @@ def _seed_packages(db: Session) -> None:
         CloudApplicationPackage(
             code="operations",
             name="Operations",
-            description="Purchase, inventory, barcode, maintenance, and employees.",
+            description="Purchase, inventory, maintenance, manufacturing and employees.",
             compatible_version_codes="19.0",
-            standard_modules_json=_json_list(["purchase", "stock", "stock_barcode", "maintenance", "hr"]),
+            standard_modules_json=_json_list(["purchase", "stock", "maintenance", "hr", "mrp", "account"]),
             helpers_modules_json=_json_list(["helpers_base", "helpers_operations"]),
             price_monthly_cents=1500,
             price_annual_cents=15000,
@@ -306,10 +306,11 @@ def _seed_packages(db: Session) -> None:
         CloudApplicationPackage(
             code="full_erp",
             name="Full ERP",
-            description="CRM through helpdesk plus approved Helpers ERP modules.",
+            description="CRM through project plus approved Helpers ERP modules (Community).",
             compatible_version_codes="19.0",
             standard_modules_json=_json_list(
                 [
+                    "contacts",
                     "crm",
                     "sale_management",
                     "purchase",
@@ -317,7 +318,8 @@ def _seed_packages(db: Session) -> None:
                     "account",
                     "hr",
                     "project",
-                    "helpdesk",
+                    "maintenance",
+                    "mrp",
                 ]
             ),
             helpers_modules_json=_json_list(

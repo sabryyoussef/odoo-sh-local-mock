@@ -65,6 +65,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Helpers ERP Cloud Manual UAT seeder (local/demo only)")
     parser.add_argument("--status", action="store_true", help="Inspect current manual UAT state (no mutation)")
     parser.add_argument("--reset", action="store_true", help="Reset only the four exact UAT identities (requires --dry-run or confirmation)")
+    parser.add_argument("--prepare-manual", action="store_true", help="Prepare manual UAT (create/update 4 accounts, no provisioning) — alias for default")
+    parser.add_argument("--provision-all", action="store_true", help="Provision all 4 manual UAT tenants bounded (max 1 at a time, fail-closed)")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without mutating")
     parser.add_argument("--json", action="store_true", help="Output JSON (redacted)")
     args = parser.parse_args()
@@ -137,6 +139,110 @@ def main() -> None:
             print(json.dumps(_redacted_summary(result), indent=2))
         return
 
+    # --prepare-manual: explicit alias for default seed (no provisioning)
+    if args.prepare_manual:
+        if args.dry_run:
+            with SessionLocal() as db:
+                summary = seed_manual_uat(db, dry_run=True)
+                print("DRY-RUN: Would prepare manual UAT (4 accounts):")
+                print(json.dumps(_redacted_summary(summary), indent=2))
+            return
+        if not is_manual_uat_allowed():
+            print("ERROR: Seeding requires HELPERS_CLOUD_MANUAL_UAT_ENABLED=true and local/UAT environment", file=sys.stderr)
+            sys.exit(1)
+        with SessionLocal() as db:
+            mod = validate_manual_uat_modules(db)
+            if not mod["ok"]:
+                print("ERROR: Module validation failed:", file=sys.stderr)
+                for err in mod["errors"]:
+                    print(f"  - {err}", file=sys.stderr)
+                sys.exit(1)
+            print("Module validation: OK")
+            for code, details in mod["packages"].items():
+                print(f"  {code}: standard={details['standard']}, helpers={details['helpers']}")
+            print()
+            summary = seed_manual_uat(db, dry_run=False)
+            print("Prepare-manual completed (idempotent, 4 accounts, no provisioning):")
+            if args.json:
+                print(json.dumps(_redacted_summary(summary), indent=2))
+            else:
+                for acc in summary["accounts"]:
+                    print(f"  {acc['username']}: user_id={acc['user_id']}, plan={acc['plan']}, package={acc['package']}")
+                    print(f"    company={acc['company']}, subdomain={acc['subdomain']}, db={acc['db_name']}")
+                    print(f"    subscription={acc['subscription_id']}, request={acc['request_id']} ({acc['status']})")
+                    print(f"    approved={acc['provisioning_approved']}, quote={acc['quote_approved']}")
+                    print()
+            print("Next: python -m app.scripts.seed_helpers_cloud_manual_uat --provision-all  (bounded, 1 at a time)")
+            print("Or:   python -m app.scripts.seed_helpers_cloud_manual_uat --status")
+        return
+
+    # --provision-all: bounded provisioning of all 4 manual UAT tenants (fail-closed, 1 at a time)
+    if args.provision_all:
+        if not is_manual_uat_allowed():
+            print("ERROR: Provision-all requires HELPERS_CLOUD_MANUAL_UAT_ENABLED=true and local/UAT environment", file=sys.stderr)
+            sys.exit(1)
+        # First ensure accounts are prepared
+        with SessionLocal() as db:
+            mod = validate_manual_uat_modules(db)
+            if not mod["ok"]:
+                print("ERROR: Module validation failed:", file=sys.stderr)
+                for err in mod["errors"]:
+                    print(f"  - {err}", file=sys.stderr)
+                sys.exit(1)
+            # Ensure seed is up to date (idempotent)
+            seed_summary = seed_manual_uat(db, dry_run=False)
+            print("Seed ensured for provision-all:")
+            for acc in seed_summary["accounts"]:
+                print(f"  {acc['username']}: request={acc['request_id']} ({acc['status']}) approved={acc['provisioning_approved']}")
+            print()
+            # Now provision each queued request bounded (1 at a time)
+            from app.services.cloud_manual_uat_provisioner import provision_manual_uat_request
+            from app.models import CloudProvisioningRequest
+            from sqlalchemy import select
+            # Get all manual UAT requests that are queued/provisioning/failed and approved
+            provisioned = []
+            failed = []
+            for acc in seed_summary["accounts"]:
+                req_id = acc["request_id"]
+                req = db.get(CloudProvisioningRequest, req_id)
+                if not req:
+                    print(f"  {acc['username']}: request {req_id} not found, skipping")
+                    continue
+                # Only provision if queued/failed and approved
+                if req.status not in ("queued", "provisioning", "failed"):
+                    print(f"  {acc['username']}: request {req_id} status={req.status} (already ready or not queued), skipping")
+                    if req.status == "ready":
+                        provisioned.append(acc["username"])
+                    continue
+                if not req.provisioning_approved:
+                    print(f"  {acc['username']}: request {req_id} not approved, skipping")
+                    failed.append(acc["username"])
+                    continue
+                print(f"  Provisioning {acc['username']} (request {req_id}, db {acc['db_name']}) bounded...")
+                try:
+                    # Need fresh session for provisioner (it uses its own SessionLocal internally for some ops, but we pass db)
+                    # Use the same db session — provisioner will commit
+                    tenant = provision_manual_uat_request(db, req_id, health_timeout_sec=180)
+                    print(f"    -> OK tenant={tenant.tenant_code} port={tenant.http_port} db={tenant.database_name}")
+                    provisioned.append(acc["username"])
+                except Exception as exc:
+                    print(f"    -> FAILED: {exc}", file=sys.stderr)
+                    failed.append(acc["username"])
+            print()
+            print(f"Provision-all completed: {len(provisioned)} succeeded, {len(failed)} failed")
+            if provisioned:
+                print(f"  Succeeded: {', '.join(provisioned)}")
+            if failed:
+                print(f"  Failed: {', '.join(failed)}", file=sys.stderr)
+            # Show status
+            from app.services.cloud_manual_uat_service import get_manual_uat_status
+            status = get_manual_uat_status(db)
+            print()
+            print("Post-provision status:")
+            for acc in status["accounts"]:
+                print(f"  {acc['username']}: request={acc['request_status']} tenant={acc['tenant_db']} port={acc['tenant_port']} status={acc['tenant_status']}")
+        return
+
     # Default: create/update
     if args.dry_run:
         with SessionLocal() as db:
@@ -177,7 +283,7 @@ def main() -> None:
                 print()
         print("Next steps:")
         print("  1. Verify portal login: python -m app.scripts.seed_helpers_cloud_manual_uat --status")
-        print("  2. Provision instances: bounded worker with max_jobs=1 per request (see guide)")
+        print("  2. Provision instances: python -m app.scripts.seed_helpers_cloud_manual_uat --provision-all  (bounded)")
         print("  3. Check Odoo URLs and logins (see HELPERS_ERP_CLOUD_MANUAL_UAT_GUIDE.md)")
 
 

@@ -697,3 +697,45 @@ def test_p3_redacted_accepts_kwargs_only():
     assert extra["password"] == "***REDACTED***"
     assert extra["api_key"] == "***REDACTED***"
     assert _redacted() == {}
+
+def test_p3_claim_ownership_cross_worker_isolation(db):
+    """One worker cannot process a request claimed by another worker.
+
+    Proves:
+    - Atomic claim sets claimed_by to the claiming worker (rowcount==1).
+    - Second worker's claim_next_real_cloud_job returns None for same request.
+    - Worker service claim_and_execute_one only processes its own claimed job.
+    - Direct adapter invocation on another worker's claimed request is not the normal path;
+      the bounded worker never receives another worker's job via its own claim.
+    """
+    _clear_queued(db)
+    req = _make_eligible_request(db, email="p3-ownership@test.example", subdomain="p3-ownership")
+    # Worker A claims via atomic claim
+    job_a = claim_next_real_cloud_job(db, "worker-a-ownership")
+    assert job_a is not None
+    assert job_a.id == req.id
+    assert job_a.claimed_by == "worker-a-ownership"
+    assert job_a.status == "provisioning"
+    assert job_a.lease_expires_at is not None
+    # Worker B cannot claim same request (already provisioning, claimed_by != worker-b)
+    job_b = claim_next_real_cloud_job(db, "worker-b-ownership")
+    assert job_b is None
+    # Worker B via bounded service also gets nothing
+    from app.services.cloud_worker_service import claim_and_execute_one
+
+    # Stub provision to avoid real resources; should not be called for worker-b
+    with patch("app.services.cloud_worker_service.execute_cloud_provisioning_job") as mock_exec:
+        claimed = claim_and_execute_one(db, "worker-b-ownership", f"p3_20260905T000000Z_{secrets.token_hex(4)}")
+        assert claimed is False
+        mock_exec.assert_not_called()
+    # Verify request still owned by worker-a
+    db.refresh(req)
+    assert req.claimed_by == "worker-a-ownership"
+    assert req.status == "provisioning"
+    # Cleanup: reset for other tests (re-queue)
+    req.status = CLOUD_PROVISION_QUEUED
+    req.claimed_by = None
+    req.started_at = None
+    req.lease_expires_at = None
+    req.current_step = "queued"
+    db.commit()

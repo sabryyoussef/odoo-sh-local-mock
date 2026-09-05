@@ -41,7 +41,7 @@
 **Browser/HTTP verification results for all four users (2026-09-05T15:35Z, via curl browser-equivalent, redacted):**
 | User | Portal username `userN / 123` | Portal email `userN@demo.local / 123` | Wrong password | Dashboard (after login) | Plan display | Session/Redirect | Logout/Re-login | Isolation |
 |------|-------------------------------|----------------------------------------|----------------|--------------------------|--------------|------------------|-----------------|-----------|
-| user1 | 302 → /cloud/instances, mosh_session created | 302 | 400 generic | Your Helpers ERP Cloud workspaces, User 1 Demo Company, Plan trial, Package sales, Status Ready, Open Odoo http://127.0.0.1:8301/web/login | Trial ✓ | 302 inside portal, httponly samesite=lax | POST /cloud/logout 302, then /cloud/instances 302 → /cloud/login, fresh POST 302 ✓ | Cannot access other user’s instance (302 → /cloud/login) ✓ |
+| user1 | 302 → /cloud/instances, mosh_session created | 302 | 400 generic | Your Helpers ERP Cloud workspaces, User 1 Demo Company, Plan trial, Package sales, Status Ready, Open Odoo http://100.76.217.35:8301/web/login?db=helpers_demo_user1 | Trial ✓ | 302 inside portal, httponly samesite=lax | POST /cloud/logout 302, then /cloud/instances 302 → /cloud/login, fresh POST 302 ✓ | Cannot access other user’s instance (302 → /cloud/login) ✓ |
 | user2 | 302 | 302 | 400 | User 2 Demo Company, Plan starter, Package trading, Status Ready, 8302 | Starter ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
 | user3 | 302 | 302 | 400 | User 3 Demo Company, Plan business, Package operations, Status Ready, 8303 | Business ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
 | user4 | 302 | 302 | 400 | User 4 Demo Company, Plan enterprise, Package full_erp, Status Ready, 8304 | Enterprise Cloud ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
@@ -86,7 +86,7 @@ $r2 = Invoke-WebRequest -UseBasicParsing "http://100.76.217.35:$port/web/login" 
 $r2.StatusCode; $r2.Content.Length; $r2.Content.Contains("session_id") -or $r2.Headers["Set-Cookie"]
 ```
 
-**Expected:** All `StatusCode 200`, portal health `{"status":"ok"}`, Odoo login `200` with session cookie, company name `User N Demo Company` visible after login, apps isolated (43 installed modules each).
+**Expected:** All `StatusCode 200`, portal health `{"status":"ok"}`, Odoo login `200` with session cookie, company name `User N Demo Company` visible after login, apps isolated (user1 67, user2 78, user3 72, user4 112 modules — distinct per package, see HELPERS_ERP_CLOUD_PACKAGE_MODULE_MATRIX.md).
 
 ## 3. Master Status / Start / Stop / Restart / Reset / Remove
 
@@ -122,11 +122,9 @@ docker compose -f docker-compose.uat.yml up -d --build --force-recreate
 # Reset four (exact-target only, no wildcard) — re-seed and re-provision bounded
 docker exec p3-uat-control-api python -m app.scripts.seed_helpers_cloud_manual_uat --reset --dry-run
 docker exec p3-uat-control-api python -m app.scripts.seed_helpers_cloud_manual_uat --reset
+docker exec p3-uat-control-api python -m app.scripts.seed_helpers_cloud_manual_uat --prepare-manual
+docker exec p3-uat-control-api python -m app.scripts.seed_helpers_cloud_manual_uat --provision-all  # bounded, 1 at a time, fail-closed
 docker exec p3-uat-control-api python -m app.scripts.seed_helpers_cloud_manual_uat --status
-# Bounded provision max_jobs=1 per account (or 4 then exit) — never unrestricted
-for rid in 4 5 6 7; do
-  docker exec p3-uat-control-api python -c "from app.db import SessionLocal; from app.services.cloud_manual_uat_provisioner import provision_manual_uat_request; from app.db import SessionLocal; db=SessionLocal(); t=provision_manual_uat_request(db, $rid, health_timeout_sec=180); print(f'SUCCESS {t.database_name} {t.http_port}')"
-done
 # Verify
 for p in 8301 8302 8303 8304; do curl -s -o /dev/null -w "http://100.76.217.35:$p/web/login %{http_code}\n" http://100.76.217.35:$p/web/login; done
 
@@ -182,7 +180,19 @@ Seed creates: User (portal login userN, password 123 hashed pbkdf2_sha256 118 ch
 - Seed: `control-api/app/scripts/seed_helpers_cloud_manual_uat.py` (idempotent, dry-run, status, reset)
 - Provisioner: `control-api/app/services/cloud_manual_uat_provisioner.py` (851 lines, bounded, exact-target)
 - Tests: `125 passed, 1 skipped` (P1/P2/P3) + `33 passed` (onboarding UI) in UAT compose
-- Instances: 4 ready, 4 DBs, 4 roles, 4 filestores, 4 containers Up, all HTTP 200 via Tailscale/LAN/loopback, Odoo login CSRF 200 with session, company names correct, 43 modules each, isolated.
+- Instances: 4 ready, 4 DBs, 4 roles, 4 filestores, 4 containers Up, all HTTP 200 via Tailscale/LAN/loopback, Odoo login CSRF 200 with session, company names correct, distinct modules (67/78/72/112), isolated.
+- Open Odoo: portal now emits `http://100.76.217.35:830N/web/login?db=helpers_demo_userN` via trusted `HELPERS_CLOUD_EXTERNAL_HOST` (fail-closed, never Host header), validated, preserves `?db=`.
+- Package matrix: `docs/reports/HELPERS_ERP_CLOUD_PACKAGE_MODULE_MATRIX.md` (validated against odoo:19.0 image).
+- Journey: `python -m app.scripts.seed_helpers_cloud_manual_uat --prepare-manual` / `--provision-all` / `--status` / `--reset` (bounded, 1 at a time).
+
+## V2 Updates (2026-09-05T18:45Z, run 20260905T173139Z_78fe47d1)
+
+- **Open Odoo URL fixed:** portal now emits `http://100.76.217.35:830N/web/login?db=helpers_demo_userN` via `control-api/app/services/cloud_external_url.py` (trusted `HELPERS_CLOUD_EXTERNAL_HOST`/`SCHEME`, validates host/scheme, preserves `?db=`, fail-closed, never trusts Host/X-Forwarded-Host). Templates `instances.html`/`instance_detail.html` use `external_urls`/`external_url` with `target="_blank"`. Production defaults empty → no URL (fail-closed). Tests `test_cloud_external_url.py` 8 passed.
+- **Company access permanent:** provisioner `_init_odoo_company_and_user` now sets `company_id=1` and ensures `res_company_users_rel` cid=1 exists, deletes other cids, idempotent, parameterized. Fixed `res_partner` creation to copy NOT NULL cols (autopost_bills etc.) from admin.
+- **Filestore copy:** `_copy_template_filestore` + `_prepare_filestore(template_db)` copies from `.cloud-tpl-build` with traversal/symlink protection, idempotent, rollback removes partial.
+- **Package differentiation:** catalog fixed (accountant→account, stock_barcode→stock, helpdesk→project, add mrp), `EXPECTED_PACKAGE_MODULES` distinct, `_install_package_modules` deterministic via one-off `odoo -c /mnt/runtime/odoo.conf -i <mods> --stop-after-init` (validates availability, fail-closed, wired before main container). Result: user1 67, user2 78, user3 72, user4 112 modules, all distinct, verified.
+- **Repeatable journey:** seeder now supports `--prepare-manual` (create 4 accounts, no provisioning), `--provision-all` (bounded 1 at a time), `--status`, `--reset` (exact-target). Idempotent, redacted logging.
+- **Rebuild:** 4 tenants rebuilt bounded, verified: HTTP 200 on 127.0.0.1 and 100.76.217.35, portal login 302, Odoo login 200 with CSRF, company User N Demo Company, company_ids correct, isolation 0 cross, ports 8301-8304, idempotent re-run no-op.
 
 ## 8. Do Not
 

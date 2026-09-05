@@ -1,0 +1,5 @@
+docker one-shot pytest (isolated sqlite, not live control.db)
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_accepts_claimed_provisioning_status
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_still_rejects_ready_and_rolled_back
+tests/test_cloud_p3_eligibility_worker.py::test_p3_redacted_accepts_kwargs_only
+3 passed, 2 warnings in 3.01s

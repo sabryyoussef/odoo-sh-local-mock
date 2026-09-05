@@ -1,0 +1,58 @@
+Phase 5 recovery — runtime cleanup
+==================================
+Failed run: p3_20260905T054700Z_9340f78e
+Request: 3
+Recorded canary metadata (audit 541/542):
+  tenant_code=p2_p3_20260905t054700z_9340_3_d50c65
+  run_id=p3_20260905T054700Z_9340f78e
+  http_port=8216
+  rand=d50c65
+  run_slug=p3_20260905t054700z_9340
+Derived exact names (from _generate_p2_identifiers + recorded tenant_code):
+  container=mosh-tenant-p3-p3_20260905t054700z_9340-3-d50c65
+  filestore_host=/opt/projects/active/odoo-sh-local-mock/data/tenants/.p3_filestore_p3_20260905T054700Z_9340f78e
+  db=mosh_tnt_p2_p3_20260905t054700z_9340_d50c65
+  role=mosh_r_p2_p3_20260905t054700z_9340_d50c65_role
+
+First inspection (recovery preflight, before extra rollback)
+------------------------------------------------------------
+container: ABSENT
+PG database exact/derived: ABSENT
+PG role exact/derived: ABSENT
+port 8216: NOT LISTENING
+tenant directory: ABSENT
+filestore root: ABSENT
+tmp artifacts matching run_id/rand: ABSENT
+template mosh_tpl_cloud_base_19_0_trading: PRESENT (not removed)
+pre-existing mosh-tenant-* : unchanged vs Phase 5 preflight
+pre-existing mosh_p3_b* DBs/containers (4 days old, not this canary): left untouched
+
+Extra rollback
+--------------
+Function: rollback_cloud_request(db, request_id=3, run_id=p3_20260905T054700Z_9340f78e)
+Source: P3 worktree adapter, one-shot container, DATABASE_URL=sqlite:////data/control.db
+init_db/migrate_schema: NOT called
+Wildcards: none
+Pre-existing tenants: not targeted (request.tenant_id is NULL; no tenant row)
+Result: ROLLBACK_ONCE_DONE, status remained rolled_back
+Requests 1 and 2: unchanged
+Audit 544: cloud.p2.rollback status=rollback_completed at 2026-09-05 06:02:22
+
+Second inspection (2026-09-05T06:02:42Z)
+----------------------------------------
+container exact: ABSENT
+canary-name grep: NO_CANARY_CONTAINER_NAMES
+PG db/role matching d50c65|9340f78e|p3_20260905t054700: empty
+port 8216: ABSENT
+filestore: ABSENT
+tenant dir: ABSENT
+tmp canary: NO_TMP_CANARY
+template: mosh_tpl_cloud_base_19_0_trading present
+integrity_check: ok
+worker: still exited / heartbeat stopped
+
+Not removed
+-----------
+Persistent template database.
+Pre-existing Ready Solution / Developer Platform tenant containers and PG objects.
+Isolated leftover p3-helpers-erp-cloud-p3-build-postgres-1 (P3 worktree compose Postgres, not the canary).

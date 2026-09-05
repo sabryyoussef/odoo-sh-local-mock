@@ -1,0 +1,61 @@
+Phase 5 recovery — after inventory
+==================================
+UTC: 2026-09-05T06:02:42Z
+Recovery TS: 20260905T055644Z
+
+Main HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+P3 HEAD: 52e0d44d0676b1e351129053a4784bf4eb51a2a7
+
+Worker
+------
+odoo-sh-local-mock-provisioning-worker-1 State=exited Exit=0 Restarting=false
+Finished=2026-09-05T05:53:30.104974412Z
+heartbeat={"status":"stopped","worker_id":"provisioning-worker-1","timestamp":"2026-09-05T05:53:29.768059+00:00"}
+control-api: still Up (uvicorn)
+backup-worker: still Up
+No worker_main host process.
+
+Integrity / checksums
+---------------------
+live integrity_check: ok
+backup 20260905T055644Z integrity_check: ok
+live SHA-256 after extra rollback: eeb51e4486de4f0f0090b3a3671e5d5632857be798eb599fcc723725e8b67c58
+backup SHA-256: e5586242f2e053db14ed75e7fe52cd374f0dc35c52bffe8b10b2955ff3af13de
+(live hash changed vs backup-time 231327aa… because audit 544 / request 3 updated_at were written)
+
+Requests
+--------
+1 queued demo 2026-09-02 04:57:10 approved=0
+2 queued demo 2026-09-03 09:11:06 approved=0
+3 rolled_back local_docker 2026-09-05 06:02:22 approved=1 tenant_id=NULL
+
+mosh-tenant containers
+----------------------
+Same 16 names as Phase 5 preflight (15 Up + vet_hospital_debug Exited). No canary container.
+
+PG databases (mosh_*)
+---------------------
+29 rows, identical to Phase 5 preflight including mosh_tpl_cloud_base_19_0_trading. No canary DB.
+
+PG roles (mosh_*)
+-----------------
+18 rows, identical to Phase 5 preflight. No canary role.
+
+Ports 8201-8215
+---------------
+Still listening (pre-existing tenants). 8216 absent.
+
+Tenant dirs / filestore
+-----------------------
+No .p3_filestore_* / .p2_filestore_* for this run_id.
+No tenant dir for p2_p3_20260905t054700z_9340_3_d50c65.
+
+Main worktree after leak restore
+--------------------------------
+P3 leakage removed. Branding/i18n dirt preserved. Evidence dir untracked.
+
+P3 worktree
+-----------
+Uncommitted: adapter status gate, _redacted default, focused tests in test_cloud_p3_eligibility_worker.py,
+and config.py Manual-UAT fail-closed flags from a concurrent local-UAT job (mtime 2026-09-05 09:05 +03).
+Focused tests: 3 passed (one-shot container, isolated sqlite, not live control.db)

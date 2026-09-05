@@ -145,17 +145,68 @@ def register_cloud_customer(db: Session, payload: RegisterInput, *, client_key: 
     return user
 
 
+# Manual UAT username allow-list — exact four, no wildcard
+_MANUAL_UAT_USERNAMES = frozenset({"user1", "user2", "user3", "user4"})
+
+
+def _is_manual_uat_login_allowed() -> bool:
+    """Fail-closed: username alias only when HELPERS_CLOUD_MANUAL_UAT_ENABLED=true and not production."""
+    try:
+        from app.config import get_settings
+
+        s = get_settings()
+        if not bool(getattr(s, "helpers_cloud_manual_uat_enabled", False)):
+            return False
+        env = (getattr(s, "app_env", "development") or "development").strip().lower()
+        if env in ("production", "prod", "live"):
+            return False
+        return True
+    except Exception:
+        return False
+
+
+def _normalize_identifier(raw: str) -> str:
+    return (raw or "").strip().lower()
+
+
 def authenticate_cloud_customer(db: Session, email: str, password: str, *, client_key: str) -> User:
     _rate_limit(f"login:{client_key}")
-    normalized = normalize_email(email)
-    user = db.scalar(select(User).where(func.lower(User.email) == normalized))
-    if not user or not user.password_hash:
-        if user and user.github_id and not user.password_hash:
-            raise CloudAuthError(
-                "This email is a GitHub developer account. Sign in with GitHub instead.",
-                "github_only",
-            )
+    raw = (email or "").strip()
+    normalized = _normalize_identifier(raw)
+    # Empty identifier fails closed with generic message (no enumeration)
+    if not normalized:
         raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
+    user = None
+    # Email path — contains @, use existing email lookup (preserves normal email login)
+    if "@" in normalized:
+        # Validate email shape loosely; if invalid, still fail with generic message
+        user = db.scalar(select(User).where(func.lower(User.email) == normalized))
+        if not user or not user.password_hash:
+            if user and user.github_id and not user.password_hash:
+                raise CloudAuthError(
+                    "This email is a GitHub developer account. Sign in with GitHub instead.",
+                    "github_only",
+                )
+            raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
+    else:
+        # Username alias path — only for Manual UAT, gated, exact allow-list, fail closed
+        if not _is_manual_uat_login_allowed():
+            raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
+        if normalized not in _MANUAL_UAT_USERNAMES:
+            raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
+        # Lookup by github_login OR email == username@demo.local, ensure exactly one match
+        candidates = db.scalars(
+            select(User).where(
+                (func.lower(User.github_login) == normalized)
+                | (func.lower(User.email) == f"{normalized}@demo.local")
+            )
+        ).all()
+        if len(candidates) != 1:
+            # Duplicate/ambiguous or not found — fail closed, no enumeration
+            raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
+        user = candidates[0]
+        if not user or not user.password_hash:
+            raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
     if not verify_password(password, user.password_hash):
         raise CloudAuthError("Email or password is incorrect.", "invalid_credentials")
     if user.auth_provider == AUTH_PROVIDER_GITHUB and user.password_hash:

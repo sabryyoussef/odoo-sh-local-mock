@@ -325,7 +325,8 @@ async def cloud_login_post(request: Request, db: Session = Depends(get_db)):
     if not validate_csrf(request, form.get("csrf_token")):
         set_flash(request, "Invalid session token. Please try again.", "error")
         return RedirectResponse("/cloud/login", status_code=302)
-    email = str(form.get("email") or "")
+    # Accept both 'email' and 'username' fields; username alias for Manual UAT (user1..user4)
+    email = str(form.get("email") or form.get("username") or "")
     password = str(form.get("password") or "")
     form_plan = str(form.get("plan") or "")
     form_cycle = str(form.get("cycle") or "")

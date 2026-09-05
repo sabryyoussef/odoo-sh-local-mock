@@ -14,8 +14,8 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="plan" value="{{ plan|default('') }}">
     <input type="hidden" name="cycle" value="{{ cycle|default('') }}">
-    <label class="field"><span>{{ t('cloud.email') }}</span>
-      <input type="email" name="email" value="{{ form.email|default('') }}" autocomplete="username" required>
+    <label class="field"><span>{{ t('cloud.email') }} / Username</span>
+      <input type="text" name="email" value="{{ form.email|default('') }}" autocomplete="username" inputmode="email" required>
     </label>
     <label class="field"><span>{{ t('cloud.password') }}</span>
       <input type="password" name="password" autocomplete="current-password" required>

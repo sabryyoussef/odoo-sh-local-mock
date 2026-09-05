@@ -78,6 +78,14 @@ class Settings(BaseSettings):
     helpers_cloud_worker_max_jobs: int = 0
     helpers_cloud_run_id_prefix: str = "p3_"
 
+    # --- Helpers ERP Cloud Manual UAT (local/demo only) ---
+    # Safest boundary: allow memorable demo credentials only on local/mock/UAT.
+    # Default false — never seed automatically in production.
+    # Requires explicit env flag, local/UAT env, per-request authorization, manual_uat marker, bounded worker, exact identity.
+    helpers_cloud_manual_uat_enabled: bool = False
+    helpers_cloud_manual_uat_allowed_hosts: str = "127.0.0.1,::1,100.76.217.35,192.168.100.66,master,master.tailcf9988.ts.net"
+    helpers_cloud_manual_uat_tailscale_hostname: str = "master.tailcf9988.ts.net"
+
     # --- Phase 9 customer portal ---
     # Future public tenant base (Phase 12). Example: https://apps.example.com
     tenant_public_base_url: str = ""

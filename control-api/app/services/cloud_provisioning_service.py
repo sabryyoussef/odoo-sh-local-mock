@@ -244,7 +244,17 @@ def cloud_request_eligibility_reasons(
     else:
         if not pl.active:
             reasons.append("plan_inactive")
-        if pl.is_demo:
+        # Manual UAT narrow exception: allow is_demo only for exact manual UAT identities with all gates
+        is_manual_uat_exception = False
+        try:
+            from app.services.cloud_manual_uat_service import is_manual_uat_allowed, is_manual_uat_request
+            if is_manual_uat_allowed() and is_manual_uat_request(request, db):
+                # Only allow is_demo for manual UAT trial (user1) — still requires all other gates
+                if pl.is_demo and pl.code == "trial":
+                    is_manual_uat_exception = True
+        except Exception:
+            pass
+        if pl.is_demo and not is_manual_uat_exception:
             reasons.append("plan_is_demo")
         # Persisted quote approval is authoritative; caller flag is not trusted
         persisted_quote = bool(getattr(request, "quote_approved", False))
@@ -474,7 +484,15 @@ def approve_cloud_request_for_real_provisioning(db: Session, request_id: int, op
         raise CloudProvisioningError("Plan missing", "plan_missing")
     if not plan.active:
         raise CloudProvisioningError("Plan inactive", "plan_inactive")
-    if plan.is_demo:
+    # Manual UAT narrow exception for trial
+    is_manual_uat_trial = False
+    try:
+        from app.services.cloud_manual_uat_service import is_manual_uat_allowed, is_manual_uat_request
+        if is_manual_uat_allowed() and is_manual_uat_request(req, db) and plan.code == "trial" and plan.is_demo:
+            is_manual_uat_trial = True
+    except Exception:
+        pass
+    if plan.is_demo and not is_manual_uat_trial:
         raise CloudProvisioningError("Demo plan cannot be approved", "plan_is_demo")
     if plan.quote_required and not bool(getattr(req, "quote_approved", False)):
         raise CloudProvisioningError("Enterprise quote not approved", "quote_not_approved")

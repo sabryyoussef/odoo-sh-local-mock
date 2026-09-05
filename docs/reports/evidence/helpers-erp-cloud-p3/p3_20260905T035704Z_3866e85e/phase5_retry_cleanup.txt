@@ -1,0 +1,22 @@
+=== ROLLBACK ATTEMPT 1 for request 5 run_id p3_20260905T071700Z_d1938642 ===
+rollback attempt 1 succeeded
+request 5 after: (5, 'rolled_back', None, 'p3-canary-worker2-p3_20260905T071700Z_d1938642')
+tenant 27 after: None
+tenant 27 count: 0
+=== ROLLBACK ATTEMPT 2 for request 5 run_id p3_20260905T071700Z_d1938642 ===
+rollback attempt 2 succeeded
+request 5 after: (5, 'rolled_back', None, 'p3-canary-worker2-p3_20260905T071700Z_d1938642')
+tenant 27 after: None
+tenant 27 count: 0
+
+Post-cleanup verification:
+- docker ps -a --filter name=mosh-tenant-p3: no containers — PASS
+- PG DBs: mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 dropped — PASS (only mosh_tpl_cloud_base_19_0_trading remains)
+- PG roles: mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role dropped — PASS
+- Ports: no 8301 listening — PASS
+- Filestore: /tmp/p3-canary-p3_20260905T071700Z_d1938642/tenants empty (only tenants dir, no .p3_filestore) — PASS
+- Isolated DB: request 5 status rolled_back, tenant 27 count 0 — PASS
+- Live DB: requests 1 queued, 2 queued, 3 rolled_back unchanged — PASS
+- Rollback idempotency: attempt 1 succeeded, attempt 2 succeeded (no error, idempotent) — PASS
+- Exact-target rollback: validated run_id in container_name, db_name, role_name, filestore_path, labels — no wildcards, no mosh-tenant-* removal — PASS
+- Template preserved: mosh_tpl_cloud_base_19_0_trading still exists — PASS

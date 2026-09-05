@@ -1,0 +1,51 @@
+P3 Phase 5 — Test Gate (isolated, no live DB)
+==============================================
+Date (UTC): 2026-09-05T07:31:13Z
+P3 worktree: /tmp/p3-helpers-erp-cloud-p3
+Image: odoo-sh-local-mock-control-api (read-only mount /tmp/p3-helpers-erp-cloud-p3/control-api:/app:ro)
+Command: docker run --rm -v /tmp/p3-helpers-erp-cloud-p3/control-api:/app:ro -w /app odoo-sh-local-mock-control-api pytest tests/test_cloud_p3_eligibility_worker.py tests/test_cloud_p2_unit.py -v
+
+Result: 36 passed, 4 warnings in 24.40s (exit 0)
+- tests/test_cloud_p3_eligibility_worker.py: 24 passed (including test_p3_claim_ownership_cross_worker_isolation)
+- tests/test_cloud_p2_unit.py: 12 passed
+
+Details:
+tests/test_cloud_p3_eligibility_worker.py::test_p3_wrong_product_line_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_adapter_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_missing_subscription_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_inactive_subscription_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_suspended_subscription_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_plan_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_inactive_plan_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_enterprise_without_quote_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_missing_template_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_unvalidated_template_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_unhealthy_template_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_template_version_mismatch_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_not_approved_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_fingerprint_mismatch_ineligible PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_already_claimed_not_reclaimed PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_eligibility_check_does_not_create_resources PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_queue_never_claimed_by_real_worker PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_worker_bounded_single_claim PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_import_does_not_create_resources PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_rollback_idempotent PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_accepts_claimed_provisioning_status PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_still_rejects_ready_and_rolled_back PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_redacted_accepts_kwargs_only PASSED
+tests/test_cloud_p3_eligibility_worker.py::test_p3_claim_ownership_cross_worker_isolation PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_not_approved PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_demo_adapter PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_invalid_fingerprint PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_template_kind_mismatch PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_template_version_mismatch PASSED
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_unvalidated_template PASSED
+tests/test_cloud_p2_unit.py::test_p2_identifier_validation_rejects_unsafe PASSED
+tests/test_cloud_p2_unit.py::test_p2_rollback_refuses_non_p2 PASSED
+tests/test_cloud_p2_unit.py::test_p2_rollback_idempotent PASSED
+tests/test_cloud_p2_unit.py::test_p2_no_runtime_before_verification PASSED
+tests/test_cloud_p2_unit.py::test_p2_cleanup_is_idempotent_no_wildcard PASSED
+tests/test_cloud_p2_unit.py::test_p2_no_secrets_in_audit PASSED
+
+Warnings: 4 (DeprecationWarning on_event, PytestCacheWarning read-only .pytest_cache) — non-blocking
+Gate: PASS — all required P3 + P2 tests passed, no live DB mutation, no Docker resources created.

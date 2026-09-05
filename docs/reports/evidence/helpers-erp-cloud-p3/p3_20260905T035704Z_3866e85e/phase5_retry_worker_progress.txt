@@ -1,0 +1,32 @@
+P3 Phase 5 — Bounded Worker Progress (Isolated)
+===============================================
+Run ID: p3_20260905T071700Z_d1938642
+Isolated DB: /tmp/p3-canary-p3_20260905T071700Z_d1938642/control.db
+Method: docker run --rm --network odoo-sh-local-mock_default -v /tmp/p3-helpers-erp-cloud-p3/control-api/app:/app/app:ro -v CANARY_DIR/control.db:/data/control.db -v CANARY_DIR:/data/canary -v /var/run/docker.sock:/var/run/docker.sock -e DATABASE_URL=sqlite:////data/control.db -e TENANT_ROOT=/data/canary/tenants -e TENANT_HOST_ROOT=CANARY_DIR/tenants -e TENANT_PORT_MIN=8301 -e BUILD_POSTGRES_HOST=odoo-sh-local-mock-build-postgres-1 -e BUILD_POSTGRES_ADMIN_PASSWORD=[REDACTED] -e BUILD_POSTGRES_PASSWORD=[REDACTED] -e HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true -e HELPERS_CLOUD_WORKER_MAX_JOBS=1 -e RUN_ID=p3_20260905T071700Z_d1938642 -e PYTHONPATH=/app -w /app odoo-sh-local-mock-control-api python /data/canary/run_bounded2.py
+
+First bounded worker (request 4, wrong password):
+[2026-09-05T07:24:23.497348+00:00] Starting bounded worker RUN_ID=p3_20260905T071700Z_d1938642 WORKER_ID=p3-canary-worker-p3_20260905T071700Z_d1938642 MAX_JOBS=1
+[2026-09-05T07:24:24.409137+00:00] Calling run_bounded_cloud_worker(max_jobs=1, worker_id=p3-canary-worker-p3_20260905T071700Z_d1938642, run_id=p3_20260905T071700Z_d1938642)
+[2026-09-05T07:24:24.690036+00:00] Bounded worker finished processed=1
+WORKER_PROCESSED_COUNT=1
+REQUEST id=4 status=rolled_back claimed_by=p3-canary-worker-p3_20260905T071700Z_d1938642 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 07:29:24.595856 last_error=provision_failed (password authentication failed for mosh_admin — used default change-me, expected)
+TENANT: none (rollback cleaned)
+
+Second bounded worker (request 5, correct password):
+[2026-09-05T07:26:51.800271+00:00] Starting bounded worker2 RUN_ID=p3_20260905T071700Z_d1938642 WORKER_ID=p3-canary-worker2-p3_20260905T071700Z_d1938642
+[2026-09-05T07:26:52.713822+00:00] Calling run_bounded_cloud_worker(max_jobs=1, worker_id=p3-canary-worker2-p3_20260905T071700Z_d1938642, run_id=p3_20260905T071700Z_d1938642)
+[2026-09-05T07:27:03.434784+00:00] Bounded worker2 finished processed=1
+WORKER_PROCESSED_COUNT=1
+REQUEST id=1 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None
+REQUEST id=2 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None
+REQUEST id=3 status=rolled_back claimed_by=None tenant_id=None current_step=ready attempt=1 lease=None last_error=None
+REQUEST id=4 status=rolled_back claimed_by=p3-canary-worker-p3_20260905T071700Z_d1938642 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 07:29:24.595856 last_error=provision_failed
+REQUEST id=5 status=ready claimed_by=p3-canary-worker2-p3_20260905T071700Z_d1938642 tenant_id=27 current_step=ready attempt=1 lease=2026-09-05 07:31:52.909986 last_error=None
+TENANT id=27 code=p2_p3_20260905t071700z_d193_5_3d46d9 db=mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 role=mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role container=mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9 port=8301 status=active
+
+Verification:
+- Claimed exactly one job (processed=1) — PASS
+- Bounded worker exited after one job (no continuous loop) — PASS
+- Never saw or modified live queue (isolated DATABASE_URL) — PASS
+- HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true, HELPERS_CLOUD_WORKER_MAX_JOBS=1 constrained to isolated DB/project — PASS
+- Request 5 claimed once, claimed_by correct, ready, one tenant, correct template mosh_tpl_cloud_base_19_0_trading — PASS

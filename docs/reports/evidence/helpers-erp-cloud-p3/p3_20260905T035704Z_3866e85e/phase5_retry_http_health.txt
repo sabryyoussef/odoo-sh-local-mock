@@ -1,0 +1,47 @@
+P3 Phase 5 — HTTP Health (Isolated Canary)
+==========================================
+Run ID: p3_20260905T071700Z_d1938642
+Request ID: 5 (p3-canary2-132f26)
+Tenant: p2_p3_20260905t071700z_d193_5_3d46d9
+Container: mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9
+Port: 127.0.0.1:8301 -> 8069
+Date (UTC): 2026-09-05T07:28:55Z
+
+Command: curl -s -D /tmp/canary_headers.txt http://127.0.0.1:8301/web/login -o /tmp/canary_body.html
+
+Headers (/tmp/canary_headers.txt):
+HTTP/1.1 200 OK
+Server: Werkzeug/3.0.1 Python/3.12.3
+Date: Sat, 05 Sep 2026 07:28:55 GMT
+Content-Type: text/html; charset=utf-8
+Cache-Control: no-cache
+X-Frame-Options: SAMEORIGIN
+Content-Security-Policy: frame-ancestors 'self'
+Set-Cookie: session_id=5YvJrEoC9Rg9G9h7NLtN9Kh_fsY8Pz81RLZzNEjLoMf0wfWjca6HYX-ox5sCTwTYmFpCI-GdmUMCVsw9DTBz; Expires=Sun, 05 Sep 2027 07:28:55 GMT; Max-Age=604800; HttpOnly; Path=/
+X-Content-Type-Options: nosniff
+Content-Length: 5834
+Connection: close
+
+Body (/tmp/canary_body.html):
+- HTTP 200 — PASS
+- Contains oe_login_form (2 matches) — PASS
+- Contains Powered by Odoo — PASS
+- Contains csrf_token, odoo.__session_info__, is_public true — PASS
+- Login page loads (97 lines, 5834 bytes) — PASS
+- Odoo version 19.0-20260817 via container logs — PASS
+
+Container inspect:
+- Name: /mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9
+- Status: running, Running: true
+- Labels: cloud_request_id=5, helpers_cloud=true, mosh_db=mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9, mosh_tenant=true, p2=true, p2_run_id=p3_20260905T071700Z_d1938642, tenant_code=p2_p3_20260905t071700z_d193_5_3d46d9, tenant_id=27
+- PortBindings: 8069/tcp -> 127.0.0.1:8301 — PASS
+- Mounts: filestore_host_path=/tmp/p3-canary-p3_20260905T071700Z_d1938642/tenants/.p3_filestore_p3_20260905T071700Z_d1938642/p2_p3_20260905t071700z_d193_5_3d46d9/filestore -> /var/lib/odoo (rw), runtime -> /mnt/runtime (ro) — PASS
+- Network: odoo-sh-local-mock_default — PASS
+- Health: null (no healthcheck, but wait_odoo_healthy passed) — PASS
+
+Port binding:
+- ss -tlnp shows 127.0.0.1:8301 LISTEN — PASS
+- docker port shows 8069/tcp -> 127.0.0.1:8301 — PASS
+- No 8302 used, no conflict with live tenants (8215 etc.) — PASS
+
+Conclusion: HTTP health returns 200, Odoo login page loads, container running, port bound safely.

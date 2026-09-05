@@ -1,0 +1,43 @@
+P3 Phase 5 — After-State Inventory (Live DB Unchanged)
+======================================================
+Run ID: p3_20260905T071700Z_d1938642
+Date (UTC): 2026-09-05T07:29:16Z
+
+Live control.db:
+- Hash: 28a9ccd69b9d86f34406e79446047936330deaede432662deeddca8eccd0ee49
+- Integrity: ok
+- Requests: 1 queued, 2 queued, 3 rolled_back (unchanged from pre-canary, except hash drift due to backup worker metering — see drift comparison)
+- Tenants: 26 (unchanged)
+- Tenant dirs: 256 (unchanged)
+- Containers: 15 mosh-tenant-* (pt_trial_1_a89ea9 etc., no mosh-tenant-p3) — PASS
+- PG DBs: 0 mosh_tnt_p2_p3* (cleaned), 0 mosh_r_p2_p3* roles — PASS
+- Ports: no 8301-8302 listening — PASS
+- Filestores: no /data/tenants/.p2* or .p3* — PASS
+
+Isolated control.db:
+- Hash: ceff22105801a2d824a40313c5aef0b97dbd4b7a0985d9fc79e916aef9d5a514
+- Integrity: ok
+- Requests: 1 queued, 2 queued, 3 rolled_back, 4 rolled_back (provision_failed), 5 rolled_back (after cleanup, was ready)
+- Tenants: 26 (after cleanup, was 27 with canary tenant)
+- Tenants dir: empty (after cleanup) — PASS
+
+Main git:
+- HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9 — PASS (unchanged)
+- Status: 52 modified branding/i18n only + untracked landing-odoo.css etc. — PASS (no P3 files)
+- P3 NOT merged — PASS
+
+P3 git:
+- HEAD: 8b57d98c8557028cbb3c92aaf8ad255421498007 (ee2964d + 8b57d98) — PASS
+- Status: untracked evidence files only — PASS
+
+Workers:
+- provisioning-worker: exited (0) since 2026-09-05T05:53:30Z — PASS (kept stopped)
+
+Manual-UAT patch:
+- /tmp/manual-uat-patch-20260905T061500Z.patch SHA 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d preserved — PASS
+
+Requests 1-3 preservation:
+- Live DB: 1 queued, 2 queued, 3 rolled_back — PASS (never requeued, never modified by canary)
+- Isolated DB: 1 queued, 2 queued, 3 rolled_back — PASS (same as live before canary)
+
+Conclusion: After-state verification PASS — live DB unchanged (except known backup drift), no leaked resources, main/P3 preserved, workers stopped, requests 1-3 preserved.

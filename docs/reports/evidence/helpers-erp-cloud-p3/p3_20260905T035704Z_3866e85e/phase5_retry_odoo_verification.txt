@@ -1,0 +1,41 @@
+P3 Phase 5 — Odoo Verification (Isolated Canary)
+================================================
+Run ID: p3_20260905T071700Z_d1938642
+Request ID: 5
+Tenant ID: 27
+Tenant Code: p2_p3_20260905t071700z_d193_5_3d46d9
+Database: mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9
+Role: mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role
+Container: mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9
+Template: mosh_tpl_cloud_base_19_0_trading (33 MB)
+Date (UTC): 2026-09-05T07:28:55Z
+
+PostgreSQL role exists:
+- docker exec psql -U mosh_admin -d postgres -c "\du" shows mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role — PASS
+
+PostgreSQL database exists:
+- docker exec psql -U mosh_admin -d postgres -c "\l" shows mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 owned by mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role, UTF8, 33 MB — PASS
+- Template mosh_tpl_cloud_base_19_0_trading also 33 MB — clone usable, size matches — PASS
+
+Database connectivity:
+- docker exec psql -U mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role -d mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 -c "SELECT current_database(), current_user, version()" returns mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9, mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role, PostgreSQL 16.15 — PASS
+
+Odoo version:
+- docker logs shows Odoo version 19.0-20260817 — PASS
+- docker exec cat /mnt/runtime/odoo.conf shows db_name=mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9, db_user=mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role, db_host=odoo-sh-local-mock-build-postgres-1, http_port=8069, data_dir=/var/lib/odoo — PASS
+
+Base module:
+- docker exec psql -U mosh_admin -d mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9 -c "SELECT name, state FROM ir_module_module WHERE name='base'" returns base | installed — PASS
+
+Filestore:
+- Isolated tenant filestore_path: /data/canary/tenants/.p3_filestore_p3_20260905T071700Z_d1938642/p2_p3_20260905t071700z_d193_5_3d46d9/filestore
+- Host path: /tmp/p3-canary-p3_20260905T071700Z_d1938642/tenants/.p3_filestore_p3_20260905T071700Z_d1938642/p2_p3_20260905t071700z_d193_5_3d46d9/filestore
+- ls -la shows drwxr-xr-x syslog syslog, contains addons, filestore, sessions — PASS
+- Container mount verified via docker inspect — PASS
+
+Request and tenant metadata match:
+- Request 5: status ready, claimed_by p3-canary-worker2-p3_20260905T071700Z_d1938642, tenant_id 27, provisioning_approved 1, fingerprint b32625c2e46629a836ec1da6c075f8547225caf0a387419c853107bda5645619, template_id 1, template_version 1.0.0, internal_url http://127.0.0.1:8301, runtime_url http://127.0.0.1:8301/web/login — PASS
+- Tenant 27: tenant_code p2_p3_20260905t071700z_d193_5_3d46d9, database_name mosh_tnt_p2_p3_20260905t071700z_d193_3d46d9, database_role mosh_r_p2_p3_20260905t071700z_d193_3d46d9_role, container_name mosh-tenant-p3-p3_20260905t071700z_d193-5-3d46d9, http_port 8301, filestore_path /data/canary/tenants/.p3_filestore_p3_20260905T071700Z_d1938642/p2_p3_20260905t071700z_d193_5_3d46d9/filestore, status active, product_line helpers_cloud — PASS
+- Correct template was used (mosh_tpl_cloud_base_19_0_trading) — PASS
+
+Conclusion: All Odoo verification checks PASS — database clone usable, base installed, filestore exists, metadata matches.

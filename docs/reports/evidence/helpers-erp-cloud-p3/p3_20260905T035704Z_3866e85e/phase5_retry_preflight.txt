@@ -1,0 +1,22 @@
+P3 Phase 5 Isolated Canary Retry — Preflight (12 checks)
+=========================================================
+Run ID (retry): p3_20260905T071700Z_d1938642
+Run ID (evidence dir): p3_20260905T035704Z_3866e85e
+Date (UTC): 2026-09-05T07:17:00Z
+P3 worktree: /tmp/p3-helpers-erp-cloud-p3
+Branch: p3-helpers-erp-cloud-controlled-activation
+P3 HEAD expected: ee2964d1a7bcd659e2b25e5eb3183ddd45788c1a
+P3 HEAD actual (after claim-ownership test): 8b57d98c8557028cbb3c92aaf8ad255421498007
+  - ee2964d fix(cloud): accept safely claimed provisioning requests (adapter gate queued or provisioning)
+  - 8b57d98 test(cloud): prove claim ownership isolation across workers (parent ee2964d)
+Main HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9 (docs(cloud): correct final HEAD reference to 5982b89)
+Main NOT merged: git merge-base --is-ancestor p3-helpers-erp-cloud-controlled-activation HEAD fails (exit 1) — PASS
+Main dirt: 52 files branding/i18n only (branding.py, dummy_data.py, main.py, app.css, theme-helpers-erp.css, templates, translations.py, view_context.py, test_saas_catalog.py, test_three_product_navigation.py, docs/DEMO.md) + untracked landing-odoo.css, imagine.html etc. No P3 files on main (cloud_worker_service.py missing, adapter gate still "Request must be queued, got" vs P3 "queued or provisioning") — PASS
+Live provisioning-worker: container odoo-sh-local-mock-provisioning-worker-1 exited (0) since 2026-09-02T11:15:54Z, finished 2026-09-05T05:53:30Z, heartbeat stopped — PASS (kept stopped, no docker compose up)
+No other consumers: lsof/fuser clean, no recent P3 writes, P3 status only untracked evidence files — PASS
+Requests: 1 queued demo (adapter demo, not real), 2 queued demo, 3 rolled_back local_docker provisioning_approved=1 (never requeue) — PASS
+Runtime resources: mosh-p3-b10/b8/b4 containers, 8 mosh_p3_* DBs, no mosh_r_p3 roles, 256 tenant dirs, no 8301-8302 ports, no mosh-tenant-p3 containers — PASS
+Manual-UAT patch: /tmp/manual-uat-patch-20260905T061500Z.patch SHA 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d preserved, not restored — PASS
+Baseline inventory: live control.db hash 9d049d433dc0562c86524dc1a78255978d086dfe443446300c75bc400bc951f9 (at 07:17Z) integrity ok, template mosh_tpl_cloud_base_19_0_trading validated healthy cloud_base 1.0.0, plans trial/starter/business/enterprise — PASS
+Isolated DB: /tmp/p3-canary-p3_20260905T071700Z_d1938642/control.db cp live control.db, hashes matched 9d049d..., integrity ok, requests 1,2 queued demo, 3 rolled_back — PASS
+All 12 prechecks PASS — authorized to proceed to test gate and canary.

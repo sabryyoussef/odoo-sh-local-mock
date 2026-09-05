@@ -3,16 +3,16 @@
 **Decision:** `P2_FINAL_PASS`
 
 **Authoritative starting main HEAD:** `aa5ffb5aaed01596f9eb94ce7d93959f4bec853c` (after P1.3, `fix(cloud): require durable provisioning approval`)
-**Final main HEAD:** `59ee9e50f92cb7f8be11fa8c1f197b1f9b42e156` (`docs(cloud): finalize P2 integration report`) — previous `4a8349a` is the P2 code+evidence HEAD, `59ee9e5` adds this final integration report
+**Final main HEAD:** `c8e2e73703bf80a33eaf6280b183bb84f076286b` (`docs(cloud): correct final HEAD reference to 5982b89`) — `4a8349a` is P2 code+evidence HEAD, `5982b89` is final integration report, `c8e2e73` corrects HEAD reference (all 10 commits ahead of `aa5ffb5`)
 **P2 base:** `aa5ffb5aaed01596f9eb94ce7d93959f4bec853c`
 **P2 branch:** [`p2-cloud-disposable-provisioner`](.) at `4a8349a` (fast-forwarded from `df28eff`)
 **Integration branch:** [`integrate-p2-cloud`](.) at `4a8349a` (created from `main`, ff to `p2`, then merged ff-only to `main`; worktree removed after integration)
 **Worktree topology (final):**
-- `/opt/projects/active/odoo-sh-local-mock` → `4a8349a` [`main`](.)
-- `/tmp/p2-cloud-disposable-provisioner-p2_20260903T124908Z_6c905ccb2aa2` → `4a8349a` [`p2-cloud-disposable-provisioner`](.)
+- `/opt/projects/active/odoo-sh-local-mock` → `c8e2e73` [`main`](.)
+- `/tmp/p2-cloud-disposable-provisioner-p2_20260903T124908Z_6c905ccb2aa2` → `c8e2e73` [`p2-cloud-disposable-provisioner`](.) (ff from `4a8349a` via `5982b89`)
 - `/tmp/integrate-p2-cloud-integrate_20260903T142513Z_3b645896` → `4a8349a` [`integrate-p2-cloud`](.) — removed via [`git worktree remove`](.) (git entry removed; filesystem `/tmp` path permission-denied on delete but no longer tracked)
 
-**Exact P2 commits (9 ahead of `aa5ffb5`, 8 code+evidence + 1 final report):**
+**Exact P2 commits (10 ahead of `aa5ffb5`, 8 code+evidence + 2 final report corrections):**
 - `569ae900171e109f41b694b1cd35dfd1d9476e03` `569ae90` `feat(cloud): add disposable local provisioning adapter` — [`control-api/app/services/cloud_docker_adapter.py`](control-api/app/services/cloud_docker_adapter.py:1) (924 lines), [`control-api/app/services/cloud_template_service.py`](control-api/app/services/cloud_template_service.py:1) (253 lines)
 - `1f504c8b7041822e9aad9c46ff940d974907cf5e` `1f504c8` `test(cloud): verify disposable provisioning and rollback` — [`control-api/tests/test_cloud_p2_unit.py`](control-api/tests/test_cloud_p2_unit.py:1) (499 lines), [`control-api/tests/test_cloud_p2_disposable_provisioning.py`](control-api/tests/test_cloud_p2_disposable_provisioning.py:1) (462 lines)
 - `df28eff0e9f88a615e301842e88428859738904f` `df28eff` `docs(cloud): record P2 provisioning evidence` — [`docs/reports/HELPERS_ERP_CLOUD_P2_DISPOSABLE_PROVISIONING_REPORT.md`](docs/reports/HELPERS_ERP_CLOUD_P2_DISPOSABLE_PROVISIONING_REPORT.md:1) (148 lines)
@@ -21,7 +21,8 @@
 - `7423ba6268dcb6efad478b38d9d85b4945fa8abb` `7423ba6` `fix(cloud): correct P2 host mount path for Docker` — translates [`tenant_root`](control-api/app/config.py:1) `/data/tenants` → [`tenant_host_root`](control-api/app/config.py:1) `/opt/projects/active/odoo-sh-local-mock/data/tenants` for Docker bind mounts (`filestore_host_path`, `runtime_host`)
 - `0ef63b768b1efb73ae3bbbe093239dcb4225e7da` `0ef63b7` `fix(cloud): verify HTTP health via in-network and loopback candidates` — [`_verify_http_health()`](control-api/app/services/cloud_docker_adapter.py:239) now probes `container_name:8069` + `host.docker.internal:port` + `127.0.0.1:port`, timeout 30s
 - `4a8349ae40cc852181de13033ff12e78bfa123ec` `4a8349a` `docs(cloud): record real disposable verification and evidence` — adds real run manifest to permanent evidence
-- `59ee9e50f92cb7f8be11fa8c1f197b1f9b42e156` `59ee9e5` `docs(cloud): finalize P2 integration report` — this report (`P2_FINAL_PASS`)
+- `5982b895e4b3375a471c825bbc6b5420a6c42709` `5982b89` `docs(cloud): finalize P2 integration report` — this report (`P2_FINAL_PASS`, amended from `59ee9e5`)
+- `c8e2e73703bf80a33eaf6280b183bb84f076286b` `c8e2e73` `docs(cloud): correct final HEAD reference to 5982b89` — corrects final HEAD reference
 
 **HEAD discrepancy resolved:**
 Earlier report referenced `d2da994` as P2 HEAD. `git log --oneline aa5ffb5..p2-cloud-disposable-provisioner` and `git merge-base` prove `d2da994` is an intermediate amended commit with same message as `df28eff` but **not an ancestor** of `df28eff`. Authoritative final P2 HEAD is `df28eff0e9f88a615e301842e88428859738904f` (3 commits ahead of `aa5ffb5`), then `1dd7bc8`/`e8620bc` docs, then `7423ba6`/`0ef63b7` fixes, then `4a8349a` evidence. `git rev-list --left-right --count main...p2-cloud-disposable-provisioner` = `0 7` (now `0 8` after `4a8349a`), `git merge-base main p2-cloud-disposable-provisioner` = `aa5ffb5`.

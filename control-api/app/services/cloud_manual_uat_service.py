@@ -205,10 +205,7 @@ def is_manual_uat_request(request: CloudProvisioningRequest | None, db: Session 
         user = db.get(User, request.user_id)
         if not is_manual_uat_user(user):
             return False
-    # Check marker in audit_metadata or request_uuid pattern
-    meta = getattr(request, "audit_metadata", None)
-    if meta and MANUAL_UAT_MARKER in str(meta):
-        return True
+    # Check marker via idempotency_key (audit_metadata not on CloudProvisioningRequest)
     # Check subdomain via instance
     if db is not None:
         inst = db.scalar(select(CloudInstance).where(CloudInstance.provisioning_request_id == request.id))
@@ -574,9 +571,7 @@ def _ensure_subscription_and_request(db: Session, user: User, setup: CloudSetupS
         # Ensure adapter is local_docker for real provisioning
         if req.adapter != CLOUD_ADAPTER_LOCAL_DOCKER:
             req.adapter = CLOUD_ADAPTER_LOCAL_DOCKER
-        # Ensure marker
-        if not req.audit_metadata or MANUAL_UAT_MARKER not in str(req.audit_metadata):
-            req.audit_metadata = json.dumps({"manual_uat": True, "account": acc["portal_username"]})
+        # Marker is in idempotency_key (provision:manual-uat:...)
         db.commit()
         db.refresh(req)
     else:
@@ -599,7 +594,6 @@ def _ensure_subscription_and_request(db: Session, user: User, setup: CloudSetupS
             template_version=tpl.version,
             template_kind=tpl.template_kind,
             runtime_verified=False,
-            audit_metadata=json.dumps({"manual_uat": True, "account": acc["portal_username"], "db_name": acc["db_name"]}),
         )
         db.add(req)
         db.flush()
@@ -762,6 +756,7 @@ def get_manual_uat_status(db: Session) -> dict[str, Any]:
         if not user:
             result["accounts"].append({
                 "username": acc["portal_username"],
+                "email": acc["email"],
                 "exists": False,
                 "plan": acc["plan_code"],
                 "package": acc["package_code"],

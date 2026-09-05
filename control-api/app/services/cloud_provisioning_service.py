@@ -248,7 +248,8 @@ def cloud_request_eligibility_reasons(
         is_manual_uat_exception = False
         try:
             from app.services.cloud_manual_uat_service import is_manual_uat_allowed, is_manual_uat_request
-            if is_manual_uat_allowed() and is_manual_uat_request(request, db):
+            # is_manual_uat_request can work without db via idempotency_key fallback
+            if is_manual_uat_allowed() and is_manual_uat_request(request):
                 # Only allow is_demo for manual UAT trial (user1) — still requires all other gates
                 if pl.is_demo and pl.code == "trial":
                     is_manual_uat_exception = True

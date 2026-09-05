@@ -73,8 +73,28 @@ def _validate_manual_uat_gates(db: Session, request: CloudProvisioningRequest) -
         raise ValueError("Request not linked to exact manual UAT identity")
     if request.adapter != "local_docker":
         raise ValueError(f"Adapter must be local_docker, got {request.adapter!r}")
-    if request.status not in (CLOUD_PROVISION_QUEUED, "provisioning"):
-        raise ValueError(f"Request must be queued/provisioning, got {request.status!r}")
+    if request.status not in (CLOUD_PROVISION_QUEUED, "provisioning", CLOUD_PROVISION_FAILED):
+        raise ValueError(f"Request must be queued/provisioning/failed, got {request.status!r}")
+    # If failed, reset to queued for retry (idempotent)
+    if request.status == CLOUD_PROVISION_FAILED:
+        request.status = CLOUD_PROVISION_QUEUED
+        request.current_step = "queued"
+        request.last_error_code = None
+        request.last_error_message = None
+        request.finished_at = None
+        request.tenant_id = None
+        from sqlalchemy.orm import Session as _S
+        # Also reset instance
+        try:
+            from app.models import CloudInstance
+            from sqlalchemy import select as _sel
+            # Use the passed db session
+            inst = db.scalar(_sel(CloudInstance).where(CloudInstance.provisioning_request_id == request.id))
+            if inst:
+                inst.status = CLOUD_PROVISION_QUEUED
+                inst.tenant_id = None
+        except Exception:
+            pass
     if not request.provisioning_approved:
         raise ValueError("Request not durably approved")
     if request.tenant_id is not None:
@@ -166,13 +186,8 @@ def _init_odoo_company_and_user(
                 cur.execute("INSERT INTO res_company (id, name) VALUES (1, %s) ON CONFLICT (id) DO UPDATE SET name = %s", (company_name, company_name))
 
             # 2. Ensure Odoo user exists with login userN and password 123
-            # Odoo stores password via res_users + res_partner
-            # We need to create/update res_users with hashed password
-            # For Odoo 19, password is stored as pbkdf2 in res_users.password
-            # But we can also use Odoo's API via container — simpler: use SQL with Odoo's hash
-            # For now, we will set via direct SQL using Odoo's expected hash format
-            # Odoo uses passlib with pbkdf2_sha512 — we can set a simple hash and let Odoo verify
-            # Alternative: use the container to run odoo shell — but for local UAT we can do SQL
+            # Odoo 19: res_users requires company_id, partner_id, login, notification_type (NOT NULL)
+            # We copy required fields from admin to ensure compatibility
 
             # Check if user exists
             cur.execute("SELECT id FROM res_users WHERE login = %s", (odoo_login,))
@@ -183,27 +198,26 @@ def _init_odoo_company_and_user(
                 cur.execute("SELECT partner_id FROM res_users WHERE id = %s", (user_id,))
                 partner_id = cur.fetchone()[0]
                 if partner_id:
-                    cur.execute("UPDATE res_partner SET name = %s, display_name = %s WHERE id = %s", (display_name, display_name, partner_id))
+                    cur.execute("UPDATE res_partner SET name = %s, complete_name = %s WHERE id = %s", (display_name, display_name, partner_id))
                 # Password will be set via Odoo container after startup (see below)
                 logger.info("Updated user %s (id=%s) in %s", odoo_login, user_id, db_name)
             else:
                 # Create user — need to insert res_partner and res_users
-                # Find admin user to copy groups
-                cur.execute("SELECT id, partner_id FROM res_users WHERE login = 'admin' LIMIT 1")
+                # Find admin user to copy required fields and groups
+                cur.execute("SELECT id, partner_id, company_id, notification_type, share FROM res_users WHERE login = 'admin' LIMIT 1")
                 admin_row = cur.fetchone()
                 if admin_row:
-                    admin_id, admin_partner = admin_row
+                    admin_id, admin_partner, admin_company_id, admin_notif_type, admin_share = admin_row
                     # Create partner
                     cur.execute(
-                        "INSERT INTO res_partner (name, display_name, is_company, active) VALUES (%s, %s, false, true) RETURNING id",
+                        "INSERT INTO res_partner (name, complete_name, is_company, active) VALUES (%s, %s, false, true) RETURNING id",
                         (display_name, display_name),
                     )
                     partner_id = cur.fetchone()[0]
-                    # Create user — password will be set after container start
-                    # Use a placeholder hash that we will update via Odoo shell
+                    # Create user — copy required fields from admin, password will be set after container start
                     cur.execute(
-                        "INSERT INTO res_users (login, password, partner_id, active) VALUES (%s, %s, %s, true) RETURNING id",
-                        (odoo_login, "placeholder", partner_id),
+                        "INSERT INTO res_users (login, password, partner_id, company_id, notification_type, share, active, create_uid, write_uid) VALUES (%s, %s, %s, %s, %s, %s, true, %s, %s) RETURNING id",
+                        (odoo_login, "placeholder", partner_id, admin_company_id, admin_notif_type or "email", False, admin_id, admin_id),
                     )
                     user_id = cur.fetchone()[0]
                     # Copy groups from admin (or give base group)
@@ -236,32 +250,28 @@ def _set_odoo_password_via_container(container_name: str, db_name: str, odoo_log
         container = client.containers.get(container_name)
         # Use odoo shell to set password
         # Odoo 19: env['res.users'].search([('login','=','user1')]).write({'password': '123'})
+        s = get_settings()
         cmd = [
             "python3", "-c",
             f"""
-import odoo
-from odoo import api, SUPERUSER_ID
 import sys
 sys.path.insert(0, '/usr/lib/python3/dist-packages')
-# Try to set password via SQL directly with Odoo's hash
 import psycopg2
-conn = psycopg2.connect(host='{get_settings().build_postgres_host}', port={get_settings().build_postgres_port}, user='{get_settings().build_postgres_user}', password='{get_settings().build_postgres_password}', dbname='{db_name}')
+conn = psycopg2.connect(host='{s.build_postgres_host}', port={s.build_postgres_port}, user='{s.build_postgres_admin_user}', password='{s.build_postgres_admin_password}', dbname='{db_name}')
 cur = conn.cursor()
-# Use Odoo's passlib to hash
 try:
     from passlib.context import CryptContext
     ctx = CryptContext(schemes=['pbkdf2_sha512'], deprecated='auto')
     hashed = ctx.hash('{odoo_password}')
     cur.execute("UPDATE res_users SET password = %s WHERE login = %s", (hashed, '{odoo_login}'))
     conn.commit()
-    print("Password set via passlib")
+    print("Password set via passlib admin")
 except Exception as e:
     print(f"passlib failed: {{e}}")
-    # Fallback: try plain (Odoo will hash on login)
     try:
         cur.execute("UPDATE res_users SET password = %s WHERE login = %s", ('{odoo_password}', '{odoo_login}'))
         conn.commit()
-        print("Password set plain")
+        print("Password set plain admin")
     except Exception as e2:
         print(f"plain failed: {{e2}}")
 conn.close()
@@ -570,7 +580,7 @@ def provision_manual_uat_request(
                 "manual_uat": "true",
                 "manual_uat_user": acc["portal_username"],
             },
-            ports={"8069/tcp": ("127.0.0.1", int(http_port))},
+            ports={"8069/tcp": [("127.0.0.1", int(http_port)), ("100.76.217.35", int(http_port)), ("192.168.100.66", int(http_port))]},
             volumes={
                 filestore_host_path: {"bind": "/var/lib/odoo", "mode": "rw"},
                 str(runtime_host): {"bind": "/mnt/runtime", "mode": "ro"},
@@ -622,18 +632,33 @@ def provision_manual_uat_request(
         if c.status != "running":
             raise RuntimeError(f"Container not running: {container_name} status={c.status}")
 
-        # Check HTTP
+        # Check HTTP — try container network first, then host bindings
         import urllib.request, urllib.error
-        url = f"http://127.0.0.1:{http_port}/web/login"
+        candidates = [f"http://{container_name}:8069/web/login", f"http://127.0.0.1:{http_port}/web/login"]
         try:
-            with urllib.request.urlopen(url, timeout=5) as resp:
-                if not (200 <= resp.status < 600):
-                    raise RuntimeError(f"HTTP check failed: {resp.status}")
-        except urllib.error.HTTPError as e:
-            if not (200 <= e.code < 600):
-                raise RuntimeError(f"HTTP check failed: {e.code}")
-        except Exception as e:
-            raise RuntimeError(f"HTTP check failed: {e}")
+            import socket
+            gw = socket.gethostbyname("host.docker.internal")
+            candidates.append(f"http://{gw}:{http_port}/web/login")
+        except Exception:
+            pass
+        last_exc = None
+        ok = False
+        for url in candidates:
+            try:
+                with urllib.request.urlopen(url, timeout=5) as resp:
+                    if 200 <= resp.status < 600:
+                        ok = True
+                        break
+            except urllib.error.HTTPError as e:
+                if 200 <= e.code < 600:
+                    ok = True
+                    break
+                last_exc = e
+            except Exception as e:
+                last_exc = e
+                continue
+        if not ok:
+            raise RuntimeError(f"HTTP check failed: {last_exc}")
 
         # 10. Mark ready
         try:

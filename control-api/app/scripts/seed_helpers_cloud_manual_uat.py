@@ -96,7 +96,8 @@ def main() -> None:
                         print(f"    - {err}")
                 print()
                 for acc in status["accounts"]:
-                    print(f"  {acc['username']} ({acc['email']}):")
+                    _email = acc.get('email', f"{acc.get('username','?')}@demo.local")
+                    print(f"  {acc['username']} ({_email}):")
                     print(f"    Exists: {acc['exists']}")
                     if acc['exists']:
                         print(f"    Plan: {acc['plan']}, Package: {acc['package']}")
@@ -107,7 +108,7 @@ def main() -> None:
                         print(f"    Approved: provisioning={acc['provisioning_approved']}, quote={acc['quote_approved']}")
                         print(f"    Instance: {acc['instance_id']} ({acc['instance_status']})")
                         print(f"    Tenant: {acc['tenant_id']} ({acc['tenant_code']}, db={acc['tenant_db']}, port={acc['tenant_port']}, status={acc['tenant_status']})")
-                        if acc['internal_url']:
+                        if acc.get('internal_url'):
                             print(f"    URL: {acc['internal_url']}")
                     print()
         return

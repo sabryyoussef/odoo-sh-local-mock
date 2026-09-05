@@ -1,0 +1,30 @@
+tests/test_cloud_manual_uat_portal_login.py::test_10_production_mode_does_not_enable_alias_bypass PASSED [ 83%]
+tests/test_cloud_manual_uat_portal_login.py::test_11_passwords_remain_hashed PASSED [ 91%]
+tests/test_cloud_manual_uat_portal_login.py::test_12_failure_does_not_expose_account_existence PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/test_cloud_manual_uat_portal_login.py::test_01_user1_username_succeeds_via_http
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_cloud_manual_uat_portal_login.py::test_01_user1_username_succeeds_via_http
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_cloud_manual_uat_portal_login.py: 36 warnings
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 12 passed, 38 warnings in 12.64s =======================

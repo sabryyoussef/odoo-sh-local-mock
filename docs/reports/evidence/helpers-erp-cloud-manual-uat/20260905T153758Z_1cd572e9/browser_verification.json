@@ -1,0 +1,15 @@
+{
+  "portal_login_url": "http://100.76.217.35:8001/cloud/login",
+  "form_action": "/cloud/login",
+  "form_fields": ["csrf_token", "email", "password", "plan", "cycle"],
+  "csrf": "per-request hidden input, validated via validate_csrf, new token per GET",
+  "session_cookie": "mosh_session (httponly, samesite=lax, path=/, Max-Age=1209600, value redacted)",
+  "users": {
+    "user1": {"username_login": "302 -> /cloud/instances, session created", "email_login": "302", "wrong_password": "400 generic", "plan": "trial", "company": "User 1 Demo Company", "dashboard": "Your Helpers ERP Cloud workspaces, Plan trial, Package sales, Status Ready", "logout": "302, session invalidated, fresh login 302", "isolation": "cannot access other user's data (302 to /cloud/login)"},
+    "user2": {"username_login": "302 -> /cloud/instances", "email_login": "302", "wrong_password": "400", "plan": "starter", "company": "User 2 Demo Company", "dashboard": "Plan starter, Package trading", "logout": "302", "isolation": "302"},
+    "user3": {"username_login": "302", "email_login": "302", "wrong_password": "400", "plan": "business", "company": "User 3 Demo Company", "dashboard": "Plan business, Package operations", "logout": "302", "isolation": "302"},
+    "user4": {"username_login": "302", "email_login": "302", "wrong_password": "400", "plan": "enterprise", "company": "User 4 Demo Company", "dashboard": "Plan enterprise, Package full_erp", "logout": "302", "isolation": "302"}
+  },
+  "redirect_chain": "POST /cloud/login 302 -> /cloud/instances 200 (inside portal, no external redirect)",
+  "http_status": "200 for GET login, 302 for success POST, 400 for failure POST with generic message"
+}

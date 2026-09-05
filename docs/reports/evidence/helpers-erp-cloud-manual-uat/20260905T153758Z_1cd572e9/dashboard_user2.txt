@@ -1,0 +1,5 @@
+        <h2>User 2 Demo Company</h2>
+          <div><dt>Company</dt><dd>User 2 Demo Company</dd></div>
+          <div><dt>Plan</dt><dd>starter</dd></div>
+          <div><dt>Package</dt><dd>trading</dd></div>
+          <div><dt>Status</dt><dd>Ready</dd></div>

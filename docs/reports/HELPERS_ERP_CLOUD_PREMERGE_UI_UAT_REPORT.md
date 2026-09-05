@@ -165,3 +165,56 @@ All gates met: HEADs verified, P3 not merged, live worker stopped, live flags fa
 
 Do not merge P3 or UAT into main. Manual Windows testing can proceed via Tailscale `http://100.76.217.35:8001` and `http://100.76.217.35:830N/web/login` (or LAN `http://192.168.100.66:8001`/`http://192.168.100.66:830N/web/login`) with `userN/123`.
 
+---
+
+## 20. Portal Login Fix — UAT_PORTAL_LOGIN_FIXED (2026-09-05T15:35Z)
+
+**Root cause:** `control-api/app/services/cloud_auth_service.py:authenticate_cloud_customer` performed email-only lookup `func.lower(User.email) == normalized` and `control-api/app/templates/cloud/login.html` used `type="email"` `name="email"` only. Memorable username `user1` (without `@`) never matched any row, so `POST email=user1 password=123` returned `400 Bad Request` `“Email or password is incorrect.”` with no session, while `user1@demo.local` succeeded `302`. Previous “verify succeeded” tested only `verify_password` hash directly, not the real HTTP route.
+
+**Actual failing URL/form behavior (before fix, captured via curl browser-equivalent):**
+- `GET http://100.76.217.35:8001/cloud/login` → `200`, `form action="/cloud/login"`, `input type="email" name="email"`, `input type="password" name="password"`, `input type="hidden" name="csrf_token"` per-request, `set-cookie mosh_session` (httponly, samesite=lax, path=/, value redacted)
+- `POST /cloud/login` with `email=user1` `password=123` `csrf_token` → `400` `form-error-summary` `“Email or password is incorrect.”`, no `mosh_session` user_id, no redirect
+- `POST /cloud/login` with `email=user1@demo.local` `password=123` → `302` `location: /cloud/instances` `set-cookie mosh_session` (with user_id, redacted)
+- Redirect chain on success: `302 → /cloud/instances 200` (inside portal, no external URL); on failure: `400` stays on `/cloud/login`
+
+**Fix (UAT branch only, fail-closed):**
+- `control-api/app/services/cloud_auth_service.py` — added `_MANUAL_UAT_USERNAMES = frozenset({"user1","user2","user3","user4"})`, `_is_manual_uat_login_allowed()` (requires `HELPERS_CLOUD_MANUAL_UAT_ENABLED=true` and `APP_ENV != production`), `_normalize_identifier()` (strip+lower), branched `authenticate_cloud_customer`: if `@` in identifier → email path (preserves normal email login); else → username alias path gated, exact allow-list, `select(User).where(func.lower(github_login)==normalized OR func.lower(email)==f"{normalized}@demo.local")`, `len(candidates)!=1` fails closed with generic `400`, no enumeration, no plaintext, no bypass, no auto-login
+- `control-api/app/api/cloud.py` — `cloud_login_post` now `email = str(form.get("email") or form.get("username") or "")` to accept both field names
+- `control-api/app/templates/cloud/login.html` — `type="email"` → `type="text"` `inputmode="email"` and label `Work email / Username` so browser accepts `user1` without HTML5 email validation blocking
+
+**Confirmed portal login URL (Windows-accessible):** `http://100.76.217.35:8001/cloud/login` (nav `http://100.76.217.35:8001/` → “Cloud sign in” → `/cloud/login`; LAN `http://192.168.100.66:8001/cloud/login`; Tailscale hostname `http://master.tailcf9988.ts.net:8001/cloud/login`)
+
+**Exact accepted username/email formats:**
+- Username: `user1`, `user2`, `user3`, `user4` — exact, case-insensitive, whitespace trimmed, gated by `HELPERS_CLOUD_MANUAL_UAT_ENABLED=true` + `APP_ENV=development` (default false, production blocked)
+- Email alias: `user1@demo.local`, `user2@demo.local`, `user3@demo.local`, `user4@demo.local` — same normalization, always works via email path
+- Both resolve to same `users` row (`email=userN@demo.local`, `github_login=userN`, `password_hash=pbkdf2_sha256$200000$...` 118 chars)
+
+**Portal vs Odoo credential distinction:**
+- Portal: `http://100.76.217.35:8001/cloud/login` → `data-uat/control.db` `users` via `authenticate_cloud_customer` (pbkdf2_sha256 200k), creates `mosh_session` (httponly, samesite=lax), redirects to `/cloud/instances` showing `User N Demo Company`, `Plan`, `Package`, `Status Ready`. No Odoo auto-login.
+- Odoo: `http://100.76.217.35:830N/web/login?db=helpers_demo_userN` → `p3-uat-build-postgres` `helpers_demo_userN` `res_users` (pbkdf2-sha512), separate `session_id` cookie, same memorable `userN / 123` for Manual UAT but distinct system. Portal session cannot access Odoo data.
+
+**Browser/HTTP verification results for all four users (2026-09-05T15:35Z, curl browser-equivalent, redacted):**
+| User | `userN / 123` | `userN@demo.local / 123` | Wrong password | Dashboard | Plan | Session/Redirect | Logout/Re-login | Isolation |
+|------|---------------|---------------------------|----------------|-----------|------|------------------|-----------------|-----------|
+| user1 | 302 → /cloud/instances, mosh_session | 302 | 400 generic | Your Helpers ERP Cloud workspaces, User 1 Demo Company, Plan trial, Package sales, Status Ready | Trial ✓ | 302 inside portal, httponly samesite=lax | POST /cloud/logout 302 → /cloud/instances 302 → /cloud/login, fresh 302 ✓ | 302 to /cloud/login when accessing other user’s instance ✓ |
+| user2 | 302 | 302 | 400 | User 2 Demo Company, Plan starter, Package trading | Starter ✓ | 302 | 302 ✓ | 302 ✓ |
+| user3 | 302 | 302 | 400 | User 3 Demo Company, Plan business, Package operations | Business ✓ | 302 | 302 ✓ | 302 ✓ |
+| user4 | 302 | 302 | 400 | User 4 Demo Company, Plan enterprise, Package full_erp | Enterprise Cloud ✓ | 302 | 302 ✓ | 302 ✓ |
+
+**Tests (12):** `control-api/tests/test_cloud_manual_uat_portal_login.py` — 12 passed via `TestClient` real `POST /cloud/login` (user1 username, email alias, wrong password, unknown user, user2-4, whitespace/case, duplicate fail-closed, session only after auth, redirect inside portal, production bypass blocked, hashed passwords, no enumeration). Run: `docker exec p3-uat-control-api pytest tests/test_cloud_manual_uat_portal_login.py -v` → `12 passed`.
+
+**Odoo preservation:** `http://100.76.217.35:8301` 200, `8302` 200, `8303` 200, `8304` 200 — all `helpers_demo_userN` login-capable, unchanged.
+
+**UAT commits:** `fd52b03 fix(cloud): allow manual UAT portal username login`, `1f5189a test(cloud): verify manual UAT portal authentication` (plus docs commit pending)
+
+**Evidence:** `docs/reports/evidence/helpers-erp-cloud-manual-uat/20260905T153758Z_1cd572e9/` (preflight.json, portal_login_page.html, form_action.txt, form_fields.txt, csrf_behavior.txt, reproduce.md, browser_verification.json, dashboard_userN.txt, odoo_http.txt, test_summary.txt, git_heads.txt, containers.txt, integrity_*.txt)
+
+**Main/live preservation:** Main HEAD `73e75b9b5882e1e6db66b66cde5c63a35f8127b9` unchanged, `git status` clean, live `provisioning-worker` still `Exited`, live `control.db` integrity ok, no live DB mutation.
+
+**Decision:** `UAT_PORTAL_LOGIN_FIXED` — all four portal users authenticate via real HTTP route with `userN / 123`, valid sessions, correct plans, logout/relogin, wrong passwords fail, isolation passes, Odoo preserved, main/live unchanged.
+
+**Retry for user (Windows, Tailscale `100.76.217.35` or LAN `192.168.100.66`):**
+- Portal: `http://100.76.217.35:8001/cloud/login` → enter `user1` / `123` (or `user1@demo.local` / `123`) → `Sign in` → lands on `My ERP` dashboard `User 1 Demo Company` `Plan trial`. Repeat for `user2`/`user3`/`user4` (Starter/Business/Enterprise Cloud). If `400`, check `HELPERS_CLOUD_MANUAL_UAT_ENABLED=true` and `APP_ENV=development` on `p3-uat-control-api`.
+- Odoo: `http://100.76.217.35:8301/web/login?db=helpers_demo_user1` → `user1` / `123` (similarly 8302-8304 for user2-4).
+
+

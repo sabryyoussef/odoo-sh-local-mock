@@ -1,0 +1,2 @@
+CSRF field: csrf_token (value redacted)
+Session cookie: mosh_session (value redacted, httponly, samesite=lax, path=/)

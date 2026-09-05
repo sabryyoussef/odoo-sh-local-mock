@@ -1,0 +1,5 @@
+        <h2>User 3 Demo Company</h2>
+          <div><dt>Company</dt><dd>User 3 Demo Company</dd></div>
+          <div><dt>Plan</dt><dd>business</dd></div>
+          <div><dt>Package</dt><dd>operations</dd></div>
+          <div><dt>Status</dt><dd>Ready</dd></div>

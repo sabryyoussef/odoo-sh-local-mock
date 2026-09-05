@@ -1,0 +1,75 @@
+analysis-runner Up 7 days 8787/tcp
+asta_education_demo_media_worker Up 5 days 127.0.0.1:8043->8099/tcp
+asta_education_demo_nginx Up 5 days 
+asta-lms-poc-asta-media-worker-1 Up 5 days 127.0.0.1:8099->8099/tcp
+asta-lms-poc-db-1 Up 5 days (healthy) 5432/tcp
+asta-lms-poc-nginx-1 Up 5 days 127.0.0.1:18088->80/tcp
+asta-lms-poc-odoo-1 Up 5 days 127.0.0.1:8069->8069/tcp, 8071-8072/tcp
+chatwoot_ai_redis Up 7 days 6379/tcp
+chatwoot_ai_worker Up 7 days 3010/tcp
+chatwoot-attachment-preprocessor Up 7 days 127.0.0.1:8791->8791/tcp
+chatwoot_evolution_bridge Up 7 days 
+chatwoot_postgres Up 7 days 5432/tcp
+chatwoot_rails Up 7 days 127.0.0.1:3000->3000/tcp
+chatwoot_redis Up 7 days 6379/tcp
+chatwoot_sidekiq Up 7 days 3000/tcp
+docker-api-1 Up 3 days (healthy) 5001/tcp
+docker-api_websocket-1 Up 3 days 5001/tcp
+docker-db_postgres-1 Up 3 days (healthy) 5432/tcp
+docker-nginx-1 Up 3 days 100.76.217.35:8090->80/tcp, 127.0.0.1:8090->80/tcp, 192.168.100.66:8090->80/tcp, 127.0.0.1:18443->443/tcp
+docker-plugin_daemon-1 Up 3 days 127.0.0.1:5003->5003/tcp
+docker-redis-1 Up 3 days (healthy) 6379/tcp
+docker-sandbox-1 Up 3 days (healthy) 
+docker-ssrf_proxy-1 Up 3 days 3128/tcp
+docker-weaviate-1 Up 3 days 
+docker-web-1 Up 3 days 3000/tcp
+docker-worker-1 Up 3 days 5001/tcp
+docker-worker_beat-1 Up 3 days 5001/tcp
+evolution_api Up 7 days 127.0.0.1:8080->8080/tcp
+evolution_auth_proxy Up 7 days 127.0.0.1:18080->80/tcp
+evolution_postgres Up 7 days 5432/tcp
+evolution_redis Up 7 days 6379/tcp
+groq-native-bridge Up 4 days (healthy) 8787/tcp, 20128/tcp
+mosh-e2e-g3a-control-api-e2e-1 Up 3 days (healthy) 127.0.0.1:43311->8000/tcp
+mosh-tenant-clone_12_2769d0 Up 3 days 8071-8072/tcp, 127.0.0.1:8205->8069/tcp
+mosh-tenant-clone_13_36dc56 Up 3 days 8071-8072/tcp, 127.0.0.1:8206->8069/tcp
+mosh-tenant-clone_15_b78fa8 Up 3 days 8071-8072/tcp, 127.0.0.1:8208->8069/tcp
+mosh-tenant-clone_17_f144c3 Up 3 days 8071-8072/tcp, 127.0.0.1:8210->8069/tcp
+mosh-tenant-clone_18_d397ca Up 3 days 8071-8072/tcp, 127.0.0.1:8211->8069/tcp
+mosh-tenant-clone_20_aea0ed Up 3 days 8071-8072/tcp, 127.0.0.1:8213->8069/tcp
+mosh-tenant-manual-uat-user1 Up 3 hours 8071-8072/tcp, 100.76.217.35:8301->8069/tcp, 127.0.0.1:8301->8069/tcp, 192.168.100.66:8301->8069/tcp
+mosh-tenant-manual-uat-user2 Up 3 hours 8071-8072/tcp, 100.76.217.35:8302->8069/tcp, 127.0.0.1:8302->8069/tcp, 192.168.100.66:8302->8069/tcp
+mosh-tenant-manual-uat-user3 Up 3 hours 8071-8072/tcp, 100.76.217.35:8303->8069/tcp, 127.0.0.1:8303->8069/tcp, 192.168.100.66:8303->8069/tcp
+mosh-tenant-manual-uat-user4 Up 3 hours 8071-8072/tcp, 100.76.217.35:8304->8069/tcp, 127.0.0.1:8304->8069/tcp, 192.168.100.66:8304->8069/tcp
+mosh-tenant-pt_trial_1_a89ea9 Up 3 days 8071-8072/tcp, 127.0.0.1:8215->8069/tcp
+mosh-tenant-sis_21_b0da13 Up 3 days 8071-8072/tcp, 127.0.0.1:8214->8069/tcp
+mosh-tenant-vet_hospital_11_1bb4cf Up 3 days 8071-8072/tcp, 127.0.0.1:8204->8069/tcp
+mosh-tenant-vet_hospital_14_55e234 Up 3 days 8071-8072/tcp, 127.0.0.1:8207->8069/tcp
+mosh-tenant-vet_hospital_16_49c61c Up 3 days 8071-8072/tcp, 127.0.0.1:8209->8069/tcp
+mosh-tenant-vet_hospital_19_7f6dcd Up 3 days 8071-8072/tcp, 127.0.0.1:8212->8069/tcp
+mosh-tenant-vet_hospital_5_3fb408 Up 3 days 8071-8072/tcp, 127.0.0.1:8201->8069/tcp
+mosh-tenant-vet_hospital_7_e8fa67 Up 3 days 8071-8072/tcp, 127.0.0.1:8202->8069/tcp
+mosh-tenant-vet_hospital_9_7d45d8 Up 3 days 8071-8072/tcp, 127.0.0.1:8203->8069/tcp
+n8n Up 7 days 100.76.217.35:5678->5678/tcp, 127.0.0.1:5678->5678/tcp
+odoo-sh-local-mock-backup-worker-1 Up 3 days 8000/tcp
+odoo-sh-local-mock-build-postgres-1 Up 5 days (healthy) 5432/tcp
+odoo-sh-local-mock-control-api-1 Up 3 days 0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+ollama Up 4 days 127.0.0.1:11434->11434/tcp
+omniroute Up 4 days (healthy) 100.76.217.35:20128->20128/tcp, 127.0.0.1:20128->20128/tcp
+ops_uptime_kuma Up 7 days (healthy) 
+p3-helpers-erp-cloud-p3-build-postgres-1 Up 12 hours (healthy) 5432/tcp
+p3-uat-build-postgres Up 3 hours (healthy) 5432/tcp
+p3-uat-control-api Up 30 seconds 100.76.217.35:8001->8000/tcp, 127.0.0.1:8001->8000/tcp, 192.168.100.66:8001->8000/tcp
+petspot_evolution_api Up 7 days 127.0.0.1:8199->8080/tcp
+petspot_evolution_auth_proxy Up 7 days 127.0.0.1:18081->80/tcp
+petspot_evolution_postgres Up 7 days 5432/tcp
+petspot_evolution_redis Up 7 days 6379/tcp
+platform-mcp Up 7 days 127.0.0.1:8091-8094->8091-8094/tcp
+portainer Up 7 days 
+sabry-mobile-hub Up 7 days 
+smsgate-backend Up 7 days (healthy) 3000/tcp
+smsgate-db Up 7 days (healthy) 3306/tcp
+smsgate-inbox-proxy Up 7 days 80/tcp, 127.0.0.1:3055->3000/tcp
+smsgate-webhook-inbox Up 7 days 
+smsgate-worker Up 7 days (healthy) 3000/tcp
+whatsapp-parser-service Up 7 days 8099/tcp

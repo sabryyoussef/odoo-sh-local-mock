@@ -1,0 +1,7 @@
+UAT HEAD 1f5189a56637bca4d64bee57ea3359fbcf27bfbe
+MAIN HEAD 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+1f5189a test(cloud): verify manual UAT portal authentication
+fd52b03 fix(cloud): allow manual UAT portal username login
+ff65565 docs(cloud): add Windows manual UAT guide and premerge report
+1d58b33 test(cloud): verify manual UAT bounded provisioning and isolation
+c02fdd6 fix(cloud): harden manual UAT provisioner for Odoo 19 and isolated compose

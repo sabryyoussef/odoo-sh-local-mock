@@ -15,6 +15,39 @@
 - No public internet exposure — all Odoo ports `8301-8398` bound to `127.0.0.1`, `100.76.217.35`, `192.168.100.66` only.
 - Portal requires `HELPERS_CLOUD_MANUAL_UAT_ENABLED=true` and `APP_ENV=development` (fail-closed default false).
 
+## 2a. Portal Login — Confirmed (Browser/HTTP Verified 2026-09-05T15:35Z)
+
+**Confirmed portal login URL (Windows-accessible):** `http://100.76.217.35:8001/cloud/login` (also `http://100.76.217.35:8001/` → nav “Cloud sign in” → `/cloud/login`; LAN `http://192.168.100.66:8001/cloud/login`; Tailscale hostname `http://master.tailcf9988.ts.net:8001/cloud/login`)
+
+**Actual form behavior (captured via curl, browser-equivalent):**
+- `GET /cloud/login` → `200`, `set-cookie mosh_session` (httponly, samesite=lax, path=/, Max-Age 1209600, value redacted), `csrf_token` hidden per-request
+- `form method="post" action="/cloud/login"` with fields `csrf_token`, `email` (now `type="text"` `inputmode="email"` to accept username), `password`, `plan`, `cycle`
+- `POST /cloud/login` with `csrf_token`, `email`, `password` → on success `302 Found` `location: /cloud/instances` `set-cookie mosh_session` (now with `user_id`, value redacted), redirect stays inside portal (`/cloud/*`, no external URL)
+- On failure `400 Bad Request` with generic `“Email or password is incorrect.”` in `form-error-summary`, no session, no enumeration
+- CSRF validated via `validate_csrf`, session via `mosh_session`, cookie domain not set (host-only), `SameSite=Lax`, `Secure` not required for http private network, `HttpOnly` true
+
+**Exact accepted username/email formats (memorable, approved for Manual UAT):**
+- Username: `user1`, `user2`, `user3`, `user4` — exact allow-list, case-insensitive, leading/trailing whitespace trimmed, `HELPERS_CLOUD_MANUAL_UAT_ENABLED=true` and `APP_ENV != production` required (fail-closed, default false)
+- Email alias: `user1@demo.local`, `user2@demo.local`, `user3@demo.local`, `user4@demo.local` — same normalization, always works (normal email login path)
+- Both map to same `users` row (`email=userN@demo.local`, `github_login=userN`, `password_hash=pbkdf2_sha256$200000$...` 118 chars, `auth_provider=email_password`)
+- Duplicate/ambiguous username (two rows matching `github_login` or `email`) fails closed with generic 400, no enumeration
+- Wrong password, unknown user, empty identifier all return identical generic 400
+
+**Portal vs Odoo credential distinction:**
+- **Portal (Helpers ERP Cloud control plane):** `http://100.76.217.35:8001/cloud/login` → authenticates against isolated `data-uat/control.db` `users` table via `authenticate_cloud_customer` (pbkdf2_sha256 200k). Success creates `mosh_session` and redirects to ` /cloud/instances` dashboard showing `User N Demo Company`, `Plan`, `Package`, `Status Ready`. Does NOT auto-login to Odoo.
+- **Odoo (tenant ERP):** `http://100.76.217.35:830N/web/login?db=helpers_demo_userN` → authenticates against isolated Postgres `p3-uat-build-postgres` `helpers_demo_userN` `res_users` (pbkdf2-sha512). Same memorable `userN / 123` for Manual UAT, but separate system, separate hash, separate session (`session_id` cookie). Portal session cannot access Odoo data and vice versa.
+- For Manual UAT both use `userN / 123` intentionally, but they are distinct logins. Test portal first, then Odoo separately.
+
+**Browser/HTTP verification results for all four users (2026-09-05T15:35Z, via curl browser-equivalent, redacted):**
+| User | Portal username `userN / 123` | Portal email `userN@demo.local / 123` | Wrong password | Dashboard (after login) | Plan display | Session/Redirect | Logout/Re-login | Isolation |
+|------|-------------------------------|----------------------------------------|----------------|--------------------------|--------------|------------------|-----------------|-----------|
+| user1 | 302 → /cloud/instances, mosh_session created | 302 | 400 generic | Your Helpers ERP Cloud workspaces, User 1 Demo Company, Plan trial, Package sales, Status Ready, Open Odoo http://127.0.0.1:8301/web/login | Trial ✓ | 302 inside portal, httponly samesite=lax | POST /cloud/logout 302, then /cloud/instances 302 → /cloud/login, fresh POST 302 ✓ | Cannot access other user’s instance (302 → /cloud/login) ✓ |
+| user2 | 302 | 302 | 400 | User 2 Demo Company, Plan starter, Package trading, Status Ready, 8302 | Starter ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
+| user3 | 302 | 302 | 400 | User 3 Demo Company, Plan business, Package operations, Status Ready, 8303 | Business ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
+| user4 | 302 | 302 | 400 | User 4 Demo Company, Plan enterprise, Package full_erp, Status Ready, 8304 | Enterprise Cloud ✓ | 302 | 302, fresh 302 ✓ | 302 ✓ |
+
+Evidence: `docs/reports/evidence/helpers-erp-cloud-manual-uat/20260905T153758Z_1cd572e9/` (preflight.json, portal_login_page.html, form_action.txt, form_fields.txt, reproduce.md, browser_verification.json, dashboard_userN.txt, odoo_http.txt, test_summary.txt, git_heads.txt)
+
 ## 2. Windows PowerShell Checks (run on desktop-rc42jmh)
 
 ```powershell

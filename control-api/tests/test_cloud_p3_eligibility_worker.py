@@ -643,3 +643,57 @@ def test_p3_rollback_idempotent(db):
                     rollback_cloud_request(db, req.id, run_id)
     # Should not raise and should remain rolled_back or failed
     assert req.status in (CLOUD_PROVISION_ROLLED_BACK, CLOUD_PROVISION_FAILED, "rolled_back", "failed")
+
+
+def test_p3_adapter_accepts_claimed_provisioning_status(db):
+    """After claim_next_real_cloud_job, status is provisioning; adapter must accept it.
+
+    The committed queued-only gate caused invalid_status on the Phase 5 canary.
+    This test proves the adapter proceeds past the status check for provisioning
+    without creating runtime resources (identifier generation is stubbed).
+    """
+    _clear_queued(db)
+    req = _make_eligible_request(db, email="p3-status-prov@test.example", subdomain="p3-status-prov")
+    req.status = "provisioning"
+    db.commit()
+    run_id = f"p3_20260905T000000Z_{secrets.token_hex(4)}"
+    from app.services.cloud_docker_adapter import provision_cloud_request, CloudDockerProvisioningError
+
+    with patch("app.services.postgres_service.database_exists", return_value=True):
+        with patch(
+            "app.services.cloud_docker_adapter._generate_p2_identifiers",
+            side_effect=AssertionError("passed_status_gate"),
+        ):
+            with pytest.raises(AssertionError, match="passed_status_gate"):
+                provision_cloud_request(db, req.id, run_id)
+    db.refresh(req)
+    assert req.status == "provisioning"
+    assert req.tenant_id is None
+
+
+def test_p3_adapter_still_rejects_ready_and_rolled_back(db):
+    """Status gate is not unrestricted: ready/rolled_back remain invalid_status."""
+    _clear_queued(db)
+    req = _make_eligible_request(db, email="p3-status-ready@test.example", subdomain="p3-status-ready")
+    run_id = f"p3_20260905T000000Z_{secrets.token_hex(4)}"
+    from app.services.cloud_docker_adapter import provision_cloud_request, CloudDockerProvisioningError
+
+    for bad in (CLOUD_PROVISION_READY, CLOUD_PROVISION_ROLLED_BACK, CLOUD_PROVISION_FAILED):
+        req.status = bad
+        db.commit()
+        with pytest.raises(CloudDockerProvisioningError) as exc:
+            provision_cloud_request(db, req.id, run_id)
+        assert exc.value.code == "invalid_status"
+        assert "queued or provisioning" in str(exc.value)
+
+
+def test_p3_redacted_accepts_kwargs_only():
+    """Logger extra=_redacted(request_id=..., run_id=...) must not require a positional msg."""
+    from app.services.cloud_worker_service import _redacted
+
+    extra = _redacted(request_id=3, run_id="p3_example", password="secret", api_key="k")
+    assert extra["request_id"] == 3
+    assert extra["run_id"] == "p3_example"
+    assert extra["password"] == "***REDACTED***"
+    assert extra["api_key"] == "***REDACTED***"
+    assert _redacted() == {}

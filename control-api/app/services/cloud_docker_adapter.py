@@ -357,8 +357,8 @@ def provision_cloud_request(
         raise CloudDockerProvisioningError("Wrong product line", "wrong_product_line")
     if request.adapter != CLOUD_ADAPTER_LOCAL_DOCKER:
         raise CloudDockerProvisioningError(f"Adapter must be local_docker, got {request.adapter!r}", "adapter_not_real")
-    if request.status != CLOUD_PROVISION_QUEUED:
-        raise CloudDockerProvisioningError(f"Request must be queued, got {request.status!r}", "invalid_status")
+    if request.status not in (CLOUD_PROVISION_QUEUED, "provisioning"):
+        raise CloudDockerProvisioningError(f"Request must be queued or provisioning, got {request.status!r}", "invalid_status")
     if not request.provisioning_approved:
         raise CloudDockerProvisioningError("Request not durably approved", "not_approved")
     if request.tenant_id is not None:

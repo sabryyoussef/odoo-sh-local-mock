@@ -35,7 +35,7 @@ from app.product_lines import (
 logger = logging.getLogger(__name__)
 
 # Redacted logging helper
-def _redacted(msg: str, **kwargs) -> dict:
+def _redacted(msg: str = "", **kwargs) -> dict:
     """Return redacted log extra (no secrets)."""
     safe = {}
     for k, v in kwargs.items():

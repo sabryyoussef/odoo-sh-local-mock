@@ -1,0 +1,12 @@
+[2026-09-05T09:44:19.035826+00:00] Second rollback attempt RUN_ID=p3_20260905T093700Z_8b5749a4 REQUEST_ID=6
+DATABASE_URL=sqlite:////data/canary/control.db
+TENANT_ROOT=/data/canary/tenants
+Before second rollback: id=6 status=rolled_back tenant_id=None last_error=injected_after_container_start
+Tenants before second rollback: 26
+[2026-09-05T09:44:19.239516+00:00] Second rollback completed without error (idempotent)
+After second rollback: id=6 status=rolled_back tenant_id=None last_error=injected_after_container_start
+Tenants after second rollback: 26
+PASS: Second rollback idempotent, request still rolled_back, tenant_id None
+Other tenants preserved: 26 (should be 26)
+PASS: No wildcard deletion, other tenants preserved
+[2026-09-05T09:44:19.240868+00:00] Second rollback verification done

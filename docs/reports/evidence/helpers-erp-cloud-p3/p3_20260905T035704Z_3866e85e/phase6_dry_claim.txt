@@ -1,0 +1,58 @@
+Dry claim check p3_20260905T093700Z_8b5749a4
+{
+  "matrix": [
+    {
+      "id": 1,
+      "adapter": "demo",
+      "product_line": "helpers_cloud",
+      "status": "queued",
+      "eligible": false,
+      "reasons": [
+        "adapter_not_real",
+        "template_missing",
+        "subscription_ineligible"
+      ],
+      "approved": false,
+      "tenant_id": null
+    },
+    {
+      "id": 2,
+      "adapter": "demo",
+      "product_line": "helpers_cloud",
+      "status": "queued",
+      "eligible": false,
+      "reasons": [
+        "adapter_not_real",
+        "template_missing",
+        "subscription_ineligible",
+        "plan_is_demo"
+      ],
+      "approved": false,
+      "tenant_id": null
+    },
+    {
+      "id": 6,
+      "adapter": "local_docker",
+      "product_line": "helpers_cloud",
+      "status": "queued",
+      "eligible": true,
+      "reasons": [],
+      "approved": true,
+      "tenant_id": null
+    }
+  ],
+  "claimed_id": 6,
+  "before_count": 3,
+  "after_count": 3,
+  "before_ids": [
+    1,
+    2,
+    6
+  ],
+  "after_ids": [
+    1,
+    2,
+    6
+  ],
+  "no_resources_created": true
+}

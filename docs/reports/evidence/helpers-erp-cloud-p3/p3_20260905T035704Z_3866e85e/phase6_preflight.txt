@@ -1,0 +1,30 @@
+P3 Phase 6 — Preflight
+======================
+Run ID: p3_20260905T093700Z_8b5749a4
+P3 HEAD: bc532df4a0d0352c674d6322bbb4f12689a6dada
+Main HEAD: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+Branch: p3-helpers-erp-cloud-controlled-activation
+Date (UTC): 2026-09-05T09:40:50Z
+Patch SHA: 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d
+Live DB hash: b63eb2132bf568e504ac67d351daba31169ed38208db77d91d6e9f6a4991a65c
+Isolated DB hash: 6b23b2004966e9844058df08b61ffc78ec085234165e120e3c3c857e8a95773e
+Isolated DB path: /tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/control.db
+Isolated tenants: /tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/tenants
+Tenant root (container): /data/canary/tenants
+Tenant host root (container): /tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/tenants
+Database URL (container): sqlite:////data/canary/control.db
+Build Postgres: odoo-sh-local-mock-build-postgres-1:5432
+Template: mosh_tpl_cloud_base_19_0_trading validated healthy
+Requests live: 1|queued|demo
+2|queued|demo
+3|rolled_back|local_docker
+Requests isolated: 1|queued|demo
+2|queued|demo
+3|rolled_back|local_docker
+Ports 8311 free: FREE
+Ports 8312 free: FREE
+Docker network: odoo-sh-local-mock_default
+P3 code mounted read-only: /tmp/p3-helpers-erp-cloud-p3/control-api/app:/app/app:ro
+HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true
+HELPERS_CLOUD_WORKER_MAX_JOBS=1
+Failure injection: after_container_start

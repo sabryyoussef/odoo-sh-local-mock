@@ -1,0 +1,70 @@
+P3 Phase 6 — First Rollback Verification
+=========================================
+Run ID: p3_20260905T093700Z_8b5749a4
+Request ID: 6
+Failure point: after_container_start
+Date: 2026-09-05T09:44:08Z
+
+Worker logs (excerpt):
+2026-09-05 09:43:28,574 WARNING app.services.cloud_docker_adapter P2 provision failed for request 6 run_id p3_20260905T093700Z_8b5749a4: Injected failure after_container_start
+2026-09-05 09:43:49,021 INFO app.services.cloud_docker_adapter P2 rollback removed container mosh-tenant-p3-p3_20260905t093700z_8b57-6-a6039d
+2026-09-05 09:43:49,101 INFO app.services.cloud_docker_adapter P2 rollback dropped database mosh_tnt_p2_p3_20260905t093700z_8b57_a6039d
+2026-09-05 09:43:49,120 INFO app.services.cloud_docker_adapter P2 rollback dropped role mosh_r_p2_p3_20260905t093700z_8b57_a6039d_role
+2026-09-05 09:43:49,122 INFO app.services.cloud_docker_adapter P2 rollback removed filestore /data/canary/tenants/.p3_filestore_p3_20260905T093700Z_8b5749a4/p2_p3_20260905t093700z_8b57_6_a6039d/filestore
+2026-09-05 09:43:49,151 INFO app.services.cloud_docker_adapter P2 rollback removed tenant p2_p3_20260905t093700z_8b57_6_a6039d
+2026-09-05 09:43:49,155 INFO app.services.cloud_docker_adapter P2 rollback completed for request 6 run p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,155 WARNING app.services.cloud_worker_service Cloud provisioning failed
+2026-09-05 09:43:49,159 INFO app.services.cloud_docker_adapter P2 rollback completed for request 6 run p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,159 INFO app.services.cloud_worker_service Cloud rollback completed
+
+Request status after worker:
+6|rolled_back|p6-worker-p3_20260905T093700Z_8b5749a4||provisioning|injected_after_container_start|Injected failure after_container_start
+
+Tenant after worker (should be removed):
+
+
+PG databases after (should be 0 for p3):
+ datname 
+---------
+(0 rows)
+
+PG roles after (should be 0 for p3):
+ rolname 
+---------
+(0 rows)
+
+Containers after (should be 0 for p3):
+no p3 container (expected)
+
+Filestore after (should be empty):
+/tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/tenants:
+
+Ports after (should be free):
+no 8311/8312 listening (expected free)
+
+Template still healthy:
+1|helpers_cloud|trading|19.0|cloud_base|mosh_tpl_cloud_base_19_0_trading|validated|healthy
+             datname              
+----------------------------------
+ mosh_tpl_cloud_base_19_0_trading
+(1 row)
+
+Live DB requests unchanged (should be 1,2,3 only):
+1|queued|demo
+2|queued|demo
+3|rolled_back|local_docker
+
+Live DB hash after worker: a9ba306a1ec1d6b8d32f1b4e9b66d8c5f7d2afe2858be39bd8eae4d6406c318b
+Isolated DB hash after worker: 1a5127f3a742c61980cfb3bba5ffae24c1f4e18e43ebaf9be6e35b10a6e87fa1
+
+Verification:
+- Request 6 status is rolled_back (or failed then rolled_back) with last_error_code injected_after_container_start
+- Tenant not ready (removed)
+- Exact container mosh-tenant-p3-p3_20260905t093700z_8b57-6-a6039d absent
+- Exact DB mosh_tnt_p2_p3_20260905t093700z_8b57_a6039d absent
+- Exact role mosh_r_p2_p3_20260905t093700z_8b57_a6039d_role absent
+- Exact filestore /data/canary/tenants/.p3_filestore_p3_20260905T093700Z_8b5749a4/p2_p3_20260905t093700z_8b57_6_a6039d/filestore absent
+- Port allocated then released (no 8311/8312)
+- Template healthy preserved
+- No unrelated Docker/PG resources changed
+- Live requests 1-3 unchanged

@@ -1,0 +1,55 @@
+P3 Phase 6 — Failure Injection Verification
+============================================
+Run ID: p3_20260905T093700Z_8b5749a4
+Request ID: 6
+Failure point: after_container_start
+Date: 2026-09-05T09:46:07Z
+
+Deterministic failure injection after container start:
+- Failure point is in FAIL_POINTS frozenset: before_database_clone, after_database_clone, before_container_start, after_container_start, during_health_check, after_health_check_before_ready
+- Chosen: after_container_start (preferred, deterministic, identifiable in logs)
+- Injection occurs after: role created, DB cloned, tenant dir created, filestore created, container started, port allocated/listening
+- Injection occurs before: health check, verification, ready transition
+- No mocks, no fake resources, no transition to ready
+
+Worker logs showing deterministic injection:
+[2026-09-05T09:43:26.494686+00:00] Starting bounded worker RUN_ID=p3_20260905T093700Z_8b5749a4 WORKER_ID=p6-worker-p3_20260905T093700Z_8b5749a4 FAIL_AT=after_container_start MAX_JOBS=1
+[2026-09-05T09:43:26.690893+00:00] Calling claim_and_execute_one(worker_id=p6-worker-p3_20260905T093700Z_8b5749a4, run_id=p3_20260905T093700Z_8b5749a4, fail_at=after_container_start)
+2026-09-05 09:43:28,574 WARNING app.services.cloud_docker_adapter P2 provision failed for request 6 run_id p3_20260905T093700Z_8b5749a4: Injected failure after_container_start
+REQUEST id=6 status=rolled_back claimed_by=p6-worker-p3_20260905T093700Z_8b5749a4 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 09:48:26.690985 last_error=injected_after_container_start error=None
+[2026-09-05T09:43:49.164030+00:00] Failure injection point: after_container_start (deterministic, after container started, before health)
+
+Provisioning stages completed before injection:
+1. Validate request eligibility and durable approval — PASS
+2. Validate approval fingerprint — PASS
+3. Validate cloud_base template — PASS
+4. Generate unique identifiers — PASS (tenant_code p2_p3_20260905t093700z_8b57_6_a6039d, db mosh_tnt_p2_p3_20260905t093700z_8b57_a6039d, role mosh_r_p2_p3_20260905t093700z_8b57_a6039d_role, container mosh-tenant-p3-p3_20260905t093700z_8b57-6-a6039d, filestore /data/canary/tenants/.p3_filestore_p3_20260905T093700Z_8b5749a4/p2_p3_20260905t093700z_8b57_6_a6039d/filestore)
+5. Reserve Tenant — PASS
+6. Create PostgreSQL role — PASS
+7. Clone tenant DB from validated cloud_base — PASS
+8. Create exact disposable filestore directory — PASS
+9. Allocate collision-free host port — PASS (port allocated, verified free 8311-8312, then used)
+10. Start one Odoo 19 container with loopback-only port binding and strict labels — PASS (container mosh-tenant-p3-p3_20260905t093700z_8b57-6-a6039d started)
+11. Labels applied — PASS
+12. Injected failure after_container_start — TRIGGERED (deterministic, identifiable in logs as "Injected failure after_container_start" with code injected_after_container_start)
+13. Rollback triggered — PASS (see phase6_first_rollback.txt)
+14. No transition to ready — PASS (request never reached ready, tenant not ready)
+
+Bounded worker claim exactly one job:
+- HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true
+- HELPERS_CLOUD_WORKER_MAX_JOBS=1
+- Worker claimed exactly one job (id=6) via atomic claim_next_real_cloud_job
+- Processed only atomic claim, triggered failure, exited, never polled, never accessed live control.db, never started live compose worker
+- Captured timestamped progress for eligibility, claim, role creation, DB clone, filestore, container start, injected failure, rollback stages, worker exit
+
+Evidence:
+- Worker progress: phase6_worker_progress.txt
+- First rollback: phase6_first_rollback.txt
+- Second rollback: phase6_second_rollback.txt
+- Manifest: phase6_manifest_redacted.json
+
+Verification:
+- Failure injection is deterministic and identifiable in logs
+- No mocks, no fake resources
+- No transition to ready
+- Bounded worker claimed exactly one job and exited

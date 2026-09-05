@@ -1,0 +1,71 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.3.4, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+configfile: pytest.ini
+plugins: anyio-4.14.2
+collecting ... collected 41 items
+
+tests/test_cloud_p3_eligibility_worker.py::test_p3_wrong_product_line_ineligible PASSED [  2%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_adapter_ineligible PASSED [  4%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_missing_subscription_ineligible PASSED [  7%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_inactive_subscription_ineligible PASSED [  9%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_suspended_subscription_ineligible PASSED [ 12%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_plan_ineligible PASSED [ 14%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_inactive_plan_ineligible PASSED [ 17%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_enterprise_without_quote_ineligible PASSED [ 19%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_missing_template_ineligible PASSED [ 21%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_unvalidated_template_ineligible PASSED [ 24%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_unhealthy_template_ineligible PASSED [ 26%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_template_version_mismatch_ineligible PASSED [ 29%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_not_approved_ineligible PASSED [ 31%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_fingerprint_mismatch_ineligible PASSED [ 34%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_already_claimed_not_reclaimed PASSED [ 36%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_eligibility_check_does_not_create_resources PASSED [ 39%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_demo_queue_never_claimed_by_real_worker PASSED [ 41%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_worker_bounded_single_claim PASSED [ 43%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_import_does_not_create_resources PASSED [ 46%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_rollback_idempotent PASSED [ 48%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_accepts_claimed_provisioning_status PASSED [ 51%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_adapter_still_rejects_ready_and_rolled_back PASSED [ 53%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_redacted_accepts_kwargs_only PASSED [ 56%]
+tests/test_cloud_p3_eligibility_worker.py::test_p3_claim_ownership_cross_worker_isolation PASSED [ 58%]
+tests/test_cloud_p3_secret_leakage.py::test_p3_redacted_redacts_all_secret_keys PASSED [ 60%]
+tests/test_cloud_p3_secret_leakage.py::test_p3_redacted_kwargs_only PASSED [ 63%]
+tests/test_cloud_p3_secret_leakage.py::test_p3_evidence_no_postgres_password_leakage SKIPPED [ 65%]
+tests/test_cloud_p3_secret_leakage.py::test_p3_canary_report_sanitized PASSED [ 68%]
+tests/test_cloud_p3_secret_leakage.py::test_p3_worker_logs_no_secret_leakage PASSED [ 70%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_not_approved PASSED [ 73%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_demo_adapter PASSED [ 75%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_invalid_fingerprint PASSED [ 78%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_template_kind_mismatch PASSED [ 80%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_template_version_mismatch PASSED [ 82%]
+tests/test_cloud_p2_unit.py::test_p2_adapter_rejects_unvalidated_template PASSED [ 85%]
+tests/test_cloud_p2_unit.py::test_p2_identifier_validation_rejects_unsafe PASSED [ 87%]
+tests/test_cloud_p2_unit.py::test_p2_rollback_refuses_non_p2 PASSED      [ 90%]
+tests/test_cloud_p2_unit.py::test_p2_rollback_idempotent PASSED          [ 92%]
+tests/test_cloud_p2_unit.py::test_p2_no_runtime_before_verification PASSED [ 95%]
+tests/test_cloud_p2_unit.py::test_p2_cleanup_is_idempotent_no_wildcard PASSED [ 97%]
+tests/test_cloud_p2_unit.py::test_p2_no_secrets_in_audit PASSED          [100%]
+
+=============================== warnings summary ===============================
+tests/test_cloud_p3_eligibility_worker.py::test_p3_wrong_product_line_ineligible
+  /app/app/main.py:140: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_cloud_p3_eligibility_worker.py::test_p3_wrong_product_line_ineligible
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 40 passed, 1 skipped, 2 warnings in 25.80s ==================

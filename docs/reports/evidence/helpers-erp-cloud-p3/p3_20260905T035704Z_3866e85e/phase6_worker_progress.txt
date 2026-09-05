@@ -1,0 +1,47 @@
+[2026-09-05T09:43:26.494686+00:00] Starting bounded worker RUN_ID=p3_20260905T093700Z_8b5749a4 WORKER_ID=p6-worker-p3_20260905T093700Z_8b5749a4 FAIL_AT=after_container_start MAX_JOBS=1
+[2026-09-05T09:43:26.494723+00:00] DATABASE_URL=sqlite:////data/canary/control.db
+[2026-09-05T09:43:26.494752+00:00] TENANT_ROOT=/data/canary/tenants TENANT_HOST_ROOT=/tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/tenants
+[2026-09-05T09:43:26.494766+00:00] BUILD_POSTGRES_HOST=odoo-sh-local-mock-build-postgres-1
+[2026-09-05T09:43:26.494777+00:00] HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true HELPERS_CLOUD_WORKER_MAX_JOBS=1
+[2026-09-05T09:43:26.494790+00:00] is_cloud_provisioning_enabled=True max_jobs=1
+[2026-09-05T09:43:26.676173+00:00] Queued before: [(1, 'demo', False), (2, 'demo', False), (6, 'local_docker', True)]
+[2026-09-05T09:43:26.686403+00:00] Eligibility id=1 reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible']
+[2026-09-05T09:43:26.687510+00:00] Eligibility id=2 reasons=['adapter_not_real', 'template_missing', 'subscription_ineligible', 'plan_is_demo']
+[2026-09-05T09:43:26.690712+00:00] Eligibility id=6 reasons=[]
+[2026-09-05T09:43:26.690893+00:00] Calling claim_and_execute_one(worker_id=p6-worker-p3_20260905T093700Z_8b5749a4, run_id=p3_20260905T093700Z_8b5749a4, fail_at=after_container_start)
+2026-09-05 09:43:26,711 INFO app.services.cloud_worker_service Cloud job claimed
+2026-09-05 09:43:26,714 INFO app.services.cloud_worker_service Cloud provisioning started
+2026-09-05 09:43:26,928 INFO app.services.audit_service audit event=cloud.p2.tenant_reserved project_id=None build_id=None actor=p2:p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:28,574 WARNING app.services.cloud_docker_adapter P2 provision failed for request 6 run_id p3_20260905T093700Z_8b5749a4: Injected failure after_container_start
+2026-09-05 09:43:49,021 INFO app.services.cloud_docker_adapter P2 rollback removed container mosh-tenant-p3-p3_20260905t093700z_8b57-6-a6039d
+2026-09-05 09:43:49,101 INFO app.services.cloud_docker_adapter P2 rollback dropped database mosh_tnt_p2_p3_20260905t093700z_8b57_a6039d
+2026-09-05 09:43:49,120 INFO app.services.cloud_docker_adapter P2 rollback dropped role mosh_r_p2_p3_20260905t093700z_8b57_a6039d_role
+2026-09-05 09:43:49,122 INFO app.services.cloud_docker_adapter P2 rollback removed filestore /data/canary/tenants/.p3_filestore_p3_20260905T093700Z_8b5749a4/p2_p3_20260905t093700z_8b57_6_a6039d/filestore
+2026-09-05 09:43:49,151 INFO app.services.cloud_docker_adapter P2 rollback removed tenant p2_p3_20260905t093700z_8b57_6_a6039d
+2026-09-05 09:43:49,155 INFO app.services.audit_service audit event=cloud.p2.rollback project_id=None build_id=None actor=p2:p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,155 INFO app.services.cloud_docker_adapter P2 rollback completed for request 6 run p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,155 WARNING app.services.cloud_worker_service Cloud provisioning failed
+2026-09-05 09:43:49,159 INFO app.services.audit_service audit event=cloud.p2.rollback project_id=None build_id=None actor=p2:p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,159 INFO app.services.cloud_docker_adapter P2 rollback completed for request 6 run p3_20260905T093700Z_8b5749a4
+2026-09-05 09:43:49,159 INFO app.services.cloud_worker_service Cloud rollback completed
+2026-09-05 09:43:49,159 WARNING app.services.cloud_worker_service Cloud job execution failed
+[2026-09-05T09:43:49.159954+00:00] claim_and_execute_one returned claimed=True
+[2026-09-05T09:43:49.159991+00:00] Bounded worker processed 1 job (failure injected)
+[2026-09-05T09:43:49.160041+00:00] Bounded worker finished
+WORKER_PROCESSED_COUNT=1
+REQUEST id=1 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None error=None
+REQUEST id=2 status=queued claimed_by=None tenant_id=None current_step=queued attempt=0 lease=None last_error=None error=None
+REQUEST id=3 status=rolled_back claimed_by=None tenant_id=None current_step=ready attempt=1 lease=None last_error=None error=None
+REQUEST id=6 status=rolled_back claimed_by=p6-worker-p3_20260905T093700Z_8b5749a4 tenant_id=None current_step=provisioning attempt=1 lease=2026-09-05 09:48:26.690985 last_error=injected_after_container_start error=None
+TENANT id=26 code=pt_trial_3_4ed6ab db=mosh_tnt_pt_trial_3_4ed6ab role=mosh_r_pt_trial_3_4ed6ab_role container=mosh-tenant-pt_trial_3_4ed6ab port=8217 status=failed filestore=/data/tenants/pt_trial_3_4ed6ab/filestore
+TENANT id=25 code=ptclone_24_702764 db=mosh_tnt_ptclone_24_702764 role=mosh_r_ptclone_24_702764_role container=mosh-tenant-ptclone_24_702764 port=8216 status=failed filestore=/data/tenants/ptclone_24_702764/filestore
+TENANT id=24 code=pt_trial_1_a89ea9 db=mosh_tnt_pt_trial_1_a89ea9 role=mosh_r_pt_trial_1_a89ea9_role container=mosh-tenant-pt_trial_1_a89ea9 port=8215 status=active filestore=/data/tenants/pt_trial_1_a89ea9/filestore
+TENANT id=23 code=vet_hospital_24_dc0fb8 db=mosh_tnt_vet_hospital_24_dc0fb8 role=mosh_r_vet_hospital_24_dc0fb8_role container=mosh-tenant-vet_hospital_24_dc0fb8 port=8215 status=failed filestore=/data/tenants/vet_hospital_24_dc0fb8/filestore
+TENANT id=22 code=hms_23_6dc3bb db=mosh_tnt_hms_23_6dc3bb role=mosh_r_hms_23_6dc3bb_role container=mosh-tenant-hms_23_6dc3bb port=8215 status=failed filestore=/data/tenants/hms_23_6dc3bb/filestore
+TENANT id=21 code=hms_22_581dda db=mosh_tnt_hms_22_581dda role=mosh_r_hms_22_581dda_role container=mosh-tenant-hms_22_581dda port=8215 status=failed filestore=/data/tenants/hms_22_581dda/filestore
+TENANT id=20 code=sis_21_b0da13 db=mosh_tnt_sis_21_b0da13 role=mosh_r_sis_21_b0da13_role container=mosh-tenant-sis_21_b0da13 port=8214 status=active filestore=/data/tenants/sis_21_b0da13/filestore
+TENANT id=19 code=clone_20_aea0ed db=mosh_tnt_clone_20_aea0ed role=mosh_r_clone_20_aea0ed_role container=mosh-tenant-clone_20_aea0ed port=8213 status=active filestore=/data/tenants/clone_20_aea0ed/filestore
+TENANT id=18 code=vet_hospital_19_7f6dcd db=mosh_tnt_vet_hospital_19_7f6dcd role=mosh_r_vet_hospital_19_7f6dcd_role container=mosh-tenant-vet_hospital_19_7f6dcd port=8212 status=active filestore=/data/tenants/vet_hospital_19_7f6dcd/filestore
+TENANT id=17 code=clone_18_d397ca db=mosh_tnt_clone_18_d397ca role=mosh_r_clone_18_d397ca_role container=mosh-tenant-clone_18_d397ca port=8211 status=active filestore=/data/tenants/clone_18_d397ca/filestore
+[2026-09-05T09:43:49.164030+00:00] Failure injection point: after_container_start (deterministic, after container started, before health)
+[2026-09-05T09:43:49.164050+00:00] Expected: role created, DB cloned, tenant dir created, filestore created, container started, port allocated, then injected failure, then rollback

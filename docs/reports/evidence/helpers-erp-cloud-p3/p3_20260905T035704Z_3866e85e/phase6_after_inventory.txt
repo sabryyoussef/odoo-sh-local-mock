@@ -1,0 +1,339 @@
+P3 Phase 6 — After Inventory
+=============================
+Run ID: p3_20260905T093700Z_8b5749a4
+Date: 2026-09-05T09:46:07Z
+
+Live DB hash after: 123f4ff40ebbcf4961fee007530d1f77206eba92e08672ab6900c9e456e6b71d
+Isolated DB hash after: bc67b31f7c7ada6a7408e6650365bd7045ba0ed2955ae3dcaafa257007406eaa
+Live integrity: ok
+Isolated integrity: ok
+
+Live requests after:
+1|24f80651a8864a9ce2bc76bb7ef29f6e|helpers_cloud|demo|queued|0|
+2|0c67aef1eba233e7630d6579cef28841|helpers_cloud|demo|queued|0|
+3|374242ca0f3723c020b32c33d5ec3071|helpers_cloud|local_docker|rolled_back|1|1
+
+Isolated requests after:
+1|24f80651a8864a9ce2bc76bb7ef29f6e|helpers_cloud|demo|queued|0|
+2|0c67aef1eba233e7630d6579cef28841|helpers_cloud|demo|queued|0|
+3|374242ca0f3723c020b32c33d5ec3071|helpers_cloud|local_docker|rolled_back|1|1
+6|514b3ceba7fe8c2d87cb41ee5b06520c|helpers_cloud|local_docker|rolled_back|1|1
+
+Template live:
+1|helpers_cloud|trading|19.0|cloud_base|mosh_tpl_cloud_base_19_0_trading|validated|healthy
+
+Template isolated:
+1|helpers_cloud|trading|19.0|cloud_base|mosh_tpl_cloud_base_19_0_trading|validated|healthy
+
+Containers after:
+analysis-runner Up 6 days n8n-analysis-runner
+asta_education_demo_media_worker Up 5 days asta-lms-poc-asta-media-worker:latest
+asta_education_demo_nginx Up 5 days nginx:1.27-alpine
+asta-lms-poc-asta-media-worker-1 Up 5 days asta-lms-poc-asta-media-worker
+asta-lms-poc-db-1 Up 5 days (healthy) postgres:16-alpine
+asta-lms-poc-nginx-1 Up 5 days nginx:1.27-alpine
+asta-lms-poc-odoo-1 Up 5 days odoo:19.0
+blissful_grothendieck Created nginx:alpine
+chatwoot_ai_redis Up 6 days redis:7-alpine
+chatwoot_ai_worker Up 6 days chatwoot-evolution-bridge-ai-worker
+chatwoot-attachment-preprocessor Up 6 days n8n-chatwoot-attachment-preprocessor
+chatwoot_evolution_bridge Up 6 days chatwoot-evolution-bridge-bridge
+chatwoot_postgres Up 6 days pgvector/pgvector:pg16
+chatwoot_rails Up 6 days chatwoot/chatwoot:v4.1.0
+chatwoot_redis Up 6 days redis:7-alpine
+chatwoot_sidekiq Up 6 days chatwoot/chatwoot:v4.1.0
+docker-api-1 Up 3 days (healthy) langgenius/dify-api:1.15.0
+docker-api_websocket-1 Up 3 days langgenius/dify-api:1.15.0
+docker-db_postgres-1 Up 3 days (healthy) postgres:15-alpine
+docker-init_permissions-1 Exited (0) 3 days ago busybox:latest
+docker-nginx-1 Up 3 days nginx:latest
+docker-plugin_daemon-1 Up 3 days langgenius/dify-plugin-daemon:0.6.3-local
+docker-redis-1 Up 3 days (healthy) redis:6-alpine
+docker-sandbox-1 Up 3 days (healthy) langgenius/dify-sandbox:0.2.15
+docker-ssrf_proxy-1 Up 3 days ubuntu/squid:latest
+docker-weaviate-1 Up 3 days semitechnologies/weaviate:1.27.0
+docker-web-1 Up 3 days langgenius/dify-web:1.15.0
+docker-worker-1 Up 3 days langgenius/dify-api:1.15.0
+docker-worker_beat-1 Up 3 days langgenius/dify-api:1.15.0
+evolution_api Up 6 days evoapicloud/evolution-api:latest
+evolution_auth_proxy Up 6 days nginx:alpine
+evolution_postgres Up 6 days postgres:15-alpine
+evolution_redis Up 6 days redis:7-alpine
+firefox-whatsapp Exited (0) 10 days ago lscr.io/linuxserver/firefox:latest
+gracious_hermann Created nginx:alpine
+groq-native-bridge Up 4 days (healthy) ghcr.io/diegosouzapw/omniroute:latest
+mosh-e2e-g3a-control-api-e2e-1 Up 2 days (healthy) odoo-sh-local-mock-control-api:latest
+mosh-p3-b10 Up 5 days odoo:19.0
+mosh-p3-b4 Up 5 days odoo:19.0
+mosh-p3-b8 Up 5 days odoo:19.0
+mosh-tenant-clone_12_2769d0 Up 3 days odoo:19.0
+mosh-tenant-clone_13_36dc56 Up 3 days odoo:19.0
+mosh-tenant-clone_15_b78fa8 Up 3 days odoo:19.0
+mosh-tenant-clone_17_f144c3 Up 3 days odoo:19.0
+mosh-tenant-clone_18_d397ca Up 3 days odoo:19.0
+mosh-tenant-clone_20_aea0ed Up 3 days odoo:19.0
+mosh-tenant-pt_trial_1_a89ea9 Up 3 days odoo:19.0
+mosh-tenant-sis_21_b0da13 Up 3 days odoo:19.0
+mosh-tenant-vet_hospital_11_1bb4cf Up 3 days odoo:19.0
+mosh-tenant-vet_hospital_14_55e234 Up 3 days odoo:19.0
+
+PG roles after:
+              rolname               
+------------------------------------
+ mosh_admin
+ mosh_odoo
+ mosh_r_clone_12_2769d0_role
+ mosh_r_clone_13_36dc56_role
+ mosh_r_clone_15_b78fa8_role
+ mosh_r_clone_17_f144c3_role
+ mosh_r_clone_18_d397ca_role
+ mosh_r_clone_20_aea0ed_role
+ mosh_r_pt_trial_1_a89ea9_role
+ mosh_r_sis_21_b0da13_role
+ mosh_r_vet_hospital_11_1bb4cf_role
+ mosh_r_vet_hospital_14_55e234_role
+ mosh_r_vet_hospital_16_49c61c_role
+ mosh_r_vet_hospital_19_7f6dcd_role
+ mosh_r_vet_hospital_5_3fb408_role
+ mosh_r_vet_hospital_7_e8fa67_role
+ mosh_r_vet_hospital_9_7d45d8_role
+ mosh_r_vet_hospital_debug_role
+(18 rows)
+
+PG databases after:
+              datname              
+-----------------------------------
+ mosh_p3_b1
+ mosh_p3_b10
+ mosh_p3_b2
+ mosh_p3_b4
+ mosh_p3_b5
+ mosh_p3_b7
+ mosh_p3_b8
+ mosh_p3_b9
+ mosh_tnt_clone_12_2769d0
+ mosh_tnt_clone_13_36dc56
+ mosh_tnt_clone_15_b78fa8
+ mosh_tnt_clone_17_f144c3
+ mosh_tnt_clone_18_d397ca
+ mosh_tnt_clone_20_aea0ed
+ mosh_tnt_pt_trial_1_a89ea9
+ mosh_tnt_sis_21_b0da13
+ mosh_tnt_vet_hospital_11_1bb4cf
+ mosh_tnt_vet_hospital_14_55e234
+ mosh_tnt_vet_hospital_16_49c61c
+ mosh_tnt_vet_hospital_19_7f6dcd
+ mosh_tnt_vet_hospital_5_3fb408
+ mosh_tnt_vet_hospital_7_e8fa67
+ mosh_tnt_vet_hospital_9_7d45d8
+ mosh_tnt_vet_hospital_debug
+ mosh_tpl_cloud_base_19_0_trading
+ mosh_tpl_hms_v1_0_0_demo
+ mosh_tpl_odoo19_community_base_v1
+ mosh_tpl_sis_v1_0_0_demo
+ mosh_tpl_vet_hospital_v1_0_0_demo
+(29 rows)
+
+Ports after:
+State  Recv-Q Send-Q               Local Address:Port  Peer Address:PortProcess                                                                                                                                                  
+LISTEN 0      4096                     127.0.0.1:18081      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18080      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18088      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:34671      0.0.0.0:*    users:(("node",pid=2617094,fd=21))                                                                                                                      
+LISTEN 0      4096                192.168.100.66:8090       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:631        0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                 100.76.217.35:5678       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      5                        127.0.0.1:20129      0.0.0.0:*    users:(("python3",pid=371563,fd=3))                                                                                                                     
+LISTEN 0      4096                     127.0.0.1:20128      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                      127.0.0.1:36823      0.0.0.0:*    users:(("node",pid=2617032,fd=21))                                                                                                                      
+LISTEN 0      4096                     127.0.0.1:20241      0.0.0.0:*    users:(("cloudflared",pid=3483356,fd=9))                                                                                                                
+LISTEN 0      50                         0.0.0.0:445        0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:3000       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                       0.0.0.0:22         0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:3055       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      50                         0.0.0.0:139        0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:18443      0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                 100.76.217.35:8090       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:5678       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                 100.76.217.35:443        0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:6060       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      128                        0.0.0.0:8042       0.0.0.0:*    users:(("python3",pid=3120794,fd=6))                                                                                                                    
+LISTEN 0      128                        0.0.0.0:8019       0.0.0.0:*    users:(("python3",pid=3113525,fd=6))                                                                                                                    
+LISTEN 0      128                        0.0.0.0:8029       0.0.0.0:*    users:(("python3",pid=20105,fd=4))                                                                                                                      
+LISTEN 0      128                        0.0.0.0:8028       0.0.0.0:*    users:(("python3",pid=21967,fd=3))                                                                                                                      
+LISTEN 0      32                         0.0.0.0:8027       0.0.0.0:*    users:(("python3",pid=1946257,fd=5),("python3",pid=1946255,fd=5),("python3",pid=1946253,fd=5),("python3",pid=1946251,fd=5),("python3",pid=1946034,fd=5))
+LISTEN 0      4096                       0.0.0.0:8000       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      128                        0.0.0.0:8072       0.0.0.0:*    users:(("python3",pid=1946258,fd=3))                                                                                                                    
+LISTEN 0      511                        0.0.0.0:8172       0.0.0.0:*    users:(("node",pid=22094,fd=21))                                                                                                                        
+LISTEN 0      511                        0.0.0.0:8169       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                        0.0.0.0:8171       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      511                        0.0.0.0:8170       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      128                      127.0.0.1:38397      0.0.0.0:*    users:(("code-08d4889f9e",pid=8498,fd=11))                                                                                                              
+LISTEN 0      200                      127.0.0.1:5432       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:5003       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      10                         0.0.0.0:7070       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8099       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8101       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8103       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8102       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8080       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8088       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8091       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8090       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8093       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8092       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8094       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                     127.0.0.1:8069       0.0.0.0:*                                                                                                                                                            
+LISTEN 0      4096                 127.0.0.53%lo:53         0.0.0.0:*                                                                                                                                                            
+
+Tenant dirs after:
+vet_hospital_1_81e62f
+vet_hospital_2_ba8805
+vet_hospital_3_208fdd
+vet_hospital_4_cdcf1c
+vet_hospital_debug
+
+Filestore after:
+/data/tenants/.p2_filestore_p2_20260903T154303Z_b1c0c98c:
+p2_p2_20260903t154303z_b1c0_2_36b400
+
+/data/tenants/.p2_filestore_p2_20260903T154303Z_b1c0c98c/p2_p2_20260903t154303z_b1c0_2_36b400:
+filestore
+runtime
+
+/data/tenants/.p2_filestore_p2_20260903T154303Z_b1c0c98c/p2_p2_20260903t154303z_b1c0_2_36b400/filestore:
+
+/data/tenants/.p2_filestore_p2_20260903T154303Z_b1c0c98c/p2_p2_20260903t154303z_b1c0_2_36b400/runtime:
+
+/data/tenants/.p2_filestore_p2_20260903T154750Z_41a5e47a:
+p2_p2_20260903t154750z_41a5_2_9d6d80
+
+/data/tenants/.p2_filestore_p2_20260903T154750Z_41a5e47a/p2_p2_20260903t154750z_41a5_2_9d6d80:
+filestore
+runtime
+
+/data/tenants/.p2_filestore_p2_20260903T154750Z_41a5e47a/p2_p2_20260903t154750z_41a5_2_9d6d80/filestore:
+
+/data/tenants/.p2_filestore_p2_20260903T154750Z_41a5e47a/p2_p2_20260903t154750z_41a5_2_9d6d80/runtime:
+
+/data/tenants/.p2_filestore_p2_20260903T155349Z_fcdb2410:
+p2_p2_20260903t155349z_fcdb_2_70e9d4
+
+/data/tenants/.p2_filestore_p2_20260903T155349Z_fcdb2410/p2_p2_20260903t155349z_fcdb_2_70e9d4:
+filestore
+runtime
+
+/data/tenants/.p2_filestore_p2_20260903T155349Z_fcdb2410/p2_p2_20260903t155349z_fcdb_2_70e9d4/filestore:
+
+/data/tenants/.p2_filestore_p2_20260903T155349Z_fcdb2410/p2_p2_20260903t155349z_fcdb_2_70e9d4/runtime:
+
+/data/tenants/.p2_filestore_p2_20260903T155837Z_0fe5c05e:
+p2_p2_20260903t155837z_0fe5_2_33c151
+
+/data/tenants/.p2_filestore_p2_20260903T155837Z_0fe5c05e/p2_p2_20260903t155837z_0fe5_2_33c151:
+filestore
+runtime
+
+/data/tenants/.p2_filestore_p2_20260903T155837Z_0fe5c05e/p2_p2_20260903t155837z_0fe5_2_33c151/filestore:
+
+/data/tenants/.p2_filestore_p2_20260903T155837Z_0fe5c05e/p2_p2_20260903t155837z_0fe5_2_33c151/runtime:
+
+/data/tenants/.platform-tpl-build:
+odoo19-community-base-v1
+
+/data/tenants/.platform-tpl-build/odoo19-community-base-v1:
+odoo.conf
+
+/data/tenants/.platform-tpl-build/odoo19-community-base-v1/odoo.conf:
+
+Isolated tenants after:
+/tmp/p3-phase6-p3_20260905T093700Z_8b5749a4/tenants:
+
+Main worktree status after:
+ M control-api/app/branding.py
+ M control-api/app/dummy_data.py
+ M control-api/app/main.py
+ M control-api/app/static/css/app.css
+ M control-api/app/static/css/theme-helpers-erp.css
+ M control-api/app/templates/account.html
+ M control-api/app/templates/authorize.html
+ M control-api/app/templates/base.html
+ M control-api/app/templates/branches.html
+ M control-api/app/templates/catalog.html
+ M control-api/app/templates/catalog_solution.html
+ M control-api/app/templates/checkout.html
+ M control-api/app/templates/deploy.html
+ M control-api/app/templates/deploy_progress.html
+ M control-api/app/templates/landing.html
+ M control-api/app/templates/not_found.html
+ M control-api/app/templates/operator/backups.html
+ M control-api/app/templates/operator/platform.html
+ M control-api/app/templates/operator/provisioning.html
+ M control-api/app/templates/operator/solutions.html
+ M control-api/app/templates/operator/tenants.html
+ M control-api/app/templates/partials/app_topbar.html
+ M control-api/app/templates/partials/cta_footer.html
+ M control-api/app/templates/partials/event_card.html
+ M control-api/app/templates/partials/feature_cards.html
+ M control-api/app/templates/partials/hero.html
+ M control-api/app/templates/partials/history_timeline.html
+ M control-api/app/templates/partials/portal_nav.html
+ M control-api/app/templates/partials/preview_mock.html
+ M control-api/app/templates/partials/product_line_cards.html
+ M control-api/app/templates/partials/projects_top_bar.html
+ M control-api/app/templates/payment_success.html
+ M control-api/app/templates/platform/deploy/_wizard_base.html
+ M control-api/app/templates/platform/index.html
+ M control-api/app/templates/platform/pricing.html
+ M control-api/app/templates/portal/dashboard.html
+ M control-api/app/templates/portal/provisioning.html
+ M control-api/app/templates/portal/subscription_detail.html
+ M control-api/app/templates/portal/subscriptions.html
+ M control-api/app/templates/portal/tenant_detail.html
+ M control-api/app/templates/portal/tenants.html
+ M control-api/app/templates/portal/trial_confirm.html
+ M control-api/app/templates/pricing.html
+ M control-api/app/templates/pricing_hub.html
+ M control-api/app/templates/project_new.html
+ M control-api/app/templates/projects.html
+ M control-api/app/translations.py
+ M control-api/app/view_context.py
+ M control-api/e2e/specs/three-product-lines.spec.js
+ M control-api/tests/test_saas_catalog.py
+
+P3 worktree status after:
+
+
+Main HEAD after: 73e75b9b5882e1e6db66b66cde5c63a35f8127b9
+P3 HEAD after: bc532df4a0d0352c674d6322bbb4f12689a6dada
+Patch SHA after: 70fb0f8001853226ca97ade4237eebf4c581344fa8e3cdda91379401dfaa3b7d  /tmp/manual-uat-patch-20260905T061500Z.patch
+Branding hashes after:
+5955246534450ff57b4490fd99d096ba823f34b15589867dd3dcde47f04d4b95  /opt/projects/active/odoo-sh-local-mock/control-api/app/branding.py
+bc1ed1786a0c2b9474e73cd0cf9077187138ce7c3af1c4a6625a166b5e39a637  /opt/projects/active/odoo-sh-local-mock/control-api/app/i18n.py
+
+Worker state after:
+mosh-e2e-g3a-control-api-e2e-1 Up 2 days (healthy)
+odoo-sh-local-mock-backup-worker-1 Up 3 days
+odoo-sh-local-mock-control-api-1 Up 2 days
+
+Docker network after:
+NETWORK ID     NAME                                DRIVER    SCOPE
+68538b45ac01   asta-lms-poc_default                bridge    local
+9078da5765bc   bridge                              bridge    local
+9c81db456405   chatwoot-evolution-bridge_default   bridge    local
+a62a456e2f3f   chatwoot_default                    bridge    local
+eb256d1f919c   deploy_default                      bridge    local
+559227cd07f6   docker_default                      bridge    local
+7a3d279c1a5d   docker_ssrf_proxy_network           bridge    local
+336b885fe187   evolution-net                       bridge    local
+82d3c98892f0   firefox-whatsapp_default            bridge    local
+d2b090bafeb0   host                                host      local
+f4ae983270c6   mosh-e2e-g3a_default                bridge    local
+335136e9268a   n8n-net                             bridge    local
+73360921bec7   nextcloud-net                       bridge    local
+d448bde01a77   none                                null      local
+6cf49a4a85ce   odoo-sh-local-mock_default          bridge    local
+e8f00dad51de   ollama-net                          bridge    local
+48e8f2b0a19b   omniroute_default                   bridge    local
+ab67e17a0bed   openclow-mobile_default             bridge    local
+f85a48151ee2   openclow-server_default             bridge    local

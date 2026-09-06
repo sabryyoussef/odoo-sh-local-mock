@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My ERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+</head>
+<body class="theme-helpers-erp body--app">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="Primary">
+    <a href="/solutions">Ready Solutions</a>
+    <a href="/cloud" class="is-active">Helpers ERP Cloud</a>
+    <a href="/platform">Developer Platform</a>
+    <a href="/pricing">Pricing</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="Language">
+      <a href="?lang=en" hreflang="en" lang="en" class="is-active">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="?lang=ar" hreflang="ar" lang="ar">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost is-active" href="/cloud/instances">My ERP</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="QP8nTOL6elvKzZLeO6tG-o0h30lWCHlql1Ry34muHKo" style="">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/">Home</a> · <a href="/cloud">Helpers ERP Cloud</a> · Instances</p>
+    
+    
+<div class="flow-header">
+  <h1>Your Helpers ERP Cloud workspaces</h1>
+  <p>Managed by Helpers ERP. No coding or server administration required.</p>
+</div>
+
+  <div class="pricing-grid">
+    
+      <article class="flow-card">
+        <h2>User 3 Demo Company</h2>
+        <dl class="kv">
+          <div><dt>Company</dt><dd>User 3 Demo Company</dd></div>
+          <div><dt>Product line</dt><dd>Helpers ERP Cloud</dd></div>
+          <div><dt>Odoo</dt><dd>19.0</dd></div>
+          <div><dt>Plan</dt><dd>business</dd></div>
+          <div><dt>Package</dt><dd>operations</dd></div>
+          <div><dt>Status</dt><dd>Queued</dd></div>
+          <div><dt>Users</dt><dd>25 requested / 25 included</dd></div>
+          <div><dt>Storage</dt><dd>50 GB requested / 50 GB included</dd></div>
+          <div><dt>Backups</dt><dd>30-day retention</dd></div>
+          <div><dt>Last backup</dt><dd>None yet (demo)</dd></div>
+        </dl>
+        
+          <p class="muted">Open Odoo is unavailable until this workspace is Ready with a verified address.</p>
+        
+        <div class="flow-actions-row">
+          <a class="btn" href="/cloud/instances/6">Workspace details</a>
+          <a class="btn" href="/cloud/subscriptions/6">View subscription</a>
+        </div>
+      </article>
+    
+  </div>
+
+
+    <script>
+    (function () {
+      var summary = document.getElementById("form-error-summary");
+      if (summary) {
+        if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+        summary.focus();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+
+</body></html>

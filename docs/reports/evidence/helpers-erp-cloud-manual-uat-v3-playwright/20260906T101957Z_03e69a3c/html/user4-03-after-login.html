@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirm · Configure your ERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+</head>
+<body class="theme-helpers-erp body--app">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="Primary">
+    <a href="/solutions">Ready Solutions</a>
+    <a href="/cloud" class="is-active">Helpers ERP Cloud</a>
+    <a href="/platform">Developer Platform</a>
+    <a href="/pricing">Pricing</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="Language">
+      <a href="?lang=en" hreflang="en" lang="en" class="is-active">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="?lang=ar" hreflang="ar" lang="ar">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost" href="/cloud/instances">My ERP</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="SuxOob5A3rcWVJVa6Ib0mDQBWx0XeKa2t1_Nie1H2NI" style="">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/">Home</a> · <a href="/cloud">Helpers ERP Cloud</a> · Confirm</p>
+    
+    
+<ol class="wizard-progress" aria-label="Setup progress">
+  
+    <li class="">
+      
+        <a href="/cloud/setup">1. Configure</a>
+      
+    </li>
+  
+    <li class="is-current">
+      
+        <span>2. Confirm</span>
+      
+    </li>
+  
+</ol>
+<p class="muted">Managed by Helpers ERP</p>
+
+
+<div class="flow-header">
+  <h1>Confirm your Helpers ERP Cloud workspace</h1>
+  <p><span class="badge badge--warning">Presentation Only</span> No real charge will occur.</p>
+</div>
+
+<section class="flow-card">
+  <dl class="kv">
+    <div><dt>Customer</dt><dd>User 4 · user4@demo.local</dd></div>
+    <div><dt>Company name</dt><dd>User 4 Demo Company</dd></div>
+    <div><dt>Workspace name</dt><dd>User 4 Demo Company (user4.helpers-erp.example)</dd></div>
+    <div><dt>Pricing</dt><dd>Enterprise Cloud · monthly</dd></div>
+    <div><dt>Choose how you work</dt><dd>Full ERP</dd></div>
+    <div><dt>Users</dt><dd>100</dd></div>
+    <div><dt>Storage (GB)</dt><dd>200 GB</dd></div>
+    <div><dt>Country</dt><dd>Egypt · EGP · en_US</dd></div>
+    <div><dt>Optional add-ons</dt><dd>None</dd></div>
+  </dl>
+</section>
+<section class="flow-card">
+  <h2>Price breakdown</h2>
+  
+    <p class="pricing-price"><strong>Custom quote</strong></p>
+    <p class="muted">Enterprise is quote-based. Submitting creates a demo request — it is not a fixed-price checkout.</p>
+  
+</section>
+<form method="post" action="/cloud/setup/confirm" id="cloud-confirm-form">
+  <input type="hidden" name="csrf_token" value="SuxOob5A3rcWVJVa6Ib0mDQBWx0XeKa2t1_Nie1H2NI" style="">
+  <input type="hidden" name="idempotency_key" value="cloud-14-7-1f9e8f82d434b637" style="">
+  <div class="flow-actions">
+    <a class="btn" href="/cloud/setup">Back</a>
+    <button type="submit" class="btn-hero btn-hero--primary" id="cloud-confirm-cta" data-disable-after-submit="1">
+      Submit Enterprise request
+    </button>
+  </div>
+</form>
+
+
+    <script>
+    (function () {
+      var summary = document.getElementById("form-error-summary");
+      if (summary) {
+        if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+        summary.focus();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+<script>
+(function () {
+  var form = document.getElementById("cloud-confirm-form");
+  var btn = document.getElementById("cloud-confirm-cta");
+  if (!form || !btn) return;
+  form.addEventListener("submit", function () {
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+  });
+})();
+</script>
+
+
+</body></html>

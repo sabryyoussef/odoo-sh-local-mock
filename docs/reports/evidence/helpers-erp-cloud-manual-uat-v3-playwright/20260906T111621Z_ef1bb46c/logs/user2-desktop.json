@@ -1,0 +1,11 @@
+{
+  "user": "user2",
+  "console": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [],
+  "urls": [
+    "[2026-09-06T11:21:13.418Z] -> http://100.76.217.35:8001/cloud/login",
+    "[2026-09-06T11:21:14.977Z] -> http://100.76.217.35:8001/cloud/instances"
+  ]
+}

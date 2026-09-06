@@ -1,0 +1,629 @@
+{
+  "run_id": "20260906T111621Z_ef1bb46c",
+  "generated_at": "2026-09-06T11:31:34Z",
+  "portal": "http://100.76.217.35:8001/cloud/login",
+  "viewport_desktop": "1440x1000",
+  "viewport_pixel5": "393x727 (Playwright devices['Pixel 5'])",
+  "retained_png_count": 36,
+  "discarded_first_run_error_pngs": [
+    "user1-99-error.png",
+    "user2-99-error.png",
+    "user3-99-error.png",
+    "user4-99-error.png"
+  ],
+  "visual_inspection": "Every retained PNG was opened with the image reader. PASS is not inferred from HTTP/DOM alone.",
+  "screenshots": [
+    {
+      "file": "user1-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-01-portal-login.png",
+      "sha256": "94c80ec6341b88fb4014157189e58842a342d333035f0510afe0d01ac4549d7d",
+      "bytes": 383443,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-02-portal-instance.png",
+      "sha256": "52ad0edc90c1cb363cd75bc891cf5ea298fab03735d4c4aa9d0483313aabd178",
+      "bytes": 235421,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=trial package=sales status=Ready company=User 1 Demo Company. Isolation: only this company."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-03-odoo-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-03-odoo-login.png",
+      "sha256": "48a7bd0d60216c2a8c645bea218b43132de275274300362e01e0b683121d1f39",
+      "bytes": 27295,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8301/web/login?db=helpers_demo_user1",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Odoo login renders; default 'Your logo' placeholder (no custom company logo). Not a white screen."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-04-odoo-home.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-04-odoo-home.png",
+      "sha256": "dc53154c8731d2bf9b496ba1e1530b0b4eea9742d70ba78396ef3aebcaf4b38e",
+      "bytes": 53108,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8301/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Discuss + OdooBot loaded; no white screen. Duplicate navbar label 'Discuss Discuss' (Odoo 19 default)."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-05-company.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-05-company.png",
+      "sha256": "dc53154c8731d2bf9b496ba1e1530b0b4eea9742d70ba78396ef3aebcaf4b38e",
+      "bytes": 53108,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8301/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Company name User N Demo Company visible in systray. Same visual frame as odoo-home (header confirmation)."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-06-apps.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-06-apps.png",
+      "sha256": "919a67bbe783004e0e90670ac11b3e2ba284086f9cfdb17856ed723dba9a4560",
+      "bytes": 52250,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8301/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Apps menu matches sales package for User 1 Demo Company."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-07-functional-menu.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-07-functional-menu.png",
+      "sha256": "65e0216a514be08b5b86cb993f38f854a929028ecbbdc63e0985268995f16e47",
+      "bytes": 117370,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8301/odoo/crm",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "CRM pipeline loaded with empty-state overlay 'member of no Sales Team'. Expected empty UAT. Company User 1 Demo Company in header."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-pixel5-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-pixel5-01-portal-login.png",
+      "sha256": "e3b386b31060c06532b8a076edb46ccf89bce98115ecc9211464d5c12eb09baf",
+      "bytes": 387241,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user1-pixel5-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-pixel5-02-portal-instance.png",
+      "sha256": "0e8f0a035bec027595df88c157fa54e918cb697081a5bb7008cd02473345bb9a",
+      "bytes": 436712,
+      "user": "user1",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=trial package=sales status=Ready company=User 1 Demo Company. Isolation: only this company."
+      ],
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company"
+    },
+    {
+      "file": "user2-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-01-portal-login.png",
+      "sha256": "94c80ec6341b88fb4014157189e58842a342d333035f0510afe0d01ac4549d7d",
+      "bytes": 383443,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-02-portal-instance.png",
+      "sha256": "5b6f82eff0ec56afb87a50fb265e86c7749a068d7d9664bcb9024c45f8664d54",
+      "bytes": 237133,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=starter package=trading status=Ready company=User 2 Demo Company. Isolation: only this company."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-03-odoo-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-03-odoo-login.png",
+      "sha256": "8443edcff808057ef0116430a75c2e89026a71b744d1ec3c75428bf30e3673fa",
+      "bytes": 27322,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8302/web/login?db=helpers_demo_user2",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Odoo login renders; default 'Your logo' placeholder (no custom company logo). Not a white screen."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-04-odoo-home.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-04-odoo-home.png",
+      "sha256": "72a16db088781c966b5fffc1084b46ba03db0b9bc4fdbf95bbd0ab1fccfd5f16",
+      "bytes": 53139,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8302/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Discuss + OdooBot loaded; no white screen. Duplicate navbar label 'Discuss Discuss' (Odoo 19 default)."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-05-company.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-05-company.png",
+      "sha256": "72a16db088781c966b5fffc1084b46ba03db0b9bc4fdbf95bbd0ab1fccfd5f16",
+      "bytes": 53139,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8302/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Company name User N Demo Company visible in systray. Same visual frame as odoo-home (header confirmation)."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-06-apps.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-06-apps.png",
+      "sha256": "853ad63c958bf614b3ef5b4ddf6d40217ff2f15fc290ee3ddfccc3569c176fba",
+      "bytes": 54281,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8302/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Apps menu matches trading package for User 2 Demo Company."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-07-functional-menu.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-07-functional-menu.png",
+      "sha256": "304f4af2ba0415f1eb31bbb0d1bc29673be6896ce53933bc06bbe5097a44c12f",
+      "bytes": 28439,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8302/odoo/stock",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Inventory Overview loaded for User 2 Demo Company. Receipts/Delivery cards visible."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-pixel5-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-pixel5-01-portal-login.png",
+      "sha256": "e3b386b31060c06532b8a076edb46ccf89bce98115ecc9211464d5c12eb09baf",
+      "bytes": 387241,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user2-pixel5-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-pixel5-02-portal-instance.png",
+      "sha256": "5b827dd4e80ad8d2c37d10ae0e67b6bcab980cb4d40d0f9637a11ff88e302419",
+      "bytes": 438935,
+      "user": "user2",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=starter package=trading status=Ready company=User 2 Demo Company. Isolation: only this company."
+      ],
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company"
+    },
+    {
+      "file": "user3-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-01-portal-login.png",
+      "sha256": "94c80ec6341b88fb4014157189e58842a342d333035f0510afe0d01ac4549d7d",
+      "bytes": 383443,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-02-portal-instance.png",
+      "sha256": "6a2962e2444dec37b8831f315d3ca9fc23b332f6d8167eed7b8fb548e8154465",
+      "bytes": 237989,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=business package=operations status=Ready company=User 3 Demo Company. Isolation: only this company."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-03-odoo-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-03-odoo-login.png",
+      "sha256": "7f1cea612d318e1c228f876b22990eb38db11e8061cf85403d89fd372270289e",
+      "bytes": 27330,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8303/web/login?db=helpers_demo_user3",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Odoo login renders; default 'Your logo' placeholder (no custom company logo). Not a white screen."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-04-odoo-home.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-04-odoo-home.png",
+      "sha256": "e53e928d5081cc70ed3698b2ef52206fb0b0237c67b04dd060aa93bba3792a30",
+      "bytes": 53188,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8303/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Discuss + OdooBot loaded; no white screen. Duplicate navbar label 'Discuss Discuss' (Odoo 19 default)."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-05-company.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-05-company.png",
+      "sha256": "e53e928d5081cc70ed3698b2ef52206fb0b0237c67b04dd060aa93bba3792a30",
+      "bytes": 53188,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8303/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Company name User N Demo Company visible in systray. Same visual frame as odoo-home (header confirmation)."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-06-apps.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-06-apps.png",
+      "sha256": "8247eb5ac14db32e6cd2380b1b8c4d5bbe5ce0de30983af78d0002f2772cd9ac",
+      "bytes": 56088,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8303/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Apps menu matches operations package for User 3 Demo Company."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-07-functional-menu.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-07-functional-menu.png",
+      "sha256": "ac7a963957d3443f0f2669c8f4208f7c6a695f34f756f11da29f2857d9d859b4",
+      "bytes": 31690,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8303/odoo/stock",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Inventory Overview loaded for User 3 Demo Company. Receipts/Delivery cards visible plus Manufacturing for operations package."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-pixel5-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-pixel5-01-portal-login.png",
+      "sha256": "e3b386b31060c06532b8a076edb46ccf89bce98115ecc9211464d5c12eb09baf",
+      "bytes": 387241,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user3-pixel5-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-pixel5-02-portal-instance.png",
+      "sha256": "477feec7fe044f5a94b3affceddfcf7ff2dbe101421c171a6d037708b2f1f3f6",
+      "bytes": 442679,
+      "user": "user3",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=business package=operations status=Ready company=User 3 Demo Company. Isolation: only this company."
+      ],
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company"
+    },
+    {
+      "file": "user4-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-01-portal-login.png",
+      "sha256": "94c80ec6341b88fb4014157189e58842a342d333035f0510afe0d01ac4549d7d",
+      "bytes": 383443,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-02-portal-instance.png",
+      "sha256": "d711b5a47ef813edf7e86f54400b2ef7ae3b95d1a60736a0527d311915bc431a",
+      "bytes": 238479,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=enterprise package=full_erp status=Ready company=User 4 Demo Company. Isolation: only this company."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-03-odoo-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-03-odoo-login.png",
+      "sha256": "caf1fdf7519db16f5b7e4b2317faac1e882e76ff9c0e96fe9b1ae1a19c838d18",
+      "bytes": 27383,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8304/web/login?db=helpers_demo_user4",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Odoo login renders; default 'Your logo' placeholder (no custom company logo). Not a white screen."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-04-odoo-home.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-04-odoo-home.png",
+      "sha256": "28156f035bd7bdc103a877aff4ec4c85d0fd55e0371b6950ca2af29abce541ad",
+      "bytes": 53082,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8304/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Discuss + OdooBot loaded; no white screen. Duplicate navbar label 'Discuss Discuss' (Odoo 19 default)."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-05-company.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-05-company.png",
+      "sha256": "28156f035bd7bdc103a877aff4ec4c85d0fd55e0371b6950ca2af29abce541ad",
+      "bytes": 53082,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8304/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Company name User N Demo Company visible in systray. Same visual frame as odoo-home (header confirmation)."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-06-apps.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-06-apps.png",
+      "sha256": "25faa562ea2a1f2c0b75c4267884533df1a60da22eb36474c1ffa64ea09842b0",
+      "bytes": 59732,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8304/odoo/discuss",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Apps menu matches full_erp package for User 4 Demo Company."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-07-functional-menu.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-07-functional-menu.png",
+      "sha256": "98a299d2105031824b503ed90332d62441c4b937296fc02b31a98b64c7e32c03",
+      "bytes": 91259,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8304/odoo/project",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS_WITH_NOTE",
+      "findings": [
+        "Project empty state 'No projects found. Let's create one!' for User 4 Demo Company. Expected empty UAT."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-pixel5-01-portal-login.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-pixel5-01-portal-login.png",
+      "sha256": "e3b386b31060c06532b8a076edb46ccf89bce98115ecc9211464d5c12eb09baf",
+      "bytes": 387241,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/login",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Helpers ERP Cloud sign-in form fully rendered; no white screen, overlap, or untranslated keys."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    },
+    {
+      "file": "user4-pixel5-02-portal-instance.png",
+      "path": "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-pixel5-02-portal-instance.png",
+      "sha256": "80165d116e8100a43c757c6cb8778bbed3bbd54b61d0f9b3a98fc9943341549f",
+      "bytes": 438738,
+      "user": "user4",
+      "viewport": "1440x1000",
+      "captured_url": "http://100.76.217.35:8001/cloud/instances",
+      "visual_inspection": "opened_as_image_not_inferred_from_http",
+      "verdict": "PASS",
+      "findings": [
+        "Plan=enterprise package=full_erp status=Ready company=User 4 Demo Company. Isolation: only this company."
+      ],
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout complete</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+</head>
+<body class="theme-helpers-erp body--app">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="Primary">
+    <a href="/solutions">Ready Solutions</a>
+    <a href="/cloud" class="is-active">Helpers ERP Cloud</a>
+    <a href="/platform">Developer Platform</a>
+    <a href="/pricing">Pricing</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="Language">
+      <a href="?lang=en" hreflang="en" lang="en" class="is-active">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="?lang=ar" hreflang="ar" lang="ar">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost" href="/cloud/instances">My ERP</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="YdnbCUV6apTv9ji2mPIRZNct_EqC8KcMyFbtOTtYEcA" style="">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/">Home</a> · <a href="/cloud">Helpers ERP Cloud</a> · Order received</p>
+    
+    
+<div class="flow-header">
+  <h1>Demo order received</h1>
+  <p>No real charge occurred. Provisioning is queued on the Helpers ERP Cloud demo adapter.</p>
+</div>
+<section class="flow-card">
+  
+    <p>Status: <strong>Queued</strong></p>
+    <a class="btn-hero btn-hero--primary" href="/cloud/provisioning/5">View provisioning</a>
+  
+  <a class="btn" href="/cloud/instances">Go to my ERP</a>
+</section>
+
+    <script>
+    (function () {
+      var summary = document.getElementById("form-error-summary");
+      if (summary) {
+        if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+        summary.focus();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+
+</body></html>

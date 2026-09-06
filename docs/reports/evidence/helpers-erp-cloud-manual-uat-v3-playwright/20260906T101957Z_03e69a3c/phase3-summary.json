@@ -1,0 +1,28 @@
+{
+  "run_id": "20260906T101957Z_03e69a3c",
+  "timestamp": "2026-09-06T10:24:36.716Z",
+  "base_url": "http://100.76.217.35:8001",
+  "viewport": "1440x1000",
+  "results": [
+    {
+      "success": false,
+      "user": "user1",
+      "error": "ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user1-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user1-browser.log'"
+    },
+    {
+      "success": false,
+      "user": "user2",
+      "error": "ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log'"
+    },
+    {
+      "success": false,
+      "user": "user3",
+      "error": "ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user3-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user3-browser.log'"
+    },
+    {
+      "success": false,
+      "user": "user4",
+      "error": "ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user4-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user4-browser.log'"
+    }
+  ]
+}

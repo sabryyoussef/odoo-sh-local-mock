@@ -1,0 +1,199 @@
+{
+  "runId": "20260906T111621Z_ef1bb46c",
+  "generatedAt": "2026-09-06T11:22:34.653Z",
+  "desktop": [
+    {
+      "user": "user1",
+      "plan": "trial",
+      "package": "sales",
+      "company": "User 1 Demo Company",
+      "port": 8301,
+      "db": "helpers_demo_user1",
+      "portalLogin": true,
+      "planPackageReady": true,
+      "openOdooHostOk": true,
+      "openOdooHref": "http://100.76.217.35:8301/web/login?db=helpers_demo_user1",
+      "odooLogin": true,
+      "odooHome": true,
+      "whiteScreen": false,
+      "companyOk": true,
+      "appsOk": true,
+      "menuOpened": "CRM",
+      "modulesVisible": [
+        "crm",
+        "sale_management",
+        "account"
+      ],
+      "isolation": [],
+      "localhost": [],
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-02-portal-instance.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-03-odoo-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-04-odoo-home.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-05-company.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-06-apps.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-07-functional-menu.png"
+      ],
+      "errors": []
+    },
+    {
+      "user": "user2",
+      "plan": "starter",
+      "package": "trading",
+      "company": "User 2 Demo Company",
+      "port": 8302,
+      "db": "helpers_demo_user2",
+      "portalLogin": true,
+      "planPackageReady": true,
+      "openOdooHostOk": true,
+      "openOdooHref": "http://100.76.217.35:8302/web/login?db=helpers_demo_user2",
+      "odooLogin": true,
+      "odooHome": true,
+      "whiteScreen": false,
+      "companyOk": true,
+      "appsOk": true,
+      "menuOpened": "Inventory",
+      "modulesVisible": [
+        "crm",
+        "sale_management",
+        "purchase",
+        "stock",
+        "account"
+      ],
+      "isolation": [],
+      "localhost": [],
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-02-portal-instance.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-03-odoo-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-04-odoo-home.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-05-company.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-06-apps.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-07-functional-menu.png"
+      ],
+      "errors": []
+    },
+    {
+      "user": "user3",
+      "plan": "business",
+      "package": "operations",
+      "company": "User 3 Demo Company",
+      "port": 8303,
+      "db": "helpers_demo_user3",
+      "portalLogin": true,
+      "planPackageReady": true,
+      "openOdooHostOk": true,
+      "openOdooHref": "http://100.76.217.35:8303/web/login?db=helpers_demo_user3",
+      "odooLogin": true,
+      "odooHome": true,
+      "whiteScreen": false,
+      "companyOk": true,
+      "appsOk": true,
+      "menuOpened": "Inventory",
+      "modulesVisible": [
+        "purchase",
+        "stock",
+        "maintenance",
+        "hr",
+        "mrp",
+        "account"
+      ],
+      "isolation": [],
+      "localhost": [],
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-02-portal-instance.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-03-odoo-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-04-odoo-home.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-05-company.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-06-apps.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-07-functional-menu.png"
+      ],
+      "errors": []
+    },
+    {
+      "user": "user4",
+      "plan": "enterprise",
+      "package": "full_erp",
+      "company": "User 4 Demo Company",
+      "port": 8304,
+      "db": "helpers_demo_user4",
+      "portalLogin": true,
+      "planPackageReady": true,
+      "openOdooHostOk": true,
+      "openOdooHref": "http://100.76.217.35:8304/web/login?db=helpers_demo_user4",
+      "odooLogin": true,
+      "odooHome": true,
+      "whiteScreen": false,
+      "companyOk": true,
+      "appsOk": true,
+      "menuOpened": "Project",
+      "modulesVisible": [
+        "crm",
+        "sale_management",
+        "purchase",
+        "stock",
+        "account",
+        "hr",
+        "project",
+        "maintenance",
+        "mrp"
+      ],
+      "isolation": [],
+      "localhost": [],
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-02-portal-instance.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-03-odoo-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-04-odoo-home.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-05-company.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-06-apps.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-07-functional-menu.png"
+      ],
+      "errors": []
+    }
+  ],
+  "mobile": [
+    {
+      "user": "user1",
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-pixel5-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user1-pixel5-02-portal-instance.png"
+      ],
+      "errors": [],
+      "isolation": [],
+      "localhost": []
+    },
+    {
+      "user": "user2",
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-pixel5-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user2-pixel5-02-portal-instance.png"
+      ],
+      "errors": [],
+      "isolation": [],
+      "localhost": []
+    },
+    {
+      "user": "user3",
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-pixel5-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user3-pixel5-02-portal-instance.png"
+      ],
+      "errors": [],
+      "isolation": [],
+      "localhost": []
+    },
+    {
+      "user": "user4",
+      "screenshots": [
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-pixel5-01-portal-login.png",
+        "/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T111621Z_ef1bb46c/screenshots/user4-pixel5-02-portal-instance.png"
+      ],
+      "errors": [],
+      "isolation": [],
+      "localhost": []
+    }
+  ]
+}

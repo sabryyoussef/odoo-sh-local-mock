@@ -1,0 +1,11 @@
+{
+  "user": "user4",
+  "console": [
+    "[2026-09-06T11:22:32.335Z] error Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": [
+    "400 POST http://100.76.217.35:8001/cloud/login"
+  ]
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "user": "user1",
+    "urlAfter": "http://100.76.217.35:8001/cloud/instances",
+    "company": true,
+    "ready": true,
+    "isolationFail": false
+  },
+  {
+    "user": "user2",
+    "urlAfter": "http://100.76.217.35:8001/cloud/instances",
+    "company": true,
+    "ready": true,
+    "isolationFail": false
+  },
+  {
+    "user": "user3",
+    "urlAfter": "http://100.76.217.35:8001/cloud/instances",
+    "company": true,
+    "ready": true,
+    "isolationFail": false
+  },
+  {
+    "user": "user4",
+    "urlAfter": "http://100.76.217.35:8001/cloud/instances",
+    "company": true,
+    "ready": true,
+    "isolationFail": false
+  }
+]

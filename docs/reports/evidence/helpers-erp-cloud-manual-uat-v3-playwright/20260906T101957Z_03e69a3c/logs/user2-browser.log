@@ -1,0 +1,11 @@
+RUN_ID=20260906T101957Z_03e69a3c
+USER=user2
+ERROR=ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log'
+STACK=Error: ENOENT: no such file or directory, copyfile '/tmp/p3-helpers-erp-cloud-windows-uat/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log' -> '/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/helpers-erp-cloud-manual-uat-v3-playwright/20260906T101957Z_03e69a3c/logs/user2-browser.log'
+    at Object.copyFileSync (node:fs:3090:11)
+    at runUser (/tmp/p3-helpers-erp-cloud-windows-uat/playwright_v3_manual.js:269:8)
+    at async main (/tmp/p3-helpers-erp-cloud-windows-uat/playwright_v3_manual.js:340:17)
+URL=http://100.76.217.35:8001/cloud/instances
+CONSOLE: 
+ERRORS: 
+FAILED: 

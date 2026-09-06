@@ -1178,6 +1178,7 @@ input {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .mkt-nav__ghost {
@@ -2760,6 +2761,8 @@ a.icon-btn {
   margin-inline-end: 8px;
   font-size: 13px;
   font-weight: 600;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .lang-switcher a {

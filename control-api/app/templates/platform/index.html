@@ -12,7 +12,7 @@
 
     <div class="page-intro">
       <p><span class="badge">{{ t('platform.badge') }}</span> {{ t('platform.intro') }}</p>
-      <p class="muted">{{ t('platform.looking') }} <a href="/solutions">{{ t('platform.browse_solutions') }}</a> {{ t('platform.looking_tail') }} <a href="/cloud">{{ t('nav.cloud') }}</a>.</p>
+      <p class="muted">{{ t('platform.looking') }} <a href="{{ locale_url('/solutions') }}">{{ t('platform.browse_solutions') }}</a> {{ t('platform.looking_tail') }} <a href="{{ locale_url('/cloud') }}">{{ t('nav.cloud') }}</a>.</p>
     </div>
 
     <div class="platform-feature-grid">
@@ -34,7 +34,7 @@
       <h2>{{ t('platform.get_started') }}</h2>
       <p class="muted">{{ t('platform.get_started_lead') }}</p>
       <div class="flow-actions-row">
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/platform/pricing">{{ t('platform.view_plans') }}</a>
+        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="{{ locale_url('/platform/pricing') }}">{{ t('platform.view_plans') }}</a>
         {% if user.github_connected %}
           <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">{{ t('platform.open_projects') }}</a>
           <a class="btn" href="/deploy">{{ t('platform.deploy') }}</a>

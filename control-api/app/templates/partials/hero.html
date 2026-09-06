@@ -34,8 +34,8 @@
       <strong>{{ t('hero.price') }}</strong>
     </p>
     <div class="hero__actions">
-      <a class="btn-hero btn-hero--primary" href="/cloud">{{ t('hero.cta_primary') }}</a>
-      <a class="btn-hero btn-hero--secondary" href="/solutions">{{ t('hero.cta_browse') }}</a>
+      <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud') }}">{{ t('hero.cta_primary') }}</a>
+      <a class="btn-hero btn-hero--secondary" href="{{ locale_url('/solutions') }}">{{ t('hero.cta_browse') }}</a>
     </div>
     <p class="hero__pipeline">{{ t('hero.pipeline') }}</p>
     {% if brand.theme_id == 'helpers_erp' and brand.modules %}
@@ -45,7 +45,7 @@
         {% endfor %}
       </div>
     {% endif %}
-    <a class="hero__all-apps" href="/solutions">{{ t('hero.all_apps') }}</a>
+    <a class="hero__all-apps" href="{{ locale_url('/solutions') }}">{{ t('hero.all_apps') }}</a>
     {% if brand.powered_by %}
       <p class="prepared-for">{{ brand.powered_by }}</p>
     {% endif %}

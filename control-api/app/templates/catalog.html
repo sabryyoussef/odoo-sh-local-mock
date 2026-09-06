@@ -12,14 +12,14 @@
 
     <div class="page-intro">
       <p><span class="badge">{{ t('catalog.badge') }}</span> {{ t('catalog.intro') }}</p>
-      <p class="muted">{{ t('catalog.alt') }} <a href="/platform">{{ t('nav.platform') }}</a> {{ t('catalog.alt_instead') }} <a href="/cloud">{{ t('catalog.configure_cloud') }}</a>.</p>
+      <p class="muted">{{ t('catalog.alt') }} <a href="{{ locale_url('/platform') }}">{{ t('nav.platform') }}</a> {{ t('catalog.alt_instead') }} <a href="{{ locale_url('/cloud') }}">{{ t('catalog.configure_cloud') }}</a>.</p>
       <p class="muted"><span class="badge badge--warning">{{ t('common.demo_data') }}</span> {{ t('catalog.demo_note') }}</p>
     </div>
 
     <div class="solution-grid">
       {% for solution in solutions %}
         <article class="solution-card">
-          <h2><a href="/solutions/{{ solution.code }}">{{ solution.name }}</a>
+          <h2><a href="{{ locale_url('/solutions/' ~ solution.code) }}">{{ solution.name }}</a>
             {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
           </h2>
           <p class="muted">{{ solution.description }}</p>
@@ -38,7 +38,7 @@
             {% endfor %}
           </ul>
           <div class="solution-card__cta">
-            <a class="btn btn--primary" href="/solutions/{{ solution.code }}">{{ t('catalog.compare') }}</a>
+            <a class="btn btn--primary" href="{{ locale_url('/solutions/' ~ solution.code) }}">{{ t('catalog.compare') }}</a>
           </div>
         </article>
       {% else %}

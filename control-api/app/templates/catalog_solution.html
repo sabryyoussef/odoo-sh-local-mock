@@ -5,7 +5,7 @@
 {% block shell %}
 <div class="app-flow">
   <main class="flow-main flow-main--full">
-    <p class="muted"><a href="/solutions">{{ t('catalog.back') }}</a></p>
+    <p class="muted"><a href="{{ locale_url('/solutions') }}">{{ t('catalog.back') }}</a></p>
     <div class="flow-header">
       <h1>{{ solution.name }}
         {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}

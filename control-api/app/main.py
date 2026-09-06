@@ -22,7 +22,7 @@ from app.auth.session import (
     validate_csrf,
 )
 from app.branding import brand_project_name, get_brand
-from app.i18n import apply_locale_cookie, template_i18n
+from app.i18n import apply_locale_cookie, redirect_with_locale, template_i18n
 from app.config import get_settings
 from app.db import SessionLocal, get_db, init_db
 from app.dependencies import (
@@ -1280,13 +1280,13 @@ def _portal_platform_views(rows):
 
 
 @app.get("/solutions", response_class=RedirectResponse)
-def solutions_index() -> RedirectResponse:
-    return RedirectResponse("/catalog", status_code=302)
+def solutions_index(request: Request) -> RedirectResponse:
+    return redirect_with_locale(request, "/catalog")
 
 
 @app.get("/solutions/{solution_code}", response_class=RedirectResponse)
-def solutions_detail_redirect(solution_code: str) -> RedirectResponse:
-    return RedirectResponse(f"/catalog/{solution_code}", status_code=302)
+def solutions_detail_redirect(solution_code: str, request: Request) -> RedirectResponse:
+    return redirect_with_locale(request, f"/catalog/{solution_code}")
 
 
 @app.get("/catalog/{solution_code}", response_class=HTMLResponse)

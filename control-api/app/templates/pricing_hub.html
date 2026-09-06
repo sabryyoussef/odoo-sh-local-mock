@@ -26,7 +26,7 @@
           <li><span class="check">✓</span> {{ t('pricing.sis') }}</li>
           <li><span class="check">✓</span> {{ t('pricing.packages') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary pricing-cta" href="/solutions">{{ t('hero.cta_browse') }}</a>
+        <a class="btn-hero btn-hero--primary pricing-cta" href="{{ locale_url('/solutions') }}">{{ t('hero.cta_browse') }}</a>
       </article>
 
       <article class="flow-card">
@@ -37,7 +37,7 @@
           <li><span class="check">✓</span> {{ t('pricing.cloud_f2') }}</li>
           <li><span class="check">✓</span> {{ t('pricing.cloud_f3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary pricing-cta" href="/cloud/pricing">{{ t('cloud.view_plans') }}</a>
+        <a class="btn-hero btn-hero--primary pricing-cta" href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.view_plans') }}</a>
       </article>
 
       <article class="flow-card">
@@ -48,7 +48,7 @@
           <li><span class="check">✓</span> {{ t('pricing.dev_f2') }}</li>
           <li><span class="check">✓</span> {{ t('pricing.dev_f3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="/platform/pricing">{{ t('platform.view_plans') }}</a>
+        <a class="btn-hero btn-hero--secondary btn-hero--on-light pricing-cta" href="{{ locale_url('/platform/pricing') }}">{{ t('platform.view_plans') }}</a>
       </article>
     </div>
   </main>

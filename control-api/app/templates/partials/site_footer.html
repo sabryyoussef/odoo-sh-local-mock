@@ -2,23 +2,23 @@
   <div class="site-footer__inner">
     <div class="site-footer__col">
       <h2>{{ t('footer.product') }}</h2>
-      <a href="/solutions">{{ t('nav.ready_solutions') }}</a>
-      <a href="/cloud">{{ t('nav.cloud') }}</a>
-      <a href="/platform">{{ t('nav.platform') }}</a>
-      <a href="/pricing">{{ t('nav.pricing') }}</a>
+      <a href="{{ locale_url('/solutions') }}">{{ t('nav.ready_solutions') }}</a>
+      <a href="{{ locale_url('/cloud') }}">{{ t('nav.cloud') }}</a>
+      <a href="{{ locale_url('/platform') }}">{{ t('nav.platform') }}</a>
+      <a href="{{ locale_url('/pricing') }}">{{ t('nav.pricing') }}</a>
     </div>
     <div class="site-footer__col">
       <h2>{{ t('footer.get_started') }}</h2>
-      <a href="/cloud">{{ t('nav.try_free') }}</a>
-      <a href="/login">{{ t('nav.signin') }}</a>
-      <a href="/cloud/register">{{ t('footer.register') }}</a>
-      <a href="/projects">{{ t('nav.projects') }}</a>
+      <a href="{{ locale_url('/cloud') }}">{{ t('nav.try_free') }}</a>
+      <a href="{{ locale_url('/login') }}">{{ t('nav.signin') }}</a>
+      <a href="{{ locale_url('/cloud/register') }}">{{ t('footer.register') }}</a>
+      <a href="{{ locale_url('/projects') }}">{{ t('nav.projects') }}</a>
     </div>
     <div class="site-footer__col">
       <h2>{{ t('footer.platform') }}</h2>
-      <a href="/platform">{{ t('footer.github_builds') }}</a>
-      <a href="/platform/pricing">{{ t('footer.dev_plans') }}</a>
-      <a href="/catalog">{{ t('footer.catalog') }}</a>
+      <a href="{{ locale_url('/platform') }}">{{ t('footer.github_builds') }}</a>
+      <a href="{{ locale_url('/platform/pricing') }}">{{ t('footer.dev_plans') }}</a>
+      <a href="{{ locale_url('/catalog') }}">{{ t('footer.catalog') }}</a>
     </div>
     <div class="site-footer__col">
       <h2>{{ t('footer.about') }}</h2>

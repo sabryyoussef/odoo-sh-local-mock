@@ -8,9 +8,9 @@
       <p>{{ t('cta.body_default') }}</p>
     {% endif %}
     <div class="cta-footer__actions">
-      <a class="btn-hero btn-hero--primary" href="/cloud">{{ t('hero.cta_primary') }}</a>
-      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/pricing">{{ t('cta.view_plans') }}</a>
-      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="/projects">{{ t('cta.open_projects') }}</a>
+      <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud') }}">{{ t('hero.cta_primary') }}</a>
+      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="{{ locale_url('/pricing') }}">{{ t('cta.view_plans') }}</a>
+      <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="{{ locale_url('/projects') }}">{{ t('cta.open_projects') }}</a>
     </div>
   </div>
 </section>

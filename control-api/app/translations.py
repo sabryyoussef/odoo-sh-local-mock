@@ -78,7 +78,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "products.card2.li3": "Backups and support according to your plan",
         "products.card2.cta": "Configure Your ERP",
         "products.card3.kicker": "For developers",
-        "products.card3.title": "Ship custom ERP from Git",
+        "products.card3.title": "Ship Custom Odoo from Git",
         "products.card3.body": "Build and run custom Helpers ERP projects directly from GitHub.",
         "products.card3.li1": "Branches, commits, and build logs",
         "products.card3.li2": "CONNECT to a real Helpers ERP runtime",

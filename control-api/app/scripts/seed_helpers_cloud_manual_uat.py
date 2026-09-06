@@ -38,6 +38,7 @@ from app.services.cloud_manual_uat_service import (
     is_manual_uat_allowed,
     reset_manual_uat,
     seed_manual_uat,
+    seed_manual_uat_accounts_only,
     validate_manual_uat_modules,
 )
 
@@ -66,6 +67,7 @@ def main() -> None:
     parser.add_argument("--status", action="store_true", help="Inspect current manual UAT state (no mutation)")
     parser.add_argument("--reset", action="store_true", help="Reset only the four exact UAT identities (requires --dry-run or confirmation)")
     parser.add_argument("--prepare-manual", action="store_true", help="Prepare manual UAT (create/update 4 accounts, no provisioning) — alias for default")
+    parser.add_argument("--prepare-manual-accounts-only", action="store_true", help="Prepare manual UAT for FINAL handoff (4 accounts, 0 tenants — user clicks Create to queue)")
     parser.add_argument("--provision-all", action="store_true", help="Provision all 4 manual UAT tenants bounded (max 1 at a time, fail-closed)")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done without mutating")
     parser.add_argument("--json", action="store_true", help="Output JSON (redacted)")
@@ -137,6 +139,42 @@ def main() -> None:
             result = reset_manual_uat(db, dry_run=False)
             print("Reset completed:")
             print(json.dumps(_redacted_summary(result), indent=2))
+        return
+
+    # --prepare-manual-accounts-only: FINAL handoff (4 accounts, 0 tenants)
+    if args.prepare_manual_accounts_only:
+        if args.dry_run:
+            with SessionLocal() as db:
+                summary = seed_manual_uat_accounts_only(db, dry_run=True)
+                print("DRY-RUN: Would prepare manual UAT accounts-only (4 accounts, 0 tenants):")
+                print(json.dumps(_redacted_summary(summary), indent=2))
+            return
+        if not is_manual_uat_allowed():
+            print("ERROR: Seeding requires HELPERS_CLOUD_MANUAL_UAT_ENABLED=true and local/UAT environment", file=sys.stderr)
+            sys.exit(1)
+        with SessionLocal() as db:
+            mod = validate_manual_uat_modules(db)
+            if not mod["ok"]:
+                print("ERROR: Module validation failed:", file=sys.stderr)
+                for err in mod["errors"]:
+                    print(f"  - {err}", file=sys.stderr)
+                sys.exit(1)
+            print("Module validation: OK")
+            for code, details in mod["packages"].items():
+                print(f"  {code}: standard={details['standard']}, helpers={details['helpers']}")
+            print()
+            summary = seed_manual_uat_accounts_only(db, dry_run=False)
+            print("Prepare-manual-accounts-only completed (4 accounts, 0 tenants — ready for Create click):")
+            if args.json:
+                print(json.dumps(_redacted_summary(summary), indent=2))
+            else:
+                for acc in summary["accounts"]:
+                    print(f"  {acc['username']}: user_id={acc['user_id']}, plan={acc['plan']}, package={acc['package']}")
+                    print(f"    company={acc['company']}, subdomain={acc['subdomain']}, db={acc['db_name']}")
+                    print(f"    setup={acc['setup_id']} ({acc['setup_status']})")
+                    print()
+            print("Next: User logs in at http://100.76.217.35:8001/cloud/login and clicks Create/Configure to queue provisioning")
+            print("Worker: python -m app.manual_uat_worker_main --max-success 4 (isolated, allow-listed)")
         return
 
     # --prepare-manual: explicit alias for default seed (no provisioning)

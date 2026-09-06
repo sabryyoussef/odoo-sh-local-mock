@@ -646,6 +646,62 @@ def _ensure_subscription_and_request(db: Session, user: User, setup: CloudSetupS
     return sub, req, inst
 
 
+def seed_manual_uat_accounts_only(db: Session, *, dry_run: bool = False) -> dict[str, Any]:
+    """Idempotent seed for final manual handoff — creates only users and setups, no subscriptions/requests.
+
+    For READY handoff: 4 portal accounts, 0 pre-created/queued/ready tenants.
+    User clicks Create in portal to queue work, isolated worker provisions.
+    """
+    if not is_manual_uat_allowed() and not dry_run:
+        raise PermissionError("Manual UAT seeding requires HELPERS_CLOUD_MANUAL_UAT_ENABLED=true and local/UAT environment")
+
+    mod_validation = validate_manual_uat_modules(db)
+    if not mod_validation["ok"]:
+        raise ValueError(f"Module validation failed: {mod_validation['errors']}")
+
+    summary: dict[str, Any] = {
+        "accounts": [],
+        "module_validation": mod_validation,
+        "dry_run": dry_run,
+        "mode": "accounts_only",
+    }
+
+    for acc in MANUAL_UAT_ACCOUNTS:
+        if dry_run:
+            user = db.scalar(select(User).where(User.email == acc["email"].lower()))
+            exists = user is not None
+            summary["accounts"].append({
+                "username": acc["portal_username"],
+                "email": acc["email"],
+                "plan": acc["plan_code"],
+                "package": acc["package_code"],
+                "exists": exists,
+                "action": "update" if exists else "create",
+            })
+            continue
+
+        user = _ensure_user(db, acc)
+        setup = _ensure_setup(db, user, acc)
+        # Do NOT create subscription/request/instance — leave for user Create click
+        summary["accounts"].append({
+            "username": acc["portal_username"],
+            "email": acc["email"],
+            "user_id": user.id,
+            "plan": acc["plan_code"],
+            "package": acc["package_code"],
+            "company": acc["company"],
+            "subdomain": acc["subdomain"],
+            "db_name": acc["db_name"],
+            "setup_id": setup.id,
+            "setup_status": setup.status,
+            "status": "accounts_only_no_request",
+            "provisioning_approved": False,
+            "quote_approved": False,
+        })
+
+    return summary
+
+
 def seed_manual_uat(db: Session, *, dry_run: bool = False) -> dict[str, Any]:
     """Idempotent seed for all four manual UAT accounts.
 

@@ -1,0 +1,97 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.3.4, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+configfile: pytest.ini
+plugins: anyio-4.14.2
+collecting ... collected 61 items
+
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_default_false PASSED [  1%]
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_allow_list_exact_four PASSED [  3%]
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_db_names_exact PASSED [  4%]
+tests/test_cloud_manual_uat_isolation.py::test_portal_password_hashed_not_plaintext PASSED [  6%]
+tests/test_cloud_manual_uat_isolation.py::test_pg_password_strong_not_123 PASSED [  8%]
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_user_exact PASSED [  9%]
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_enabled_requires_flag_and_local PASSED [ 11%]
+tests/test_cloud_manual_uat_isolation.py::test_no_live_db_mutation PASSED [ 13%]
+tests/test_cloud_manual_uat_portal_login.py::test_01_user1_username_succeeds_via_http PASSED [ 14%]
+tests/test_cloud_manual_uat_portal_login.py::test_02_user1_email_succeeds_via_http PASSED [ 16%]
+tests/test_cloud_manual_uat_portal_login.py::test_03_wrong_password_fails PASSED [ 18%]
+tests/test_cloud_manual_uat_portal_login.py::test_04_unknown_user_fails PASSED [ 19%]
+tests/test_cloud_manual_uat_portal_login.py::test_05_user2_user3_user4_succeed_with_username PASSED [ 21%]
+tests/test_cloud_manual_uat_portal_login.py::test_06_whitespace_and_case_normalized PASSED [ 22%]
+tests/test_cloud_manual_uat_portal_login.py::test_07_duplicate_username_fails_closed PASSED [ 24%]
+tests/test_cloud_manual_uat_portal_login.py::test_08_session_only_after_valid_auth PASSED [ 26%]
+tests/test_cloud_manual_uat_portal_login.py::test_09_redirect_stays_inside_portal PASSED [ 27%]
+tests/test_cloud_manual_uat_portal_login.py::test_10_production_mode_does_not_enable_alias_bypass PASSED [ 29%]
+tests/test_cloud_manual_uat_portal_login.py::test_11_passwords_remain_hashed PASSED [ 31%]
+tests/test_cloud_manual_uat_portal_login.py::test_12_failure_does_not_expose_account_existence PASSED [ 32%]
+tests/test_cloud_external_url.py::test_external_url_configured PASSED    [ 34%]
+tests/test_cloud_external_url.py::test_external_url_correct_port_and_db PASSED [ 36%]
+tests/test_cloud_external_url.py::test_no_localhost_link_in_windows_uat PASSED [ 37%]
+tests/test_cloud_external_url.py::test_malicious_forwarded_host_rejected PASSED [ 39%]
+tests/test_cloud_external_url.py::test_missing_configuration_fail_closed PASSED [ 40%]
+tests/test_cloud_external_url.py::test_production_defaults_safe PASSED   [ 42%]
+tests/test_cloud_external_url.py::test_is_valid_external_url PASSED      [ 44%]
+tests/test_cloud_external_url.py::test_db_name_validation PASSED         [ 45%]
+tests/test_cloud_onboarding_ui.py::test_pricing_ctas_carry_plan_and_cycle PASSED [ 47%]
+tests/test_cloud_onboarding_ui.py::test_invalid_plan_cycle_query_is_ignored PASSED [ 49%]
+tests/test_cloud_onboarding_ui.py::test_trial_cycle_normalized_to_monthly PASSED [ 50%]
+tests/test_cloud_onboarding_ui.py::test_short_registration_omits_phone_company_country PASSED [ 52%]
+tests/test_cloud_onboarding_ui.py::test_short_registration_validation PASSED [ 54%]
+tests/test_cloud_onboarding_ui.py::test_existing_cloud_user_selects_plan_from_pricing PASSED [ 55%]
+tests/test_cloud_onboarding_ui.py::test_resume_incomplete_draft PASSED   [ 57%]
+tests/test_cloud_onboarding_ui.py::test_resume_confirm_ready_draft PASSED [ 59%]
+tests/test_cloud_onboarding_ui.py::test_completed_user_goes_to_instances PASSED [ 60%]
+tests/test_cloud_onboarding_ui.py::test_no_draft_goes_to_pricing PASSED  [ 62%]
+tests/test_cloud_onboarding_ui.py::test_legacy_draft_resumes_on_new_configure PASSED [ 63%]
+tests/test_cloud_onboarding_ui.py::test_plan_change_caps_users_storage_and_drops_paid_addons PASSED [ 65%]
+tests/test_cloud_onboarding_ui.py::test_posted_totals_are_ignored PASSED [ 67%]
+tests/test_cloud_onboarding_ui.py::test_country_presets_and_other_editable PASSED [ 68%]
+tests/test_cloud_onboarding_ui.py::test_language_storage PASSED          [ 70%]
+tests/test_cloud_onboarding_ui.py::test_subdomain_rules PASSED           [ 72%]
+tests/test_cloud_onboarding_ui.py::test_duplicate_subdomain PASSED       [ 73%]
+tests/test_cloud_onboarding_ui.py::test_enterprise_custom_quote_cta PASSED [ 75%]
+tests/test_cloud_onboarding_ui.py::test_confirm_idempotency_double_submit PASSED [ 77%]
+tests/test_cloud_onboarding_ui.py::test_legacy_route_redirects PASSED    [ 78%]
+tests/test_cloud_onboarding_ui.py::test_happy_path_trial_and_paid PASSED [ 80%]
+tests/test_cloud_onboarding_ui.py::test_keyboard_labels_and_error_summary PASSED [ 81%]
+tests/test_cloud_onboarding_ui.py::test_post_auth_destination_precedence PASSED [ 83%]
+tests/test_cloud_onboarding_ui.py::test_quote_preview_uses_4xx_for_invalid_requests PASSED [ 85%]
+tests/test_cloud_onboarding_ui.py::test_new_user_each_plan_from_pricing PASSED [ 86%]
+tests/test_cloud_onboarding_ui.py::test_annual_intent_applied_for_starter PASSED [ 88%]
+tests/test_cloud_onboarding_ui.py::test_nojs_update_quote_stays_on_configure PASSED [ 90%]
+tests/test_cloud_onboarding_ui.py::test_setup_plan_redirects_to_configure_when_plan_saved PASSED [ 91%]
+tests/test_cloud_onboarding_ui.py::test_other_country_persists_editable_currency_tz PASSED [ 93%]
+tests/test_cloud_onboarding_ui.py::test_uae_country_defaults_on_configure PASSED [ 95%]
+tests/test_cloud_onboarding_ui.py::test_github_login_directs_company_buyers_to_cloud PASSED [ 96%]
+tests/test_cloud_onboarding_ui.py::test_default_package_enables_compatible_addons PASSED [ 98%]
+tests/test_cloud_onboarding_ui.py::test_happy_path_starter PASSED        [100%]
+
+=============================== warnings summary ===============================
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_default_false
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_cloud_manual_uat_isolation.py::test_manual_uat_default_false
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_cloud_manual_uat_portal_login.py: 36 warnings
+tests/test_cloud_onboarding_ui.py: 68 warnings
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 61 passed, 106 warnings in 46.72s =======================

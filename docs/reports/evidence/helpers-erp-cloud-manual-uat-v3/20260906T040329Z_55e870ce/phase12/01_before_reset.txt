@@ -1,0 +1,88 @@
+=== Phase 12: Before reset ===
+======================================================================
+ Helpers ERP Cloud — Local UAT / Demo (manual_uat)
+======================================================================
+ Environment: development
+ Manual UAT enabled: True
+ Allowed: True
+
+Manual UAT Status:
+  Enabled: True
+  Local env: True
+  Allowed: True
+  Module validation: OK
+
+  user1 (user1@demo.local):
+    Exists: True
+    Plan: trial, Package: sales
+    Company: User 1 Demo Company, Subdomain: user1
+    Setup: draft (plan)
+    Subscription: 4 (trial)
+    Request: 4 (ready, adapter=local_docker)
+    Approved: provisioning=True, quote=False
+    Instance: 4 (ready)
+    Tenant: 27 (helpers_demo_user1, db=helpers_demo_user1, port=8301, status=active)
+    URL: http://127.0.0.1:8301
+
+  user2 (user2@demo.local):
+    Exists: True
+    Plan: starter, Package: trading
+    Company: User 2 Demo Company, Subdomain: user2
+    Setup: draft (plan)
+    Subscription: 5 (active)
+    Request: 5 (ready, adapter=local_docker)
+    Approved: provisioning=True, quote=False
+    Instance: 5 (ready)
+    Tenant: 28 (helpers_demo_user2, db=helpers_demo_user2, port=8302, status=active)
+    URL: http://127.0.0.1:8302
+
+  user3 (user3@demo.local):
+    Exists: True
+    Plan: business, Package: operations
+    Company: User 3 Demo Company, Subdomain: user3
+    Setup: draft (plan)
+    Subscription: 6 (active)
+    Request: 6 (ready, adapter=local_docker)
+    Approved: provisioning=True, quote=False
+    Instance: 6 (ready)
+    Tenant: 29 (helpers_demo_user3, db=helpers_demo_user3, port=8303, status=active)
+    URL: http://127.0.0.1:8303
+
+  user4 (user4@demo.local):
+    Exists: True
+    Plan: enterprise, Package: full_erp
+    Company: User 4 Demo Company, Subdomain: user4
+    Setup: draft (plan)
+    Subscription: 7 (active)
+    Request: 7 (ready, adapter=local_docker)
+    Approved: provisioning=True, quote=True
+    Instance: 7 (ready)
+    Tenant: 30 (helpers_demo_user4, db=helpers_demo_user4, port=8304, status=active)
+    URL: http://127.0.0.1:8304
+
+---
+p3-uat-control-api Up 28 minutes 100.76.217.35:8001->8000/tcp, 127.0.0.1:8001->8000/tcp, 192.168.100.66:8001->8000/tcp
+p3-uat-build-postgres Up 32 minutes (healthy) 5432/tcp
+---
+---
+helpers_demo_user1
+helpers_demo_user2
+helpers_demo_user3
+helpers_demo_user4
+pt_trial_1_60b12e
+pt_trial_1_787796
+pt_trial_1_ab36c9
+pt_trial_1_c1a09d
+pt_trial_1_d3340c
+pt_trial_1_ee5552
+pt_trial_1_f5b9fb
+pt_trial_1_f96eca
+vet_hospital_1_7631c6
+vet_hospital_1_a9fa20
+vet_hospital_1_ae6758
+vet_hospital_1_be55e4
+vet_hospital_1_ce0082
+vet_hospital_1_e4fa80
+---
+Password for user mosh_admin: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: fe_sendauth: no password supplied

@@ -1,0 +1,8 @@
+{
+  "status": "done_once",
+  "worker": "manual-uat-worker",
+  "timestamp": "2026-09-06T04:29:51.188925+00:00",
+  "processed": true,
+  "max_success": 4,
+  "allowed": true
+}

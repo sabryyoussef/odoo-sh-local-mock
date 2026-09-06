@@ -1,0 +1,6 @@
+mosh-tenant-manual-uat-user1 Up 25 seconds 8071-8072/tcp, 100.76.217.35:8304->8069/tcp, 127.0.0.1:8304->8069/tcp, 192.168.100.66:8304->8069/tcp
+mosh-tenant-manual-uat-user4 Up 2 minutes 8071-8072/tcp, 100.76.217.35:8303->8069/tcp, 127.0.0.1:8303->8069/tcp, 192.168.100.66:8303->8069/tcp
+mosh-tenant-manual-uat-user3 Up 4 minutes 8071-8072/tcp, 100.76.217.35:8302->8069/tcp, 127.0.0.1:8302->8069/tcp, 192.168.100.66:8302->8069/tcp
+mosh-tenant-manual-uat-user2 Up 5 minutes 8071-8072/tcp, 100.76.217.35:8301->8069/tcp, 127.0.0.1:8301->8069/tcp, 192.168.100.66:8301->8069/tcp
+p3-uat-control-api Up 24 minutes 100.76.217.35:8001->8000/tcp, 127.0.0.1:8001->8000/tcp, 192.168.100.66:8001->8000/tcp
+p3-uat-build-postgres Up 24 minutes (healthy) 5432/tcp

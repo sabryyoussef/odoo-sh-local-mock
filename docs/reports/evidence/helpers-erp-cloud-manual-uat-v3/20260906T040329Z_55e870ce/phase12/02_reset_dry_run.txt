@@ -1,0 +1,191 @@
+======================================================================
+ Helpers ERP Cloud — Local UAT / Demo (manual_uat)
+======================================================================
+ Environment: development
+ Manual UAT enabled: True
+ Allowed: True
+
+DRY-RUN: Reset plan (no mutation):
+{
+  "dry_run": true,
+  "targets": [
+    {
+      "username": "user1",
+      "user_id": 11,
+      "exists": true,
+      "subscriptions": [
+        4
+      ],
+      "requests": [
+        4
+      ],
+      "instances": [
+        4
+      ],
+      "tenants": [
+        27
+      ],
+      "setups": [
+        4,
+        8
+      ]
+    },
+    {
+      "username": "user2",
+      "user_id": 12,
+      "exists": true,
+      "subscriptions": [
+        5
+      ],
+      "requests": [
+        5
+      ],
+      "instances": [
+        5
+      ],
+      "tenants": [
+        28
+      ],
+      "setups": [
+        5,
+        9
+      ]
+    },
+    {
+      "username": "user3",
+      "user_id": 13,
+      "exists": true,
+      "subscriptions": [
+        6
+      ],
+      "requests": [
+        6
+      ],
+      "instances": [
+        6
+      ],
+      "tenants": [
+        29
+      ],
+      "setups": [
+        6,
+        10
+      ]
+    },
+    {
+      "username": "user4",
+      "user_id": 14,
+      "exists": true,
+      "subscriptions": [
+        7
+      ],
+      "requests": [
+        7
+      ],
+      "instances": [
+        7
+      ],
+      "tenants": [
+        30
+      ],
+      "setups": [
+        7,
+        11
+      ]
+    }
+  ],
+  "would_delete": [
+    {
+      "username": "user1",
+      "user_id": 11,
+      "exists": true,
+      "subscriptions": [
+        4
+      ],
+      "requests": [
+        4
+      ],
+      "instances": [
+        4
+      ],
+      "tenants": [
+        27
+      ],
+      "setups": [
+        4,
+        8
+      ]
+    },
+    {
+      "username": "user2",
+      "user_id": 12,
+      "exists": true,
+      "subscriptions": [
+        5
+      ],
+      "requests": [
+        5
+      ],
+      "instances": [
+        5
+      ],
+      "tenants": [
+        28
+      ],
+      "setups": [
+        5,
+        9
+      ]
+    },
+    {
+      "username": "user3",
+      "user_id": 13,
+      "exists": true,
+      "subscriptions": [
+        6
+      ],
+      "requests": [
+        6
+      ],
+      "instances": [
+        6
+      ],
+      "tenants": [
+        29
+      ],
+      "setups": [
+        6,
+        10
+      ]
+    },
+    {
+      "username": "user4",
+      "user_id": 14,
+      "exists": true,
+      "subscriptions": [
+        7
+      ],
+      "requests": [
+        7
+      ],
+      "instances": [
+        7
+      ],
+      "tenants": [
+        30
+      ],
+      "setups": [
+        7,
+        11
+      ]
+    }
+  ],
+  "preserved": [
+    "templates",
+    "shared base images/databases",
+    "non-UAT users",
+    "non-UAT subscriptions"
+  ]
+}
+
+To execute, run without --dry-run (requires HELPERS_CLOUD_MANUAL_UAT_ENABLED=true)

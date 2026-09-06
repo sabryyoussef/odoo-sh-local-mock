@@ -1,0 +1,36 @@
+=== 06 portal login proof ===
+Portal: http://100.76.217.35:8001/cloud/login
+Date: 2026-09-06T06:49:38Z
+
+--- user1 ---
+CSRF len: 43
+POST /cloud/login user1/123 -> HTTP 302
+Redirect check via curl -L:
+FINAL:http://100.76.217.35:8001/cloud/setup/confirm CODE:302
+GET /cloud/setup with session -> HTTP 200
+  -> Setup page OK
+
+--- user2 ---
+CSRF len: 43
+POST /cloud/login user2/123 -> HTTP 302
+Redirect check via curl -L:
+FINAL:http://100.76.217.35:8001/cloud/setup/confirm CODE:302
+GET /cloud/setup with session -> HTTP 200
+  -> Setup page OK
+
+--- user3 ---
+CSRF len: 43
+POST /cloud/login user3/123 -> HTTP 302
+Redirect check via curl -L:
+FINAL:http://100.76.217.35:8001/cloud/setup/confirm CODE:302
+GET /cloud/setup with session -> HTTP 200
+  -> Setup page OK
+
+--- user4 ---
+CSRF len: 43
+POST /cloud/login user4/123 -> HTTP 302
+Redirect check via curl -L:
+FINAL:http://100.76.217.35:8001/cloud/login CODE:400
+GET /cloud/setup with session -> HTTP 200
+  -> Setup page OK
+

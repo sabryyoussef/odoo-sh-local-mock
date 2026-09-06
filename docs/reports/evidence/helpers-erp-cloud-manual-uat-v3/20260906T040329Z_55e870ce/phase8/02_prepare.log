@@ -1,0 +1,36 @@
+======================================================================
+ Helpers ERP Cloud — Local UAT / Demo (manual_uat)
+======================================================================
+ Environment: development
+ Manual UAT enabled: True
+ Allowed: True
+
+Module validation: OK
+  sales: standard=['contacts', 'crm', 'sale_management', 'account'], helpers=['helpers_base']
+  trading: standard=['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account'], helpers=['helpers_base', 'helpers_trading']
+  operations: standard=['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account'], helpers=['helpers_base', 'helpers_operations']
+  full_erp: standard=['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp'], helpers=['helpers_base', 'helpers_trading', 'helpers_finance', 'helpers_operations']
+
+Prepare-manual completed (idempotent, 4 accounts, no provisioning):
+  user1: user_id=11, plan=trial, package=sales
+    company=User 1 Demo Company, subdomain=user1, db=helpers_demo_user1
+    subscription=4, request=4 (queued)
+    approved=True, quote=False
+
+  user2: user_id=12, plan=starter, package=trading
+    company=User 2 Demo Company, subdomain=user2, db=helpers_demo_user2
+    subscription=5, request=5 (queued)
+    approved=True, quote=False
+
+  user3: user_id=13, plan=business, package=operations
+    company=User 3 Demo Company, subdomain=user3, db=helpers_demo_user3
+    subscription=6, request=6 (queued)
+    approved=True, quote=False
+
+  user4: user_id=14, plan=enterprise, package=full_erp
+    company=User 4 Demo Company, subdomain=user4, db=helpers_demo_user4
+    subscription=7, request=7 (queued)
+    approved=True, quote=True
+
+Next: python -m app.scripts.seed_helpers_cloud_manual_uat --provision-all  (bounded, 1 at a time)
+Or:   python -m app.scripts.seed_helpers_cloud_manual_uat --status

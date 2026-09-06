@@ -1,0 +1,36 @@
+=== user1 ===
+  GET /cloud/login 200 csrf=VnsVIkMF...
+  POST /cloud/login 200 url=http://127.0.0.1:8000/cloud/instances
+  instances page contains instances/tenant: True
+  GET /cloud/pricing 200 len=7449 has_trial=True has_enterprise=True
+  GET /cloud/setup 200 len=7539
+  GET /cloud/instances 200 len=3745 has_no_instances=False
+<!DOCTYPE html> <html lang="en" dir="ltr"> <head>   <meta charset="utf-8">   <meta name="viewport" content="width=device-width, initial-scale=1">   <title>My ERP</title>   <link rel="preconnect" href="https://fonts.googleapis.com">   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">   <link rel="stylesheet" href="/static/css/ap
+
+=== user2 ===
+  GET /cloud/login 200 csrf=LK6scSrs...
+  POST /cloud/login 200 url=http://127.0.0.1:8000/cloud/instances
+  instances page contains instances/tenant: True
+  GET /cloud/pricing 200 len=7449 has_trial=True has_enterprise=True
+  GET /cloud/setup 200 len=7539
+  GET /cloud/instances 200 len=3751 has_no_instances=False
+<!DOCTYPE html> <html lang="en" dir="ltr"> <head>   <meta charset="utf-8">   <meta name="viewport" content="width=device-width, initial-scale=1">   <title>My ERP</title>   <link rel="preconnect" href="https://fonts.googleapis.com">   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">   <link rel="stylesheet" href="/static/css/ap
+
+=== user3 ===
+  GET /cloud/login 200 csrf=uzDGoAF-...
+  POST /cloud/login 200 url=http://127.0.0.1:8000/cloud/instances
+  instances page contains instances/tenant: True
+  GET /cloud/pricing 200 len=7449 has_trial=True has_enterprise=True
+  GET /cloud/setup 200 len=7539
+  GET /cloud/instances 200 len=3758 has_no_instances=False
+<!DOCTYPE html> <html lang="en" dir="ltr"> <head>   <meta charset="utf-8">   <meta name="viewport" content="width=device-width, initial-scale=1">   <title>My ERP</title>   <link rel="preconnect" href="https://fonts.googleapis.com">   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">   <link rel="stylesheet" href="/static/css/ap
+
+=== user4 ===
+  GET /cloud/login 200 csrf=gZMNGDQy...
+  POST /cloud/login 200 url=http://127.0.0.1:8000/cloud/instances
+  instances page contains instances/tenant: True
+  GET /cloud/pricing 200 len=7449 has_trial=True has_enterprise=True
+  GET /cloud/setup 200 len=7539
+  GET /cloud/instances 200 len=3762 has_no_instances=False
+<!DOCTYPE html> <html lang="en" dir="ltr"> <head>   <meta charset="utf-8">   <meta name="viewport" content="width=device-width, initial-scale=1">   <title>My ERP</title>   <link rel="preconnect" href="https://fonts.googleapis.com">   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">   <link rel="stylesheet" href="/static/css/ap
+

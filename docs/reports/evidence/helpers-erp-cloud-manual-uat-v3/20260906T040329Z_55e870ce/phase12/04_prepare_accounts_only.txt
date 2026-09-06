@@ -1,0 +1,32 @@
+======================================================================
+ Helpers ERP Cloud — Local UAT / Demo (manual_uat)
+======================================================================
+ Environment: development
+ Manual UAT enabled: True
+ Allowed: True
+
+Module validation: OK
+  sales: standard=['contacts', 'crm', 'sale_management', 'account'], helpers=['helpers_base']
+  trading: standard=['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account'], helpers=['helpers_base', 'helpers_trading']
+  operations: standard=['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account'], helpers=['helpers_base', 'helpers_operations']
+  full_erp: standard=['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp'], helpers=['helpers_base', 'helpers_trading', 'helpers_finance', 'helpers_operations']
+
+Prepare-manual-accounts-only completed (4 accounts, 0 tenants — ready for Create click):
+  user1: user_id=11, plan=trial, package=sales
+    company=User 1 Demo Company, subdomain=user1, db=helpers_demo_user1
+    setup=4 (draft)
+
+  user2: user_id=12, plan=starter, package=trading
+    company=User 2 Demo Company, subdomain=user2, db=helpers_demo_user2
+    setup=5 (draft)
+
+  user3: user_id=13, plan=business, package=operations
+    company=User 3 Demo Company, subdomain=user3, db=helpers_demo_user3
+    setup=6 (draft)
+
+  user4: user_id=14, plan=enterprise, package=full_erp
+    company=User 4 Demo Company, subdomain=user4, db=helpers_demo_user4
+    setup=7 (draft)
+
+Next: User logs in at http://100.76.217.35:8001/cloud/login and clicks Create/Configure to queue provisioning
+Worker: python -m app.manual_uat_worker_main --max-success 4 (isolated, allow-listed)

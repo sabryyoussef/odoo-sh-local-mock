@@ -1,0 +1,57 @@
+======================================================================
+ Helpers ERP Cloud — Local UAT / Demo (manual_uat)
+======================================================================
+ Environment: development
+ Manual UAT enabled: True
+ Allowed: True
+
+Manual UAT Status:
+  Enabled: True
+  Local env: True
+  Allowed: True
+  Module validation: OK
+
+  user1 (user1@demo.local):
+    Exists: True
+    Plan: trial, Package: sales
+    Company: User 1 Demo Company, Subdomain: user1
+    Setup: draft (confirm)
+    Subscription: None (None)
+    Request: None (None, adapter=None)
+    Approved: provisioning=False, quote=False
+    Instance: None (None)
+    Tenant: None (None, db=None, port=None, status=None)
+
+  user2 (user2@demo.local):
+    Exists: True
+    Plan: starter, Package: trading
+    Company: User 2 Demo Company, Subdomain: user2
+    Setup: draft (confirm)
+    Subscription: None (None)
+    Request: None (None, adapter=None)
+    Approved: provisioning=False, quote=False
+    Instance: None (None)
+    Tenant: None (None, db=None, port=None, status=None)
+
+  user3 (user3@demo.local):
+    Exists: True
+    Plan: business, Package: operations
+    Company: User 3 Demo Company, Subdomain: user3
+    Setup: draft (confirm)
+    Subscription: None (None)
+    Request: None (None, adapter=None)
+    Approved: provisioning=False, quote=False
+    Instance: None (None)
+    Tenant: None (None, db=None, port=None, status=None)
+
+  user4 (user4@demo.local):
+    Exists: True
+    Plan: enterprise, Package: full_erp
+    Company: User 4 Demo Company, Subdomain: user4
+    Setup: draft (confirm)
+    Subscription: None (None)
+    Request: None (None, adapter=None)
+    Approved: provisioning=False, quote=False
+    Instance: None (None)
+    Tenant: None (None, db=None, port=None, status=None)
+

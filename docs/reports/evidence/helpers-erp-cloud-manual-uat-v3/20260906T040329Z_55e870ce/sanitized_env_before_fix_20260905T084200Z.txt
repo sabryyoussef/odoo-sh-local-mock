@@ -1,0 +1,44 @@
+# Mock Odoo.sh — local platform secrets
+# NEVER commit this file.
+
+# --- Session / crypto ---
+# Used for signed cookies; Fernet token encryption is derived from this value.
+SESSION_SECRET=***REDACTED***
+
+# --- Platform GitHub OAuth App (ONE app for all customers) ---
+# App name: Mock Odoo.sh
+# Developer settings: https://github.com/settings/developers
+GITHUB_CLIENT_ID=Ov23lihCBTVF0QrY2lx5
+GITHUB_CLIENT_SECRET=***REDACTED***
+GITHUB_CALLBACK_URL=https://mock-odoo.drpaws.ai/auth/github/callback
+
+# --- Optional ---
+# DATABASE_URL=sqlite:////data/control.db
+# DEMO_SUBSCRIPTION_CODE=MOSH-2026-ABCD-1234
+BUILD_ROOT=/data/builds
+BUILD_PORT_MIN=8101
+BUILD_PORT_MAX=8198
+BUILD_POSTGRES_HOST=build-postgres
+BUILD_POSTGRES_PORT=5432
+BUILD_POSTGRES_USER=mosh_odoo
+BUILD_POSTGRES_PASSWORD=***REDACTED***
+BUILD_POSTGRES_ADMIN_USER=mosh_admin
+BUILD_POSTGRES_ADMIN_PASSWORD=***REDACTED***
+ODOO19_IMAGE=odoo:19.0
+ODOO18_IMAGE=odoo:18.0
+ODOO17_IMAGE=odoo:17.0
+BUILD_DOCKER_NETWORK=odoo-sh-local-mock_default
+BUILD_CONTAINER_MEMORY=1536m
+BUILD_CONTAINER_NANO_CPUS=1000000000
+BUILD_HEALTH_TIMEOUT_SEC=180
+BUILD_HOST_ROOT=/opt/projects/active/odoo-sh-local-mock/data/builds
+GITHUB_WEBHOOK_SECRET=***REDACTED***
+GITHUB_WEBHOOK_PUBLIC_URL=https://mock-odoo.drpaws.ai/webhooks/github
+MAX_CONCURRENT_BUILDS=2
+
+# Helpers ERP branded demo
+DEMO_THEME=helpers_erp
+
+# Do not put API keys in .env — use a secrets manager or local-only untracked file.
+# CURSOR_API_KEY=...OPERATOR_GITHUB_LOGINS=sabryyoussef
+OPERATOR_GITHUB_LOGINS=sabryyoussef

@@ -1,0 +1,4 @@
+helpers_demo_user1|http://127.0.0.1:8301|http://master.tailcf9988.ts.net:8301
+helpers_demo_user2|http://127.0.0.1:8302|http://master.tailcf9988.ts.net:8302
+helpers_demo_user3|http://127.0.0.1:8303|http://master.tailcf9988.ts.net:8303
+helpers_demo_user4|http://127.0.0.1:8304|http://master.tailcf9988.ts.net:8304

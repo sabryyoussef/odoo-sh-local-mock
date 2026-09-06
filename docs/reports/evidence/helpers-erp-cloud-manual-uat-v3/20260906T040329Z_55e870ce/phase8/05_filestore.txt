@@ -1,0 +1,32 @@
+drwxr-xr-x 4 root  root   80 Sep  6 07:31 helpers_demo_user1
+drwxr-xr-x 4 root  root   80 Sep  6 07:32 helpers_demo_user2
+drwxr-xr-x 4 root  root   80 Sep  6 07:33 helpers_demo_user3
+drwxr-xr-x 4 root  root   80 Sep  6 07:35 helpers_demo_user4
+=== helpers_demo_user1 ===
+total 0
+drwxr-xr-x 5 syslog syslog 100 Sep  6 07:31 .
+drwxr-xr-x 4 root   root    80 Sep  6 07:31 ..
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:31 addons
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:31 filestore
+drwxr-xr-x 2 syslog syslog  40 Sep  6 07:31 sessions
+=== helpers_demo_user2 ===
+total 0
+drwxr-xr-x 5 syslog syslog 100 Sep  6 07:32 .
+drwxr-xr-x 4 root   root    80 Sep  6 07:32 ..
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:32 addons
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:32 filestore
+drwxr-xr-x 2 syslog syslog  40 Sep  6 07:32 sessions
+=== helpers_demo_user3 ===
+total 0
+drwxr-xr-x 5 syslog syslog 100 Sep  6 07:33 .
+drwxr-xr-x 4 root   root    80 Sep  6 07:33 ..
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:34 addons
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:34 filestore
+drwxr-xr-x 2 syslog syslog  40 Sep  6 07:33 sessions
+=== helpers_demo_user4 ===
+total 0
+drwxr-xr-x 5 syslog syslog 100 Sep  6 07:35 .
+drwxr-xr-x 4 root   root    80 Sep  6 07:35 ..
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:35 addons
+drwxr-xr-x 3 syslog syslog  60 Sep  6 07:35 filestore
+drwxr-xr-x 2 syslog syslog  40 Sep  6 07:35 sessions

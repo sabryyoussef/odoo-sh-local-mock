@@ -1,0 +1,7 @@
+BUILD_DOCKER_NETWORK p3-helpers-erp-cloud-windows-uat_default
+TENANT_ROOT /data/tenants
+TENANT_HOST_ROOT /tmp/p3-helpers-erp-cloud-windows-uat/data-uat/tenants
+MANUAL_UAT_ENABLED True
+MANUAL_UAT_DB_NAMES frozenset({'helpers_demo_user3', 'helpers_demo_user1', 'helpers_demo_user2', 'helpers_demo_user4'})
+allowed True
+allow_list []

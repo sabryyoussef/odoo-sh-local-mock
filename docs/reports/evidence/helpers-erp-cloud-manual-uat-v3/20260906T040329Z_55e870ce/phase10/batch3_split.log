@@ -1,0 +1,505 @@
+===RUNNING tests/test_backup_scheduler.py===
+........                                                                 [100%]
+=============================== warnings summary ===============================
+tests/test_backup_scheduler.py::test_infer_frequency_types
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_backup_scheduler.py::test_infer_frequency_types
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 2 warnings in 4.92s
+---END tests/test_backup_scheduler.py---
+FOOTER tests/test_backup_scheduler.py: 8 passed, 2 warnings in 4.92s
+EXIT_CODE:0
+===RUNNING tests/test_backups.py===
+....................                                                     [100%]
+=============================== warnings summary ===============================
+tests/test_backups.py::test_policy_snapshot_from_subscription
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_backups.py::test_policy_snapshot_from_subscription
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+20 passed, 2 warnings in 11.20s
+---END tests/test_backups.py---
+FOOTER tests/test_backups.py: 20 passed, 2 warnings in 11.20s
+EXIT_CODE:0
+===RUNNING tests/test_build_engine.py===
+........                                                                 [100%]
+=============================== warnings summary ===============================
+tests/test_build_engine.py::test_safe_naming
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_build_engine.py::test_safe_naming
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 2 warnings in 5.28s
+---END tests/test_build_engine.py---
+FOOTER tests/test_build_engine.py: 8 passed, 2 warnings in 5.28s
+EXIT_CODE:0
+===RUNNING tests/test_module_catalog.py===
+.....................---END tests/test_module_catalog.py---
+FOOTER tests/test_module_catalog.py: 
+EXIT_CODE:0
+===RUNNING tests/test_oauth_redirect.py===
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_oauth_redirect.py::test_localhost_forces_http_and_default_port
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_oauth_redirect.py::test_localhost_forces_http_and_default_port
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 2 warnings in 3.84s
+---END tests/test_oauth_redirect.py---
+FOOTER tests/test_oauth_redirect.py: 6 passed, 2 warnings in 3.84s
+EXIT_CODE:0
+===RUNNING tests/test_operator_auth.py===
+....                                                                     [100%]
+=============================== warnings summary ===============================
+app/main.py:141
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+../usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+4 passed, 2 warnings in 2.93s
+---END tests/test_operator_auth.py---
+FOOTER tests/test_operator_auth.py: 4 passed, 2 warnings in 2.93s
+EXIT_CODE:0
+===RUNNING tests/test_phase1.py===
+.................                                                        [100%]
+=============================== warnings summary ===============================
+tests/test_phase1.py::test_user_upsert
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_phase1.py::test_user_upsert
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+17 passed, 2 warnings in 9.11s
+---END tests/test_phase1.py---
+FOOTER tests/test_phase1.py: 17 passed, 2 warnings in 9.11s
+EXIT_CODE:0
+===RUNNING tests/test_platform_deployment.py===
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_platform_deployment.py::test_generate_platform_tenant_code
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_platform_deployment.py::test_generate_platform_tenant_code
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 2 warnings in 4.51s
+---END tests/test_platform_deployment.py---
+FOOTER tests/test_platform_deployment.py: 6 passed, 2 warnings in 4.51s
+EXIT_CODE:0
+===RUNNING tests/test_platform_lifecycle_api.py===
+.....                                                                    [100%]
+=============================== warnings summary ===============================
+app/main.py:141
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+../usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 2 warnings in 3.79s
+---END tests/test_platform_lifecycle_api.py---
+FOOTER tests/test_platform_lifecycle_api.py: 5 passed, 2 warnings in 3.79s
+EXIT_CODE:0
+===RUNNING tests/test_platform_lifecycle.py===
+..................                                                       [100%]
+=============================== warnings summary ===============================
+tests/test_platform_lifecycle.py::test_config_defaults_and_bounds
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_platform_lifecycle.py::test_config_defaults_and_bounds
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+18 passed, 2 warnings in 10.55s
+---END tests/test_platform_lifecycle.py---
+FOOTER tests/test_platform_lifecycle.py: 18 passed, 2 warnings in 10.55s
+EXIT_CODE:0
+===RUNNING tests/test_platform_plan_entitlements.py===
+......................---END tests/test_platform_plan_entitlements.py---
+FOOTER tests/test_platform_plan_entitlements.py: 
+EXIT_CODE:0
+===RUNNING tests/test_platform_templates.py===
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+tests/test_platform_templates.py::test_platform_template_conf_bind_uses_host_root
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_platform_templates.py::test_platform_template_conf_bind_uses_host_root
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 2 warnings in 6.65s
+---END tests/test_platform_templates.py---
+FOOTER tests/test_platform_templates.py: 7 passed, 2 warnings in 6.65s
+EXIT_CODE:0
+===RUNNING tests/test_platform_wizard.py===
+........s                                                                [100%]
+=============================== warnings summary ===============================
+tests/test_platform_wizard.py::test_wizard_draft_created
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_platform_wizard.py::test_wizard_draft_created
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_platform_wizard.py::test_wizard_version_page
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 1 skipped, 3 warnings in 5.84s
+---END tests/test_platform_wizard.py---
+FOOTER tests/test_platform_wizard.py: 8 passed, 1 skipped, 3 warnings in 5.84s
+EXIT_CODE:0
+===RUNNING tests/test_product_line_regression.py===
+===RUNNING tests/test_product_line_regression.py===
+.....                                                                    [100%]
+=============================== warnings summary ===============================
+tests/test_product_line_regression.py::test_ready_solutions_routes_and_vertical_identity
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_product_line_regression.py::test_ready_solutions_routes_and_vertical_identity
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_product_line_regression.py::test_ready_solutions_routes_and_vertical_identity
+tests/test_product_line_regression.py::test_ready_solutions_routes_and_vertical_identity
+tests/test_product_line_regression.py::test_developer_platform_routes_and_github_path
+tests/test_product_line_regression.py::test_developer_platform_routes_and_github_path
+tests/test_product_line_regression.py::test_developer_platform_routes_and_github_path
+tests/test_product_line_regression.py::test_cloud_registration_does_not_replace_github_login
+tests/test_product_line_regression.py::test_cloud_registration_does_not_replace_github_login
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 9 warnings in 3.99s
+---END tests/test_product_line_regression.py---
+FOOTER tests/test_product_line_regression.py: 5 passed, 9 warnings in 3.99s
+EXIT_CODE:0
+===RUNNING tests/test_provisioning.py===
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/test_provisioning.py::test_queue_requires_idempotency
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_provisioning.py::test_queue_requires_idempotency
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+9 passed, 2 warnings in 5.43s
+---END tests/test_provisioning.py---
+FOOTER tests/test_provisioning.py: 9 passed, 2 warnings in 5.43s
+EXIT_CODE:0
+===RUNNING tests/test_saas_catalog.py===
+...........                                                              [100%]
+=============================== warnings summary ===============================
+tests/test_saas_catalog.py::test_solution_crud_and_uniqueness
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_saas_catalog.py::test_solution_crud_and_uniqueness
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_saas_catalog.py::test_catalog_page_public
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+11 passed, 3 warnings in 6.32s
+---END tests/test_saas_catalog.py---
+FOOTER tests/test_saas_catalog.py: 11 passed, 3 warnings in 6.32s
+EXIT_CODE:0
+===RUNNING tests/test_template_init.py===
+.                                                                        [100%]
+=============================== warnings summary ===============================
+tests/test_template_init.py::test_template_postgres_name_version_starts_with_letter
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_template_init.py::test_template_postgres_name_version_starts_with_letter
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 1.59s
+---END tests/test_template_init.py---
+FOOTER tests/test_template_init.py: 1 passed, 2 warnings in 1.59s
+EXIT_CODE:0
+===RUNNING tests/test_three_product_navigation.py===
+F.....                                                                   [100%]
+=================================== FAILURES ===================================
+___________________ test_homepage_shows_three_product_lines ____________________
+
+client = <starlette.testclient.TestClient object at 0x7638283f5dc0>
+
+    def test_homepage_shows_three_product_lines(client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        body = resp.text
+        assert "Ready Business Solutions" in body
+        assert "Build Your ERP" in body
+>       assert "Ship Custom Odoo from Git" in body
+E       assert 'Ship Custom Odoo from Git' in '<!DOCTYPE html>\n<html lang="en" dir="ltr">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width...production host.</p>\n</footer>\n</div>\n\n  </div>\n  <script src="/static/js/app.js"></script>\n  \n</body>\n</html>'
+
+tests/test_three_product_navigation.py:12: AssertionError
+=============================== warnings summary ===============================
+tests/test_three_product_navigation.py::test_homepage_shows_three_product_lines
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_three_product_navigation.py::test_homepage_shows_three_product_lines
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+tests/test_three_product_navigation.py: 10 warnings
+  /usr/local/lib/python3.12/site-packages/starlette/templating.py:161: DeprecationWarning: The `name` is not the first parameter anymore. The first parameter should be the `Request` instance.
+  Replace `TemplateResponse(name, {"request": request})` by `TemplateResponse(request, name)`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_three_product_navigation.py::test_homepage_shows_three_product_lines
+1 failed, 5 passed, 12 warnings in 4.34s
+---END tests/test_three_product_navigation.py---
+FOOTER tests/test_three_product_navigation.py: 1 failed, 5 passed, 12 warnings in 4.34s
+EXIT_CODE:0
+===RUNNING tests/test_webhooks_lifecycle.py===
+...................                                                      [100%]
+=============================== warnings summary ===============================
+tests/test_webhooks_lifecycle.py::test_valid_signature_accepted
+  /app/app/main.py:141: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_webhooks_lifecycle.py::test_valid_signature_accepted
+  /usr/local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+19 passed, 2 warnings in 10.52s
+---END tests/test_webhooks_lifecycle.py---
+FOOTER tests/test_webhooks_lifecycle.py: 19 passed, 2 warnings in 10.52s
+EXIT_CODE:0
+===RESUME_COMPLETE===
+===PATCHED_FOOTER tests/test_module_catalog.py: ===
+===PATCHED_FOOTER tests/test_platform_plan_entitlements.py: ===
+
+===CORRECTED_FOOTER tests/test_module_catalog.py: 21 passed, 1 skipped, 662 warnings in 12.38s ===
+EXIT_CODE:0
+===CORRECTED_FOOTER tests/test_platform_plan_entitlements.py: 22 passed, 1 skipped, 1475 warnings in 14.55s ===
+EXIT_CODE:0
+===CORRECTED_FOOTER tests/test_three_product_navigation.py: 6 passed, 12 warnings in 4.16s ===
+EXIT_CODE:0
+===MANIFEST_TOTALS 426 passed, 0 failed, 13 skipped ===

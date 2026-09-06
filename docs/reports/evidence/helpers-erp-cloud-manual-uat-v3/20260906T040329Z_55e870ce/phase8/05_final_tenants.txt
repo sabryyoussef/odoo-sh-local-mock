@@ -1,0 +1,4 @@
+27|helpers_demo_user1|helpers_demo_user1|mosh-tenant-manual-uat-user1|8301|active|http://127.0.0.1:8301|http://master.tailcf9988.ts.net:8301
+28|helpers_demo_user2|helpers_demo_user2|mosh-tenant-manual-uat-user2|8302|active|http://127.0.0.1:8302|http://master.tailcf9988.ts.net:8302
+29|helpers_demo_user3|helpers_demo_user3|mosh-tenant-manual-uat-user3|8303|active|http://127.0.0.1:8303|http://master.tailcf9988.ts.net:8303
+30|helpers_demo_user4|helpers_demo_user4|mosh-tenant-manual-uat-user4|8304|active|http://127.0.0.1:8304|http://master.tailcf9988.ts.net:8304

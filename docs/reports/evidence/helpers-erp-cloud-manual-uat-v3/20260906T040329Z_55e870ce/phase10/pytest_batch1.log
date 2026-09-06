@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.3.4, pluggy-1.6.0
+rootdir: /app
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.14.2
+collected 439 items / 10 deselected / 429 selected
+
+tests/test_backup_scheduler.py ........                                  [  1%]
+tests/test_backups.py ....................                               [  6%]
+tests/test_build_engine.py ........                                      [  8%]
+tests/test_cloud_external_url.py ........                                [ 10%]
+tests/test_cloud_manual_uat_isolation.py ........                        [ 12%]
+tests/test_cloud_manual_uat_portal_login.py ............                 [ 14%]
+tests/test_cloud_onboarding_ui.py .................................      [ 22%]
+tests/test_cloud_p1_2_eligibility.py ..........                          [ 24%]
+tests/test_cloud_p1_3_durable_approval.py .............................. [ 31%]
+.....                                                                    [ 33%]
+tests/test_cloud_p1_atomic_concurrency.py .....                          [ 34%]
+tests/test_cloud_p1_contracts.py ..................                      [ 38%]
+tests/test_cloud_p2_unit.py ............                                 [ 41%]
+tests/test_cloud_p3_eligibility_worker.py ........................       [ 46%]
+tests/test_cloud_p3_secret_leakage.py ..s..                              [ 48%]
+tests/test_customer_portal.py .................                          [ 51%]
+tests/test_dual_journey.py ...........                                   [ 54%]
+tests/test_e2e_harness.py ......                                         [ 55%]
+tests/test_helpers_erp_cloud.py ......................                   [ 61%]
+tests/test_module_catalog.py .....................                       [ 65%]
+tests/test_oauth_redirect.py ......                                      [ 67%]
+tests/test_operator_auth.py ....                                         [ 68%]
+tests/test_phase1.py .................                                   [ 72%]
+tests/test_platform_deployment.py ......                                 [ 73%]
+tests/test_platform_lifecycle.py ..................                      [ 77%]
+tests/test_platform_lifecycle_api.py .....                               [ 79%]
+tests/test_platform_plan_entitlements.py ......................

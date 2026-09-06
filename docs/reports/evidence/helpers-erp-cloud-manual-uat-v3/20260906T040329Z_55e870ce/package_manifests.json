@@ -1,0 +1,36 @@
+{
+  "full_erp": [
+    "contacts",
+    "crm",
+    "sale_management",
+    "purchase",
+    "stock",
+    "account",
+    "hr",
+    "project",
+    "maintenance",
+    "mrp"
+  ],
+  "operations": [
+    "purchase",
+    "stock",
+    "maintenance",
+    "hr",
+    "mrp",
+    "account"
+  ],
+  "sales": [
+    "contacts",
+    "crm",
+    "sale_management",
+    "account"
+  ],
+  "trading": [
+    "contacts",
+    "crm",
+    "sale_management",
+    "purchase",
+    "stock",
+    "account"
+  ]
+}

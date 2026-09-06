@@ -1,0 +1,157 @@
+2026-09-06 04:31:31,647 INFO Manual UAT worker claiming request 4 for user1 (allow-list)
+2026-09-06 04:31:31,817 INFO audit event=cloud.manual_uat.tenant_reserved project_id=None build_id=None actor=manual_uat:user1
+2026-09-06 04:31:33,005 INFO No template filestore found for mosh_tpl_cloud_base_19_0_trading, creating empty filestore at /data/tenants/helpers_demo_user1/filestore
+2026-09-06 04:31:33,108 INFO Installing package modules for sales: ['crm', 'sale_management', 'account'] (already installed: {'google_gmail', 'mail_bot', 'auth_totp_mail', 'auth_passkey', 'rpc', 'sms', 'web_unsplash', 'base', 'portal', 'bus', 'base_import', 'mail', 'base_setup', 'barcodes', 'microsoft_outlook', 'web', 'spreadsheet', 'auth_passkey_portal', 'resource_mail', 'partner_autocomplete', 'http_routing', 'digest', 'auth_totp_portal', 'analytic', 'snailmail', 'api_doc', 'product', 'base_import_module', 'auth_signup', 'utm', 'uom', 'base_install_request', 'privacy_lookup', 'phone_validation', 'auth_totp', 'html_editor', 'contacts', 'board', 'resource', 'iap_mail', 'spreadsheet_dashboard', 'web_tour', 'iap'})
+2026-09-06 04:31:33,787 INFO Install conf for helpers_demo_user1: [options]
+admin_passwd = ***REDACTED***
+list_db = False
+db_host = uat-build-postgres
+db_port = 5432
+db_user = mosh_r_helpers_demo_user1_role
+db_password = ***REDACTED***
+db_name = helpers_demo_user1
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+http_interface = 0.0.0.0
+http_port = 8069
+proxy_mode = True
+without_demo = True
+data_dir = /var/lib/odoo
+
+2026-09-06 04:32:21,440 INFO Module install container mosh-install-helpers_demo_user1 finished status=0 logs tail:  sale_pdf_quote_builder/wizards/res_config_settings_views.xml 
+2026-09-06 04:32:17,043 1 INFO helpers_demo_user1 odoo.modules.loading: Module sale_pdf_quote_builder loaded in 0.79s, 407 queries (+407 other) 
+2026-09-06 04:32:17,043 1 INFO helpers_demo_user1 odoo.modules.loading: 67 modules loaded in 39.21s, 17694 queries (+17694 extra) 
+2026-09-06 04:32:18,550 1 INFO helpers_demo_user1 odoo.modules.loading: Modules loaded. 
+2026-09-06 04:32:20,794 1 INFO helpers_demo_user1 odoo.registry: Registry changed, signaling through the database 
+2026-09-06 04:32:20,796 1 INFO helpers_demo_user1 odoo.registry: Registry loaded in 45.719s 
+2026-09-06 04:32:20,796 1 INFO helpers_demo_user1 odoo.service.server: Initiating shutdown 
+2026-09-06 04:32:20,796 1 INFO helpers_demo_user1 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-09-06 04:32:20,797 1 INFO helpers_demo_user1 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  
+
+2026-09-06 04:32:21,440 INFO Module install succeeded for sales: ['crm', 'sale_management', 'account']
+2026-09-06 04:32:21,474 INFO Module install verification passed for sales: ['crm', 'sale_management', 'account']
+2026-09-06 04:32:30,344 INFO Set company name to User 1 Demo Company in helpers_demo_user1
+2026-09-06 04:32:30,375 INFO Created user user1 (id=5) in helpers_demo_user1
+2026-09-06 04:32:30,378 INFO Inserted res_company_users_rel for new user user1 (id=5) company 1 in helpers_demo_user1
+2026-09-06 04:32:32,687 INFO Set password via container mosh-tenant-manual-uat-user1: Password set via passlib admin
+
+2026-09-06 04:32:32,768 INFO audit event=cloud.manual_uat.provisioned project_id=None build_id=None actor=manual_uat:user1
+2026-09-06 04:32:32,770 INFO Manual UAT provisioned ready: tenant=helpers_demo_user1 request=4 port=8301 db=helpers_demo_user1
+2026-09-06 04:32:32,770 INFO Manual UAT worker provisioned user1: tenant=helpers_demo_user1 port=8301 db=helpers_demo_user1 (1/4)
+2026-09-06 04:32:34,795 INFO Manual UAT worker claiming request 5 for user2 (allow-list)
+2026-09-06 04:32:34,837 INFO audit event=cloud.manual_uat.tenant_reserved project_id=None build_id=None actor=manual_uat:user2
+2026-09-06 04:32:36,006 INFO No template filestore found for mosh_tpl_cloud_base_19_0_trading, creating empty filestore at /data/tenants/helpers_demo_user2/filestore
+2026-09-06 04:32:36,119 INFO Installing package modules for trading: ['crm', 'sale_management', 'purchase', 'stock', 'account'] (already installed: {'google_gmail', 'mail_bot', 'auth_totp_mail', 'auth_passkey', 'rpc', 'sms', 'web_unsplash', 'base', 'portal', 'bus', 'base_import', 'mail', 'base_setup', 'barcodes', 'microsoft_outlook', 'web', 'spreadsheet', 'auth_passkey_portal', 'resource_mail', 'partner_autocomplete', 'http_routing', 'digest', 'auth_totp_portal', 'analytic', 'snailmail', 'api_doc', 'product', 'base_import_module', 'auth_signup', 'utm', 'uom', 'base_install_request', 'privacy_lookup', 'phone_validation', 'auth_totp', 'html_editor', 'contacts', 'board', 'resource', 'iap_mail', 'spreadsheet_dashboard', 'web_tour', 'iap'})
+2026-09-06 04:32:36,805 INFO Install conf for helpers_demo_user2: [options]
+admin_passwd = ***REDACTED***
+list_db = False
+db_host = uat-build-postgres
+db_port = 5432
+db_user = mosh_r_helpers_demo_user2_role
+db_password = ***REDACTED***
+db_name = helpers_demo_user2
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+http_interface = 0.0.0.0
+http_port = 8069
+proxy_mode = True
+without_demo = True
+data_dir = /var/lib/odoo
+
+2026-09-06 04:33:44,212 INFO Module install container mosh-install-helpers_demo_user2 finished status=0 logs tail: ding: loading sale_purchase_stock/views/purchase_order_views.xml 
+2026-09-06 04:33:39,968 1 INFO helpers_demo_user2 odoo.modules.loading: Module sale_purchase_stock loaded in 0.31s, 143 queries (+143 other) 
+2026-09-06 04:33:39,969 1 INFO helpers_demo_user2 odoo.modules.loading: 78 modules loaded in 59.33s, 27905 queries (+27905 extra) 
+2026-09-06 04:33:41,509 1 INFO helpers_demo_user2 odoo.modules.loading: Modules loaded. 
+2026-09-06 04:33:43,467 1 INFO helpers_demo_user2 odoo.registry: Registry changed, signaling through the database 
+2026-09-06 04:33:43,469 1 INFO helpers_demo_user2 odoo.registry: Registry loaded in 65.352s 
+2026-09-06 04:33:43,469 1 INFO helpers_demo_user2 odoo.service.server: Initiating shutdown 
+2026-09-06 04:33:43,469 1 INFO helpers_demo_user2 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-09-06 04:33:43,469 1 INFO helpers_demo_user2 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  
+
+2026-09-06 04:33:44,212 INFO Module install succeeded for trading: ['crm', 'sale_management', 'purchase', 'stock', 'account']
+2026-09-06 04:33:44,256 INFO Module install verification passed for trading: ['crm', 'sale_management', 'purchase', 'stock', 'account']
+2026-09-06 04:33:53,141 INFO Set company name to User 2 Demo Company in helpers_demo_user2
+2026-09-06 04:33:53,180 INFO Created user user2 (id=5) in helpers_demo_user2
+2026-09-06 04:33:53,182 INFO Inserted res_company_users_rel for new user user2 (id=5) company 1 in helpers_demo_user2
+2026-09-06 04:33:55,470 INFO Set password via container mosh-tenant-manual-uat-user2: Password set via passlib admin
+
+2026-09-06 04:33:55,554 INFO audit event=cloud.manual_uat.provisioned project_id=None build_id=None actor=manual_uat:user2
+2026-09-06 04:33:55,556 INFO Manual UAT provisioned ready: tenant=helpers_demo_user2 request=5 port=8302 db=helpers_demo_user2
+2026-09-06 04:33:55,556 INFO Manual UAT worker provisioned user2: tenant=helpers_demo_user2 port=8302 db=helpers_demo_user2 (2/4)
+2026-09-06 04:33:57,579 INFO Manual UAT worker claiming request 6 for user3 (allow-list)
+2026-09-06 04:33:57,630 INFO audit event=cloud.manual_uat.tenant_reserved project_id=None build_id=None actor=manual_uat:user3
+2026-09-06 04:33:58,904 INFO No template filestore found for mosh_tpl_cloud_base_19_0_trading, creating empty filestore at /data/tenants/helpers_demo_user3/filestore
+2026-09-06 04:33:58,971 INFO Installing package modules for operations: ['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account'] (already installed: {'google_gmail', 'mail_bot', 'auth_totp_mail', 'auth_passkey', 'rpc', 'sms', 'web_unsplash', 'base', 'portal', 'bus', 'base_import', 'mail', 'base_setup', 'barcodes', 'microsoft_outlook', 'web', 'spreadsheet', 'auth_passkey_portal', 'resource_mail', 'partner_autocomplete', 'http_routing', 'digest', 'auth_totp_portal', 'analytic', 'snailmail', 'api_doc', 'product', 'base_import_module', 'auth_signup', 'utm', 'uom', 'base_install_request', 'privacy_lookup', 'phone_validation', 'auth_totp', 'html_editor', 'contacts', 'board', 'resource', 'iap_mail', 'spreadsheet_dashboard', 'web_tour', 'iap'})
+2026-09-06 04:33:59,614 INFO Install conf for helpers_demo_user3: [options]
+admin_passwd = ***REDACTED***
+list_db = False
+db_host = uat-build-postgres
+db_port = 5432
+db_user = mosh_r_helpers_demo_user3_role
+db_password = ***REDACTED***
+db_name = helpers_demo_user3
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+http_interface = 0.0.0.0
+http_port = 8069
+proxy_mode = True
+without_demo = True
+data_dir = /var/lib/odoo
+
+2026-09-06 04:35:16,322 INFO Module install container mosh-install-helpers_demo_user3 finished status=0 logs tail: odoo.modules.loading: loading purchase_mrp/security/ir.model.access.csv 
+2026-09-06 04:35:11,459 1 INFO helpers_demo_user3 odoo.modules.loading: Module purchase_mrp loaded in 0.43s, 233 queries (+233 other) 
+2026-09-06 04:35:11,460 1 INFO helpers_demo_user3 odoo.modules.loading: 72 modules loaded in 68.19s, 32008 queries (+32008 extra) 
+2026-09-06 04:35:13,456 1 INFO helpers_demo_user3 odoo.modules.loading: Modules loaded. 
+2026-09-06 04:35:15,530 1 INFO helpers_demo_user3 odoo.registry: Registry changed, signaling through the database 
+2026-09-06 04:35:15,532 1 INFO helpers_demo_user3 odoo.registry: Registry loaded in 74.640s 
+2026-09-06 04:35:15,532 1 INFO helpers_demo_user3 odoo.service.server: Initiating shutdown 
+2026-09-06 04:35:15,532 1 INFO helpers_demo_user3 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-09-06 04:35:15,532 1 INFO helpers_demo_user3 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  
+
+2026-09-06 04:35:16,322 INFO Module install succeeded for operations: ['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account']
+2026-09-06 04:35:16,369 INFO Module install verification passed for operations: ['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account']
+2026-09-06 04:35:25,251 INFO Set company name to User 3 Demo Company in helpers_demo_user3
+2026-09-06 04:35:25,289 INFO Created user user3 (id=5) in helpers_demo_user3
+2026-09-06 04:35:25,292 INFO Inserted res_company_users_rel for new user user3 (id=5) company 1 in helpers_demo_user3
+2026-09-06 04:35:27,586 INFO Set password via container mosh-tenant-manual-uat-user3: Password set via passlib admin
+
+2026-09-06 04:35:27,679 INFO audit event=cloud.manual_uat.provisioned project_id=None build_id=None actor=manual_uat:user3
+2026-09-06 04:35:27,682 INFO Manual UAT provisioned ready: tenant=helpers_demo_user3 request=6 port=8303 db=helpers_demo_user3
+2026-09-06 04:35:27,683 INFO Manual UAT worker provisioned user3: tenant=helpers_demo_user3 port=8303 db=helpers_demo_user3 (3/4)
+2026-09-06 04:35:29,732 INFO Manual UAT worker claiming request 7 for user4 (allow-list)
+2026-09-06 04:35:29,785 INFO audit event=cloud.manual_uat.tenant_reserved project_id=None build_id=None actor=manual_uat:user4
+2026-09-06 04:35:31,100 INFO No template filestore found for mosh_tpl_cloud_base_19_0_trading, creating empty filestore at /data/tenants/helpers_demo_user4/filestore
+2026-09-06 04:35:31,176 INFO Installing package modules for full_erp: ['crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp'] (already installed: {'google_gmail', 'mail_bot', 'auth_totp_mail', 'auth_passkey', 'rpc', 'sms', 'web_unsplash', 'base', 'portal', 'bus', 'base_import', 'mail', 'base_setup', 'barcodes', 'microsoft_outlook', 'web', 'spreadsheet', 'auth_passkey_portal', 'resource_mail', 'partner_autocomplete', 'http_routing', 'digest', 'auth_totp_portal', 'analytic', 'snailmail', 'api_doc', 'product', 'base_import_module', 'auth_signup', 'utm', 'uom', 'base_install_request', 'privacy_lookup', 'phone_validation', 'auth_totp', 'html_editor', 'contacts', 'board', 'resource', 'iap_mail', 'spreadsheet_dashboard', 'web_tour', 'iap'})
+2026-09-06 04:35:32,004 INFO Install conf for helpers_demo_user4: [options]
+admin_passwd = ***REDACTED***
+list_db = False
+db_host = uat-build-postgres
+db_port = 5432
+db_user = mosh_r_helpers_demo_user4_role
+db_password = ***REDACTED***
+db_name = helpers_demo_user4
+addons_path = /usr/lib/python3/dist-packages/odoo/addons
+http_interface = 0.0.0.0
+http_port = 8069
+proxy_mode = True
+without_demo = True
+data_dir = /var/lib/odoo
+
+2026-09-06 04:37:22,177 INFO Module install container mosh-install-helpers_demo_user4 finished status=0 logs tail: e sale_purchase_project: creating or updating database tables 
+2026-09-06 04:37:17,399 1 INFO helpers_demo_user4 odoo.modules.loading: Module sale_purchase_project loaded in 0.21s, 61 queries (+61 other) 
+2026-09-06 04:37:17,400 1 INFO helpers_demo_user4 odoo.modules.loading: 112 modules loaded in 101.92s, 48209 queries (+48209 extra) 
+2026-09-06 04:37:19,509 1 INFO helpers_demo_user4 odoo.modules.loading: Modules loaded. 
+2026-09-06 04:37:21,411 1 INFO helpers_demo_user4 odoo.registry: Registry changed, signaling through the database 
+2026-09-06 04:37:21,413 1 INFO helpers_demo_user4 odoo.registry: Registry loaded in 107.990s 
+2026-09-06 04:37:21,413 1 INFO helpers_demo_user4 odoo.service.server: Initiating shutdown 
+2026-09-06 04:37:21,413 1 INFO helpers_demo_user4 odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-09-06 04:37:21,414 1 INFO helpers_demo_user4 odoo.sql_db: ConnectionPool(read/write;used=0/count=0/max=64): Closed 1 connections  
+
+2026-09-06 04:37:22,177 INFO Module install succeeded for full_erp: ['crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp']
+2026-09-06 04:37:22,223 INFO Module install verification passed for full_erp: ['crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp']
+2026-09-06 04:37:41,735 INFO Set company name to User 4 Demo Company in helpers_demo_user4
+2026-09-06 04:37:41,775 INFO Created user user4 (id=5) in helpers_demo_user4
+2026-09-06 04:37:41,777 INFO Inserted res_company_users_rel for new user user4 (id=5) company 1 in helpers_demo_user4
+2026-09-06 04:37:44,095 INFO Set password via container mosh-tenant-manual-uat-user4: Password set via passlib admin
+
+2026-09-06 04:37:44,183 INFO audit event=cloud.manual_uat.provisioned project_id=None build_id=None actor=manual_uat:user4
+2026-09-06 04:37:44,186 INFO Manual UAT provisioned ready: tenant=helpers_demo_user4 request=7 port=8304 db=helpers_demo_user4
+2026-09-06 04:37:44,187 INFO Manual UAT worker provisioned user4: tenant=helpers_demo_user4 port=8304 db=helpers_demo_user4 (4/4)
+2026-09-06 04:37:46,188 INFO Manual UAT bounded worker done: 4 jobs processed, total 4/4

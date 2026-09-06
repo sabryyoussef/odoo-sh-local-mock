@@ -1,0 +1,20 @@
+{
+  "run_id": "20260906T040329Z_55e870ce",
+  "timestamp": "2026-09-06T04:03:29Z",
+  "main_head": "73e75b9b5882e1e6db66b66cde5c63a35f8127b9",
+  "p3_head": "a1c5d45cbbdbe789dc36d49ed1993da7d5f5b403",
+  "uat_head": "dbc582907944eefcdfa8d4fe20fcf66c3e70d585",
+  "uat_branch": "p3-helpers-erp-cloud-windows-uat",
+  "main_clean": true,
+  "live_worker_stopped": true,
+  "backup_exists": true,
+  "backup_path": "/tmp/p3-helpers-erp-cloud-windows-uat/data-uat/backups/pre-v3-20260906T035606Z/",
+  "uat_integrity": "ok",
+  "live_integrity": "ok",
+  "uat_postgres_no_host_port": true,
+  "uat_network": "p3-helpers-erp-cloud-windows-uat_default",
+  "uat_tenants": 4,
+  "uat_dbs": ["helpers_demo_user1","helpers_demo_user2","helpers_demo_user3","helpers_demo_user4"],
+  "live_tenants": 26,
+  "live_requests": 3
+}

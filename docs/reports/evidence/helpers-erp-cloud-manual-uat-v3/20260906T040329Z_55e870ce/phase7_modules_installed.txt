@@ -1,0 +1,12 @@
+=== helpers_demo_user1 ===
+Password for user mosh_admin: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: fe_sendauth: no password supplied
+=== helpers_demo_user2 ===
+Password for user mosh_admin: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: fe_sendauth: no password supplied
+=== helpers_demo_user3 ===
+Password for user mosh_admin: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: fe_sendauth: no password supplied
+=== helpers_demo_user4 ===
+Password for user mosh_admin: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: fe_sendauth: no password supplied

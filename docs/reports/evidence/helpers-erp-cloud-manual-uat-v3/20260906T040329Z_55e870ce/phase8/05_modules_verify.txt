@@ -1,0 +1,4 @@
+helpers_demo_user1: expected ['contacts', 'crm', 'sale_management', 'account'] -> missing [] -> PASS (installed 67)
+helpers_demo_user2: expected ['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account'] -> missing [] -> PASS (installed 78)
+helpers_demo_user3: expected ['purchase', 'stock', 'maintenance', 'hr', 'mrp', 'account'] -> missing [] -> PASS (installed 72)
+helpers_demo_user4: expected ['contacts', 'crm', 'sale_management', 'purchase', 'stock', 'account', 'hr', 'project', 'maintenance', 'mrp'] -> missing [] -> PASS (installed 112)

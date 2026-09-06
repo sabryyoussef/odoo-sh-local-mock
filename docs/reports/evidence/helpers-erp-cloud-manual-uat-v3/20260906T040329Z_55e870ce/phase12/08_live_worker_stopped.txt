@@ -1,0 +1,17 @@
+Live provisioning-worker status at 2026-09-06T06:49:41Z
+docker-worker_beat-1 Up 4 days 5001/tcp
+odoo-sh-local-mock-backup-worker-1 Up 4 days 8000/tcp
+odoo-sh-local-mock-provisioning-worker-1 Exited (0) 25 hours ago 
+asta_education_demo_media_worker Up 5 days 127.0.0.1:8043->8099/tcp
+asta-lms-poc-asta-media-worker-1 Up 6 days 127.0.0.1:8099->8099/tcp
+chatwoot_ai_worker Up 7 days 3010/tcp
+uat-job-worker Exited (255) 3 weeks ago 127.0.0.1:8095->8095/tcp
+docker-worker-1 Up 4 days 5001/tcp
+smsgate-worker Up 7 days (healthy) 3000/tcp
+
+UAT compose:
+p3-uat-control-api Up 31 minutes
+p3-uat-build-postgres Up 36 minutes (healthy)
+
+Isolated UAT worker (should be not running until manual click):
+no manual_uat_worker process (expected - starts on demand)

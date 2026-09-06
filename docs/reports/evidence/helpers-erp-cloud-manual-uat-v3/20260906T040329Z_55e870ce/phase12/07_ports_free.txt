@@ -1,0 +1,6 @@
+Ports 8301-8304 status at 2026-09-06T06:49:40Z
+port 8301 FREE (expected)
+port 8302 FREE (expected)
+port 8303 FREE (expected)
+port 8304 FREE (expected)
+no containers publishing 830x (expected)

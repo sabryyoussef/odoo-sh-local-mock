@@ -1,0 +1,200 @@
+{
+  "run_id": "20260906T040329Z_55e870ce",
+  "batches": {
+    "batch1": {
+      "files": [
+        "tests/test_cloud_external_url.py",
+        "tests/test_cloud_manual_uat_isolation.py",
+        "tests/test_cloud_manual_uat_portal_login.py",
+        "tests/test_cloud_onboarding_ui.py"
+      ],
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "log": "phase10/batch1.log"
+    },
+    "batch2": {
+      "files": [
+        "tests/test_cloud_p1_2_eligibility.py",
+        "tests/test_cloud_p1_3_durable_approval.py",
+        "tests/test_cloud_p1_atomic_concurrency.py",
+        "tests/test_cloud_p1_contracts.py",
+        "tests/test_cloud_p2_disposable_provisioning.py",
+        "tests/test_cloud_p2_unit.py",
+        "tests/test_cloud_p3_eligibility_worker.py",
+        "tests/test_cloud_p3_secret_leakage.py",
+        "tests/test_customer_portal.py",
+        "tests/test_dual_journey.py",
+        "tests/test_e2e_harness.py",
+        "tests/test_helpers_erp_cloud.py"
+      ],
+      "passed": 164,
+      "failed": 0,
+      "skipped": 10,
+      "exit_code": 0,
+      "log": "phase10/batch2.log"
+    },
+    "batch3": {
+      "files": [
+        "tests/test_backup_scheduler.py",
+        "tests/test_backups.py",
+        "tests/test_build_engine.py",
+        "tests/test_module_catalog.py",
+        "tests/test_oauth_redirect.py",
+        "tests/test_operator_auth.py",
+        "tests/test_phase1.py",
+        "tests/test_platform_deployment.py",
+        "tests/test_platform_lifecycle_api.py",
+        "tests/test_platform_lifecycle.py",
+        "tests/test_platform_plan_entitlements.py",
+        "tests/test_platform_templates.py",
+        "tests/test_platform_wizard.py",
+        "tests/test_product_line_regression.py",
+        "tests/test_provisioning.py",
+        "tests/test_saas_catalog.py",
+        "tests/test_template_init.py",
+        "tests/test_three_product_navigation.py",
+        "tests/test_webhooks_lifecycle.py"
+      ],
+      "per_file": {
+        "tests/test_backup_scheduler.py": {
+          "passed": 8,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_backups.py": {
+          "passed": 20,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_build_engine.py": {
+          "passed": 8,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_module_catalog.py": {
+          "passed": 21,
+          "failed": 0,
+          "skipped": 1,
+          "exit_code": 0,
+          "note": "SKIP_DOCKER_SCAN=1 for test_real_odoo19_catalog_scan"
+        },
+        "tests/test_oauth_redirect.py": {
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_operator_auth.py": {
+          "passed": 4,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_phase1.py": {
+          "passed": 17,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_platform_deployment.py": {
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_platform_lifecycle_api.py": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_platform_lifecycle.py": {
+          "passed": 18,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_platform_plan_entitlements.py": {
+          "passed": 22,
+          "failed": 0,
+          "skipped": 1,
+          "exit_code": 0,
+          "note": "SKIP_DOCKER_SCAN=1 for test_invalid_six_manifests_lockout_live"
+        },
+        "tests/test_platform_templates.py": {
+          "passed": 7,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_platform_wizard.py": {
+          "passed": 8,
+          "failed": 0,
+          "skipped": 1,
+          "exit_code": 0
+        },
+        "tests/test_product_line_regression.py": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_provisioning.py": {
+          "passed": 9,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_saas_catalog.py": {
+          "passed": 11,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_template_init.py": {
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        },
+        "tests/test_three_product_navigation.py": {
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0,
+          "note": "fixed translations.py Ship Custom Odoo from Git"
+        },
+        "tests/test_webhooks_lifecycle.py": {
+          "passed": 19,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0
+        }
+      },
+      "passed": 201,
+      "failed": 0,
+      "skipped": 3,
+      "exit_code": 0,
+      "log": "phase10/batch3_split.log (updated with fixed footers)"
+    }
+  },
+  "totals": {
+    "total_files": 35,
+    "passed": 426,
+    "failed": 0,
+    "skipped": 13,
+    "exit_code": 0
+  },
+  "notes": [
+    "All 35 test files executed exactly once across batch1+batch2+batch3",
+    "No new UAT regression; previous 1 failure in test_three_product_navigation fixed via translations.py",
+    "Docker-dependent tests skipped with SKIP_DOCKER_SCAN=1 (2 tests) - resource-safe, not a failure",
+    "Full suite not run as single pytest due to 300s CLI timeout; batched with timeout wrappers and log footers",
+    "Each batch exit code 0, no SIGKILL, no extra compose container"
+  ]
+}

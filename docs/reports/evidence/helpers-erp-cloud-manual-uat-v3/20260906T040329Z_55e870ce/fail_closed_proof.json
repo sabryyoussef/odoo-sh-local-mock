@@ -1,0 +1,22 @@
+{
+  "installer_bug": {
+    "root_cause": "bytes.wait bug: detach=False returns bytes (logs), not Container; calling .wait() on bytes fails. Also no timeout, no fail-closed.",
+    "fix": "detach=True + bounded timeout 600s + fail-closed verification. If install fails or verification fails, raise RuntimeError and rollback tenant.",
+    "location": "control-api/app/services/cloud_manual_uat_provisioner.py:_install_package_modules",
+    "lines": "608-692",
+    "verification": "After install, query ir_module_module for installed state, compare to to_install, raise if missing"
+  },
+  "fail_closed": {
+    "description": "Required-module failure prevents ready (fail-closed)",
+    "code": "_install_package_modules raises RuntimeError on failure, provision_manual_uat_request does not catch it (no try/except around call), so tenant is rolled back and request marked failed",
+    "proof": "Line 855-858: _install_package_modules called without try/except, failure propagates to outer except which marks request failed and cleans up tenant",
+    "test": "If module install fails, tenant not marked ready, request status=failed, no ready tenant created"
+  },
+  "public_url": {
+    "description": "Open Odoo / public_url must not store or present localhost for Windows",
+    "storage": "tenant.public_url = http://master.tailcf9988.ts.net:830x (Tailscale), tenant.internal_url = http://127.0.0.1:830x (internal only)",
+    "presentation": "UI uses external_urls built via build_external_odoo_url (HELPERS_CLOUD_EXTERNAL_HOST=100.76.217.35) or tenant.public_url (Tailscale), never localhost",
+    "validation": "cloud_external_url.py rejects localhost/127.0.0.1 as invalid host, fail-closed if not configured",
+    "evidence": "instances.html and instance_detail.html use external_urls/external_url, not internal_url"
+  }
+}

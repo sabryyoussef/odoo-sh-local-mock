@@ -608,7 +608,7 @@ def _install_package_modules(
                 image=settings.odoo19_image,
                 name=install_name,
                 command=["-c", "/mnt/runtime/odoo.conf", "-i", mod_list, "--stop-after-init", "--without-demo=all"],
-                detach=False,
+                detach=True,
                 network=settings.build_docker_network,
                 volumes={
                     str(filestore_host_path): {"bind": "/var/lib/odoo", "mode": "rw"},
@@ -625,23 +625,70 @@ def _install_package_modules(
                 nano_cpus=int(settings.build_container_nano_cpus),
                 remove=False,
             )
-            # container is returned after run completes when detach=False, but docker-py returns container object
-            # Need to wait and check logs
+            # Correct Docker API: detach=True returns Container, then wait with bounded timeout
+            # detach=False would return bytes (logs), not a Container — calling .wait() on bytes fails
             try:
-                result = container.wait(timeout=600)
-                logs = container.logs().decode("utf-8", errors="replace")[-4000:]
+                try:
+                    result = container.wait(timeout=600)
+                except Exception as wait_exc:
+                    try:
+                        raw = container.logs().decode("utf-8", errors="replace")[-4000:]
+                        import re as _re
+                        redacted = _re.sub(r"db_password\s*=.*", "db_password = ***REDACTED***", raw)
+                        redacted = _re.sub(r"admin_passwd\s*=.*", "admin_passwd = ***REDACTED***", redacted)
+                        logger.error("Module install wait failed for %s (%s): %s logs=%s", package_code, mod_list, wait_exc, redacted[-2000:])
+                    except Exception:
+                        logger.error("Module install wait failed for %s (%s): %s", package_code, mod_list, wait_exc)
+                    try:
+                        container.remove(force=True)
+                    except Exception:
+                        pass
+                    raise RuntimeError(f"Module install timeout/failure for {package_code} ({mod_list}): {wait_exc}") from wait_exc
+                try:
+                    raw_logs = container.logs().decode("utf-8", errors="replace")
+                except Exception:
+                    raw_logs = ""
+                import re as _re2
+                redacted_logs = _re2.sub(r"db_password\s*=.*", "db_password = ***REDACTED***", raw_logs)
+                redacted_logs = _re2.sub(r"admin_passwd\s*=.*", "admin_passwd = ***REDACTED***", redacted_logs)
+                redacted_logs = _re2.sub(r"PASSWORD\s*=.*", "PASSWORD=***REDACTED***", redacted_logs)
+                logs_tail = redacted_logs[-4000:]
                 status = result.get("StatusCode", 1) if isinstance(result, dict) else 1
-                logger.info("Module install container %s finished status=%s logs tail: %s", install_name, status, logs[-1000:])
+                logger.info("Module install container %s finished status=%s logs tail: %s", install_name, status, logs_tail[-1000:])
                 if status != 0:
-                    raise RuntimeError(f"Module install failed for {package_code} ({mod_list}) status={status} logs={logs[-2000:]}")
+                    raise RuntimeError(f"Module install failed for {package_code} ({mod_list}) status={status} logs={logs_tail[-2000:]}")
                 logger.info("Module install succeeded for %s: %s", package_code, to_install)
+                # Verify every required module is now installed (fail-closed)
+                try:
+                    verify_conn = psycopg2.connect(
+                        host=settings.build_postgres_host,
+                        port=settings.build_postgres_port,
+                        user=settings.build_postgres_admin_user,
+                        password=settings.build_postgres_admin_password,
+                        dbname=db_name,
+                    )
+                    try:
+                        with verify_conn.cursor() as cur:
+                            cur.execute("SELECT name FROM ir_module_module WHERE state = 'installed'")
+                            installed_after = {row[0] for row in cur.fetchall()}
+                    finally:
+                        verify_conn.close()
+                    missing_after = [m for m in to_install if m not in installed_after]
+                    if missing_after:
+                        raise RuntimeError(f"Module install verification failed for {package_code}: required modules not installed: {missing_after} (installed={installed_after})")
+                    logger.info("Module install verification passed for %s: %s", package_code, to_install)
+                except RuntimeError:
+                    raise
+                except Exception as verify_exc:
+                    logger.warning("Module install verification check failed for %s: %s", package_code, verify_exc)
+                    raise RuntimeError(f"Module install verification error for {package_code}: {verify_exc}") from verify_exc
             finally:
                 try:
                     container.remove(force=True)
                 except Exception:
                     pass
         except Exception as exc:
-            logger.warning("Module install failed for %s: %s", package_code, exc)
+            logger.error("Module install failed for %s (fail-closed, will rollback): %s", package_code, exc)
             raise
 
 
@@ -805,22 +852,15 @@ def provision_manual_uat_request(
             data_dir="/var/lib/odoo",
         )
 
-        # 5b. Install package-specific Community modules (best-effort, non-fatal for UAT)
-        # For UAT, package differentiation is primarily via portal package selection;
-        # actual Odoo module install is best-effort and logged, but does not block ready.
-        # This ensures tenants are provisioned even if module install has transient issues.
+        # 5b. Install package-specific Community modules (fail-closed)
+        # Required modules must be installed before marking ready; failure rolls back tenant
         # Host paths (/tmp/...) exist on host via ./data-uat:/data mount; inside control-api they are /data/...
-        try:
-            _install_package_modules(
-                db_name=db_name,
-                package_code=package_code,
-                runtime_host_path=runtime_host,
-                filestore_host_path=Path(filestore_host_path),
-            )
-        except Exception as exc:
-            logger.warning("Package module install failed for %s (non-fatal, tenant will still be ready): %s", package_code, exc)
-            # Do not raise — mark ready anyway, package is still recorded in subscription/instance
-            # Comparison report will show intended vs installed
+        _install_package_modules(
+            db_name=db_name,
+            package_code=package_code,
+            runtime_host_path=runtime_host,
+            filestore_host_path=Path(filestore_host_path),
+        )
 
         # 6. Start container (loopback only)
         try:

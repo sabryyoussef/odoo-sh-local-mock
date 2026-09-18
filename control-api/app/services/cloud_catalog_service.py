@@ -106,6 +106,17 @@ def get_package_by_id(db: Session, package_id: int) -> CloudApplicationPackage |
     return row
 
 
+def get_package_by_code(db: Session, code: str) -> CloudApplicationPackage | None:
+    row = db.scalar(
+        select(CloudApplicationPackage).where(
+            CloudApplicationPackage.code == (code or "").strip().lower(),
+            CloudApplicationPackage.active.is_(True),
+            CloudApplicationPackage.product_line == PRODUCT_LINE_HELPERS_CLOUD,
+        )
+    )
+    return row
+
+
 def parse_csv_codes(raw: str | None) -> list[str]:
     if not raw:
         return []
@@ -142,6 +153,9 @@ def seed_helpers_cloud(db: Session) -> None:
     _seed_packages(db)
     _seed_addons(db)
     _seed_demo_customer_journey(db)
+    from app.services.cloud_template_service import seed_demo_template_catalog
+
+    seed_demo_template_catalog(db)
 
 
 def _upsert_plan(db: Session, **kwargs) -> CloudPlan:

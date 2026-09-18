@@ -109,6 +109,18 @@ def launch_context(
             "launch_kind": "blocked",
         }
     public_url = getattr(tenant, "public_url", None) or tenant.domain
+    if not public_url:
+        # Derive a customer-safe hostname when provisioning forgot to persist it.
+        try:
+            from app.services.public_url_service import get_safe_public_url
+
+            public_url = get_safe_public_url(
+                getattr(tenant, "internal_url", None),
+                None,
+                getattr(tenant, "tenant_code", None),
+            )
+        except Exception:
+            public_url = None
     if public_url:
         url = public_url if public_url.startswith("http") else f"https://{public_url}"
         return {
@@ -119,12 +131,22 @@ def launch_context(
         }
     internal = tenant.internal_url or ""
     is_localhost = internal.startswith("http://127.0.0.1") or internal.startswith("http://localhost")
+    # Never offer 127.0.0.1 to browsers that reached us via a public Host
+    # (Tailscale / Cloudflare) — docker-proxied client IPs look "local".
     if is_localhost and allow_localhost_launch and request_is_local:
         return {
             "can_launch": True,
             "launch_url": internal,
             "launch_message": "Open application (local development only)",
             "launch_kind": "local_dev",
+        }
+    # Allow non-localhost internal URLs (e.g., live Odoo runtime at 192.168.1.7:8069)
+    if internal and not is_localhost:
+        return {
+            "can_launch": True,
+            "launch_url": internal,
+            "launch_message": "Open HMS",
+            "launch_kind": "internal_live",
         }
     return {
         "can_launch": False,

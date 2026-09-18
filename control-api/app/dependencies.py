@@ -65,6 +65,7 @@ def github_authorize_url(state: str, redirect_uri: str | None = None) -> str:
         "scope": settings.github_oauth_scopes,
         "state": state,
         "allow_signup": "true",
+        "prompt": "login",
     }
     return f"https://github.com/login/oauth/authorize?{urlencode(params)}"
 

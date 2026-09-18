@@ -1,0 +1,7 @@
+{
+  "operation": "res.config.settings search_read",
+  "user_uid": 5,
+  "denied": false,
+  "error_type": "auth_failed",
+  "status": 500
+}

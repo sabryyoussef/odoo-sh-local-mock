@@ -41,4 +41,6 @@ def render_template(
         **template_i18n(request),
     }
     response = templates.TemplateResponse(name, payload, status_code=status_code)
+    if name in {"cloud/login.html", "cloud/register.html", "login.html"}:
+        response.headers["Cache-Control"] = "no-store"
     return apply_locale_cookie(request, response)

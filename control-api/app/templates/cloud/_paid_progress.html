@@ -1,0 +1,25 @@
+{% if paid_step is defined %}
+<nav class="cloud-journey-progress" aria-label="{{ t('cloud.journey.progress_label') }}">
+  <p class="cloud-journey-progress__label">{{ t('cloud.journey.progress.' ~ paid_step) }}</p>
+  <ol class="cloud-pricing-progress__steps">
+    <li class="{% if paid_step == 'solution' %}is-active{% endif %}{% if paid_step in ['plan', 'resources', 'review'] %} is-done{% endif %}">
+      {% if paid_step != 'solution' %}<a href="{{ locale_url('/cloud/build') }}">{% endif %}
+      <span>1</span>{{ t('cloud.journey.step.solution') }}
+      {% if paid_step != 'solution' %}</a>{% endif %}
+    </li>
+    <li class="{% if paid_step == 'plan' %}is-active{% endif %}{% if paid_step in ['resources', 'review'] %} is-done{% endif %}">
+      {% if paid_step in ['resources', 'review'] %}<a href="{{ locale_url('/cloud/pricing') }}">{% endif %}
+      <span>2</span>{{ t('cloud.journey.step.plan') }}
+      {% if paid_step in ['resources', 'review'] %}</a>{% endif %}
+    </li>
+    <li class="{% if paid_step == 'resources' %}is-active{% endif %}{% if paid_step == 'review' %} is-done{% endif %}">
+      {% if paid_step == 'review' %}<a href="{{ locale_url('/cloud/build/resources') }}">{% endif %}
+      <span>3</span>{{ t('cloud.journey.step.resources') }}
+      {% if paid_step == 'review' %}</a>{% endif %}
+    </li>
+    <li class="{% if paid_step == 'review' %}is-active{% endif %}">
+      <span>4</span>{{ t('cloud.journey.step.review') }}
+    </li>
+  </ol>
+</nav>
+{% endif %}

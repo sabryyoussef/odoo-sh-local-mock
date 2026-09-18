@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:8399/odoo/discuss",
+  "title": "OdooBot",
+  "readyState": "complete",
+  "bodyLen": 317,
+  "bodyKids": 3,
+  "assetErr": false,
+  "session": false,
+  "sessionUid": null,
+  "hasNavbar": true,
+  "hasWebClient": true,
+  "hydrated": true
+}

@@ -1,0 +1,4 @@
+Error while loading "@web/core/user":
+TypeError: Cannot read properties of undefined (reading 'id')
+Error while loading "@web/core/user":
+TypeError: Cannot read properties of undefined (reading 'id')

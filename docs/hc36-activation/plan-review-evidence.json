@@ -1,0 +1,25 @@
+{
+  "checkpoint": "HC3_6_SINGLE_CLONE_ACTIVATION_PLAN_READY",
+  "scope": "PLAN_AND_REVIEW_ONLY",
+  "recorded_at_utc": "2026-09-13T13:22:23.010860+00:00",
+  "prepared_database_sha256": "9a8f30392c7ae33258c6772d9469df18fe4d673d7b298524f970567411c4f2d5",
+  "prepared_database_connection_opened": false,
+  "http_get_requests": 5,
+  "http_get_successes": 5,
+  "mutation_endpoint_requests": 0,
+  "remote_pvesh_executed": false,
+  "ssh_usage_attempts": 2,
+  "runtime_configuration_activated": false,
+  "control_rows_inserted": false,
+  "credentials_roles_acls_created": false,
+  "draft_scripts_executed": false,
+  "draft_validation": [
+    "Python AST parse",
+    "bash -n",
+    "JSON parse",
+    "artifact SHA-256"
+  ],
+  "runtime_tests_run_this_scope": false,
+  "prior_transport_acceptance_tests": 413,
+  "live_execution_ready": false
+}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.build.solution_title') }} · {{ t('cloud.title') }}{% endblock %}
+{% block body_class %}body--landing body--cloud-build{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=7">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-pricing-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ t('cloud.journey.step.solution') }}</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main">
+    <section class="cloud-pricing-hero" aria-labelledby="cloud-build-title">
+      {% include "cloud/_paid_progress.html" %}
+      <div class="cloud-pricing-hero__copy">
+        <h1 id="cloud-build-title">{{ t('cloud.build.solution_title') }}</h1>
+        <p>{{ t('cloud.build.solution_lead') }}</p>
+      </div>
+    </section>
+
+    <form method="post" action="{{ locale_url('/cloud/build') }}" class="cloud-build-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <fieldset class="cloud-package-grid cloud-solution-grid">
+        <legend class="sr-only">{{ t('cloud.build.solution_title') }}</legend>
+        {% for card in packages %}
+          <label class="cloud-pricing-card cloud-solution-card{% if card.selected %} is-recommended{% endif %}">
+            <input type="radio" name="package_code" value="{{ card.code }}" {% if card.selected or (not card.selected and card.code == 'trading') %}checked{% endif %} required>
+            <h2 class="cloud-pricing-card__title"><bdi dir="ltr">{{ card.name }}</bdi></h2>
+            <p class="cloud-pricing-card__desc">{{ card.description }}</p>
+            <p class="muted"><strong>{{ t('cloud.setup.best_for') }}</strong> {{ card.best_for }}</p>
+          </label>
+        {% endfor %}
+      </fieldset>
+      <div class="cloud-final-cta__actions" style="margin-top:28px">
+        <button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.build.continue_plan') }}</button>
+        <a class="btn-hero btn-hero--secondary" href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
+      </div>
+    </form>
+  </main>
+  {% include "partials/site_footer.html" %}
+</div>
+{% endblock %}

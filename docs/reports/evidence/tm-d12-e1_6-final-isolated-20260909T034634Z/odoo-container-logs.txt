@@ -1,0 +1,33 @@
+2026-09-09 03:46:43,559 1 WARNING ? odoo.tools.config: option addons_path, invalid addons directory '/mnt/extra-addons', skipped 
+2026-09-09 03:46:43,559 1 INFO ? odoo: Odoo version 19.0-20260817 
+2026-09-09 03:46:43,560 1 INFO ? odoo: Using configuration file at /mnt/runtime/odoo.conf 
+2026-09-09 03:46:43,560 1 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/python3/dist-packages/odoo/addons', '/usr/lib/python3/dist-packages/addons']) 
+2026-09-09 03:46:43,560 1 INFO ? odoo: database: REDACTED_ROLE@build-postgres:5432 
+2026-09-09 03:46:44,003 1 INFO ? odoo.service.server: HTTP service (werkzeug) running on c5f1c62493df:8069 
+2026-09-09 03:46:44,060 1 INFO REDACTED_DB odoo.modules.loading: loading 1 modules... 
+2026-09-09 03:46:44,072 1 INFO REDACTED_DB odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra) 
+2026-09-09 03:46:44,095 1 INFO REDACTED_DB odoo.modules.loading: loading 43 modules... 
+2026-09-09 03:46:44,649 1 INFO REDACTED_DB odoo.modules.loading: 43 modules loaded in 0.55s, 0 queries (+0 extra) 
+2026-09-09 03:46:44,799 1 INFO REDACTED_DB odoo.modules.loading: Modules loaded. 
+2026-09-09 03:46:44,834 1 INFO REDACTED_DB odoo.registry: Registry loaded in 0.830s 
+2026-09-09 03:47:06,125 1 ERROR ? odoo.http: Exception during request handling. 
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 2848, in __call__
+    request._post_init()
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 1810, in _post_init
+    self.session, self.db = self._get_session_and_dbname()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 1816, in _get_session_and_dbname
+    session = root.session_store.new()
+              ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/http.py", line 2772, in session_store
+    path = odoo.tools.config.session_dir
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/odoo/tools/config.py", line 1023, in session_dir
+    os.makedirs(d, 0o700)
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/var/lib/odoo/sessions'
+2026-09-09 03:47:06,129 1 INFO ? werkzeug: 192.168.112.1 - - [09/Sep/2026 03:47:06] "GET /web/login HTTP/1.1" 500 - 0 0.000 0.004

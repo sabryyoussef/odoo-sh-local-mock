@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.demo.start_title') }} · {{ t('cloud.title') }}{% endblock %}
+{% block body_class %}body--landing body--cloud-demo-start{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=7">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-pricing-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ t('cloud.demo.start_crumb') }}</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main">
+    <section class="cloud-pricing-hero" aria-labelledby="cloud-demo-title">
+      <p class="cloud-journey-kicker">{{ t('cloud.demo.badge_free') }}</p>
+      <h1 id="cloud-demo-title">{{ t('cloud.demo.start_title') }}</h1>
+      <p>{{ t('cloud.demo.start_lead') }}</p>
+    </section>
+
+    <section class="cloud-journey-split cloud-journey-split--single" aria-label="{{ t('cloud.demo.start_title') }}">
+      <article class="cloud-journey-card cloud-journey-card--demo">
+        <p class="cloud-journey-card__kicker">{{ t('cloud.demo.badge_free') }}</p>
+        <h2>{{ t('cloud.demo.start_title') }}</h2>
+        <ul class="cloud-journey-card__list">
+          <li>{{ t('cloud.demo.point_free') }}</li>
+          <li>{{ t('cloud.demo.point_ready') }}</li>
+          <li>{{ t('cloud.demo.point_limited') }}</li>
+          <li>{{ t('cloud.demo.point_predefined') }}</li>
+          <li>{{ t('cloud.demo.point_not_production') }}</li>
+        </ul>
+        <a class="btn-hero btn-hero--secondary" href="{{ locale_url(demo_continue_href) }}">{{ t('cloud.cta.try_demo') }}</a>
+      </article>
+    </section>
+
+    <p class="cloud-billing-help">{{ t('cloud.demo.paid_alternative') }} <a href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a></p>
+  </main>
+  {% include "partials/site_footer.html" %}
+</div>
+{% endblock %}

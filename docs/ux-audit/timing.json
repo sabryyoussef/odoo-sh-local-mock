@@ -1,0 +1,25 @@
+{
+  "measurement_time": "2026-09-18T09:30+03:00",
+  "measurements": [
+    {"route": "/catalog", "label": "EN", "load_ms": 927, "source": "LIVE_BROWSER"},
+    {"route": "/catalog?lang=ar", "label": "AR", "load_ms": 1453, "source": "LIVE_BROWSER"},
+    {"route": "/catalog/hms", "label": "EN", "load_ms": 873, "source": "LIVE_BROWSER"},
+    {"route": "/catalog/hms?lang=ar", "label": "AR", "load_ms": 1472, "source": "LIVE_BROWSER"},
+    {"route": "/catalog/sis", "label": "EN", "load_ms": 795, "source": "LIVE_BROWSER"},
+    {"route": "/catalog/vet-hospital", "label": "EN", "load_ms": 849, "source": "LIVE_BROWSER"},
+    {"route": "/catalog/generic", "label": "EN", "load_ms": 832, "source": "LIVE_BROWSER"},
+    {"route": "/cloud/demo", "label": "EN", "load_ms": 1330, "source": "LIVE_BROWSER"},
+    {"route": "/cloud/login", "label": "EN", "load_ms": 1119, "source": "LIVE_BROWSER"},
+    {"route": "/cloud/pricing", "label": "EN", "load_ms": 1371, "source": "LIVE_BROWSER"},
+    {"route": "/cloud/register", "label": "submit_ms": 430, "source": "LIVE_BROWSER"},
+    {"route": "/cloud/setup", "label": "first_page_ms": 430, "source": "LIVE_BROWSER"},
+    {"route": "hms_tenant_8217_web_login", "label": "page_load_ms": 71, "source": "LIVE_BROWSER"},
+    {"route": "hms_tenant_8217_login_submit", "label": "login_ms": 1614, "source": "LIVE_BROWSER"},
+    {"route": "hms_tenant_8216_web", "label": "page_load_ms": 1968, "source": "LIVE_BROWSER"}
+  ],
+  "provisioning_timestamps": [
+    {"tenant": 32, "operation": "provision_tenant", "started": "2026-09-18T03:27:09Z", "completed": "2026-09-18T03:27:27Z", "duration_seconds": 17.6, "source": "DURABLE_JOB_EVIDENCE"},
+    {"tenant": 33, "operation": "provision_tenant", "started": "2026-09-18T08:51:15Z", "completed": "2026-09-18T08:51:26Z", "duration_seconds": 11.2, "source": "DURABLE_JOB_EVIDENCE"},
+    {"tenant": 31, "operation": "provision_authoritative_tenant", "started": "2026-09-17T13:35:59Z", "completed": "2026-09-17T13:36:17Z", "duration_seconds": 17.9, "source": "DURABLE_JOB_EVIDENCE"}
+  ]
+}

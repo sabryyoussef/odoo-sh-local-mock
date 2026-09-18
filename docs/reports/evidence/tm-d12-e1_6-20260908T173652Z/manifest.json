@@ -1,0 +1,212 @@
+{
+  "checkpoint": "E1.6",
+  "tm": "TM-D12",
+  "timestamp": "20260908T173652Z",
+  "branch": "sabry-06-session-01-demo-contracts",
+  "head": "1f96959e9f5fd4c29531b5e83cdbe2fae213b337",
+  "objective": "Prove TM-D12 through one fully isolated customer demo journey: register/login → configure → confirm demo → demo request queued → demo worker claims request → real E1.2 adapters clone synthetic disposable template → lifecycle activation → portal status becomes active → Open Odoo URL available only to owning customer → restricted demo user can access disposable Odoo instance",
+  "isolation": {
+    "compose_project": "tm-d12-e16-tm-d12-e16-20260908t*-* (unique timestamped, e.g. tm-d12-e16-tm-d12-e16-20260908t173652z-*)",
+    "prefix_pattern": "tm_d12_e16_<timestamp>_<rand>",
+    "disposable_db_prefix": "tm_d12_e16_*",
+    "synthetic_template_db": "tm_d12_e16_*_src (synthetic, never mosh_tnt_*/mosh_tpl_*/production)",
+    "disposable_dst_db": "tm_d12_e16_*_dst and mosh_demo_* (deterministic per request_id, under /tmp)",
+    "disposable_roles": "tm_d12_e16_*_r_src, tm_d12_e16_*_r_dst, mosh_demo_r_*",
+    "filestore": "/tmp/tm_d12_e16_*_src, /tmp/tm_d12_e16_*_dst, /tmp/.demo_clone_* (isolated, never /data/tenants production)",
+    "network": "isolated Docker network / localhost-bound (no public Odoo)",
+    "control_plane": "disposable in-memory SQLite (never live control.db)",
+    "baseline_counts": "pg_database and pg_roles counts recorded before and restored after (assert pg_db_after == pg_db_before, pg_role_after == pg_role_before)",
+    "cleanup": "rollback_demo_clone + _cleanup_synthetic + drop_tenant_database/role + shutil.rmtree filestore; verified not exists after"
+  },
+  "worker_flags": {
+    "defaults": {
+      "helpers_cloud_real_provisioning_enabled": false,
+      "helpers_cloud_worker_max_jobs": 0,
+      "helpers_cloud_demo_worker_enabled": false,
+      "helpers_cloud_demo_worker_max_jobs": 0,
+      "helpers_cloud_demo_lifecycle_enabled": false,
+      "helpers_cloud_demo_lifecycle_max_jobs": 0,
+      "helpers_cloud_demo_cleanup_enabled": false,
+      "helpers_cloud_demo_cleanup_max_jobs": 0
+    },
+    "disposable_override": {
+      "HELPERS_CLOUD_DEMO_WORKER_ENABLED": "true",
+      "HELPERS_CLOUD_DEMO_WORKER_MAX_JOBS": "1",
+      "TENANT_ROOT": "/tmp"
+    },
+    "job_count": 1,
+    "real_provisioning_worker": "never started (claim_next_real_cloud_job returns None for demo)",
+    "auto_cleanup": "never enabled"
+  },
+  "routes": {
+    "register": "/cloud/register?plan=starter&cycle=monthly&lang=en|ar",
+    "login": "/cloud/login",
+    "configure": "/cloud/setup",
+    "confirm": "/cloud/demo/confirm",
+    "status": "/cloud/demo/status/{request_id}?lang=en|ar",
+    "open": "/cloud/demo/open/{request_id}",
+    "portal_api": "/api/portal/cloud/demo-status/{request_id}"
+  },
+  "states": ["preparing", "active"],
+  "locales": ["en", "ar"],
+  "screenshots": [
+    {
+      "file": "01-confirm-en.png",
+      "route": "/cloud/demo/confirm?lang=en",
+      "state": "confirm",
+      "locale": "en",
+      "hash_sha256": "f1fa4059df1f7c67f655b800d6e56f71ed0f54498f88ffdf3c641f39b50dd233"
+    },
+    {
+      "file": "02-confirm-ar.png",
+      "route": "/cloud/demo/confirm?lang=ar",
+      "state": "confirm",
+      "locale": "ar",
+      "hash_sha256": "ac345d568dd24bfdbf0f217507deb223342981c487dd7456bc9ae189ac24cfc3"
+    },
+    {
+      "file": "03-preparing-en.png",
+      "route": "/cloud/demo/status/{id}?lang=en",
+      "state": "preparing",
+      "locale": "en",
+      "hash_sha256": "151917eada9655849a0b80dfe9c422f2fb359c87fc504a4933b5bdd0cf1c69bd"
+    },
+    {
+      "file": "04-preparing-ar.png",
+      "route": "/cloud/demo/status/{id}?lang=ar",
+      "state": "preparing",
+      "locale": "ar",
+      "hash_sha256": "3af228852a06f0dc1fa9dd22e1c4faf27e8f8b75d1deca451dd32e0d47a201e7"
+    },
+    {
+      "file": "05-active-en.png",
+      "route": "/cloud/demo/status/{id}?lang=en",
+      "state": "active",
+      "locale": "en",
+      "hash_sha256": "326534713bd87be24b6973dc6e88b11af60bba6d76ab7d055da06b4f523d03ef"
+    },
+    {
+      "file": "06-active-ar.png",
+      "route": "/cloud/demo/status/{id}?lang=ar",
+      "state": "active",
+      "locale": "ar",
+      "hash_sha256": "5c513310f10b482fc388b0c5db64366b1ed0d19a6f1bc9f5771a71fc2e668c4f"
+    },
+    {
+      "file": "07-open-odoo.png",
+      "route": "/cloud/demo/open/{id}",
+      "state": "open_redirect",
+      "locale": "en",
+      "hash_sha256": "e9508a94410e5b1df2aa81f80f4dd24e0f70b3b2ec70fae794bcbcbc34eea39c",
+      "redirect": "http://100.76.217.35:8219/web/login?db=mosh_demo_e16_*"
+    },
+    {
+      "file": "08-restricted-user.png",
+      "route": "disposable Odoo instance (restricted demo user landing)",
+      "state": "restricted_user",
+      "locale": "en",
+      "hash_sha256": "852dc2d102a2c9085e72bce27ca6a45f2f5be496c5e36dfeb2f57b98eae0af5b"
+    }
+  ],
+  "html_hashes": {
+    "confirm-en.html": "987e9d2029f39011",
+    "confirm-ar.html": "f2b322c437e4da21",
+    "status-preparing-en.html": "59c11245a275bffc",
+    "status-preparing-ar.html": "209eb89c9b216c5c",
+    "status-active-en.html": "f7e59ca803642d94",
+    "status-active-ar.html": "4362377acdd5c7f7",
+    "open-odoo-redirect.html": "255614d959f1303f",
+    "restricted-user-landing.html": "d3e8d452c136ddc3"
+  },
+  "redacted_ids": {
+    "request_id": 2,
+    "request_uuid": "78061590****",
+    "tenant_code": "e16_tena****",
+    "user_id": 2,
+    "subdomain": "e16evce8487",
+    "template_id": 5
+  },
+  "portal_status": {
+    "status": "active",
+    "can_launch": true,
+    "expires_at": "2026-09-15T17:40:04.066222+00:00",
+    "grace_ends_at": "2026-09-18T17:40:04.066222+00:00",
+    "retention_ends_at": "2026-10-18T17:40:04.066222+00:00",
+    "safe_message": "Your demo is active.",
+    "no_secrets": "portal JSON contains no db_name, role, host, port, filestore, password, secret, connection, exception"
+  },
+  "restricted_user_evidence": {
+    "demo_login_prefix": "demo_",
+    "role_createdb": false,
+    "role_superuser": false,
+    "not_in_admin_groups": true,
+    "cannot_create_db": "verified via pg_roles rolcreatedb=False",
+    "isolated_from_other_tenant": "owner of src_db != demo role"
+  },
+  "test_counts": {
+    "E1.6": "6 passed (test_e16_isolated_disposable_tm_d12_end_to_end + 5 isolation/ownership/bilingual/external_url)",
+    "E1.5": "36 passed",
+    "E1.4": "45 passed",
+    "E1.1-E1.3": "55 passed (10+29+16)",
+    "E1.3R": "10 passed",
+    "portal_OAuth_external_bilingual": "139 passed (test_cloud_external_url + test_cloud_google_oauth + test_cloud_manual_uat_isolation + test_cloud_manual_uat_portal_login + test_cloud_onboarding_ui + test_i18n_landing + test_three_product_navigation + test_helpers_erp_cloud)",
+    "real_provisioning_regression": "92 passed (test_cloud_p1_2_eligibility + test_cloud_p1_3_durable_approval + test_cloud_p1_contracts + test_cloud_p1_atomic_concurrency + test_cloud_p3_eligibility_worker)",
+    "total_E1.6_suite": "6+36+45+55+10+139 = 291 (plus 92 real slice already counted in 139? distinct total 291 unique, 383 with overlap)"
+  },
+  "migrations": {
+    "disposable": "init_db() + migrate_dp6_schema(engine) on isolated SQLite; synthetic PG template DB created via _admin_connect CREATE DATABASE with template0",
+    "live_db": "NOT migrated, NOT patched, NOT inspected destructively (per CRITICAL DATABASE RULE)"
+  },
+  "journey": {
+    "1_register_login": "register_cloud_customer + authenticate_cloud_customer via isolated SQLite",
+    "2_configure": "save_plan/version/package/company/addons → is_confirm_ready true, review_snapshot package trading version 19.0",
+    "3_confirm_demo": "checkout_demo_clone with idempotency_key → order/sub/req/inst created, lane demo, adapter demo_clone, template_id set",
+    "4_queued": "req.status queued, portal status preparing, can_launch false",
+    "5_worker_claims": "claim_next_demo_clone_job with worker_id e16-worker-* succeeds, second claim None, real worker None",
+    "6_clone": "execute_demo_clone_job with real adapters (patched _find_template_filestore to synthetic src) → dst DB mosh_demo_*, filestore /tmp/.demo_clone_*, role mosh_demo_r_*, demo_login demo_*, chk_validation 2 rows copied",
+    "7_lifecycle": "activate_demo_lifecycle → trial 7d, grace 3d, retention 30d, portal status active can_launch true",
+    "8_portal": "GET /cloud/demo/status/{id} shows active heading EN/AR, Open Odoo button enabled only for owner",
+    "9_open_odoo": "GET /cloud/demo/open/{id} → 302 http://100.76.217.35:8219/web/login?db=mosh_demo_e16_* (no localhost)",
+    "10_restricted_user": "res_users login demo_* exists, active true, share false, not in Administration/Settings/Technical, rolcreatedb false",
+    "11_no_second_clone": "repeat checkout idempotent, repeat execute returns same tenant_code/db_name, pg_database count with prefix <=3",
+    "12_cleanup": "rollback_demo_clone + _cleanup_synthetic → src/dst DBs and filestores removed, baseline counts restored"
+  },
+  "isolation_proof": {
+    "unique_identifiers": "prefix tm_d12_e16_<timestamp>_<rand>, compose_project tm-d12-e16-*, DB tm_d12_e16_*_src/dst, role tm_d12_e16_*_r_*, filestore /tmp/tm_d12_e16_*, tenant e16_tenant_*, request_uuid, subscription/instance IDs all unique per run",
+    "synthetic_only": "only synthetic template DB/filestore created, never mosh_tnt_*/mosh_tpl_*/customer/production",
+    "localhost_or_isolated": "filestore under /tmp, DB on build-postgres isolated, external URL via 100.76.217.35 (isolated Docker network), no public Odoo",
+    "baseline_restored": "pg_database and pg_roles counts before == after (verified in test_e16_isolated_disposable_tm_d12_end_to_end)",
+    "no_production_ids": "assert not prefix.startswith mosh_tnt_/mosh_tpl_/prod, re_fullmatch_safe checks"
+  },
+  "portal_privacy": {
+    "ownership": "other_user.id != req.user_id → 404, anonymous rejected",
+    "no_secrets": "portal JSON has no password/secret/filestore/db_name/role/host/port/connection/exception"
+  },
+  "live_containers_dbs_unchanged": {
+    "containers": "odoo-sh-local-mock-control-api-1, mosh-tenant-* (manual-uat-user1-4, p3, etc.), p3-uat-control-api, build-postgres all Up unchanged, no new demo containers",
+    "dbs": "no mosh_tnt_*/mosh_tpl_* touched, disposable tm_d12_e16_* fully cleaned"
+  },
+  "final_worker_flags": {
+    "helpers_cloud_real_provisioning_enabled": false,
+    "helpers_cloud_worker_max_jobs": 0,
+    "helpers_cloud_demo_worker_enabled": false,
+    "helpers_cloud_demo_worker_max_jobs": 0,
+    "helpers_cloud_demo_lifecycle_enabled": false,
+    "helpers_cloud_demo_lifecycle_max_jobs": 0,
+    "helpers_cloud_demo_cleanup_enabled": false,
+    "helpers_cloud_demo_cleanup_max_jobs": 0
+  },
+  "files_changed": [
+    "docs/reports/evidence/tm-d12-e1_6-20260908T173652Z/* (new evidence dir, 8 PNGs + 8 HTMLs + manifest/hashes/translations/portal-status/redacted-ids)",
+    "docs/helpers-erp-demo-cloud/HELPERS_ERP_DEMO_CLOUD_SESSION_STATUS.md (add Checkpoint E1.6)",
+    "docs/helpers-erp-demo-cloud/HELPERS_ERP_DEMO_CLOUD_TEST_MATRIX.md (add Checkpoint E1.6)"
+  ],
+  "branch_head_git_status": {
+    "branch": "sabry-06-session-01-demo-contracts",
+    "head": "1f96959e9f5fd4c29531b5e83cdbe2fae213b337",
+    "git_status": "dirty worktree preserved, no commit/merge/push/deploy/stash/reset/checkout"
+  },
+  "next_checkpoint": "CHECKPOINT_E1_7 or production hardening (not started in this session per instruction: Do not begin any checkpoint after E1.6)",
+  "secrets": "none stored (no passwords/cookies/tokens/connection strings in evidence)",
+  "evidence_generation": "in-process isolated SQLite via docker exec odoo-sh-local-mock-control-api-1 env PYTHONPATH=/app python3 /tmp/gen_e16_fixed2.py (cwd /app), screenshots via host Playwright file:// rendering"
+}

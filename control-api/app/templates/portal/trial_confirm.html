@@ -9,6 +9,9 @@
       <h1>Confirm demo trial</h1>
       <p class="badge badge--warning">Demo trial — not a real payment or production subscription</p>
     </div>
+    {% if flash %}
+    <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
     <section class="flow-card">
       <h2>{{ solution.name }}</h2>
       <p>Package: <strong>{{ package.name }}</strong> ({{ package.trial_days }}-day demo trial)</p>

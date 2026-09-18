@@ -1,0 +1,12 @@
+{
+  "disposable_control_db": "/tmp/tm-d12-iso-xqemjta2/control.db",
+  "disposable_tenant_root": "/tmp/tm-d12-iso-xqemjta2/tenants",
+  "disposable_tenant_host_root": "/tmp/tm-d12-iso-xqemjta2/tenants",
+  "disposable_base": "/tmp/tm-d12-iso-xqemjta2",
+  "database_url": "sqlite:////tmp/tm-d12-iso-xqemjta2/control.db",
+  "tenant_root": "/tmp/tm-d12-iso-xqemjta2/tenants",
+  "tenant_host_root": "/tmp/tm-d12-iso-xqemjta2/tenants",
+  "live_control_db": "/opt/projects/active/odoo-sh-local-mock/data/control.db",
+  "live_tenant_root": "/opt/projects/active/odoo-sh-local-mock/data/tenants",
+  "isolation_verified": true
+}

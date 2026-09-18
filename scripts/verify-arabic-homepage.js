@@ -35,7 +35,7 @@ async function main() {
   if (arLang !== "ar" || arDir !== "rtl") {
     throw new Error(`Arabic after toggle failed: lang=${arLang} dir=${arDir}`);
   }
-  if (!arTitle.includes("شركتك")) {
+  if (!arTitle.includes("اختر مسار")) {
     throw new Error(`Arabic title missing: ${arTitle}`);
   }
   await page.screenshot({ path: path.join(OUT, "desktop-ar.png"), fullPage: true });

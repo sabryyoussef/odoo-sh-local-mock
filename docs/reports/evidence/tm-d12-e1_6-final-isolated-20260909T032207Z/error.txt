@@ -1,0 +1,6 @@
+Odoo not responding after retries at http://127.0.0.1:8400/web/login?db=mosh_demo_2_d4735e3a
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_final_isolated_harness.py", line 767, in <module>
+    assert _odoo_ok, f"Odoo not responding after retries at {odoo_url_host}"
+           ^^^^^^^^
+AssertionError: Odoo not responding after retries at http://127.0.0.1:8400/web/login?db=mosh_demo_2_d4735e3a

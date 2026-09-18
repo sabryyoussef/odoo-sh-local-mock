@@ -1,0 +1,6 @@
+replace() argument 1 must be str, not None
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 343, in <module>
+    sanitized = pg.content().replace(db_name,"REDACTED_DB").replace(demo_pw,"REDACTED").replace(rl_name,"REDACTED_ROLE").replace(ext_url,"REDACTED_URL")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: replace() argument 1 must be str, not None

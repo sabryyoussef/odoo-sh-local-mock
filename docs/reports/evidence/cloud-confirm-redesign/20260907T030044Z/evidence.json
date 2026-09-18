@@ -1,0 +1,50 @@
+{
+  "base": "http://127.0.0.1:8023",
+  "outDir": "docs/reports/evidence/cloud-confirm-redesign/20260907T030044Z",
+  "captures": [
+    {
+      "name": "confirm-desktop-ar.png",
+      "finalUrl": "http://127.0.0.1:8023/cloud/setup/confirm?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "confirm-desktop-en.png",
+      "finalUrl": "http://127.0.0.1:8023/cloud/setup/confirm",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "confirm-mobile-ar.png",
+      "finalUrl": "http://127.0.0.1:8023/cloud/setup/confirm?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "confirm-mobile-en.png",
+      "finalUrl": "http://127.0.0.1:8023/cloud/setup/confirm",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    }
+  ]
+}

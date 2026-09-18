@@ -1,0 +1,53 @@
+{
+  "base": "http://127.0.0.1:8020",
+  "outDir": "docs/reports/evidence/cloud-setup-option-a/20260907T014404Z",
+  "captures": [
+    {
+      "name": "setup-desktop-ar.png",
+      "finalUrl": "http://127.0.0.1:8020/cloud/setup?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "setup-desktop-en.png",
+      "finalUrl": "http://127.0.0.1:8020/cloud/setup",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "setup-mobile-ar.png",
+      "finalUrl": "http://127.0.0.1:8020/cloud/setup?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "setup-mobile-en.png",
+      "finalUrl": "http://127.0.0.1:8020/cloud/setup",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    }
+  ],
+  "scans": [],
+  "interactions": {
+    "advisorText": "باقة Trading موصى بها لأنك تبيع منتجات وتحتاج مشتريات ومخزونًا ومحاسبة.",
+    "detailsVisible": true,
+    "quoteTotal": "$107.00",
+    "errorCount": 3,
+    "focusVisible": true,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    ]
+  }
+}

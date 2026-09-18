@@ -59,6 +59,8 @@ def run_tenant_odoo_container(
     filestore_container_path: str,
     filestore_host_path: str,
     admin_passwd: str,
+    addons_path: str | None = None,
+    extra_volumes: dict[str, dict[str, str]] | None = None,
 ) -> docker.models.containers.Container:
     settings = get_settings()
     image = odoo_image_for_version(odoo_version)
@@ -68,12 +70,14 @@ def run_tenant_odoo_container(
     runtime_container = Path(filestore_container_path).parent / "runtime"
     runtime_host = Path(filestore_host_path).parent / "runtime"
     runtime_container.mkdir(parents=True, exist_ok=True)
+    effective_addons_path = addons_path or "/usr/lib/python3/dist-packages/odoo/addons"
     write_odoo_conf_file(
         runtime_container / "odoo.conf",
         db_name=db_name,
         db_user=db_user,
         db_password=db_password,
         admin_passwd=admin_passwd,
+        addons_path=effective_addons_path,
         data_dir="/var/lib/odoo",
     )
 
@@ -104,6 +108,7 @@ def run_tenant_odoo_container(
             volumes={
                 filestore_host_path: {"bind": "/var/lib/odoo", "mode": "rw"},
                 str(runtime_host): {"bind": "/mnt/runtime", "mode": "ro"},
+                **(extra_volumes or {}),
             },
             mem_limit=1536 * 1024 * 1024,
             nano_cpus=int(settings.build_container_nano_cpus),

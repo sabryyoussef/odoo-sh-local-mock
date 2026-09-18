@@ -79,18 +79,17 @@ def test_pricing_ctas_carry_plan_and_cycle(client, db):
     seed_helpers_cloud(db)
     page = client.get("/cloud/pricing")
     assert page.status_code == 200
-    assert "Start free" in page.text
+    assert "Try Demo" in page.text
     assert "Choose Starter" in page.text
     assert "Choose Business" in page.text
-    assert "Continue with Enterprise" in page.text
-    assert "/cloud/register?plan=trial" in page.text
-    assert "/cloud/register?plan=starter" in page.text
+    assert "Request a Quote" in page.text
+    assert "/cloud/demo" in page.text
+    assert "/cloud/build/resources?plan=starter" in page.text
     annual = client.get("/cloud/pricing?cycle=annual")
     assert "plan=starter" in annual.text
     assert "cycle=annual" in annual.text
-    assert "plan=trial" in annual.text
-    assert "cycle=monthly" in annual.text
-    assert "Yearly total" in annual.text or "yearly" in annual.text.lower()
+    assert "/cloud/demo" in annual.text
+    assert "billed annually" in annual.text
 
 
 def test_invalid_plan_cycle_query_is_ignored(client, db):
@@ -150,7 +149,7 @@ def test_existing_cloud_user_selects_plan_from_pricing(client, db):
     _login(client, "existing@company.example")
     seed_helpers_cloud(db)
     pricing = client.get("/cloud/pricing")
-    assert "/cloud/setup?plan=business" in pricing.text
+    assert "/cloud/build/resources?plan=business" in pricing.text
     resp = client.get("/cloud/setup?plan=business&cycle=monthly", follow_redirects=False)
     assert resp.status_code == 302
     assert resp.headers["location"] == "/cloud/setup"
@@ -516,6 +515,55 @@ def test_confirm_idempotency_double_submit(client, db):
     assert "Finish configuring your workspace before confirming." not in success.text
 
 
+def test_confirm_page_matches_setup_shell_and_localizes_review(client, db):
+    user = _register(db, "confirm-ui@company.example")
+    seed_helpers_cloud(db)
+    _login(client, "confirm-ui@company.example")
+    client.get("/cloud/setup?plan=starter&cycle=monthly")
+    setup = get_or_create_draft_setup(db, user)
+    package = next(p for p in list_published_cloud_packages(db) if p.code == "sales")
+    token = _csrf(client.get("/cloud/setup").text)
+    posted = client.post(
+        "/cloud/setup",
+        data={
+            "csrf_token": token,
+            "package_id": str(package.id),
+            "legal_company_name": "Confirm UI Co",
+            "workspace_name": "Confirm UI",
+            "requested_subdomain": "confirm-ui-co",
+            "country": "Egypt",
+            "language": LANGUAGE_EN,
+            "required_users": "5",
+            "required_storage_gb": "10",
+            "action": "continue",
+        },
+        follow_redirects=False,
+    )
+    assert posted.headers["location"] == "/cloud/setup/confirm"
+    en = client.get("/cloud/setup/confirm")
+    assert en.status_code == 200
+    assert "cloud-confirm-shell" in en.text
+    assert "cloud-confirm-summary" in en.text
+    assert 'action="/cloud/setup/confirm"' in en.text
+    assert 'name="idempotency_key"' in en.text
+    assert 'name="csrf_token"' in en.text
+    assert "Confirm production order" in en.text
+    assert "English" in en.text
+    assert "Egypt" in en.text
+    assert "en_US" not in en.text
+    assert "sale_management" not in en.text
+    assert "cloud.confirm_" not in en.text
+    ar = client.get("/cloud/setup/confirm?lang=ar")
+    assert ar.status_code == 200
+    assert 'dir="rtl"' in ar.text
+    assert "مصر" in ar.text
+    assert "الإنجليزية" in ar.text
+    assert "تأكيد" in ar.text or "أكد" in ar.text
+    assert "en_US" not in ar.text
+    assert "Egypt" not in ar.text.split("<footer", 1)[0]
+    assert "cloud.confirm_" not in ar.text
+
+
 def test_legacy_route_redirects(client, db):
     _register(db, "redirlegacy@company.example")
     _login(client, "redirlegacy@company.example")
@@ -619,14 +667,16 @@ def test_quote_preview_uses_4xx_for_invalid_requests(client, db):
 def test_new_user_each_plan_from_pricing(client, db):
     seed_helpers_cloud(db)
     pricing = client.get("/cloud/pricing").text
+    demo = client.get("/cloud/demo").text
+    assert "Try Demo" in demo
+    assert "/cloud/register?plan=trial" in demo
     for plan, cta in (
-        ("trial", "Start free"),
         ("starter", "Choose Starter"),
         ("business", "Choose Business"),
-        ("enterprise", "Continue with Enterprise"),
+        ("enterprise", "Request a Quote"),
     ):
         assert cta in pricing
-        assert f"/cloud/register?plan={plan}" in pricing
+        assert f"/cloud/build/resources?plan={plan}" in pricing
         _logout(client)
         token = _csrf(client.get(f"/cloud/register?plan={plan}&cycle=monthly").text)
         resp = client.post(
@@ -649,6 +699,24 @@ def test_new_user_each_plan_from_pricing(client, db):
         assert page.status_code == 200
         assert "Choose how you work" in page.text
         _logout(client)
+    _logout(client)
+    token = _csrf(client.get("/cloud/register?plan=trial&cycle=monthly").text)
+    resp = client.post(
+        "/cloud/register",
+        data={
+            "csrf_token": token,
+            "full_name": "Trial Buyer",
+            "email": "trial.buyer@company.example",
+            "password": "SecurePass1",
+            "password_confirm": "SecurePass1",
+            "terms": "1",
+            "plan": "trial",
+            "cycle": "monthly",
+        },
+        follow_redirects=False,
+    )
+    assert resp.status_code == 302
+    assert resp.headers["location"] == "/cloud/setup"
 
 
 def test_annual_intent_applied_for_starter(client, db):
@@ -670,7 +738,7 @@ def test_annual_intent_applied_for_starter(client, db):
     )
     assert resp.headers["location"] == "/cloud/setup"
     page = client.get("/cloud/setup")
-    assert "annual" in page.text
+    assert "Annual billing" in page.text
     assert "Starter" in page.text
 
 
@@ -701,6 +769,81 @@ def test_nojs_update_quote_stays_on_configure(client, db):
     assert resp.status_code == 200
     assert "Choose how you work" in resp.text
     assert "$" in resp.text
+
+
+def test_guided_setup_ui_hides_module_names_and_shows_customer_guidance(client, db):
+    _register(db, "guided@company.example")
+    _login(client, "guided@company.example")
+    seed_helpers_cloud(db)
+    client.get("/cloud/setup?plan=starter&cycle=monthly")
+    page = client.get("/cloud/setup")
+    assert page.status_code == 200
+    assert "Help me choose" in page.text
+    assert "Compare packages" in page.text
+    assert "Best for:" in page.text
+    assert "View everything included" in page.text
+    assert "Estimate summary" in page.text
+    assert "No payment today" in page.text
+    assert "Management dashboards" in page.text
+    assert "This package does not include the capabilities required for this add-on." in page.text
+    for technical in ("sale_management", "helpers_trading", "helpers_operations", "module_dependencies_json"):
+        assert technical not in page.text
+
+
+def test_guided_setup_arabic_locale_and_quote_labels(client, db):
+    _register(db, "guided-ar@company.example")
+    _login(client, "guided-ar@company.example")
+    seed_helpers_cloud(db)
+    client.get("/cloud/setup?plan=starter&cycle=monthly&lang=ar")
+    page = client.get("/cloud/setup?lang=ar")
+    assert page.status_code == 200
+    assert 'dir="rtl"' in page.text
+    assert 'action="/cloud/setup?lang=ar"' in page.text
+    assert 'data-fetch-url="/cloud/setup/quote?lang=ar"' in page.text
+    assert "ساعدني في الاختيار" in page.text
+    assert "قارن الباقات" in page.text
+    assert "ملخص التكلفة" in page.text
+    assert "لا يوجد دفع اليوم" in page.text
+    assert "لوحات متابعة الإدارة" in page.text
+    assert "هذه الباقة لا تتضمن القدرات المطلوبة لهذه الإضافة." in page.text
+    assert "cloud.setup" not in page.text
+    quote = client.get("/cloud/setup/quote?lang=ar")
+    assert quote.status_code == 200
+    payload = quote.json()
+    labels = [line["label"] for line in payload["lines"]]
+    assert "رسوم الخدمة والمنصة" in labels
+    assert "الباقة" in labels
+    assert payload["period_label"] == "شهر"
+
+
+def test_guided_setup_rejects_unavailable_management_dashboard(client, db):
+    _register(db, "dash-unavailable@company.example")
+    _login(client, "dash-unavailable@company.example")
+    seed_helpers_cloud(db)
+    client.get("/cloud/setup?plan=starter&cycle=monthly")
+    page = client.get("/cloud/setup")
+    from app.models import CloudAddon
+
+    dashboard = db.scalar(select(CloudAddon).where(CloudAddon.code == "management_dashboards"))
+    package = next(p for p in list_published_cloud_packages(db) if p.code == "trading")
+    resp = client.post(
+        "/cloud/setup",
+        data={
+            "csrf_token": _csrf(page.text),
+            "package_id": str(package.id),
+            "legal_company_name": "Dash Co",
+            "workspace_name": "Dash Co",
+            "requested_subdomain": "dash-co",
+            "country": "Egypt",
+            "language": LANGUAGE_EN,
+            "required_users": "5",
+            "required_storage_gb": "10",
+            "addon_ids": [str(dashboard.id)],
+            "action": "continue",
+        },
+    )
+    assert resp.status_code == 400
+    assert "does not include the capabilities required" in resp.text
 
 
 def test_setup_plan_redirects_to_configure_when_plan_saved(client, db):
@@ -781,6 +924,16 @@ def test_github_login_directs_company_buyers_to_cloud(client):
     assert "Company ERP without code?" in page.text
 
 
+def test_cloud_session_does_not_trap_developer_login(client, db):
+    _register(db, "switch-login@company.example")
+    _login(client, "switch-login@company.example")
+    trapped = client.get("/login", follow_redirects=False)
+    assert trapped.status_code == 200
+    assert "Sign in with GitHub" in trapped.text
+    assert "Log out of Cloud" in trapped.text
+    assert trapped.headers.get("location") != "/cloud/instances"
+
+
 def test_default_package_enables_compatible_addons(client, db):
     _register(db, "addonsenabled@company.example")
     _login(client, "addonsenabled@company.example")
@@ -788,7 +941,7 @@ def test_default_package_enables_compatible_addons(client, db):
     client.get("/cloud/setup?plan=business&cycle=monthly")
     page = client.get("/cloud/setup")
     assert 'name="addon_ids"' in page.text
-    assert page.text.count("is-disabled") < page.text.count("pricing-card")
+    assert page.text.count("is-disabled") < page.text.count("cloud-addon-card")
 
 
 def test_happy_path_starter(client, db):
@@ -831,7 +984,7 @@ def test_happy_path_starter(client, db):
     )
     assert cont.headers["location"] == "/cloud/setup/confirm"
     confirm = client.get("/cloud/setup/confirm")
-    assert "Place demo order" in confirm.text
+    assert "Confirm production order" in confirm.text
     assert "SAR" in confirm.text or "Saudi" in confirm.text
     csrf = _csrf(confirm.text)
     key = re.search(r'name="idempotency_key" value="([^"]+)"', confirm.text).group(1)

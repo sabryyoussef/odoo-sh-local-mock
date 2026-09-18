@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Callable
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -10,10 +11,20 @@ from fastapi.responses import RedirectResponse
 from starlette.responses import Response
 
 from app.translations import TRANSLATIONS
+from app.setup_translations import SETUP_TRANSLATIONS
+
+for _locale, _entries in SETUP_TRANSLATIONS.items():
+    TRANSLATIONS.setdefault(_locale, {}).update(_entries)
+
+logger = logging.getLogger(__name__)
 
 SUPPORTED_LOCALES = ("en", "ar")
 COOKIE_NAME = "lang"
 COOKIE_MAX_AGE = 365 * 24 * 3600
+
+# Keys that resolved to nothing during this process's lifetime. Populated by
+# ``translate`` so a stale/incomplete catalog is observable instead of silent.
+MISSING_KEYS: set[str] = set()
 
 
 def resolve_locale(request: Request) -> str:
@@ -49,14 +60,49 @@ def switch_locale_href(request: Request, locale: str) -> str:
     return f"{path}?{urlencode(query)}"
 
 
-def translator(locale: str) -> Callable[[str], str]:
-    english = TRANSLATIONS["en"]
-    bundle = TRANSLATIONS.get(locale) or english
+def humanize_key(key: str) -> str:
+    """Last-resort label for a key with no catalog entry.
 
+    Never returns the dotted identifier itself: a missing entry must degrade to
+    something a customer can read, not an internal key such as
+    ``cloud.google_continue``.
+    """
+    leaf = (key or "").strip().rsplit(".", 1)[-1]
+    words = leaf.replace("_", " ").replace("-", " ").split()
+    if not words:
+        return ""
+    return " ".join(words).capitalize()
+
+
+def has_translation(key: str) -> bool:
+    """True when ``key`` has a real English entry (the catalog's source locale)."""
+    return bool(key) and bool(TRANSLATIONS["en"].get(key))
+
+
+def translate(locale: str, key: str) -> str:
+    """Resolve ``key`` for ``locale`` with an English fallback.
+
+    Resolution order: requested locale -> English -> humanized leaf. A raw
+    dotted key is never returned, so a catalog gap can no longer surface as a
+    visible internal identifier (see ``humanize_key``).
+    """
+    english = TRANSLATIONS["en"]
+    if locale in SUPPORTED_LOCALES and locale != "en":
+        bundle = TRANSLATIONS.get(locale) or english
+        value = bundle.get(key) or english.get(key)
+    else:
+        value = english.get(key)
+    if value:
+        return value
+    if key and key not in MISSING_KEYS:
+        MISSING_KEYS.add(key)
+        logger.warning("i18n_missing_key key=%s locale=%s", key, locale)
+    return humanize_key(key)
+
+
+def translator(locale: str) -> Callable[[str], str]:
     def t(key: str) -> str:
-        if locale == "ar":
-            return bundle.get(key) or english.get(key) or key
-        return english.get(key) or key
+        return translate(locale, key)
 
     return t
 

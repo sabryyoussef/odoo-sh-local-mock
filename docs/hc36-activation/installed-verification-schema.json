@@ -1,0 +1,511 @@
+{
+  "provenance": "offline extraction from previously cached installed API schema; no new network requests",
+  "endpoints": {
+    "/cluster/ha/status/current": {
+      "permissions": {
+        "check": [
+          "perm",
+          "/",
+          [
+            "Sys.Audit"
+          ]
+        ]
+      },
+      "returns": {
+        "items": {
+          "properties": {
+            "armed-state": {
+              "description": "For type 'fencing'. Whether HA is armed, on standby, disarming or disarmed.",
+              "enum": [
+                "armed",
+                "standby",
+                "disarming",
+                "disarmed"
+              ],
+              "optional": 1,
+              "type": "string"
+            },
+            "auto-rebalance": {
+              "default": 1,
+              "description": "HA resource may be migrated during automatic rebalancing.",
+              "optional": 1,
+              "type": "boolean"
+            },
+            "crm_state": {
+              "description": "For type 'service'. Service state as seen by the CRM.",
+              "optional": 1,
+              "type": "string"
+            },
+            "failback": {
+              "default": 1,
+              "description": "The HA resource is automatically migrated to the node with the highest priority according to their node affinity rule, if a node with a higher priority than the current node comes online.",
+              "optional": 1,
+              "type": "boolean"
+            },
+            "id": {
+              "description": "Status entry ID (quorum, master, lrm:<node>, service:<sid>).",
+              "type": "string"
+            },
+            "max_relocate": {
+              "description": "For type 'service'.",
+              "optional": 1,
+              "type": "integer"
+            },
+            "max_restart": {
+              "description": "For type 'service'.",
+              "optional": 1,
+              "type": "integer"
+            },
+            "node": {
+              "description": "Node associated to status entry.",
+              "type": "string"
+            },
+            "quorate": {
+              "description": "For type 'quorum'. Whether the cluster is quorate or not.",
+              "optional": 1,
+              "type": "boolean"
+            },
+            "request_state": {
+              "description": "For type 'service'. Requested service state.",
+              "optional": 1,
+              "type": "string"
+            },
+            "resource_mode": {
+              "description": "For type 'fencing'. How resources are handled while disarmed.",
+              "enum": [
+                "freeze",
+                "ignore"
+              ],
+              "optional": 1,
+              "type": "string"
+            },
+            "sid": {
+              "description": "For type 'service'. Service ID.",
+              "optional": 1,
+              "type": "string"
+            },
+            "state": {
+              "description": "For type 'service'. Verbose service state.",
+              "optional": 1,
+              "type": "string"
+            },
+            "status": {
+              "description": "Status of the entry (value depends on type).",
+              "type": "string"
+            },
+            "timestamp": {
+              "description": "For type 'lrm','master'. Timestamp of the status information.",
+              "optional": 1,
+              "type": "integer"
+            },
+            "type": {
+              "description": "Type of status entry.",
+              "enum": [
+                "quorum",
+                "master",
+                "lrm",
+                "service",
+                "fencing"
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "/nodes/{node}/tasks/{upid}/status": {
+      "permissions": {
+        "description": "The user needs 'Sys.Audit' permissions on '/nodes/<node>' if they are not the owner of the task.",
+        "user": "all"
+      },
+      "returns": {
+        "properties": {
+          "exitstatus": {
+            "optional": 1,
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "node": {
+            "type": "string"
+          },
+          "pid": {
+            "type": "integer"
+          },
+          "pstart": {
+            "type": "integer"
+          },
+          "starttime": {
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "stopped"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "upid": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "/nodes/{node}/storage/{storage}/content": {
+      "permissions": {
+        "check": [
+          "perm",
+          "/storage/{storage}",
+          [
+            "Datastore.Audit",
+            "Datastore.AllocateSpace"
+          ],
+          "any",
+          1
+        ]
+      },
+      "returns": {
+        "items": {
+          "properties": {
+            "approximate-size": {
+              "description": "Approximate volume size in bytes. Present instead of 'size' for storages where determining the exact size has technical limitations. Will typically be an upper bound on the actual size, but the exact semantics depend on the storage plugin.",
+              "optional": 1,
+              "renderer": "bytes",
+              "type": "integer"
+            },
+            "ctime": {
+              "description": "Creation time (seconds since the UNIX Epoch).",
+              "minimum": 0,
+              "optional": 1,
+              "type": "integer"
+            },
+            "encrypted": {
+              "description": "If whole backup is encrypted, value is the fingerprint or '1'  if encrypted. Only useful for the Proxmox Backup Server storage type.",
+              "optional": 1,
+              "type": "string"
+            },
+            "format": {
+              "description": "Format identifier ('raw', 'qcow2', 'subvol', 'iso', 'tgz' ...)",
+              "type": "string"
+            },
+            "notes": {
+              "description": "Optional notes. If they contain multiple lines, only the first one is returned here.",
+              "optional": 1,
+              "type": "string"
+            },
+            "parent": {
+              "description": "Volume identifier of parent (for linked cloned).",
+              "optional": 1,
+              "type": "string"
+            },
+            "protected": {
+              "description": "Protection status. Currently only supported for backups.",
+              "optional": 1,
+              "type": "boolean"
+            },
+            "size": {
+              "description": "Volume size in bytes.",
+              "optional": 1,
+              "renderer": "bytes",
+              "type": "integer"
+            },
+            "used": {
+              "description": "Used space. Please note that most storage plugins do not report anything useful here.",
+              "optional": 1,
+              "renderer": "bytes",
+              "type": "integer"
+            },
+            "verification": {
+              "description": "Last backup verification result, only useful for PBS storages.",
+              "optional": 1,
+              "properties": {
+                "state": {
+                  "description": "Last backup verification state.",
+                  "type": "string"
+                },
+                "upid": {
+                  "description": "Last backup verification UPID.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "vmid": {
+              "description": "Associated Owner VMID.",
+              "optional": 1,
+              "type": "integer"
+            },
+            "volid": {
+              "description": "Volume identifier.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "links": [
+          {
+            "href": "{volid}",
+            "rel": "child"
+          }
+        ],
+        "type": "array"
+      }
+    },
+    "/nodes/{node}/storage/{storage}/content/{volume}": {
+      "permissions": {
+        "description": "You need read access for the volume.",
+        "user": "all"
+      },
+      "returns": {
+        "properties": {
+          "format": {
+            "description": "Format identifier ('raw', 'qcow2', 'subvol', 'iso', 'tgz' ...)",
+            "type": "string"
+          },
+          "notes": {
+            "description": "Optional notes.",
+            "optional": 1,
+            "type": "string"
+          },
+          "path": {
+            "description": "The Path",
+            "type": "string"
+          },
+          "protected": {
+            "description": "Protection status. Currently only supported for backups.",
+            "optional": 1,
+            "type": "boolean"
+          },
+          "size": {
+            "description": "Volume size in bytes.",
+            "renderer": "bytes",
+            "type": "integer"
+          },
+          "used": {
+            "description": "Used space. Please note that most storage plugins do not report anything useful here.",
+            "renderer": "bytes",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "/nodes/{node}/storage/{storage}/status": {
+      "permissions": {
+        "check": [
+          "perm",
+          "/storage/{storage}",
+          [
+            "Datastore.Audit",
+            "Datastore.AllocateSpace"
+          ],
+          "any",
+          1
+        ]
+      },
+      "returns": {
+        "properties": {
+          "active": {
+            "description": "Set when storage is accessible.",
+            "optional": 1,
+            "type": "boolean"
+          },
+          "avail": {
+            "description": "Available storage space in bytes.",
+            "optional": 1,
+            "renderer": "bytes",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Allowed storage content types.",
+            "format": "pve-storage-content-list",
+            "type": "string"
+          },
+          "enabled": {
+            "description": "Set when storage is enabled (not disabled).",
+            "optional": 1,
+            "type": "boolean"
+          },
+          "shared": {
+            "description": "Shared flag from storage configuration.",
+            "optional": 1,
+            "type": "boolean"
+          },
+          "total": {
+            "description": "Total storage space in bytes.",
+            "optional": 1,
+            "renderer": "bytes",
+            "type": "integer"
+          },
+          "type": {
+            "description": "Storage type.",
+            "type": "string"
+          },
+          "used": {
+            "description": "Used storage space in bytes.",
+            "optional": 1,
+            "renderer": "bytes",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "/nodes/{node}/status": {
+      "permissions": {
+        "check": [
+          "perm",
+          "/nodes/{node}",
+          [
+            "Sys.Audit"
+          ]
+        ]
+      },
+      "returns": {
+        "additionalProperties": 1,
+        "properties": {
+          "boot-info": {
+            "description": "Meta-information about the boot mode.",
+            "properties": {
+              "mode": {
+                "description": "Through which firmware the system got booted.",
+                "enum": [
+                  "efi",
+                  "legacy-bios"
+                ],
+                "type": "string"
+              },
+              "secureboot": {
+                "description": "System is booted in secure mode, only applicable for the \"efi\" mode.",
+                "optional": 1,
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "cpu": {
+            "description": "The current cpu usage.",
+            "type": "number"
+          },
+          "cpuinfo": {
+            "properties": {
+              "cores": {
+                "description": "The number of physical cores of the CPU.",
+                "type": "integer"
+              },
+              "cpus": {
+                "description": "The number of logical threads of the CPU.",
+                "type": "integer"
+              },
+              "model": {
+                "description": "The CPU model",
+                "type": "string"
+              },
+              "sockets": {
+                "description": "The number of logical threads of the CPU.",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "current-kernel": {
+            "description": "Meta-information about the currently booted kernel of this node.",
+            "properties": {
+              "machine": {
+                "description": "Hardware (architecture) type",
+                "type": "string"
+              },
+              "release": {
+                "description": "OS kernel release (e.g., \"6.8.0\")",
+                "type": "string"
+              },
+              "sysname": {
+                "description": "OS kernel name (e.g., \"Linux\")",
+                "type": "string"
+              },
+              "version": {
+                "description": "OS kernel version with build info",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "loadavg": {
+            "description": "An array of load avg for 1, 5 and 15 minutes respectively.",
+            "items": {
+              "description": "The value of the load.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "memory": {
+            "properties": {
+              "available": {
+                "description": "The available memory in bytes.",
+                "type": "integer"
+              },
+              "free": {
+                "description": "The free memory in bytes.",
+                "type": "integer"
+              },
+              "total": {
+                "description": "The total memory in bytes.",
+                "type": "integer"
+              },
+              "used": {
+                "description": "The used memory in bytes.",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "pveversion": {
+            "description": "The PVE version string.",
+            "type": "string"
+          },
+          "rootfs": {
+            "properties": {
+              "avail": {
+                "description": "The available bytes in the root filesystem.",
+                "type": "integer"
+              },
+              "free": {
+                "description": "The free bytes on the root filesystem.",
+                "type": "integer"
+              },
+              "total": {
+                "description": "The total size of the root filesystem in bytes.",
+                "type": "integer"
+              },
+              "used": {
+                "description": "The used bytes in the root filesystem.",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "/access/permissions": {
+      "permissions": {
+        "description": "Each user/token is allowed to dump their own permissions (or that of owned tokens). A user can dump the permissions of another user or their tokens if they have 'Sys.Audit' permission on /access.",
+        "user": "all"
+      },
+      "returns": {
+        "description": "Map of \"path\" => (Map of \"privilege\" => \"propagate boolean\").",
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "observed_at_utc": "2026-09-13T19:20:18.295265+00:00",
+  "checkpoint": "CHECKPOINT_HC3_6_MUTATION_PREREQUISITES_BLOCKED",
+  "blockers": [
+    "mutation credential helper-compute-hc36@pve!clone-once is absent (install is operator-only; not executed this session)",
+    "auditor GET /nodes/pve-test/storage/local-lvm/content returns 0 rows",
+    "auditor GET of source volume objects returns 403",
+    "post-clone independence remains independence_unverifiable without readable lvmthin content/parent metadata"
+  ],
+  "api": "https://pve-test.home.arpa:8006",
+  "trusted_ca_sha256": "1940763fc39896ac5851325bfe2ea8c3e9246ce4c1d74a9ba91f7d71adc907aa",
+  "expected_cluster_fingerprint": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c",
+  "auditor_identity": "helper-compute-ro@pve!hc3-6-freeze-ro",
+  "mutation_credential_present": false,
+  "mutation_identity_configured": null,
+  "mutation_identity_expected": "helper-compute-hc36@pve!clone-once",
+  "isolated_lab": {
+    "path": "/opt/projects/active/odoo-sh-local-mock/data-hc36/control.db",
+    "sha256": "9a8f30392c7ae33258c6772d9469df18fe4d673d7b298524f970567411c4f2d5",
+    "directory_mode": "0o700",
+    "database_mode": "0o600",
+    "tables": [
+      "proxmox_clone_approvals",
+      "proxmox_clone_intents",
+      "proxmox_mutation_controls",
+      "proxmox_provisioning_audit_events",
+      "proxmox_provisioning_jobs",
+      "proxmox_reservations",
+      "proxmox_vmid_leases"
+    ],
+    "table_counts": {
+      "proxmox_clone_approvals": 0,
+      "proxmox_clone_intents": 0,
+      "proxmox_mutation_controls": 0,
+      "proxmox_provisioning_audit_events": 0,
+      "proxmox_provisioning_jobs": 0,
+      "proxmox_reservations": 0,
+      "proxmox_vmid_leases": 0
+    },
+    "empty": true,
+    "integrity": "ok"
+  },
+  "http_method_counts": {
+    "GET": 18,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "mutation_methods": 0,
+  "snapshot": {
+    "mutation_methods": 0,
+    "http_methods": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ],
+    "http_method_counts": {
+      "GET": 18,
+      "POST": 0,
+      "PUT": 0,
+      "PATCH": 0,
+      "DELETE": 0
+    },
+    "version": "9.2.11",
+    "source_vmid_present": true,
+    "source_name": "ubuntu-2404-cloudinit-template",
+    "source_template": 1,
+    "source_status": "stopped",
+    "source_onboot": 0,
+    "cluster_fingerprint": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c",
+    "cluster_match": true,
+    "node_online": true,
+    "node_maintenance_field_present": false,
+    "node_maintenance": false,
+    "maintenance_proof": {
+      "maintenance": false,
+      "proof": "pve-9.2-ha-node-untracked",
+      "node_id": "pve-test",
+      "ha_current_types": [
+        "quorum",
+        "fencing"
+      ]
+    },
+    "maintenance_error": null,
+    "storage_active": true,
+    "storage_type": "lvmthin",
+    "storage_content_count": 0,
+    "source_volume_proof": {
+      "vmid": 9000,
+      "disks": [
+        {
+          "vmid": 9000,
+          "slot": "scsi0",
+          "storage": "local-lvm",
+          "volume_id": "local-lvm:base-9000-disk-0",
+          "format": null,
+          "size": 21474836480,
+          "size_proven": true,
+          "source": "qemu-config-size"
+        },
+        {
+          "vmid": 9000,
+          "slot": "efidisk0",
+          "storage": "local-lvm",
+          "volume_id": "local-lvm:base-9000-disk-1",
+          "format": null,
+          "size": 4194304,
+          "size_proven": true,
+          "source": "qemu-config-size"
+        },
+        {
+          "vmid": 9000,
+          "slot": "ide2",
+          "storage": "local-lvm",
+          "volume_id": "local-lvm:vm-9000-cloudinit",
+          "format": null,
+          "size": null,
+          "size_proven": false,
+          "source": "qemu-config-identity"
+        }
+      ],
+      "fingerprint": "1ea7078647df8b1725d79e2af22975dde6ce4e8aa87df1043ded28d00ff3e89f",
+      "all_sizes_proven": false
+    },
+    "source_volume_error": null,
+    "independence_capability": {
+      "storage_type": "lvmthin",
+      "content_rows": 0,
+      "parent_field_observed": false,
+      "origin_field_observed": false,
+      "backing_field_observed": false,
+      "volume_object_gets": [
+        {
+          "path": "/nodes/pve-test/storage/local-lvm/content/base-9000-disk-0",
+          "status": 403
+        },
+        {
+          "path": "/nodes/pve-test/storage/local-lvm/content/base-9000-disk-1",
+          "status": 403
+        },
+        {
+          "path": "/nodes/pve-test/storage/local-lvm/content/vm-9000-cloudinit",
+          "status": 403
+        }
+      ]
+    },
+    "independence_without_target": "independence_unverifiable",
+    "vmbr0_present": true,
+    "vmbr0_active": 1,
+    "vmbr0_acl_object": "/sdn/zones/localnetwork/vmbr0",
+    "vmbr0_acl_visible": false,
+    "reserved_range_occupied": [],
+    "reserved_range_clear": true,
+    "auditor_permission_paths": [
+      "/",
+      "/access",
+      "/access/groups",
+      "/nodes",
+      "/pool",
+      "/sdn",
+      "/storage",
+      "/vms"
+    ]
+  }
+}

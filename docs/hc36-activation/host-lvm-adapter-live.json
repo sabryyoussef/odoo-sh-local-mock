@@ -1,0 +1,47 @@
+{
+  "checkpoint": "CHECKPOINT_HC3_6_HOST_LVM_ADAPTER_PASS",
+  "schema": "hc36-host-lvm-adapter-live-v1",
+  "observed_at_utc": "2026-09-16T04:22:00+00:00",
+  "prior_checkpoint": "CHECKPOINT_HC3_6_INDEPENDENCE_VERIFIER_LIVE_PASS",
+  "prior_job_id": "4de8b1a2-e4ca-4a9f-b0ce-1b9d8624d882",
+  "not_progress": ["6aa87fad-b3d8-4ebf-9955-9a74d8f1032d"],
+  "clone_executed": false,
+  "worker_armed": false,
+  "mutation_kill_switch": true,
+  "mutation_token_present": false,
+  "hc37_authorized": false,
+  "live_verification": {
+    "ssh_to_pve_test": "authorized",
+    "verifier_user": "helper-verify",
+    "verifier_host": "100.122.63.86",
+    "verifier_ssh_key": "/home/sabry/.ssh/helper_compute_verifier",
+    "remote_command_exactly": "sudo /usr/local/sbin/helper-compute-lvm-proof"
+  },
+  "source_preflight_replay": {
+    "ok": true,
+    "fingerprint": "ef6029addf0787ba2b96e2e6854ac5e3b21f447d0e03fdefad40d877123b4f3b",
+    "source_hash": "70ee786c24fd689edbe676495ea53a4cd7123d35c79b0c18c4dc1ab9dc3c64e6",
+    "disk_hash": "51e573777d677ff184ac70f68ab09cf46b59a15521c1e34c947ee0407883f4af",
+    "maintenance_clear": true,
+    "path": "collect_preflight empty auditor content + host LVM"
+  },
+  "http_method_counts": {
+    "GET": 21,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "origin_empty_semantics": "ambiguous_not_independence_proof",
+  "offline_tests": {
+    "passed": 275,
+    "failed": 0,
+    "files": [
+      "tests/test_helper_compute_hc3_6_host_lvm_adapter.py",
+      "tests/test_helper_compute_hc3_6_independence_verifier.py",
+      "tests/test_helper_compute_hc3_6_transport.py",
+      "tests/test_helper_compute_hc3_6_staging.py",
+      "tests/test_helper_compute_hc3_6_prerequisites.py"
+    ]
+  }
+}

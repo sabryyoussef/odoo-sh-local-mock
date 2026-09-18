@@ -12,9 +12,18 @@
     {% endif %}
     {{ brand.short_name }}
   </a>
-  {% if flash %}
+    {% if flash %}
     <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}" style="max-width:420px">
       {{ flash.message }}
+    </div>
+  {% endif %}
+  {% if cloud_session %}
+    <div class="sub-result sub-result--bad" style="max-width:420px">
+      {{ t('auth.cloud_session_block') }}
+      <form method="post" action="/cloud/logout" class="inline-form" style="margin-top:8px">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="link-button">{{ t('auth.logout_cloud_first') }}</button>
+      </form>
     </div>
   {% endif %}
   <div class="auth-card">
@@ -26,6 +35,7 @@
         {{ t('auth.github_btn') }}
       </a>
       <p class="auth-note muted">{{ t('auth.github_note') }}</p>
+      <p class="auth-note muted"><a href="https://github.com/logout" target="_blank" rel="noopener">{{ t('auth.github_switch') }}</a></p>
       <p class="auth-note muted">{{ t('auth.signin_hosts') }}</p>
     {% else %}
       <a class="btn-hero btn-hero--primary auth-btn" href="/auth/github" style="opacity:.7">
@@ -37,8 +47,8 @@
     {% endif %}
       <hr class="auth-split">
       <p class="auth-lead">{{ t('auth.company_q') }}</p>
-      <a class="btn-hero btn-hero--secondary auth-btn" href="/cloud/login">{{ t('auth.cloud_signin') }}</a>
-      <p class="auth-note muted"><a href="/cloud/register">{{ t('auth.create_cloud') }}</a> {{ t('auth.with_email') }}</p>
+      <a class="btn-hero btn-hero--secondary auth-btn" href="{{ cloud_login_href|default('/cloud/login') }}">{{ t('auth.cloud_signin') }}</a>
+      <p class="auth-note muted"><a href="{{ cloud_register_href|default('/cloud/register') }}">{{ t('auth.create_cloud') }}</a> {{ t('auth.with_email') }}</p>
   </div>
   <a class="auth-back" href="/">{{ t('auth.back') }}</a>
 </div>

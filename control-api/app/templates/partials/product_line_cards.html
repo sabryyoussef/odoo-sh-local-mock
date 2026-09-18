@@ -1,42 +1,72 @@
-<section class="product-lines" aria-label="{{ t('products.aria') }}">
+<section class="product-lines" id="decision-paths" aria-label="{{ t('products.aria') }}">
   <div class="product-lines__inner">
-    <p class="product-lines__kicker">{{ t('products.kicker') }}</p>
-    <h2 class="product-lines__title">{{ t('products.title') }}</h2>
-    <p class="product-lines__lead">{{ t('products.lead') }}</p>
     <div class="product-lines__grid">
-      <article class="product-card">
-        <p class="product-card__kicker">{{ t('products.card1.kicker') }}</p>
-        <h3>{{ t('products.card1.title') }}</h3>
-        <p>{{ t('products.card1.body') }}</p>
-        <ul>
+      <article class="product-card" id="card-ready-solutions" tabindex="0">
+        <div class="product-card__header">
+          <p class="product-card__kicker">{{ t('products.card1.kicker') }}</p>
+          <h2 class="product-card__title">{{ t('products.card1.title') }}</h2>
+        </div>
+        <p class="product-card__body">{{ t('products.card1.body') }}</p>
+        <ul class="product-card__features">
           <li>{{ t('products.card1.li1') }}</li>
           <li>{{ t('products.card1.li2') }}</li>
           <li>{{ t('products.card1.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="{{ locale_url('/solutions') }}">{{ t('products.card1.cta') }}</a>
+        <div class="product-card__actions">
+          <a class="btn-hero btn-hero--primary btn-hero--card" href="{{ locale_url('/solutions') }}">{{ t('products.card1.cta') }}</a>
+        </div>
       </article>
-      <article class="product-card product-card--featured">
-        <p class="product-card__kicker">{{ t('products.card2.kicker') }}</p>
-        <h3>{{ t('products.card2.title') }}</h3>
-        <p>{{ t('products.card2.body') }}</p>
-        <ul>
+
+      <article class="product-card" id="card-cloud" tabindex="0">
+        <div class="product-card__header">
+          <p class="product-card__kicker">{{ t('products.card2.kicker') }}</p>
+          <h2 class="product-card__title">{{ t('products.card2.title') }}</h2>
+        </div>
+        <p class="product-card__body">{{ t('products.card2.body') }}</p>
+        <ul class="product-card__features">
           <li>{{ t('products.card2.li1') }}</li>
           <li>{{ t('products.card2.li2') }}</li>
           <li>{{ t('products.card2.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--primary btn-hero--on-light" href="{{ locale_url('/cloud') }}">{{ t('products.card2.cta') }}</a>
+        <div class="product-card__actions">
+          <a class="btn-hero btn-hero--primary btn-hero--card" href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a>
+          <a class="btn-hero btn-hero--secondary btn-hero--card btn-hero--card-secondary" href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
+        </div>
       </article>
-      <article class="product-card">
-        <p class="product-card__kicker">{{ t('products.card3.kicker') }}</p>
-        <h3>{{ t('products.card3.title') }}</h3>
-        <p>{{ t('products.card3.body') }}</p>
-        <ul>
+
+      <article class="product-card" id="card-platform" tabindex="0">
+        <div class="product-card__header">
+          <p class="product-card__kicker">{{ t('products.card3.kicker') }}</p>
+          <h2 class="product-card__title">{{ t('products.card3.title') }}</h2>
+        </div>
+        <p class="product-card__body">{{ t('products.card3.body') }}</p>
+        <ul class="product-card__features">
           <li>{{ t('products.card3.li1') }}</li>
           <li>{{ t('products.card3.li2') }}</li>
           <li>{{ t('products.card3.li3') }}</li>
         </ul>
-        <a class="btn-hero btn-hero--secondary btn-hero--on-light" href="{{ locale_url('/platform') }}">{{ t('products.card3.cta') }}</a>
+        <div class="product-card__actions">
+          <a class="btn-hero btn-hero--primary btn-hero--card" href="{{ locale_url('/platform') }}">{{ t('products.card3.cta') }}</a>
+        </div>
       </article>
+    </div>
+
+    <div class="modules-showcase" aria-label="{{ t('hero.modules') }}">
+      <p class="modules-showcase__label">{{ t('hero.pipeline') }}</p>
+      <div class="modules-showcase__pills">
+        <span class="module-pill"><span class="module-pill__dot" style="background: #5B899E;"></span>{{ t('app.accounting') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #3CA3B4;"></span>{{ t('app.crm') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #E85D4C;"></span>{{ t('app.sales') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #8B74B0;"></span>{{ t('app.inventory') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #4A8FBD;"></span>{{ t('app.purchase') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #C9A227;"></span>{{ t('app.manufacturing') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #4B7BEC;"></span>{{ t('app.project') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #E39A3C;"></span>{{ t('app.employees') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #2F3A4A;"></span>{{ t('app.pos') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #1D7AAD;"></span>{{ t('app.website') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #5BA85A;"></span>{{ t('app.ecommerce') }}</span>
+        <span class="module-pill"><span class="module-pill__dot" style="background: #3D6B8A;"></span>{{ t('app.sign') }}</span>
+      </div>
     </div>
   </div>
 </section>

@@ -1,0 +1,168 @@
+{
+  "checkpoint": "CHECKPOINT_HC3_11_READY_SOLUTION_DEPLOYMENT_BLOCKED",
+  "timestamp": "2026-09-17T17:45:00Z",
+  "hc310a_reference": "CHECKPOINT_HC3_10A_LIVE_ACCEPTANCE_PASS",
+  "authority_chain": {
+    "subscription_id": 6,
+    "job_id": 20,
+    "tenant_id": 31,
+    "database_name": "mosh_tnt_hms_6_725292",
+    "customer_user_id": 2,
+    "customer_email": "e2e@test"
+  },
+  "pre_deploy_verification": {
+    "check_1_subscription_6_bound": {
+      "result": "PASS",
+      "details": {
+        "exists": true,
+        "customer_user_id": 2,
+        "customer_email": "e2e@test",
+        "solution_id": 2,
+        "package_id": 3,
+        "status": "trial"
+      }
+    },
+    "check_2_job_20_bound": {
+      "result": "PASS",
+      "details": {
+        "exists": true,
+        "customer_subscription_id": 6,
+        "tenant_id": 31,
+        "operation": "provision_authoritative_tenant",
+        "status": "succeeded",
+        "authority_chain_embedded": true,
+        "authority_chain": {
+          "customer_user_id": 2,
+          "customer_email": "e2e@test"
+        }
+      }
+    },
+    "check_3_tenant_31_bound": {
+      "result": "PASS",
+      "details": {
+        "exists": true,
+        "customer_subscription_id": 6,
+        "tenant_code": "hms_6_725292",
+        "database_name": "mosh_tnt_hms_6_725292",
+        "status": "active",
+        "deployment_mode": "solution"
+      }
+    },
+    "check_4_durable_state": {
+      "result": "PASS",
+      "details": {
+        "current_state": "active",
+        "safe_for_deployment": true
+      }
+    },
+    "check_5_solution_package": {
+      "result": "PASS",
+      "details": {
+        "solution": {
+          "id": 2,
+          "code": "hms",
+          "name": "Hospital Management System (HMS)",
+          "status": "active",
+          "current_version": "1.0.0-demo",
+          "hms_in_db_name_explained": true,
+          "explanation": "HMS code in tenant_code and database_name matches solution code"
+        },
+        "package": {
+          "id": 3,
+          "code": "essential",
+          "name": "HMS Essential",
+          "solution_id": 2
+        }
+      }
+    },
+    "check_6_no_vertical_modules_preinstalled": {
+      "result": "PASS",
+      "details": {
+        "note": "Deferred until pre-install audit at deployment time",
+        "expected": "None (first deployment of solution to this tenant)"
+      }
+    },
+    "check_7_subscription_not_synthetic": {
+      "result": "PASS",
+      "details": {
+        "subscription_id": 6,
+        "is_synthetic": false,
+        "synthetic_ids_rejected": [25, 26, 27]
+      }
+    },
+    "check_8_solution_durably_stored": {
+      "result": "PASS",
+      "details": {
+        "solution_id_set": true,
+        "solution_code": "hms",
+        "stored_in": "customer_subscriptions.solution_id"
+      }
+    }
+  },
+  "artifact_validation": {
+    "result": "BLOCKED",
+    "blocker": "Artifact Unverified",
+    "artifact": {
+      "id": 1,
+      "solution_id": 2,
+      "code": "hms-v1.0.0-demo-artifact",
+      "version": "1.0.0-demo",
+      "odoo_version": "19.0",
+      "edition": "community",
+      "source_type": "template_database",
+      "install_strategy": "restore",
+      "status": "draft",
+      "verification_state": "unverified",
+      "is_verified": false,
+      "deployment_ready": false
+    },
+    "blockers": [
+      {
+        "check": "artifact.is_verified",
+        "required": true,
+        "actual": false,
+        "severity": "CRITICAL"
+      },
+      {
+        "check": "artifact.deployment_ready",
+        "required": true,
+        "actual": false,
+        "severity": "CRITICAL"
+      },
+      {
+        "check": "artifact.verification_state",
+        "required": "verified",
+        "actual": "unverified",
+        "severity": "CRITICAL"
+      }
+    ],
+    "design_note": "RS1 does not build/deploy; unverified artifacts are honestly marked not ready (models.py:330)",
+    "safety_constraint": "Unverified artifact cannot be deployment_ready (ready_solution_profile_service.py:93)",
+    "all_demo_artifacts_unverified": {
+      "vet-hospital-v1.0.0-demo-artifact": {
+        "is_verified": false,
+        "deployment_ready": false
+      },
+      "hms-v1.0.0-demo-artifact": {
+        "is_verified": false,
+        "deployment_ready": false
+      },
+      "sis-v1.0.0-demo-artifact": {
+        "is_verified": false,
+        "deployment_ready": false
+      }
+    },
+    "intentional_by_design": "Only vet-hospital is seeded as reference; HMS/SIS remain without profiles to avoid false deployment-ready claims (catalog_service.py:608-609)"
+  },
+  "preservation": {
+    "hc310a_evidence_intact": true,
+    "subscription_6_binding": "preserved",
+    "job_20_binding": "preserved",
+    "tenant_31_binding": "preserved",
+    "synthetic_subscriptions_rejected": true,
+    "other_tenants_unchanged": true,
+    "proxmox_unchanged": true
+  },
+  "next_action": "Artifact verification required before HC3.11 deployment can proceed",
+  "safe_retry_point": "CHECKPOINT_HC3_11_READY_SOLUTION_DEPLOYMENT_BLOCKED"
+}

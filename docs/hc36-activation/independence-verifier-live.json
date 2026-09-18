@@ -1,0 +1,100 @@
+{
+  "checkpoint": "CHECKPOINT_HC3_6_INDEPENDENCE_VERIFIER_LIVE_PASS",
+  "schema": "hc36-independence-verifier-live-v1",
+  "observed_at_utc": "2026-09-14T02:58:00+00:00",
+  "session": "HC3.6 Session 6 — Host-Side LVM Independence Verifier live acceptance",
+  "status": "live_pass",
+  "source_job_id": "4de8b1a2-e4ca-4a9f-b0ce-1b9d8624d882",
+  "not_progress": ["6aa87fad-b3d8-4ebf-9955-9a74d8f1032d"],
+  "live_verification": {
+    "ssh_to_pve_test": "authorized",
+    "ssh_error": null,
+    "dns_resolution": "pve-test.home.arpa -> 100.122.63.86",
+    "icmp_reachable": true,
+    "proxmox_api_reachable": true,
+    "tls_certificate_fingerprint": "1940763fc39896ac5851325bfe2ea8c3e9246ce4c1d74a9ba91f7d71adc907aa",
+    "verifier_command": "/usr/local/sbin/helper-compute-lvm-proof",
+    "verifier_user": "helper-verify",
+    "verifier_host": "100.122.63.86",
+    "verifier_ssh_key": "/home/sabry/.ssh/helper_compute_verifier",
+    "remote_command_exactly": "sudo /usr/local/sbin/helper-compute-lvm-proof",
+    "live_verifier_execution_count": 1,
+    "verifier_exit_code": 0,
+    "lv_records": 15,
+    "arbitrary_sudo": "password_required",
+    "arbitrary_command_rejected": true
+  },
+  "http_method_counts": {
+    "GET": 18,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "mutation_count": 0,
+  "worker_activations": 0,
+  "vm_config_disk_used": false,
+  "clone_executed": false,
+  "origin_empty_semantics": "ambiguous_not_independence_proof",
+  "source_vm": {
+    "vmid": 9000,
+    "present": true,
+    "name": "ubuntu-2404-cloudinit-template",
+    "template": 1,
+    "status": "stopped",
+    "onboot": 0,
+    "scsi0": "local-lvm:base-9000-disk-0,discard=on,iothread=1,size=20G,ssd=1",
+    "efidisk0": "local-lvm:base-9000-disk-1,efitype=4m,size=4M",
+    "ide2": "local-lvm:vm-9000-cloudinit,media=cdrom"
+  },
+  "lvm": {
+    "vg_name": "pve",
+    "thinpool": "data",
+    "validated": true,
+    "source_volumes": ["base-9000-disk-0", "base-9000-disk-1", "vm-9000-cloudinit"],
+    "all_sizes_proven": true,
+    "evidence_source": "qemu-config+host-lvm"
+  },
+  "auditor_storage_content_count": 0,
+  "independence_model": {
+    "schema": "hc36-independence-v1",
+    "required_checks": 10,
+    "checks": [
+      "target_lv_names_distinct",
+      "target_owned_by_target_vmid",
+      "target_in_expected_vg_thinpool",
+      "target_disk_sizes_consistent",
+      "target_not_base_volumes",
+      "no_lvm_origin_references_source",
+      "no_proxmox_config_parent",
+      "no_storage_content_parent_origin",
+      "expected_disk_count_present",
+      "source_target_config_consistent"
+    ],
+    "origin_empty_semantics": "ambiguous_not_independence_proof",
+    "decision_model": "all_must_pass_for_independence",
+    "empty_content_without_host_lvm": "independence_unverifiable",
+    "host_lvm_plus_target_qemu_no_parent": "may_substitute_check_8"
+  },
+  "capability_verification": {
+    "schema": "hc36-verifier-capability-v1",
+    "all_checks_passed": true,
+    "checks_count": 8,
+    "checks": [
+      "verifier_user_configured",
+      "trusted_host_configured",
+      "fixed_command_path",
+      "timeout_configured",
+      "max_output_configured",
+      "arbitrary_command_rejected_by_design",
+      "malicious_command_rejected",
+      "host_mismatch_rejected"
+    ]
+  },
+  "test_results_at_live_pass": {
+    "file": "tests/test_helper_compute_hc3_6_independence_verifier.py",
+    "passed": 56,
+    "failed": 0
+  },
+  "operator_action_required": []
+}

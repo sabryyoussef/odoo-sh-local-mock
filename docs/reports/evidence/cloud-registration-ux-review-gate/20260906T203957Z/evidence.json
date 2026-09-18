@@ -1,0 +1,113 @@
+{
+  "base": "http://127.0.0.1:8015",
+  "outDir": "docs/reports/evidence/cloud-registration-ux-review-gate/20260906T203957Z",
+  "screenshots": [
+    "registration-desktop-en.png",
+    "registration-desktop-ar.png",
+    "registration-mobile-en.png",
+    "registration-mobile-ar.png",
+    "pricing-register-account-setup-flow.png"
+  ],
+  "checks": [
+    {
+      "name": "registration-desktop-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-desktop-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "registration-mobile-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-mobile-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "pricing-register-account-setup-flow",
+      "finalUrl": "http://127.0.0.1:8015/cloud/setup",
+      "containsSetupHeading": true
+    },
+    {
+      "name": "translation-scan-registration-en",
+      "status": "http://127.0.0.1:8015/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-registration-ar",
+      "status": "http://127.0.0.1:8015/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-pricing-en",
+      "status": "http://127.0.0.1:8015/cloud/pricing?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-pricing-ar",
+      "status": "http://127.0.0.1:8015/cloud/pricing?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-overview-en",
+      "status": "http://127.0.0.1:8015/cloud?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-overview-ar",
+      "status": "http://127.0.0.1:8015/cloud?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-login-en",
+      "status": "http://127.0.0.1:8015/cloud/login?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-login-ar",
+      "status": "http://127.0.0.1:8015/cloud/login?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-setup-en",
+      "status": "http://127.0.0.1:8015/cloud/login",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-setup-ar",
+      "status": "http://127.0.0.1:8015/cloud/login",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-terms-en",
+      "status": "http://127.0.0.1:8015/terms?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-terms-ar",
+      "status": "http://127.0.0.1:8015/terms?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-privacy-en",
+      "status": "http://127.0.0.1:8015/privacy?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-privacy-ar",
+      "status": "http://127.0.0.1:8015/privacy?lang=ar",
+      "rawCloudKeys": []
+    }
+  ],
+  "untranslated": []
+}

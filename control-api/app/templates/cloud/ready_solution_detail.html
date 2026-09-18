@@ -1,0 +1,78 @@
+{% extends "cloud/base.html" %}
+{% block title %}{% if subscription and subscription.solution %}{{ subscription.solution.name }}{% endif %} · Ready Solutions{% endblock %}
+{% block cloud_crumb %} · <a href="{{ locale_url('/cloud/ready-solutions') }}">Ready Solutions</a> · {% if subscription and subscription.solution %}{{ subscription.solution.name }}{% endif %}{% endblock %}
+{% block cloud_content %}
+<div class="cloud-customer-shell cloud-customer-shell--single">
+  <main class="cloud-customer-main">
+    {% if subscription and subscription.solution %}
+      <section class="cloud-setup-hero flow-card">
+        <p class="cloud-plan-chip"><span>{{ subscription.status|capitalize }}</span></p>
+        <h1>{{ subscription.solution.name }}</h1>
+        <p>{{ subscription.solution.description or 'Professional solution' }}</p>
+      </section>
+
+      <div class="settings-grid">
+        <section class="flow-card">
+          <h2>Subscription Details</h2>
+          <dl class="kv">
+            <div><dt>Solution</dt><dd>{{ subscription.solution.name }}</dd></div>
+            <div><dt>Package</dt><dd>{{ subscription.package.name if subscription.package else 'Standard' }}</dd></div>
+            <div><dt>Status</dt><dd>{{ subscription.status|capitalize }}</dd></div>
+            {% if subscription.trial_started_at %}
+              <div><dt>Trial Started</dt><dd>{{ subscription.trial_started_at.strftime('%Y-%m-%d') }}</dd></div>
+            {% endif %}
+            {% if subscription.trial_ends_at %}
+              <div><dt>Trial Ends</dt><dd>{{ subscription.trial_ends_at.strftime('%Y-%m-%d') }}</dd></div>
+            {% endif %}
+          </dl>
+        </section>
+
+        {% if tenant %}
+          <section class="flow-card">
+            <h2>Tenant Information</h2>
+            <dl class="kv">
+              <div><dt>Database</dt><dd><code>{{ tenant.database_name }}</code></dd></div>
+              <div><dt>Tenant Code</dt><dd><code>{{ tenant.tenant_code }}</code></dd></div>
+              <div><dt>Odoo Version</dt><dd><bdi dir="ltr">{{ tenant.odoo_version }}</bdi></dd></div>
+              <div><dt>Solution Version</dt><dd><bdi dir="ltr">{{ tenant.solution_version }}</bdi></dd></div>
+              <div><dt>Status</dt><dd>{{ tenant.status }}</dd></div>
+              {% if tenant.active_users %}
+                <div><dt>Active Users</dt><dd>{{ tenant.active_users }}</dd></div>
+              {% endif %}
+              {% if tenant.last_backup_at %}
+                <div><dt>Last Backup</dt><dd>{{ tenant.last_backup_at }}</dd></div>
+              {% endif %}
+            </dl>
+          </section>
+        {% endif %}
+      </div>
+
+      <section class="flow-card">
+        <h2>Access Your Solution</h2>
+        {% if can_open and external_url %}
+          <p>Your solution is ready to use. Click below to open it.</p>
+          <div style="margin-top: 1.5rem;">
+            <a class="btn-hero btn-hero--primary" href="{{ external_url }}" target="_blank" rel="noopener">Open {{ subscription.solution.name }}</a>
+          </div>
+        {% elif tenant %}
+          <p>Your solution is currently {{ tenant.status }}. Check back shortly.</p>
+          <div style="margin-top: 1.5rem;">
+            <button type="button" class="btn-hero btn-hero--primary" disabled>Open {{ subscription.solution.name }}</button>
+          </div>
+        {% else %}
+          <p>Your solution is being provisioned. This may take a few minutes.</p>
+          <div style="margin-top: 1.5rem;">
+            <button type="button" class="btn-hero btn-hero--primary" disabled>Provisioning...</button>
+          </div>
+        {% endif %}
+      </section>
+    {% else %}
+      <section class="flow-card">
+        <h2>Subscription Not Found</h2>
+        <p>The subscription you're looking for doesn't exist or you don't have permission to access it.</p>
+        <a class="btn" href="{{ locale_url('/cloud/ready-solutions') }}">Back to Ready Solutions</a>
+      </section>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

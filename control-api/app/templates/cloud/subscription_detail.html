@@ -1,26 +1,47 @@
 {% extends "cloud/base.html" %}
-{% block title %}Subscription{% endblock %}
-{% block cloud_crumb %} · Subscription{% endblock %}
+{% block title %}{{ t('cloud.subscription.title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.subscription.crumb') }}{% endblock %}
 {% block cloud_content %}
-<div class="flow-header">
-  <h1>Cloud subscription {{ subscription.code }}</h1>
-  <p><span class="badge badge--warning">Presentation Only</span> Demo subscription — not a live paid contract.</p>
+{% set plan_code = (subscription.plan.code if subscription.plan else '')|lower %}
+{% set package_code = (subscription.package.code if subscription.package else '')|lower %}
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip"><span class="badge badge--warning">{{ t('cloud.presentation') }}</span><span>{{ t('cloud.no_charge') }}</span></p>
+      <h1>{{ t('cloud.subscription.heading') }} <bdi dir="ltr">{{ subscription.code }}</bdi></h1>
+      <p>{{ t('cloud.subscription.lead') }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.subscription.section_overview') }}</p>
+        <h2>{{ t('cloud.subscription.summary') }}</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('cloud.product_line') }}</dt><dd>{{ t('cloud.title') }}</dd></div>
+        <div><dt>{{ t('cloud.status') }}</dt><dd>{{ t('cloud.status.' ~ subscription.status) }}</dd></div>
+        <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ t('cloud.plan_name_' ~ plan_code) if plan_code else t('cloud.plan_name_generic') }}</dd></div>
+        <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ t('cloud.setup.package.' ~ package_code) if package_code else t('cloud.none') }}</dd></div>
+        <div><dt>{{ t('cloud.odoo_version') }}</dt><dd>{{ subscription.version.display_name }}</dd></div>
+        <div><dt>{{ t('cloud.billing_cycle') }}</dt><dd>{{ t('cloud.cycle_annual') if subscription.billing_cycle == 'annual' else t('cloud.cycle_monthly') }}</dd></div>
+        <div><dt>{{ t('cloud.users') }}</dt><dd><bdi dir="ltr">{{ subscription.requested_users }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.storage_gb') }}</dt><dd><bdi dir="ltr">{{ subscription.requested_storage_gb }}</bdi> {{ t('cloud.unit_gb') }}</dd></div>
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.renewal') }}</dt><dd>{{ subscription.renewal_at or t('cloud.not_applicable') }}</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>{{ t('cloud.price_breakdown') }}</h2>
+    {% if pricing.total_display %}
+      <p class="pricing-price"><strong>{{ pricing.total_display }}</strong>{% if pricing.period_label %} <span>/ {{ t('cloud.setup.period.' ~ pricing.period_label) }}</span>{% endif %}</p>
+      <p class="cloud-summary-note">{{ t('cloud.subscription.snapshot_note') }}</p>
+    {% else %}
+      <p class="cloud-summary-note">{{ t('cloud.subscription.no_snapshot') }}</p>
+    {% endif %}
+    <div class="cloud-confirm-actions">
+      <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/instances') }}">{{ t('cloud.back_to_instances') }}</a>
+    </div>
+  </aside>
 </div>
-<section class="flow-card">
-  <dl class="kv">
-    <div><dt>Product line</dt><dd>Helpers ERP Cloud</dd></div>
-    <div><dt>Status</dt><dd>{{ subscription.status }}</dd></div>
-    <div><dt>Plan</dt><dd>{{ subscription.plan.name }}</dd></div>
-    <div><dt>Package</dt><dd>{{ subscription.package.name }}</dd></div>
-    <div><dt>Odoo</dt><dd>{{ subscription.version.display_name }}</dd></div>
-    <div><dt>Billing</dt><dd>{{ subscription.billing_cycle }}</dd></div>
-    <div><dt>Users</dt><dd>{{ subscription.requested_users }}</dd></div>
-    <div><dt>Storage</dt><dd>{{ subscription.requested_storage_gb }} GB</dd></div>
-    <div><dt>Renewal</dt><dd>{{ subscription.renewal_at or 'n/a' }}</dd></div>
-  </dl>
-  {% if pricing.total_display %}
-    <p>Snapshot total: {{ pricing.total_display }} / {{ pricing.period_label }}</p>
-  {% endif %}
-  <a class="btn" href="/cloud/instances">Back to instances</a>
-</section>
 {% endblock %}

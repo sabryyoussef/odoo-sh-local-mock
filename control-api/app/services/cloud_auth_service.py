@@ -9,11 +9,12 @@ import secrets
 import time
 from dataclasses import dataclass
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import User
-from app.product_lines import AUTH_PROVIDER_EMAIL, AUTH_PROVIDER_GITHUB
+from app.models import ProviderIdentity, User
+from app.product_lines import AUTH_PROVIDER_EMAIL, AUTH_PROVIDER_GITHUB, AUTH_PROVIDER_GOOGLE
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,26 @@ class CloudAuthError(Exception):
         super().__init__(message)
         self.message = message
         self.code = code
+        # field -> English message (kept for callers/logs) and field -> stable
+        # code (used by the UI to render a translated message instead of the
+        # raw backend string).
+        self.field_errors: dict[str, str] = {}
+        self.field_error_codes: dict[str, str] = {}
+
+
+# Stable validation codes. The UI resolves ``cloud.err_<code>`` from the
+# translation catalog; these English strings stay as the non-UI fallback so
+# service callers and logs keep working.
+REGISTER_ERROR_MESSAGES: dict[str, str] = {
+    "full_name": "Enter your full name.",
+    "email": "Enter a valid work email address.",
+    "phone": "Enter a phone number.",
+    "company_name": "Enter your company name.",
+    "country": "Enter your country.",
+    "password": "Password must be at least 8 characters.",
+    "password_confirm": "Password confirmation does not match.",
+    "terms": "Please accept the terms to continue.",
+}
 
 
 @dataclass
@@ -85,34 +106,43 @@ def reset_rate_limit_for_tests() -> None:
     _attempts.clear()
 
 
-def _validate_register_fields(payload: RegisterInput) -> dict[str, str]:
-    errors: dict[str, str] = {}
+def _validate_register_field_codes(payload: RegisterInput) -> dict[str, str]:
+    """Return ``{field: stable_code}`` for every field that failed validation."""
+    codes: dict[str, str] = {}
     if len((payload.full_name or "").strip()) < 2:
-        errors["full_name"] = "Enter your full name."
-    email = normalize_email(payload.email)
-    if not EMAIL_RE.match(email):
-        errors["email"] = "Enter a valid work email address."
+        codes["full_name"] = "full_name"
+    if not EMAIL_RE.match(normalize_email(payload.email)):
+        codes["email"] = "email"
     if payload.phone and len(payload.phone.strip()) < 6:
-        errors["phone"] = "Enter a phone number."
+        codes["phone"] = "phone"
     if payload.company_name and len(payload.company_name.strip()) < 2:
-        errors["company_name"] = "Enter your company name."
+        codes["company_name"] = "company_name"
     if payload.country and len(payload.country.strip()) < 2:
-        errors["country"] = "Enter your country."
+        codes["country"] = "country"
     if len(payload.password or "") < 8:
-        errors["password"] = "Password must be at least 8 characters."
+        codes["password"] = "password"
     if payload.password != payload.password_confirm:
-        errors["password_confirm"] = "Password confirmation does not match."
+        codes["password_confirm"] = "password_confirm"
     if not payload.terms_accepted:
-        errors["terms"] = "Please accept the terms to continue."
-    return errors
+        codes["terms"] = "terms"
+    return codes
+
+
+def _validate_register_fields(payload: RegisterInput) -> dict[str, str]:
+    """Backwards-compatible ``{field: English message}`` view of the codes."""
+    return {
+        field: REGISTER_ERROR_MESSAGES[code]
+        for field, code in _validate_register_field_codes(payload).items()
+    }
 
 
 def register_cloud_customer(db: Session, payload: RegisterInput, *, client_key: str) -> User:
     _rate_limit(f"register:{client_key}")
-    errors = _validate_register_fields(payload)
-    if errors:
+    codes = _validate_register_field_codes(payload)
+    if codes:
         err = CloudAuthError("Please correct the highlighted fields.", "validation")
-        err.field_errors = errors  # type: ignore[attr-defined]
+        err.field_error_codes = codes
+        err.field_errors = {f: REGISTER_ERROR_MESSAGES[c] for f, c in codes.items()}
         raise err
     email = normalize_email(payload.email)
     existing = db.scalar(select(User).where(func.lower(User.email) == email))
@@ -182,6 +212,11 @@ def authenticate_cloud_customer(db: Session, email: str, password: str, *, clien
         # Validate email shape loosely; if invalid, still fail with generic message
         user = db.scalar(select(User).where(func.lower(User.email) == normalized))
         if not user or not user.password_hash:
+            if user and (user.auth_provider or "").strip().lower() == AUTH_PROVIDER_GOOGLE:
+                raise CloudAuthError(
+                    "This account uses Google sign-in. Continue with Google instead.",
+                    "google_only",
+                )
             if user and user.github_id and not user.password_hash:
                 raise CloudAuthError(
                     "This email is a GitHub developer account. Sign in with GitHub instead.",
@@ -215,5 +250,207 @@ def authenticate_cloud_customer(db: Session, email: str, password: str, *, clien
     return user
 
 
+def link_provider_identity(
+    db: Session,
+    user: User,
+    *,
+    provider: str,
+    provider_subject: str,
+    provider_email: str | None = None,
+    email_verified: bool = False,
+    profile_name: str | None = None,
+    avatar_url: str | None = None,
+) -> ProviderIdentity:
+    provider_key = (provider or "").strip().lower()
+    subject = (provider_subject or "").strip()
+    if not user or not user.id or not provider_key or not subject:
+        raise CloudAuthError("Provider identity cannot be linked safely.", "provider_identity_invalid")
+    existing = db.scalar(
+        select(ProviderIdentity).where(
+            ProviderIdentity.provider == provider_key,
+            ProviderIdentity.provider_subject == subject,
+        )
+    )
+    if existing:
+        if existing.user_id != user.id:
+            raise CloudAuthError(
+                "This sign-in provider account is already linked to another user.",
+                "provider_identity_taken",
+            )
+        existing.provider_email = normalize_email(provider_email or existing.provider_email or "") or None
+        existing.email_verified = bool(email_verified)
+        existing.profile_name = profile_name or existing.profile_name
+        existing.avatar_url = avatar_url or existing.avatar_url
+        db.commit()
+        db.refresh(existing)
+        return existing
+    normalized_provider_email = normalize_email(provider_email or "") or None
+    if normalized_provider_email:
+        email_owner = db.scalar(select(User).where(func.lower(User.email) == normalized_provider_email))
+        if email_owner and email_owner.id != user.id:
+            raise CloudAuthError(
+                "This provider email belongs to another account. Sign in with that account first.",
+                "provider_email_conflict",
+            )
+    identity = ProviderIdentity(
+        user_id=user.id,
+        provider=provider_key,
+        provider_subject=subject,
+        provider_email=normalized_provider_email,
+        email_verified=bool(email_verified),
+        profile_name=profile_name,
+        avatar_url=avatar_url,
+    )
+    db.add(identity)
+    db.commit()
+    db.refresh(identity)
+    return identity
+
+
+def _google_display_name(name: str | None, email: str) -> str:
+    cleaned = (name or "").strip()
+    if len(cleaned) >= 2:
+        return cleaned
+    local = (email or "").split("@", 1)[0].replace(".", " ").replace("_", " ").strip()
+    return local[:255] or "Cloud customer"
+
+
+def authenticate_google_customer(db: Session, claims) -> tuple[User, str]:
+    """Resolve a validated Google ID token to a local Cloud user.
+
+    Returns ``(user, outcome)`` where outcome is ``login``, ``linked``, or ``created``.
+    Uses Google ``sub`` as the stable identity. Never creates a duplicate account
+    when the verified email already belongs to a password Cloud user — that path
+    performs verified-email account linking instead.
+    """
+    from app.services.cloud_google_oauth import GoogleIdClaims
+
+    if not isinstance(claims, GoogleIdClaims):
+        raise CloudAuthError("Google sign-in could not be completed.", "google_failed")
+    if not claims.email_verified or not claims.email or not claims.subject:
+        raise CloudAuthError(
+            "Google did not provide a verified email. Use work email to continue.",
+            "google_unverified",
+        )
+    subject = claims.subject.strip()
+    email = normalize_email(claims.email)
+    identity = db.scalar(
+        select(ProviderIdentity).where(
+            ProviderIdentity.provider == AUTH_PROVIDER_GOOGLE,
+            ProviderIdentity.provider_subject == subject,
+        )
+    )
+    if identity:
+        user = db.get(User, identity.user_id)
+        if not user:
+            raise CloudAuthError("Google sign-in could not be completed.", "google_failed")
+        link_provider_identity(
+            db,
+            user,
+            provider=AUTH_PROVIDER_GOOGLE,
+            provider_subject=subject,
+            provider_email=email,
+            email_verified=True,
+            profile_name=claims.name,
+            avatar_url=claims.picture,
+        )
+        logger.info("cloud_google_auth user_id=%s outcome=login", user.id)
+        return user, "login"
+
+    existing = db.scalar(select(User).where(func.lower(User.email) == email))
+    if existing:
+        other_google = db.scalar(
+            select(ProviderIdentity).where(
+                ProviderIdentity.provider == AUTH_PROVIDER_GOOGLE,
+                ProviderIdentity.user_id == existing.id,
+            )
+        )
+        if other_google and other_google.provider_subject != subject:
+            raise CloudAuthError(
+                "This email is already linked to a different Google account.",
+                "google_email_conflict",
+            )
+        if existing.password_hash:
+            linked = link_provider_identity(
+                db,
+                existing,
+                provider=AUTH_PROVIDER_GOOGLE,
+                provider_subject=subject,
+                provider_email=email,
+                email_verified=True,
+                profile_name=claims.name,
+                avatar_url=claims.picture,
+            )
+            if claims.picture and not existing.avatar_url:
+                existing.avatar_url = claims.picture
+                db.commit()
+            logger.info(
+                "cloud_google_auth user_id=%s outcome=linked identity_id=%s",
+                existing.id,
+                linked.id,
+            )
+            return existing, "linked"
+        if existing.github_id and not existing.password_hash:
+            raise CloudAuthError(
+                "This email is linked to a GitHub developer account. "
+                "Use Sign in with GitHub for Developer Platform, or register Cloud with a different work email.",
+                "github_email_conflict",
+            )
+        raise CloudAuthError(
+            "This email already belongs to another account. Sign in with that account first.",
+            "provider_email_conflict",
+        )
+
+    from datetime import datetime, timezone
+
+    try:
+        user = User(
+            github_id=None,
+            github_login=None,
+            name=_google_display_name(claims.name, email),
+            email=email,
+            avatar_url=claims.picture,
+            password_hash=None,
+            auth_provider=AUTH_PROVIDER_GOOGLE,
+            terms_accepted_at=datetime.now(timezone.utc),
+        )
+        db.add(user)
+        db.flush()
+        db.add(
+            ProviderIdentity(
+                user_id=user.id,
+                provider=AUTH_PROVIDER_GOOGLE,
+                provider_subject=subject,
+                provider_email=email,
+                email_verified=True,
+                profile_name=claims.name,
+                avatar_url=claims.picture,
+            )
+        )
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        db.rollback()
+        raced = db.scalar(
+            select(ProviderIdentity).where(
+                ProviderIdentity.provider == AUTH_PROVIDER_GOOGLE,
+                ProviderIdentity.provider_subject == subject,
+            )
+        )
+        if raced:
+            user = db.get(User, raced.user_id)
+            if user:
+                logger.info("cloud_google_auth user_id=%s outcome=login", user.id)
+                return user, "login"
+        raise CloudAuthError("Google sign-in could not be completed.", "google_failed") from None
+    logger.info("cloud_google_auth user_id=%s email_domain=%s outcome=created", user.id, email.split("@")[-1])
+    return user, "created"
+
+
 def is_cloud_customer(user: User | None) -> bool:
-    return bool(user and user.password_hash)
+    if not user:
+        return False
+    if user.password_hash:
+        return True
+    provider = (user.auth_provider or "").strip().lower()
+    return provider in {AUTH_PROVIDER_GOOGLE, AUTH_PROVIDER_EMAIL}

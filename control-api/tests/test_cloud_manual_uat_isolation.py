@@ -79,21 +79,43 @@ def test_manual_uat_user_exact():
     assert is_manual_uat_user(None) is False
 
 
-def test_manual_uat_enabled_requires_flag_and_local():
-    # In UAT compose, both true -> allowed true
-    # We test the logic: if flag false, not allowed
-    s = get_settings()
-    # Save original
-    orig = s.helpers_cloud_manual_uat_enabled
-    try:
-        # Simulate disabled
-        s.helpers_cloud_manual_uat_enabled = False
-        # Need to clear lru_cache? get_settings is cached, so we patch directly
-        assert is_manual_uat_enabled() is False
-        assert is_manual_uat_allowed() is False
-    finally:
-        s.helpers_cloud_manual_uat_enabled = orig
-        assert is_manual_uat_allowed() is True  # UAT compose has true + development
+def test_manual_uat_enabled_requires_flag_and_local(monkeypatch):
+    """Isolated: explicitly establish flag + local env, clear cache, no UAT Compose dependency."""
+    # Positive case: flag true + local env => allowed
+    monkeypatch.setenv("HELPERS_CLOUD_MANUAL_UAT_ENABLED", "true")
+    monkeypatch.setenv("APP_ENV", "development")
+    get_settings.cache_clear()
+    assert is_manual_uat_enabled() is True
+    assert is_manual_uat_allowed() is True
+
+    # Negative: disabled flag returns False even when local
+    monkeypatch.setenv("HELPERS_CLOUD_MANUAL_UAT_ENABLED", "false")
+    monkeypatch.setenv("APP_ENV", "development")
+    get_settings.cache_clear()
+    assert is_manual_uat_enabled() is False
+    assert is_manual_uat_allowed() is False
+
+    # Negative: non-local environment returns False even when flag true
+    monkeypatch.setenv("HELPERS_CLOUD_MANUAL_UAT_ENABLED", "true")
+    monkeypatch.setenv("APP_ENV", "production")
+    get_settings.cache_clear()
+    assert is_manual_uat_enabled() is True
+    assert is_manual_uat_allowed() is False
+
+    # Additional prod variants (prod, live, case-insensitive)
+    for prod_env in ("prod", "live", "PRODUCTION", "Prod"):
+        monkeypatch.setenv("APP_ENV", prod_env)
+        monkeypatch.setenv("HELPERS_CLOUD_MANUAL_UAT_ENABLED", "true")
+        get_settings.cache_clear()
+        assert is_manual_uat_allowed() is False, f"should be blocked for env={prod_env}"
+
+    # Restore positive to prove ordering does not leak (final state local+enabled)
+    monkeypatch.setenv("APP_ENV", "development")
+    monkeypatch.setenv("HELPERS_CLOUD_MANUAL_UAT_ENABLED", "true")
+    get_settings.cache_clear()
+    assert is_manual_uat_allowed() is True
+    # Cache isolation restored by monkeypatch teardown + conftest autouse cache_clear
+    get_settings.cache_clear()
 
 
 def test_no_live_db_mutation():

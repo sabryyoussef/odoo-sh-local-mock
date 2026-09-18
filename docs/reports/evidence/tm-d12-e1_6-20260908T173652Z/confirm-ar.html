@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اختر الخطة المناسبة لشركتك · Helpers ERP Cloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=6">
+
+</head>
+<body class="theme-helpers-erp body--landing body--cloud-pricing">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/?lang=ar">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="القائمة الرئيسية">
+    <a href="/solutions?lang=ar">الحلول الجاهزة</a>
+    <a href="/cloud?lang=ar" class="is-active"><bdi dir="ltr">Helpers ERP Cloud</bdi></a>
+    <a href="/platform?lang=ar">منصة المطوّرين</a>
+    <a href="/pricing?lang=ar">الأسعار</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="اللغة">
+      <a href="/cloud/pricing?lang=en" hreflang="en" lang="en">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="/cloud/pricing?lang=ar" hreflang="ar" lang="ar" class="is-active">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost" href="/cloud/instances">نظامي</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="lx0aRCIwFUcvUjrOQHTMahig-h7zwHtkn0gQkEOpW1M">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">خروج</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="landing cloud-pricing-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="/?lang=ar">الرئيسية</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="/cloud?lang=ar"><bdi dir="ltr">Helpers ERP Cloud</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">الأسعار</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main">
+    <section class="cloud-pricing-hero" aria-labelledby="cloud-pricing-title">
+      <div class="cloud-pricing-progress" aria-label="الخطوة 1 من 4 — اختر خطتك">
+        <p class="cloud-pricing-progress__label">الخطوة 1 من 4 — اختر خطتك</p>
+        <ol class="cloud-pricing-progress__steps">
+          <li class="is-active"><span>1</span>الخطة</li>
+          <li><span>2</span>التطبيقات والباقة</li>
+          <li><span>3</span>بيانات الشركة</li>
+          <li><span>4</span>المراجعة</li>
+        </ol>
+      </div>
+
+      <div class="cloud-pricing-hero__copy">
+        <h1 id="cloud-pricing-title">اختر الخطة المناسبة لشركتك</h1>
+        <p>ابدأ بتجربة مجانية أو اختر خطة تناسب عدد المستخدمين والتخزين ومستوى الدعم الذي تحتاجه شركتك.</p>
+      </div>
+
+      <aside class="cloud-demo-notice" role="note" aria-labelledby="cloud-demo-notice-title">
+        <strong id="cloud-demo-notice-title">بيئة عرض تجريبية</strong>
+        <span>الأسعار المعروضة للتوضيح فقط، ولن يتم تحصيل أي مبلغ حقيقي.</span>
+      </aside>
+    </section>
+
+    <section class="cloud-pricing-controls" aria-labelledby="cloud-billing-cycle-title">
+      <form method="get" action="/cloud/pricing" class="cloud-billing-form" id="cloud-cycle-form">
+        <input type="hidden" name="lang" value="ar">
+        <fieldset class="cloud-billing-fieldset">
+          <legend id="cloud-billing-cycle-title">طريقة الفوترة</legend>
+          <div class="cloud-billing-segment" role="presentation">
+            <label class="cloud-billing-segment__opt is-active">
+              <input type="radio" name="cycle" value="monthly" checked>
+              <span>شهري</span>
+            </label>
+            <label class="cloud-billing-segment__opt">
+              <input type="radio" name="cycle" value="annual" >
+              <span>سنوي</span>
+            </label>
+          </div>
+        </fieldset>
+        <p class="cloud-billing-help">اختر طريقة الفوترة، وسيظهر المبلغ الإجمالي بوضوح قبل التأكيد.</p>
+        <noscript><button type="submit" class="btn-hero btn-hero--primary">عرض الأسعار</button></noscript>
+      </form>
+    </section>
+
+    <section class="cloud-pricing-plans" id="plans" aria-labelledby="cloud-plans-title">
+      <h2 class="sr-only" id="cloud-plans-title">اختر الخطة المناسبة لشركتك</h2>
+      <div class="cloud-pricing-grid">
+        
+          
+          
+          
+          <article class="cloud-pricing-card cloud-pricing-card--trial" tabindex="0">
+            <div class="cloud-pricing-card__top">
+              
+              <h3 class="cloud-pricing-card__title">
+                
+                  تجربة مجانية
+                
+              </h3>
+              <p class="cloud-pricing-card__desc">
+                استكشف رحلة الإعداد داخل مساحة عمل تجريبية مؤقتة.
+              </p>
+            </div>
+
+            <div class="cloud-pricing-card__price">
+              
+                <strong>تجربة مجانية لمدة <bdi dir="ltr">14</bdi> يومًا</strong>
+              
+            </div>
+
+            <ul class="cloud-pricing-features">
+              <li><span class="check" aria-hidden="true">✓</span><span>يشمل <bdi dir="ltr">2</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">3</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span><bdi dir="ltr">2</bdi> جيجابايت مشمولة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">5</bdi> جيجابايت</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>احتفاظ بالنسخ الاحتياطي لمدة <bdi dir="ltr">1</bdi> يومًا</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مستوى الدعم: مجتمعي</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مدة التجربة: <bdi dir="ltr">14</bdi> يوماً تجربة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يتابع الإعداد إلى التطبيقات وبيانات الشركة والمراجعة.</span></li>
+            </ul>
+
+            <a class="btn-hero btn-hero--primary cloud-pricing-card__cta" href="/cloud/setup?plan=trial&amp;cycle=monthly&amp;lang=ar">
+              
+                ابدأ التجربة المجانية
+              
+            </a>
+          </article>
+        
+          
+          
+          
+          <article class="cloud-pricing-card cloud-pricing-card--starter" tabindex="0">
+            <div class="cloud-pricing-card__top">
+              
+              <h3 class="cloud-pricing-card__title">
+                
+                  <bdi dir="ltr">Starter</bdi>
+                
+              </h3>
+              <p class="cloud-pricing-card__desc">
+                للشركات الصغيرة التي تبدأ استخدام نظام ERP مُدار.
+              </p>
+            </div>
+
+            <div class="cloud-pricing-card__price">
+              
+                <strong><bdi dir="ltr">$49.00 USD</bdi></strong>
+                <span>شهريًا</span>
+              
+            </div>
+
+            <ul class="cloud-pricing-features">
+              <li><span class="check" aria-hidden="true">✓</span><span>يشمل <bdi dir="ltr">5</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">10</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span><bdi dir="ltr">10</bdi> جيجابايت مشمولة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">50</bdi> جيجابايت</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>احتفاظ بالنسخ الاحتياطي لمدة <bdi dir="ltr">7</bdi> يومًا</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مستوى الدعم: أساسي</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مدة التجربة: <bdi dir="ltr">14</bdi> يوماً تجربة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يتابع الإعداد إلى التطبيقات وبيانات الشركة والمراجعة.</span></li>
+            </ul>
+
+            <a class="btn-hero btn-hero--secondary cloud-pricing-card__cta" href="/cloud/setup?plan=starter&amp;cycle=monthly&amp;lang=ar">
+              
+                اختر خطة <bdi dir="ltr">Starter</bdi>
+              
+            </a>
+          </article>
+        
+          
+          
+          
+          <article class="cloud-pricing-card cloud-pricing-card--business is-recommended" tabindex="0">
+            <div class="cloud-pricing-card__top">
+              <span class="cloud-pricing-badge">الأكثر اختيارًا</span>
+              <h3 class="cloud-pricing-card__title">
+                
+                  <bdi dir="ltr">Business</bdi>
+                
+              </h3>
+              <p class="cloud-pricing-card__desc">
+                للشركات النامية التي تحتاج إلى مستخدمين أكثر وتخزين أكبر ودعم ذي أولوية.
+              </p>
+            </div>
+
+            <div class="cloud-pricing-card__price">
+              
+                <strong><bdi dir="ltr">$149.00 USD</bdi></strong>
+                <span>شهريًا</span>
+              
+            </div>
+
+            <ul class="cloud-pricing-features">
+              <li><span class="check" aria-hidden="true">✓</span><span>يشمل <bdi dir="ltr">25</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">50</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span><bdi dir="ltr">50</bdi> جيجابايت مشمولة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يمكن الزيادة حتى <bdi dir="ltr">200</bdi> جيجابايت</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>احتفاظ بالنسخ الاحتياطي لمدة <bdi dir="ltr">30</bdi> يومًا</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مستوى الدعم: ذو أولوية</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مدة التجربة: <bdi dir="ltr">14</bdi> يوماً تجربة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يتابع الإعداد إلى التطبيقات وبيانات الشركة والمراجعة.</span></li>
+            </ul>
+
+            <a class="btn-hero btn-hero--primary cloud-pricing-card__cta" href="/cloud/setup?plan=business&amp;cycle=monthly&amp;lang=ar">
+              
+                اختر خطة <bdi dir="ltr">Business</bdi>
+              
+            </a>
+          </article>
+        
+          
+          
+          
+          <article class="cloud-pricing-card cloud-pricing-card--enterprise is-quote" tabindex="0">
+            <div class="cloud-pricing-card__top">
+              
+              <h3 class="cloud-pricing-card__title">
+                
+                  <bdi dir="ltr">Enterprise Cloud</bdi>
+                
+              </h3>
+              <p class="cloud-pricing-card__desc">
+                للمؤسسات التي تحتاج إلى سعة أكبر أو إعداد مُدار أو موارد مخصصة.
+              </p>
+            </div>
+
+            <div class="cloud-pricing-card__price">
+              
+                <strong>عرض سعر مخصص</strong>
+              
+            </div>
+
+            <ul class="cloud-pricing-features">
+              <li><span class="check" aria-hidden="true">✓</span><span>يشمل <bdi dir="ltr">100</bdi> مستخدمين</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>سعة مستخدمين موسعة حسب عرض السعر</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span><bdi dir="ltr">200</bdi> جيجابايت مشمولة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>سعة تخزين موسعة حسب عرض السعر</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>احتفاظ بالنسخ الاحتياطي لمدة <bdi dir="ltr">90</bdi> يومًا</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مستوى الدعم: إعداد مُدار</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>مدة التجربة: <bdi dir="ltr">30</bdi> يوماً تجربة</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>يتابع الإعداد إلى التطبيقات وبيانات الشركة والمراجعة.</span></li>
+            </ul>
+
+            <a class="btn-hero btn-hero--secondary cloud-pricing-card__cta" href="/cloud/setup?plan=enterprise&amp;cycle=monthly&amp;lang=ar">
+              
+                اطلب عرض سعر
+              
+            </a>
+          </article>
+        
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__col">
+      <h2>المنتج</h2>
+      <a href="/solutions?lang=ar">الحلول الجاهزة</a>
+      <a href="/cloud?lang=ar"><bdi dir="ltr">Helpers ERP Cloud</bdi></a>
+      <a href="/platform?lang=ar">منصة المطوّرين</a>
+      <a href="/pricing?lang=ar">الأسعار</a>
+    </div>
+    <div class="site-footer__col">
+      <h2>ابدأ</h2>
+      <a href="/cloud?lang=ar">اختر الحل المناسب</a>
+      <a href="/login?lang=ar">تسجيل الدخول</a>
+      <a href="/cloud/register?lang=ar">إنشاء حساب سحابي</a>
+      <a href="/projects?lang=ar">المشاريع</a>
+    </div>
+    <div class="site-footer__col">
+      <h2>المنصة</h2>
+      <a href="/platform?lang=ar">بناءات GitHub</a>
+      <a href="/platform/pricing?lang=ar">خطط المطوّرين</a>
+      <a href="/catalog?lang=ar">كتالوج الحلول</a>
+    </div>
+    <div class="site-footer__col">
+      <h2>حول</h2>
+      
+        <p>Business Sense Corporation</p>
+      
+      
+        <p>منصة Helpers ERP السحابية والتسليم.</p>
+      
+    </div>
+  </div>
+  <p class="site-footer__legal">Helpers ERP Cloud Demo · بيئة عرض تجريبي، وليست استضافة إنتاج.</p>
+</footer>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+<script>
+(function () {
+  var form = document.getElementById("cloud-cycle-form");
+  if (!form) return;
+  form.querySelectorAll('input[name="cycle"]').forEach(function (input) {
+    input.addEventListener("change", function () { form.submit(); });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -13,6 +13,10 @@ data/
 venv/
 dist/
 .cache/
+.pytest_cache/
+data-hc36/
+data-uat/
+graphify-out/
 
 # Playwright / G3-A isolated browser artifacts
 control-api/e2e/test-results/

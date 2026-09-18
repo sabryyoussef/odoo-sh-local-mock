@@ -1,21 +1,44 @@
 {% extends "cloud/base.html" %}
-{% block title %}Provisioning{% endblock %}
-{% block cloud_crumb %} · Provisioning{% endblock %}
+{% block title %}{{ t('cloud.provisioning.title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.provisioning.crumb') }}{% endblock %}
 {% block cloud_content %}
-<div class="flow-header">
-  <h1>Provisioning your company ERP</h1>
-  <p>Helpers ERP is preparing an isolated database. This page never shows developer logs or source code.</p>
-  {% if demo_adapter %}<p><span class="badge badge--warning">Demo provisioning</span> Status is simulated. Odoo is not live until a verified runtime exists.</p>{% endif %}
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip">
+        <span class="badge badge--warning">{{ t('cloud.presentation') }}</span>
+        <span>{{ t('cloud.runtime_not_live') }}</span>
+      </p>
+      <h1>{{ t('cloud.provisioning.heading') }}</h1>
+      <p>{{ t('cloud.provisioning.lead') }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.provisioning.progress') }}</p>
+        <h2>{{ t('cloud.provisioning.request_status') }}</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.request_id') }}</dt><dd><bdi dir="ltr">{{ provisioning.request_uuid }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.status') }}</dt><dd>{{ t('cloud.status.' ~ provisioning.status) }}</dd></div>
+        <div><dt>{{ t('cloud.current_step') }}</dt><dd>{{ t('cloud.status.' ~ provisioning.current_step) if provisioning.current_step else t('cloud.none') }}</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>{{ t('cloud.workspace_access') }}</h2>
+    {% if demo_adapter %}<p><span class="badge badge--warning">{{ t('cloud.demo_provisioning') }}</span></p>{% endif %}
+    <p class="cloud-summary-note">{{ t('cloud.no_developer_logs') }}</p>
+    <div class="cloud-confirm-actions">
+      {% if provisioning.runtime_verified and provisioning.runtime_url %}
+        <a class="btn-hero btn-hero--primary" href="{{ provisioning.runtime_url }}">{{ t('cloud.open_odoo') }}</a>
+      {% else %}
+        <button type="button" class="btn-hero btn-hero--primary" disabled>{{ t('cloud.open_odoo') }}</button>
+        <p class="muted">{{ t('cloud.open_odoo_disabled') }}</p>
+      {% endif %}
+      <a class="btn" href="{{ locale_url('/cloud/instances') }}">{{ t('cloud.back_to_instances') }}</a>
+    </div>
+  </aside>
 </div>
-<section class="flow-card">
-  <p>Request {{ provisioning.request_uuid }}</p>
-  <p>Status: <strong>{{ status_labels.get(provisioning.status, provisioning.status) }}</strong></p>
-  <p>Current step: {{ provisioning.current_step }}</p>
-  {% if provisioning.runtime_verified and provisioning.runtime_url %}
-    <a class="btn-hero btn-hero--primary" href="{{ provisioning.runtime_url }}">Open Odoo</a>
-  {% else %}
-    <p class="muted">Open Odoo is disabled until a verified runtime URL exists. No placeholder address is shown.</p>
-  {% endif %}
-  <a class="btn" href="/cloud/instances">Back to instances</a>
-</section>
 {% endblock %}

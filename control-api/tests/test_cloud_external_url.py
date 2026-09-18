@@ -97,6 +97,26 @@ def test_is_valid_external_url():
     assert is_valid_external_url("") is False
     assert is_valid_external_url("http://evil.com@attacker") is False
 
+def test_preferred_host_allow_list_only():
+    with patch("app.services.cloud_external_url.get_settings") as mock:
+        mock.return_value.helpers_cloud_external_host = "100.76.217.35"
+        mock.return_value.helpers_cloud_external_scheme = "http"
+        mock.return_value.helpers_cloud_external_allowed_hosts = (
+            "100.76.217.35,192.168.100.66,master.tailcf9988.ts.net"
+        )
+        lan = build_external_odoo_url(
+            "helpers_demo_user1", 8301, preferred_host="192.168.100.66"
+        )
+        assert lan == "http://192.168.100.66:8301/web/login?db=helpers_demo_user1"
+        evil = build_external_odoo_url(
+            "helpers_demo_user1", 8301, preferred_host="evil.com"
+        )
+        assert evil == "http://100.76.217.35:8301/web/login?db=helpers_demo_user1"
+        local = build_external_odoo_url(
+            "helpers_demo_user1", 8301, preferred_host="127.0.0.1"
+        )
+        assert local == "http://100.76.217.35:8301/web/login?db=helpers_demo_user1"
+
 def test_db_name_validation():
     with patch("app.services.cloud_external_url.get_settings") as mock:
         mock.return_value.helpers_cloud_external_host = "100.76.217.35"

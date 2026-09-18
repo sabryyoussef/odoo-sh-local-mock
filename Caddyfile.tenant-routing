@@ -1,0 +1,54 @@
+# Caddy reverse proxy for Helpers ERP tenant routing
+# 
+# Routes all tenant subdomains to the shared Odoo runtime (192.168.1.7:8069)
+# Database selection via Host header and Odoo dbfilter
+#
+# Usage: caddy run -c Caddyfile.tenant-routing
+#
+# For local demo with nip.io:
+#   caddy run -c Caddyfile.tenant-routing
+#   Then access: https://hms-hms-28-74d22b.203.0.113.1.nip.io/
+#
+# For production with real domain:
+#   Update *.apps.example.com and Caddyfile settings
+
+# ============================================
+# Tenant routing via wildcard subdomain
+# ============================================
+
+# Local demo configuration (replace with your external IP)
+# *.{$EXTERNAL_IP}.nip.io {
+#     reverse_proxy 192.168.1.7:8069 {
+#         header_uri Host {host}
+#         header_upstream X-Forwarded-Host {host}
+#         header_upstream X-Forwarded-Proto {scheme}
+#         header_upstream X-Forwarded-For {remote_host}
+#         header_upstream X-Real-IP {remote_host}
+#     }
+# }
+
+# Production configuration (replace with your actual domain)
+*.apps.example.com {
+    reverse_proxy 192.168.1.7:8069 {
+        # Preserve original Host header for Odoo dbfilter routing
+        header_upstream Host {host}
+        header_upstream X-Forwarded-Host {host}
+        header_upstream X-Forwarded-Proto {scheme}
+        header_upstream X-Forwarded-For {remote_host}
+        header_upstream X-Real-IP {remote_host}
+    }
+}
+
+# Optionally: catch-all for control API
+control.apps.example.com {
+    reverse_proxy localhost:8000 {
+        header_upstream X-Forwarded-Proto {scheme}
+        header_upstream X-Forwarded-For {remote_host}
+    }
+}
+
+# ============================================
+# TLS configuration
+# ============================================
+# Caddy automatically provisions Let's Encrypt certificates for *.example.com
+# For local/nip.io, use self-signed or disable TLS in test environment

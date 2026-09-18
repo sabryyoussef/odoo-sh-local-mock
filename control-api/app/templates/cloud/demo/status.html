@@ -1,0 +1,104 @@
+{% extends "cloud/base.html" %}
+{% block title %}{{ t('cloud.demo.status_title') }} · {{ app_name }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.demo.status_crumb') }}{% endblock %}
+{% block cloud_content %}
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip">
+        <span class="badge badge--warning">{{ t('cloud.presentation') }}</span>
+        <span>{{ t('cloud.demo.runtime_not_live') }}</span>
+      </p>
+      <h1>{{ t('cloud.demo.status_heading') }}</h1>
+      <p>{{ portal.safe_message }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.progress') }}</p>
+        <h2>{{ t('cloud.demo.request_details') }}</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.request_id') }}</dt><dd><bdi dir="ltr">{{ provisioning.request_uuid }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.status') }}</dt><dd>{{ portal.status_label }}</dd></div>
+        {% if portal.expires_at %}
+        <div><dt>{{ t('cloud.demo.expires_at') }}</dt><dd><bdi dir="ltr">{{ portal.expires_at }}</bdi></dd></div>
+        {% endif %}
+        {% if portal.grace_ends_at %}
+        <div><dt>{{ t('cloud.demo.grace_ends_at') }}</dt><dd><bdi dir="ltr">{{ portal.grace_ends_at }}</bdi></dd></div>
+        {% endif %}
+        {% if portal.retention_ends_at %}
+        <div><dt>{{ t('cloud.demo.retention_ends_at') }}</dt><dd><bdi dir="ltr">{{ portal.retention_ends_at }}</bdi></dd></div>
+        {% endif %}
+      </dl>
+    </section>
+
+    {% if portal.status == 'preparing' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.preparing_kicker') }}</p>
+        <h2>{{ t('cloud.demo.preparing_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.preparing_lead') }}</p>
+    </section>
+    {% elif portal.status == 'active' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.active_kicker') }}</p>
+        <h2>{{ t('cloud.demo.active_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.active_lead') }}</p>
+    </section>
+    {% elif portal.status == 'expired' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.expired_kicker') }}</p>
+        <h2>{{ t('cloud.demo.expired_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.expired_lead') }}</p>
+    </section>
+    {% elif portal.status == 'failed' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.failed_kicker') }}</p>
+        <h2>{{ t('cloud.demo.failed_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.failed_lead') }}</p>
+    </section>
+    {% endif %}
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>{{ t('cloud.workspace_access') }}</h2>
+    {% if portal.status == 'active' %}
+      <p><span class="badge badge--success">{{ t('cloud.demo.active_badge') }}</span></p>
+    {% elif portal.status == 'preparing' %}
+      <p><span class="badge badge--warning">{{ t('cloud.demo.preparing_badge') }}</span></p>
+    {% elif portal.status == 'expired' %}
+      <p><span class="badge badge--danger">{{ t('cloud.demo.expired_badge') }}</span></p>
+    {% elif portal.status == 'failed' %}
+      <p><span class="badge badge--danger">{{ t('cloud.demo.failed_badge') }}</span></p>
+    {% else %}
+      <p><span class="badge">{{ t('cloud.demo.unavailable_badge') }}</span></p>
+    {% endif %}
+    <p class="cloud-summary-note">{{ t('cloud.no_developer_logs') }}</p>
+    <div class="cloud-confirm-actions">
+      {% if can_launch and external_url %}
+        <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/demo/open/' ~ provisioning.id) }}">{{ t('cloud.open_odoo') }}</a>
+      {% else %}
+        <button type="button" class="btn-hero btn-hero--primary" disabled>{{ t('cloud.open_odoo') }}</button>
+        {% if portal.status == 'preparing' %}
+          <p class="muted">{{ t('cloud.demo.open_disabled_preparing') }}</p>
+        {% elif portal.status == 'expired' %}
+          <p class="muted">{{ t('cloud.demo.open_disabled_expired') }}</p>
+        {% elif portal.status == 'failed' %}
+          <p class="muted">{{ t('cloud.demo.open_disabled_failed') }}</p>
+        {% else %}
+          <p class="muted">{{ t('cloud.open_odoo_disabled') }}</p>
+        {% endif %}
+      {% endif %}
+      <a class="btn" href="{{ locale_url('/cloud/instances') }}">{{ t('cloud.back_to_instances') }}</a>
+    </div>
+  </aside>
+</div>
+{% endblock %}

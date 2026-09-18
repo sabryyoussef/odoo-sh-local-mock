@@ -1,0 +1,8 @@
+{
+  "operation": "res.config.settings search_read",
+  "user_uid": 5,
+  "denied": true,
+  "error_type": "odoo.exceptions.AccessError",
+  "status": 200,
+  "body_snippet": "{\"jsonrpc\": \"2.0\", \"id\": 2, \"error\": {\"code\": 0, \"message\": \"Odoo Server Error\", \"data\": {\"name\": \"odoo.exceptions.AccessError\", \"message\": \"You are not allowed to access 'Config Settings' (res.config.settings) records.\\n\\nThis operation is allowed for the following groups:\\n\\t- Role / Administrator\\n\\nContact your administrator to request access if necessary.\", \"arguments\": [\"You are not allowed to access 'Config Settings' (res.config.settings) records.\\n\\nThis operation is allowed for the foll"
+}

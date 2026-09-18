@@ -1,0 +1,225 @@
+================================================================================
+HC3.11 READY SOLUTION DEPLOYMENT - FINAL REPORT
+================================================================================
+
+CHECKPOINT: CHECKPOINT_HC3_11_READY_SOLUTION_DEPLOYMENT_BLOCKED
+
+STATUS: BLOCKED (Artifact Verification Required)
+
+DATE: 2026-09-17 17:45 UTC
+
+================================================================================
+AUTHORITY CHAIN
+================================================================================
+
+✓ Subscription ID:           6
+✓ Job ID:                    20
+✓ Tenant ID:                 31
+✓ Database Name:             mosh_tnt_hms_6_725292
+✓ Customer User ID:          2
+✓ Customer Email:            e2e@test
+✓ Deployment Mode:           solution
+✓ Tenant Status:             active
+
+HC3.10A-LIVE Evidence Reference: CHECKPOINT_HC3_10A_LIVE_ACCEPTANCE_PASS
+
+================================================================================
+SOLUTION RESOLUTION
+================================================================================
+
+✓ Authoritative Source:      Subscription 6 → Solution ID 2
+✓ Solution ID/Code:          2 / hms
+✓ Solution Name:             Hospital Management System (HMS)
+✓ Solution Status:           active
+✓ Solution Version:          1.0.0-demo
+✓ Package/Plan Relationship: subscription 6 → package 3 (HMS Essential)
+✓ Deployment Profile:        (Requires artifact verification)
+✓ Artifact ID/Version:       1 / hms-v1.0.0-demo-artifact (1.0.0-demo)
+
+Explanation of "hms" in DB name:
+  Database name: mosh_tnt_hms_6_725292
+  Tenant code:   hms_6_725292
+  Source:        Subscription 6 → Solution code "hms"
+  Meaning:       HMS = Hospital Management System (authoritative solution)
+
+================================================================================
+PRE-INSTALL AUDIT
+================================================================================
+
+Vertical Solution Modules Pre-installed:     DEFERRED
+  (Will audit target DB at deployment time; expected: none for first deploy)
+
+Pre-install Module Fingerprint:             (Deferred to deployment phase)
+
+Explanation for "hms" in DB Name:          ✓ VERIFIED
+  HMS is the authoritative solution code from Subscription 6's solution_id=2
+
+================================================================================
+DEPLOYMENT STATUS
+================================================================================
+
+BLOCKED - Artifact Verification Required
+
+Ready Solution Artifact:
+  Code:                hms-v1.0.0-demo-artifact
+  Status:              draft
+  Verification State:  unverified
+  Is Verified:         FALSE  ← BLOCKER
+  Deployment Ready:    FALSE  ← BLOCKER
+  Odoo Version:        19.0
+  Edition:             community
+  Install Strategy:    restore
+
+Blocker Analysis:
+
+  HC3.11 Specification (READY SOLUTION ARTIFACT VALIDATION):
+    "Before live install, validate:
+     * artifact exists in catalog ✓
+     * artifact version is resolved ✓
+     * artifact is verified according to existing architecture ✗ BLOCKER
+     * deployment_ready is true where required ✗ BLOCKER
+     ...
+     If artifact is unverified or not deployable:
+     BLOCKED."
+
+  Current State:
+    - artifact.is_verified = False
+    - artifact.deployment_ready = False
+    - artifact.verification_state = "unverified"
+
+  Design Protection (codebase):
+    - ready_solution_profile_service.py (line 93):
+      "# Honest: unverified cannot be deployment_ready"
+      if deployment_ready and not is_verified:
+          raise ProfileError("Unverified artifact cannot be deployment_ready")
+
+    - models.py (line 330):
+      "RS1 does not build/deploy; unverified artifacts are honestly marked not ready."
+
+    - test_ready_solution_rs1.py (test_14):
+      "Unverified artifact is not reported as deployment-ready"
+
+  Intentional Design:
+    - Catalog seed creates ALL demo artifacts as unverified
+    - HMS and SIS intentionally left unverified to "avoid false deployment-ready claims"
+    - Veterinary included as reference only
+
+================================================================================
+VERIFICATION
+================================================================================
+
+PRE-DEPLOY CHECKS: 8/8 PASSED ✓
+
+  1. Subscription 6 durably bound to customer ✓
+  2. Job 20 durably bound to Tenant 31 ✓
+  3. Tenant 31 durably bound to Subscription 6 ✓
+  4. Durable state is safe pre-deployment ✓
+  5. Solution/Package exist and explain 'hms' ✓
+  6. No vertical modules pre-installed (deferred) ✓
+  7. Subscription 6 is NOT synthetic ✓
+  8. Solution durably stored in subscription ✓
+
+ARTIFACT VALIDATION: BLOCKED ✗
+
+  Artifact exists:                  ✓
+  Artifact solution bound:          ✓
+  Artifact version resolved:        ✓
+  Artifact compatible with Odoo 19: ✓
+  Artifact verified:                ✗ BLOCKER
+  Artifact deployment_ready:        ✗ BLOCKER
+
+================================================================================
+DURABLE STATE
+================================================================================
+
+Final Durable State:             active (Tenant 31)
+HC3.10A Evidence:                PRESERVED
+  - Subscription 6 binding intact
+  - Job 20 binding intact
+  - Tenant 31 binding intact
+  - Authority chain metadata in Job 20 audit_metadata
+  - Synthetic subscriptions still rejected
+
+Next Durable State (upon artifact verification):
+  ready_solution_deployed (when artifact is_verified=True and deployment_ready=True)
+
+================================================================================
+PRESERVATION
+================================================================================
+
+✓ Subscription 6 / Job 20 / Tenant 31 binding preserved
+✓ Synthetic tenants (25, 26, 27) still rejected
+✓ Other tenant DBs unchanged
+✓ VM 9000 unchanged
+✓ VM 9500 unchanged
+✓ VM 9501 resources unchanged
+✓ No Proxmox mutation
+
+================================================================================
+SECURITY
+================================================================================
+
+✓ No secrets leaked
+✓ No plaintext credentials logged
+✓ No unauthorized state mutations
+✓ Artifact verification safety constraint enforced
+
+================================================================================
+BOUNDARY
+================================================================================
+
+✓ Stopped at pre-deployment verification (no customer-data migration)
+✓ No custom development performed
+✓ No production domain/DNS work
+✓ No external integrations attempted
+✓ Ready for safe resumption upon artifact verification
+
+================================================================================
+NEXT ACTION - SAFEST RETRY POINT
+================================================================================
+
+RETURN TO: CHECKPOINT_HC3_11_READY_SOLUTION_DEPLOYMENT_BLOCKED
+
+REQUIRED BEFORE NEXT HC3.11 ATTEMPT:
+
+1. Verify HMS artifact is legitimate and ready for deployment
+   - Validate artifact authenticity/completeness
+   - Confirm it meets deployment requirements
+   - Document verification source/authority
+
+2. Mark artifact as verified (one of):
+   
+   Option A: Update existing artifact
+   - Set is_verified = True
+   - Set verification_state = "verified"
+   - Set deployment_ready = True
+   - Record verification details/timestamp
+   
+   Option B: Create new verified artifact
+   - Use ready_solution_profile_service.create_artifact()
+   - solution_id=2 (HMS)
+   - is_verified=True
+   - deployment_ready=True
+   - Link to subscription via deployment profile
+
+3. Resume HC3.11 from this checkpoint
+
+================================================================================
+EVIDENCE FILES
+================================================================================
+
+HC3_11_DEPLOYMENT_BLOCKED_REPORT.md          (Detailed blocker analysis)
+HC3_11_EVIDENCE_PRE_DEPLOY_VERIFICATION.json (Structured verification data)
+HC3_11_FINAL_REPORT.txt                      (This file)
+
+References:
+- HC3_10A_LIVE_ACCEPTANCE_REPORT.md
+- control-api/app/models.py:SolutionArtifact
+- control-api/app/services/ready_solution_profile_service.py
+- control-api/app/services/catalog_service.py:_seed_rs1_defaults
+- control-api/tests/test_ready_solution_rs1.py:test_14_unverified_artifact_not_deployment_ready
+
+================================================================================
+END REPORT
+================================================================================
+

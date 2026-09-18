@@ -1,0 +1,42 @@
+{
+  "base": "http://127.0.0.1:8013",
+  "outDir": "docs/reports/evidence/cloud-registration-ux-google-auth/20260906T202607Z",
+  "screenshots": [
+    "registration-desktop-en.png",
+    "registration-desktop-ar.png",
+    "registration-mobile-en.png",
+    "registration-mobile-ar.png",
+    "pricing-register-account-setup-flow.png"
+  ],
+  "checks": [
+    {
+      "name": "registration-desktop-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-desktop-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "registration-mobile-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-mobile-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "pricing-register-account-setup-flow",
+      "finalUrl": "http://127.0.0.1:8013/cloud/setup",
+      "containsSetupHeading": true
+    }
+  ]
+}

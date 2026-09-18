@@ -1,0 +1,111 @@
+{
+  "schema": "hc36-one-clone-attempt-v1",
+  "checkpoint": "CHECKPOINT_HC3_6_MUTATION_BLOCKED",
+  "observed_at_utc": "2026-09-16T08:45:00+00:00",
+  "prior_checkpoints": [
+    "CHECKPOINT_HC3_6_HOST_LVM_ADAPTER_PASS",
+    "CHECKPOINT_HC3_6_INDEPENDENCE_VERIFIER_LIVE_PASS",
+    "CHECKPOINT_HC3_6_ONE_CLONE_PREPARED_FOR_TARGET_ACL"
+  ],
+  "mutation_attempted": false,
+  "clone_executed": false,
+  "upid": null,
+  "clone_post_count": 0,
+  "http_method_counts": {
+    "GET": 18,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "preflight": {
+    "identity_gate": true,
+    "transport_settings_valid": true,
+    "source_vmid_present": 9000,
+    "source_state": "stopped_template",
+    "target_vmid_absent": true,
+    "cluster_vm_inventory": [101, 102, 103, 9000],
+    "lease_vmid": 9500,
+    "lease_job_id": "hc36-job-20260914t034518z-001",
+    "lease_state": "leased",
+    "clone_intents": 0,
+    "approval_id": "hc36-appr-20260914t034518z-001",
+    "approval_consumed": false,
+    "durable_kill_switch_engaged": true,
+    "mutation_control_owner_job_id": null,
+    "host_lvm_verifier": {
+      "reachable": true,
+      "user": "helper-verify",
+      "host": "100.122.63.86",
+      "command_exactly": "sudo /usr/local/sbin/helper-compute-lvm-proof",
+      "total_lvs": 15,
+      "source_volumes_present": [
+        "base-9000-disk-0",
+        "base-9000-disk-1",
+        "vm-9000-cloudinit"
+      ],
+      "target_volumes_present": [],
+      "source_drift": false
+    },
+    "dry_run_outcome": "mutation_blocked",
+    "dry_run_mutation_attempted": false
+  },
+  "blockers": [
+    {
+      "code": "mutation_credential_invalid",
+      "detail": "helper-compute-hc36@pve!clone-once exists on the cluster but its secret is not held locally; mutation_authorization() raises mutation_credential_invalid and no clone POST can be signed.",
+      "operator_only": true
+    },
+    {
+      "code": "target_acl_missing",
+      "detail": "No ACL entry for path /vms/9500. Token holds HC36CloneSource on /vms/9000, HC36CloneStorage on /storage/local-lvm, HC36CloneNetwork on /sdn/zones/localnetwork/vmbr0. Role HC36CloneTarget exists but is not bound to /vms/9500.",
+      "operator_only": true
+    }
+  ],
+  "proxmox_identity_state": {
+    "mutation_user_exists": true,
+    "mutation_user": "helper-compute-hc36@pve",
+    "mutation_token_exists": true,
+    "mutation_token_id": "helper-compute-hc36@pve!clone-once",
+    "mutation_token_privsep": 1,
+    "mutation_token_expire": 0,
+    "mutation_token_secret_held_locally": false,
+    "roles_present": [
+      "HC36CloneSource",
+      "HC36CloneTarget",
+      "HC36CloneStorage",
+      "HC36CloneNetwork"
+    ],
+    "acl_bound_paths": [
+      "/vms/9000",
+      "/storage/local-lvm",
+      "/sdn/zones/localnetwork/vmbr0"
+    ],
+    "acl_missing_paths": [
+      "/vms/9500"
+    ]
+  },
+  "operator_actions_required": [
+    "pveum acl modify /vms/9500 --tokens 'helper-compute-hc36@pve!clone-once' --roles HC36CloneTarget --propagate 0",
+    "Supply the clone-once token secret to the foreground execution context only, or rotate it on the Proxmox root console if the original value was not retained."
+  ],
+  "no_admin_path_from_workstation": {
+    "root_ssh": "permission denied (publickey)",
+    "verifier_sudo_scope": "NOPASSWD: /usr/local/sbin/helper-compute-lvm-proof only",
+    "auditor_token_role": "PVEAuditor (read-only)"
+  },
+  "fail_closed_state": {
+    "durable_kill_switch": true,
+    "mutation_token_present": false,
+    "temporary_acl_added": false,
+    "worker_armed": false,
+    "hc37_authorized": false,
+    "vm_9500_created": false,
+    "vm_9000_modified": false,
+    "other_vms_touched": false
+  },
+  "delegation_attempts": {
+    "router_job_d710ab12-a05c-4b36-92df-79c66e142160": "failed hermes_handoff_incomplete; zero mutation",
+    "router_job_bafbe9e8-cd81-422e-bfdc-6f7ad04b9d1d": "roo omniroute_provider_unresolved, hermes backend 06675c44 aborted on provider HTTP 429; zero mutation"
+  }
+}

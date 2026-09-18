@@ -7,15 +7,18 @@ def test_homepage_shows_three_product_lines(client):
     resp = client.get("/")
     assert resp.status_code == 200
     body = resp.text
-    assert "Ready Business Solutions" in body
-    assert "Build Your ERP" in body
-    assert "Ship Custom Odoo from Git" in body
+    assert "Ready Solutions" in body
+    assert "Helpers ERP Cloud" in body
+    assert "Developer Platform" in body
     assert 'href="/solutions"' in body
     assert 'href="/cloud"' in body
     assert 'href="/platform"' in body
-    assert "Browse Solutions" in body
-    assert "Configure Your ERP" in body
-    assert "Developer Platform" in body
+    assert "Browse Ready Solutions" in body
+    assert "Build Your Odoo Cloud" in body
+    assert "Try Demo" in body
+    assert 'href="/cloud/build"' in body
+    assert 'href="/cloud/demo"' in body
+    assert "Open Developer Platform" in body
 
 
 def test_homepage_ctas_open_correct_journeys(client, db):
@@ -30,7 +33,9 @@ def test_homepage_ctas_open_correct_journeys(client, db):
     cloud = client.get("/cloud")
     assert cloud.status_code == 200
     assert "Helpers ERP Cloud" in cloud.text
-    assert "View plans and start" in cloud.text
+    assert "Build Your Odoo Cloud" in cloud.text
+    assert "Try Demo" in cloud.text
+    assert "How the paid service works" in cloud.text
     assert 'href="/cloud/login"' in cloud.text
     platform = client.get("/platform")
     assert platform.status_code == 200
@@ -46,6 +51,7 @@ def test_contextual_sign_in_targets(client):
     assert "Developer sign in" in home
     cloud = client.get("/cloud").text
     assert 'href="/cloud/login"' in cloud
+    assert "Cloud Sign In" in cloud
     platform = client.get("/platform").text
     actions = platform.split("mkt-nav__actions", 1)[-1]
     assert 'href="/login"' in actions
@@ -66,13 +72,16 @@ def test_nav_lists_three_product_lines_and_sign_in(client):
 
 def test_product_positioning_not_mixed_on_cloud_overview(client):
     body = client.get("/cloud").text
-    assert "GitHub" not in body
     assert "commit" not in body.lower()
     assert "branch" not in body.lower()
     assert "CONNECT" not in body
-    assert "No coding or server administration required" in body
-    assert "View plans and start" in body
-    assert "Configure Your ERP" not in body
+    assert "Build your company Odoo cloud with a clear monthly total" in body
+    assert "Build Your Odoo Cloud" in body
+    assert "Try Demo" in body
+    assert "How the paid service works" in body
+    assert "View Plans" not in body
+    assert "not custom code" not in body.lower()
+    assert "not a developer build environment" not in body.lower()
 
 
 def test_developer_platform_keeps_git_language(client):

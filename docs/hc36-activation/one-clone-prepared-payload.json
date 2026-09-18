@@ -1,0 +1,72 @@
+{
+  "approval_id": "hc36-appr-20260914t034518z-001",
+  "bridge": "vmbr0",
+  "checkpoint": "CHECKPOINT_HC3_6_ONE_CLONE_PREPARED_FOR_TARGET_ACL",
+  "cluster_fingerprint": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c",
+  "contract_sha256": "579e9732a2dc22228ed176fa14a41655321f33de8fb641b6d6f42b621694fb65",
+  "db_row_counts": {
+    "ProxmoxCloneApproval": 1,
+    "ProxmoxCloneIntent": 0,
+    "ProxmoxMutationControl": 1,
+    "ProxmoxProvisioningAuditEvent": 1,
+    "ProxmoxProvisioningJob": 1,
+    "ProxmoxReservation": 1,
+    "ProxmoxVmidLease": 1
+  },
+  "evidence_fingerprint": "3153af1eb565b80a9948ca2b2e3f07695e58fc5539bbf8e3238e3c42f35579d1",
+  "host_verifier": {
+    "capability_ok": true,
+    "execution": "verifier_sudo_prompt"
+  },
+  "http_method_counts": {
+    "DELETE": 0,
+    "GET": 18,
+    "PATCH": 0,
+    "POST": 0,
+    "PUT": 0
+  },
+  "job_id": "hc36-job-20260914t034518z-001",
+  "lease_id": 1,
+  "no_mutation": true,
+  "node": "pve-test",
+  "ownership_fingerprint": "254ee241b67d0ab42623b944cfa280693253e521fae85f49c7a54f8b4886f560",
+  "plan_fingerprint": "a0ad86b92bc73bc2c2a79b05c6c03699782a1826b664f430e0fbf05201c2287a",
+  "pre_dispatch_blockers": [
+    "credential",
+    "preflight"
+  ],
+  "pre_dispatch_blockers_expected": [
+    "credential",
+    "preflight"
+  ],
+  "reservation_id": "hc36-res-20260914t034518z-001",
+  "sanitized_post": {
+    "body": {
+      "description": "helper-compute:hc36:579e9732a2dc22228ed176fa14a41655321f33de8fb641b6d6f42b621694fb65",
+      "full": 1,
+      "name": "hc3-6-test-clone-9500",
+      "newid": 9500,
+      "storage": "local-lvm"
+    },
+    "content_type": "application/x-www-form-urlencoded",
+    "method": "POST",
+    "url": "https://pve-test.home.arpa:8006/api2/json/nodes/pve-test/qemu/9000/clone"
+  },
+  "source_vmid": 9000,
+  "staging_manifest_fingerprint": "a0ad86b92bc73bc2c2a79b05c6c03699782a1826b664f430e0fbf05201c2287a",
+  "storage": "local-lvm",
+  "target_vmid": 9500,
+  "target_vmid_absent": true,
+  "unexpected_gate_errors": [],
+  "verification": {
+    "approval_consumed": false,
+    "frozen_contract": true,
+    "intent_count": 0,
+    "job_state": "reserved",
+    "kill_switch_engaged": true,
+    "lease_state": "leased",
+    "reservation_status": "active",
+    "transport_settings_valid": true
+  },
+  "vmid_range": "9500-9599"
+}

@@ -46,8 +46,26 @@ def _is_valid_host(host: str) -> bool:
 def _is_valid_scheme(scheme: str) -> bool:
     return scheme in _ALLOWED_SCHEMES
 
-def get_external_host_and_scheme() -> tuple[str | None, str | None]:
-    """Return validated (host, scheme) or (None, None) if not safely configured."""
+def _allowed_external_hosts() -> set[str]:
+    settings = get_settings()
+    raw = getattr(settings, "helpers_cloud_external_allowed_hosts", "")
+    if not isinstance(raw, str):
+        raw = ""
+    hosts = {part.strip().lower() for part in raw.split(",") if part.strip()}
+    hosts.discard("127.0.0.1")
+    hosts.discard("localhost")
+    hosts.discard("::1")
+    return {h for h in hosts if _is_valid_host(h)}
+
+
+def get_external_host_and_scheme(
+    preferred_host: str | None = None,
+) -> tuple[str | None, str | None]:
+    """Return validated (host, scheme) or (None, None) if not safely configured.
+
+    ``preferred_host`` is used only when it matches the configured allow-list.
+    Arbitrary Host / X-Forwarded-Host values are ignored.
+    """
     settings = get_settings()
     host = (getattr(settings, "helpers_cloud_external_host", "") or "").strip()
     scheme = (getattr(settings, "helpers_cloud_external_scheme", "") or "").strip().lower()
@@ -57,16 +75,21 @@ def get_external_host_and_scheme() -> tuple[str | None, str | None]:
         return None, None
     if not _is_valid_scheme(scheme):
         return None, None
+    candidate = (preferred_host or "").strip().lower()
+    if candidate and candidate in _allowed_external_hosts() and _is_valid_host(candidate):
+        return candidate, scheme
     return host, scheme
 
-def build_external_odoo_url(db_name: str, port: int) -> str | None:
+def build_external_odoo_url(
+    db_name: str, port: int, *, preferred_host: str | None = None
+) -> str | None:
     """Build Windows-accessible Odoo URL from trusted config.
 
     Returns None if not safely configured (fail-closed).
     Validates host/scheme, preserves ?db=, uses external host.
     Never trusts Host header.
     """
-    host, scheme = get_external_host_and_scheme()
+    host, scheme = get_external_host_and_scheme(preferred_host=preferred_host)
     if not host or not scheme:
         return None
     # Validate db_name and port
@@ -82,7 +105,9 @@ def build_external_odoo_url(db_name: str, port: int) -> str | None:
     db_q = quote(db_name, safe="")
     return f"{scheme}://{host}:{port}/web/login?db={db_q}"
 
-def build_external_odoo_url_for_instance(instance) -> str | None:
+def build_external_odoo_url_for_instance(
+    instance, *, preferred_host: str | None = None
+) -> str | None:
     """Build external URL for a CloudInstance, using its port and db via tenant or instance.
 
     Tries to get db_name from instance's tenant or from instance's requested_subdomain mapping.
@@ -149,7 +174,7 @@ def build_external_odoo_url_for_instance(instance) -> str | None:
     if not db_name:
         # Fallback: try to get from instance's workspace or company? Not reliable
         return None
-    return build_external_odoo_url(db_name, int(port))
+    return build_external_odoo_url(db_name, int(port), preferred_host=preferred_host)
 
 def is_valid_external_url(url: str) -> bool:
     """Validate a per-tenant external URL (if provided) — must be http/https, valid host, no localhost."""

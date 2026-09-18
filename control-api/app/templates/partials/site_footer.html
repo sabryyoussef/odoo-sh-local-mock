@@ -3,7 +3,9 @@
     <div class="site-footer__col">
       <h2>{{ t('footer.product') }}</h2>
       <a href="{{ locale_url('/solutions') }}">{{ t('nav.ready_solutions') }}</a>
-      <a href="{{ locale_url('/cloud') }}">{{ t('nav.cloud') }}</a>
+      <a href="{{ locale_url('/cloud') }}">{% if lang == 'ar' %}<bdi dir="ltr">{{ t('nav.cloud') }}</bdi>{% else %}{{ t('nav.cloud') }}{% endif %}</a>
+      <a href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a>
+      <a href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
       <a href="{{ locale_url('/platform') }}">{{ t('nav.platform') }}</a>
       <a href="{{ locale_url('/pricing') }}">{{ t('nav.pricing') }}</a>
     </div>

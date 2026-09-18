@@ -1,0 +1,73 @@
+{% extends "cloud/base.html" %}
+{% block title %}Ready Solutions · Helpers ERP Cloud{% endblock %}
+{% block cloud_crumb %} · Ready Solutions{% endblock %}
+{% block cloud_content %}
+<div class="cloud-customer-shell cloud-customer-shell--single">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip"><span>Vertical ERP</span></p>
+      <h1>Ready Solutions</h1>
+      <p>Your pre-configured vertical ERP systems with hosting and support included.</p>
+    </section>
+
+    {% if subscriptions %}
+      <section class="cloud-customer-grid" aria-label="Ready Solutions">
+        {% for sub in subscriptions %}
+          {% set solution = sub.solution %}
+          {% set tenant = sub.tenant %}
+          {% set status_badge = 'active' if tenant and tenant.status == 'active' else sub.status %}
+          <article class="cloud-setup-section flow-card cloud-workspace-card">
+            <p class="cloud-plan-chip">
+              <span class="badge">{{ status_badge|capitalize }}</span>
+              {% if solution %}<span>{{ solution.name }}</span>{% endif %}
+            </p>
+            <h2>{{ solution.name if solution else 'Solution' }}</h2>
+            {% if solution %}
+              <p class="muted">{{ solution.description or 'Professional solution' }}</p>
+            {% endif %}
+            <dl class="cloud-review-grid">
+              {% if solution %}
+                <div><dt>Solution</dt><dd>{{ solution.name }}</dd></div>
+              {% endif %}
+              {% if sub.package %}
+                <div><dt>Package</dt><dd>{{ sub.package.name }}</dd></div>
+              {% endif %}
+              {% if tenant %}
+                <div><dt>Database</dt><dd><code>{{ tenant.database_name }}</code></dd></div>
+                <div><dt>Odoo Version</dt><dd><bdi dir="ltr">{{ tenant.odoo_version }}</bdi></dd></div>
+                <div><dt>Solution Version</dt><dd><bdi dir="ltr">{{ tenant.solution_version }}</bdi></dd></div>
+                <div><dt>Status</dt><dd>{{ tenant.status }}</dd></div>
+                {% if tenant.active_users %}
+                  <div><dt>Active Users</dt><dd>{{ tenant.active_users }}</dd></div>
+                {% endif %}
+              {% endif %}
+              <div><dt>Subscription</dt><dd>{{ sub.status|capitalize }}</dd></div>
+              {% if sub.trial_ends_at %}
+                <div><dt>Trial Expires</dt><dd>{{ sub.trial_ends_at.strftime('%Y-%m-%d') }}</dd></div>
+              {% endif %}
+            </dl>
+            <div class="cloud-customer-actions">
+            {% if tenant and can_open[sub.id] %}
+              <a class="btn-hero btn-hero--primary" href="{{ tenant_open_url[sub.id] }}" target="_blank" rel="noopener">Open {{ solution.name if solution else 'Solution' }}</a>
+            {% elif tenant %}
+              <button type="button" class="btn-hero btn-hero--primary" disabled>Open Solution</button>
+              <p class="muted">{{ tenant.status|capitalize }} · Check back shortly</p>
+            {% else %}
+              <button type="button" class="btn-hero btn-hero--primary" disabled>Provisioning</button>
+              <p class="muted">Your solution is being set up...</p>
+            {% endif %}
+              <a class="btn" href="{{ locale_url('/cloud/ready-solutions/' ~ sub.id) }}">View Details</a>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="cloud-setup-section flow-card cloud-empty-card">
+        <h2>No Ready Solutions Yet</h2>
+        <p>Browse our vertical ERP solutions to get started with a pre-configured system.</p>
+        <a class="btn-hero btn-hero--primary" href="{{ locale_url('/catalog') }}">View Solutions</a>
+      </section>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

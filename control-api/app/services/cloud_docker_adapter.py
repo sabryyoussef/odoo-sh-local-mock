@@ -515,7 +515,10 @@ def provision_cloud_request(
         # 9. Allocate collision-free host port
         http_port = _allocate_p2_port(db)
         tenant.http_port = http_port
-        tenant.internal_url = f"http://127.0.0.1:{http_port}"
+        # Use live Odoo runtime endpoint for demo cloud tenants
+        live_endpoint = (settings.tenant_live_odoo_endpoint or "").strip().rstrip("/")
+        internal_url_base = live_endpoint if live_endpoint else f"http://127.0.0.1:{http_port}"
+        tenant.internal_url = internal_url_base
         db.commit()
 
         # 10. Start one Odoo 19 container with loopback-only port binding and strict labels
@@ -625,8 +628,8 @@ def provision_cloud_request(
         # Audit must persist transactionally, fail-closed
         try:
             request.runtime_verified = True
-            request.runtime_url = f"http://127.0.0.1:{http_port}/web/login"
-            request.internal_url = f"http://127.0.0.1:{http_port}"
+            request.runtime_url = f"{internal_url_base}/web/login"
+            request.internal_url = f"{internal_url_base}/"
             request.status = CLOUD_PROVISION_READY
             request.current_step = CLOUD_PROVISION_READY
             request.finished_at = datetime.now(timezone.utc)
@@ -637,7 +640,7 @@ def provision_cloud_request(
                 instance.status = CLOUD_PROVISION_READY
                 instance.tenant_id = tenant.id
             tenant.status = "active"
-            tenant.internal_url = f"http://127.0.0.1:{http_port}"
+            tenant.internal_url = f"{internal_url_base}/"
             # Critical audit/state must be transactional
             from app.services.audit_service import record_audit
             record_audit(db, event_type="cloud.p2.provisioned", message=f"P2 provisioned {tenant_code} ready", actor=f"p2:{run_id}", meta={"tenant_code": tenant_code, "request_id": request_id, "run_id": run_id, "http_port": http_port})

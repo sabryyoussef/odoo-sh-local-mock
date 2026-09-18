@@ -1,0 +1,5 @@
+Odoo not healthy
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 282, in <module>
+    raise RuntimeError("Odoo not healthy")
+RuntimeError: Odoo not healthy

@@ -152,14 +152,33 @@ body.body--landing .mkt-nav__try {
   color: #fff;
 }
 
-/* ——— Hero ——— */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .body--landing *,
+  .body--landing *::before,
+  .body--landing *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ——— Hero (Decision-First) ——— */
 .body--landing .hero {
   position: relative;
-  min-height: min(88vh, 820px);
+  min-height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 72px 24px 96px;
+  padding: 56px 24px 28px;
   overflow: hidden;
   text-align: center;
   background: #fff;
@@ -169,69 +188,22 @@ body.body--landing .mkt-nav__try {
 .body--landing .hero__stars,
 .body--landing .hero__glow,
 .body--landing .hero__grid,
-.body--landing .hero__orb {
-  display: none;
-}
-
+.body--landing .hero__orb,
 .body--landing .hero__stage {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.body--landing .odoo-app {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  animation: odoo-float 5.5s ease-in-out infinite;
-}
-
-.body--landing .odoo-app__icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 13px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 46%),
-    var(--app-color, var(--odoo-purple));
-  box-shadow: 0 12px 28px rgba(31, 31, 31, 0.14);
-  color: #fff;
-  font-size: 22px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-.body--landing .odoo-app__label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #3d3d3d;
-  text-shadow: 0 1px 0 #fff;
-}
-
-@keyframes odoo-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  display: none;
 }
 
 .body--landing .hero__content {
   position: relative;
   z-index: 1;
-  max-width: 680px;
-  padding: 12px 8px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 8px 12px;
 }
 
 .body--landing .hero__eyebrow,
 body.theme-helpers-erp.body--landing .hero__eyebrow {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   color: var(--odoo-purple);
   letter-spacing: 0.04em;
   text-transform: none;
@@ -241,30 +213,23 @@ body.theme-helpers-erp.body--landing .hero__eyebrow {
 
 .body--landing .hero__title,
 body.theme-helpers-erp.body--landing .hero__title {
-  margin: 0;
-  font-size: clamp(40px, 6.4vw, 72px);
+  margin: 0 0 18px;
+  font-size: clamp(34px, 5.2vw, 56px);
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
   color: #1a1a1a;
   text-shadow: none;
 }
 
 .body--landing .hero__subtitle,
 body.theme-helpers-erp.body--landing .hero__subtitle {
-  margin: 22px auto 0;
-  max-width: 620px;
-  font-size: clamp(18px, 2.1vw, 24px);
-  color: #444;
+  margin: 0 auto 28px;
+  max-width: 720px;
+  font-size: clamp(17px, 2vw, 21px);
+  color: #4a5568;
   font-weight: 400;
-  line-height: 1.45;
-}
-
-.body--landing .hero__subtitle strong {
-  display: block;
-  margin-top: 6px;
-  color: var(--odoo-purple);
-  font-weight: 700;
+  line-height: 1.55;
 }
 
 .body--landing .hero__pipeline,
@@ -276,7 +241,9 @@ body.theme-helpers-erp.body--landing .hero__pipeline {
 }
 
 .body--landing .hero__actions {
-  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
   gap: 14px;
 }
 
@@ -285,18 +252,20 @@ body.theme-helpers-erp.body--landing .btn-hero,
 body.theme-helpers-erp.body--landing .btn-hero--primary,
 body.theme-helpers-erp.body--landing .btn-hero--secondary,
 body.theme-helpers-erp.body--landing .btn-hero--on-light {
-  padding: 12px 22px;
+  padding: 12px 24px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 650;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .body--landing .btn-hero--primary,
 body.theme-helpers-erp.body--landing .btn-hero--primary {
   background: var(--odoo-purple);
-  border-color: var(--odoo-purple);
+  border: 1px solid var(--odoo-purple);
   color: #fff;
-  box-shadow: 0 8px 22px rgba(113, 75, 103, 0.28);
+  box-shadow: 0 8px 22px rgba(113, 75, 103, 0.24);
 }
 
 .body--landing .btn-hero--primary:hover,
@@ -320,9 +289,9 @@ body.theme-helpers-erp.body--landing .btn-hero--secondary:hover {
 }
 
 .body--landing .btn-hero--on-light {
-  background: #fff;
-  border: 1px solid #cfcfcf;
-  color: #2b2b2b;
+  background: var(--odoo-purple);
+  border: 1px solid var(--odoo-purple);
+  color: #fff;
 }
 
 .body--landing .hero__all-apps {
@@ -338,7 +307,247 @@ body.theme-helpers-erp.body--landing .btn-hero--secondary:hover {
 }
 
 .body--landing .prepared-for {
-  display: none;
+  display: block;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* ——— Keyboard focus accessibility ——— */
+:focus-visible,
+.body--landing a:focus-visible,
+.body--landing button:focus-visible,
+.body--landing .product-card:focus-visible {
+  outline: 2px solid var(--odoo-purple, #714b67);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(113, 75, 103, 0.2);
+}
+
+/* ——— Product lines / Decision Cards (Equal Priority) ——— */
+.body--landing .product-lines {
+  padding: 16px 24px 64px;
+  scroll-margin-top: 80px;
+}
+
+.body--landing .product-lines__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.body--landing .product-lines__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.body--landing .product-card {
+  border-radius: 16px;
+  padding: 32px 28px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
+}
+
+.body--landing .product-card:hover,
+.body--landing .product-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(113, 75, 103, 0.12);
+  border-color: var(--odoo-purple);
+}
+
+.body--landing .product-card__header {
+  margin-bottom: 12px;
+}
+
+.body--landing .product-card__kicker {
+  color: var(--odoo-purple);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 6px;
+}
+
+.body--landing .product-card__title,
+.body--landing .product-card h2,
+.body--landing .product-card h3 {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.body--landing .product-card__body,
+.body--landing .product-card p {
+  color: #4a5568;
+  line-height: 1.55;
+  font-size: 15px;
+  margin: 0 0 20px;
+}
+
+.body--landing .product-card__features,
+.body--landing .product-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.body--landing .product-card__features li,
+.body--landing .product-card li {
+  color: #4a5568;
+  line-height: 1.45;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.body--landing .product-card__features li::before {
+  content: "✓";
+  color: var(--odoo-purple);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.body--landing .product-card__actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.body--landing .btn-hero--card-secondary {
+  background: #fff;
+  color: var(--odoo-purple);
+  border: 1px solid var(--odoo-purple);
+}
+
+.body--landing .btn-hero--card-secondary:hover {
+  background: #f4f0fa;
+  color: var(--odoo-purple);
+}
+
+.body--landing .btn-hero--card {
+  display: block;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  background: var(--odoo-purple);
+  border: 1px solid var(--odoo-purple);
+  color: #fff;
+}
+
+.body--landing .btn-hero--card:hover {
+  background: var(--odoo-purple-hover);
+  border-color: var(--odoo-purple-hover);
+  color: #fff;
+}
+
+/* ——— Modules Showcase (Cleanly positioned below decision) ——— */
+.body--landing .modules-showcase {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+}
+
+.body--landing .modules-showcase__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #718096;
+  margin: 0 0 16px;
+  letter-spacing: 0.02em;
+}
+
+.body--landing .modules-showcase__pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.body--landing .module-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.body--landing .module-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.body--landing .module-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ——— Arabic RTL Overrides ——— */
+html[dir="rtl"] body.body--landing {
+  font-family: "Cairo", "Inter", sans-serif;
+}
+
+html[dir="rtl"] .product-card {
+  text-align: right;
+}
+
+html[dir="rtl"] .product-card__features li,
+html[dir="rtl"] .product-card li {
+  text-align: right;
+}
+
+html[dir="rtl"] .product-card__features li::before {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ——— Responsive Layout & Zoom Handling ——— */
+@media (max-width: 960px) {
+  .body--landing .product-lines__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .body--landing .hero {
+    padding: 36px 18px 18px;
+  }
+
+  .body--landing .product-lines {
+    padding: 12px 18px 48px;
+  }
+
+  .body--landing .product-card {
+    padding: 24px 20px;
+  }
 }
 
 /* ——— Imagine ——— */
@@ -374,85 +583,6 @@ body.theme-helpers-erp.body--landing .btn-hero--secondary:hover {
   font-style: italic;
   color: #3a3a3a;
   line-height: 1.5;
-}
-
-/* ——— Product lines ——— */
-.body--landing .product-lines {
-  padding: 24px 24px 80px;
-}
-
-.body--landing .product-lines__inner {
-  max-width: 1120px;
-}
-
-.body--landing .product-lines__kicker,
-.body--landing .productivity__kicker {
-  margin: 0 0 8px;
-  text-align: center;
-  color: var(--odoo-purple);
-  font-weight: 650;
-  font-size: 14px;
-}
-
-.body--landing .product-lines__title {
-  text-align: center;
-  font-size: clamp(28px, 3.5vw, 36px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #1a1a1a;
-}
-
-.body--landing .product-lines__lead {
-  text-align: center;
-  margin: 10px auto 36px;
-  max-width: 560px;
-  font-size: 17px;
-}
-
-.body--landing .product-card {
-  border-radius: 16px;
-  padding: 28px 24px;
-  border: 1px solid #ececec;
-  box-shadow: 0 10px 30px rgba(20, 20, 20, 0.05);
-  gap: 12px;
-}
-
-.body--landing .product-card--featured {
-  border-color: var(--odoo-purple);
-  box-shadow: 0 14px 36px rgba(113, 75, 103, 0.12);
-}
-
-.body--landing .product-card__kicker {
-  color: var(--odoo-purple);
-  font-weight: 700;
-}
-
-.body--landing .product-card h3 {
-  font-size: 22px;
-  letter-spacing: -0.02em;
-}
-
-.body--landing .product-card p,
-.body--landing .product-card li {
-  color: #555;
-  line-height: 1.5;
-}
-
-.body--landing .product-card .btn-hero--on-light {
-  margin-top: auto;
-}
-
-.body--landing .product-card--featured .btn-hero--on-light,
-.body--landing .product-card .btn-hero--primary {
-  background: var(--odoo-purple);
-  border-color: var(--odoo-purple);
-  color: #fff;
-}
-
-.body--landing .product-card--featured .btn-hero--on-light:hover,
-.body--landing .product-card .btn-hero--primary:hover {
-  background: var(--odoo-purple-hover);
-  color: #fff;
 }
 
 /* ——— Productivity ——— */
@@ -742,3 +872,945 @@ html[dir="rtl"] body.body--landing .hero__actions,
 html[dir="rtl"] .body--landing .product-lines__grid {
   direction: rtl;
 }
+
+/* ——— Helpers ERP Cloud Product Page Redesign ——— */
+.cloud-page {
+  min-height: 100vh;
+  background: #fff;
+  color: var(--landing-text);
+}
+
+.cloud-page__breadcrumb-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 18px 24px 0;
+}
+
+.cloud-page__breadcrumb {
+  font-size: 13px;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cloud-page__breadcrumb a {
+  color: #718096;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.cloud-page__breadcrumb a:hover {
+  color: var(--odoo-purple);
+  text-decoration: underline;
+}
+
+.cloud-page__breadcrumb-sep {
+  color: #a0aec0;
+}
+
+.cloud-page__breadcrumb-current {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Cloud Hero */
+.hero--cloud-product {
+  padding: 42px 24px 32px;
+}
+
+.hero--cloud-product .hero__title {
+  font-size: clamp(32px, 4.4vw, 48px);
+  line-height: 1.16;
+}
+
+.cloud-hero__account-row {
+  margin-top: 20px;
+}
+
+.cloud-hero__account-link {
+  font-size: 14px;
+  color: var(--odoo-purple);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s ease;
+}
+
+.cloud-hero__account-link:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+/* Generic Cloud Section */
+.cloud-section {
+  padding: 44px 24px;
+}
+
+.cloud-section__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.cloud-section__title {
+  text-align: center;
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #1a202c;
+  margin: 0 0 36px;
+}
+
+/* 3. How It Works (4 Steps) */
+.cloud-how {
+  background: #fbf9fa;
+  border-top: 1px solid #f1eff0;
+  border-bottom: 1px solid #f1eff0;
+  scroll-margin-top: 88px;
+}
+
+.cloud-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.cloud-step-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
+}
+
+.cloud-step-card:hover,
+.cloud-step-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(113, 75, 103, 0.1);
+  border-color: var(--odoo-purple);
+}
+
+.cloud-step-card__badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(113, 75, 103, 0.1);
+  color: var(--odoo-purple);
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cloud-step-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cloud-step-card__title {
+  font-size: 17px;
+  font-weight: 750;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.cloud-step-card__desc {
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 4. Benefits Grid (5 Cards) */
+.cloud-benefits {
+  background: #ffffff;
+}
+
+.cloud-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+.cloud-benefit-card {
+  grid-column: span 2;
+}
+
+.cloud-benefit-card:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.cloud-benefit-card:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.cloud-benefit-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 22px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 104px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
+}
+
+.cloud-benefit-card:hover,
+.cloud-benefit-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(113, 75, 103, 0.09);
+  border-color: var(--odoo-purple);
+}
+
+.cloud-benefit-card__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(113, 75, 103, 0.1);
+  color: var(--odoo-purple);
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cloud-benefit-card__text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d3748;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* 5. Developer Platform Cross-Product Callout */
+.cloud-dev-callout-wrap {
+  padding-top: 8px;
+  padding-bottom: 36px;
+}
+
+.cloud-dev-callout {
+  background: linear-gradient(135deg, #faf7f9 0%, #f4eff3 100%);
+  border: 1px solid #e7dbe3;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  box-shadow: 0 4px 16px rgba(113, 75, 103, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.cloud-dev-callout:focus-visible {
+  border-color: var(--odoo-purple);
+  box-shadow: 0 0 0 4px rgba(113, 75, 103, 0.2);
+}
+
+.cloud-dev-callout__text {
+  flex: 1;
+}
+
+.cloud-dev-callout__title {
+  font-size: 20px;
+  font-weight: 750;
+  color: #1a202c;
+  margin: 0 0 6px;
+}
+
+.cloud-dev-callout__desc {
+  font-size: 15px;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cloud-dev-callout__action {
+  flex-shrink: 0;
+}
+
+.btn-hero--callout {
+  white-space: nowrap;
+}
+
+/* 6. Final CTA Section */
+.cloud-final-cta {
+  background: linear-gradient(180deg, #faf7f9 0%, #f3ebf0 100%);
+  border-top: 1px solid #eadeea;
+  padding: 52px 24px;
+  text-align: center;
+}
+
+.cloud-final-cta__inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cloud-final-cta__title {
+  font-size: clamp(26px, 3.5vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #1a202c;
+  margin: 0 0 24px;
+}
+
+.cloud-final-cta__actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Responsive Overrides */
+@media (max-width: 960px) {
+  .cloud-steps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cloud-benefits-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cloud-benefit-card,
+  .cloud-benefit-card:nth-child(4),
+  .cloud-benefit-card:nth-child(5) {
+    grid-column: auto;
+  }
+
+  .cloud-dev-callout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .cloud-dev-callout__action {
+    width: 100%;
+  }
+
+  .cloud-dev-callout__action .btn-hero {
+    display: block;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 600px) {
+  .cloud-steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cloud-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero--cloud-product {
+    padding: 32px 16px 24px;
+  }
+
+  .cloud-section {
+    padding: 36px 16px;
+  }
+
+  .cloud-final-cta {
+    padding: 48px 16px;
+  }
+
+  .cloud-final-cta__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .cloud-final-cta__actions .btn-hero {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+}
+
+/* RTL Overrides for Cloud Product Page */
+html[dir="rtl"] .cloud-page__breadcrumb {
+  direction: rtl;
+}
+
+html[dir="rtl"] .hero--cloud-product .hero__title {
+  font-size: clamp(30px, 4.1vw, 46px);
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .cloud-hero__account-row {
+  direction: rtl;
+}
+
+html[dir="rtl"] .cloud-hero__account-link .arrow-indicator {
+  transform: rotate(180deg);
+  display: inline-block;
+}
+
+html[dir="rtl"] .cloud-step-card {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] .cloud-benefit-card {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] .cloud-dev-callout {
+  text-align: right;
+  direction: rtl;
+}
+
+/* ——— Helpers ERP Cloud Pricing Page ——— */
+.cloud-pricing-page {
+  background: #fff;
+  color: var(--landing-text);
+}
+
+.cloud-pricing-main {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 24px 24px 56px;
+}
+
+.cloud-pricing-hero {
+  display: grid;
+  gap: 24px;
+  text-align: center;
+  padding: 18px 0 28px;
+}
+
+.cloud-pricing-progress {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+  border: 1px solid #ece5ea;
+  border-radius: 16px;
+  background: #fbf9fa;
+}
+
+.cloud-pricing-progress__label {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--odoo-purple);
+}
+
+.cloud-pricing-progress__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cloud-pricing-progress__steps li {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #e7e0e5;
+  color: #5f6673;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.cloud-pricing-progress__steps li span {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #f1edf0;
+  color: #5f6673;
+}
+
+.cloud-pricing-progress__steps li.is-active {
+  background: var(--odoo-purple);
+  border-color: var(--odoo-purple);
+  color: #fff;
+}
+
+.cloud-pricing-progress__steps li.is-active span {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.cloud-pricing-hero__copy h1 {
+  margin: 0;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  color: #1a202c;
+}
+
+.cloud-pricing-hero__copy p {
+  max-width: 700px;
+  margin: 16px auto 0;
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.55;
+  color: #4a5568;
+}
+
+.cloud-demo-notice {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #eadde6;
+  background: #fbf7fa;
+  color: #354052;
+  text-align: start;
+}
+
+.cloud-demo-notice strong {
+  color: var(--odoo-purple);
+  flex: 0 0 auto;
+}
+
+.cloud-demo-notice span {
+  line-height: 1.45;
+}
+
+.cloud-pricing-controls {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 28px;
+}
+
+.cloud-billing-form {
+  width: min(100%, 560px);
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.cloud-billing-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.cloud-billing-fieldset legend {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2d3748;
+  padding: 0;
+}
+
+.cloud-billing-segment {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid #e2d9df;
+  border-radius: 999px;
+  background: #fbf9fa;
+}
+
+.cloud-billing-segment__opt {
+  position: relative;
+  min-width: 118px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  color: #4a5568;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cloud-billing-segment__opt input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cloud-billing-segment__opt.is-active {
+  background: var(--odoo-purple);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(113, 75, 103, 0.22);
+}
+
+.cloud-billing-help {
+  margin: 0;
+  max-width: 520px;
+  text-align: center;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cloud-pricing-plans {
+  scroll-margin-top: 88px;
+}
+
+.cloud-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.cloud-pricing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+  padding: 26px 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.045);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.cloud-pricing-card:hover,
+.cloud-pricing-card:focus-visible {
+  border-color: var(--odoo-purple);
+  box-shadow: 0 12px 32px rgba(113, 75, 103, 0.12);
+  transform: translateY(-3px);
+}
+
+.cloud-pricing-card.is-recommended {
+  border-color: var(--odoo-purple);
+  box-shadow: 0 12px 34px rgba(113, 75, 103, 0.13);
+}
+
+.cloud-pricing-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-bottom: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(113, 75, 103, 0.1);
+  color: var(--odoo-purple);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cloud-pricing-card__title {
+  margin: 0;
+  color: #1a202c;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.cloud-pricing-card__desc {
+  margin: 10px 0 0;
+  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cloud-pricing-card__price {
+  min-height: 92px;
+  margin: 22px 0 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.cloud-pricing-card__price strong {
+  color: #1a202c;
+  font-size: 27px;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.cloud-pricing-card__price span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.cloud-pricing-card__price em {
+  color: var(--odoo-purple);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.cloud-pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.cloud-pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cloud-pricing-features .check {
+  color: var(--odoo-purple);
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+
+.cloud-pricing-card__cta {
+  margin-top: auto;
+  width: 100%;
+  display: block;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
+  .cloud-pricing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .cloud-pricing-main {
+    padding: 18px 16px 42px;
+  }
+
+  .cloud-pricing-progress__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cloud-pricing-progress__steps li {
+    justify-content: flex-start;
+    border-radius: 14px;
+  }
+
+  .cloud-demo-notice {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cloud-billing-segment {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cloud-billing-segment__opt {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .cloud-pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+html[dir="rtl"] .cloud-pricing-page,
+html[dir="rtl"] .cloud-pricing-hero,
+html[dir="rtl"] .cloud-pricing-card,
+html[dir="rtl"] .cloud-demo-notice {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .cloud-pricing-hero__copy,
+html[dir="rtl"] .cloud-billing-help,
+html[dir="rtl"] .cloud-billing-fieldset,
+html[dir="rtl"] .cloud-pricing-card__price {
+  text-align: center;
+}
+
+html[dir="rtl"] .cloud-pricing-progress__steps,
+html[dir="rtl"] .cloud-pricing-grid,
+html[dir="rtl"] .cloud-billing-segment {
+  direction: rtl;
+}
+
+html[dir="rtl"] .cloud-pricing-hero__copy h1,
+html[dir="rtl"] .cloud-pricing-card__title {
+  letter-spacing: 0;
+}
+
+.cloud-pricing-grid--paid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cloud-price-kind,
+.cloud-price-aside {
+  display: block;
+  color: #4a5568;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.cloud-price-aside {
+  margin-top: 6px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.cloud-journey-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.cloud-journey-split--single {
+  grid-template-columns: minmax(0, 32rem);
+  justify-content: center;
+}
+
+.cloud-journey-card {
+  padding: 28px 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+}
+
+.cloud-journey-card--paid {
+  border-color: var(--odoo-purple);
+}
+
+.cloud-journey-card__kicker {
+  margin: 0 0 8px;
+  color: var(--odoo-purple);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cloud-journey-card h3,
+.cloud-journey-card h2 {
+  margin: 0 0 10px;
+}
+
+.cloud-journey-card__list {
+  margin: 0 0 22px;
+  padding-inline-start: 1.2em;
+  color: #4a5568;
+  line-height: 1.55;
+}
+
+.cloud-journey-kicker {
+  margin: 0 0 8px;
+  color: var(--odoo-purple);
+  font-weight: 800;
+}
+
+.cloud-build-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 24px;
+  align-items: start;
+}
+
+.cloud-solution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.cloud-solution-card {
+  cursor: pointer;
+}
+
+.cloud-solution-card input {
+  margin-bottom: 12px;
+}
+
+.cloud-resource-profiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cloud-commercial-total {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.cloud-commercial-total div,
+.cloud-due-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cloud-total-rule {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 8px 0 16px;
+}
+
+.cloud-build-note {
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.cloud-journey-progress {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 960px) {
+  .cloud-journey-split,
+  .cloud-build-columns,
+  .cloud-solution-grid,
+  .cloud-resource-profiles,
+  .cloud-pricing-grid--paid {
+    grid-template-columns: 1fr;
+  }
+}
+
+html[dir="rtl"] .cloud-journey-card__list,
+html[dir="rtl"] .cloud-journey-split,
+html[dir="rtl"] .cloud-build-columns,
+html[dir="rtl"] .cloud-commercial-total {
+  direction: rtl;
+}
+
+html[dir="rtl"] .cloud-journey-card,
+html[dir="rtl"] .cloud-journey-card h2,
+html[dir="rtl"] .cloud-journey-card h3 {
+  text-align: right;
+}
+

@@ -24,7 +24,11 @@ from datetime import datetime, timedelta, timezone
 
 from app.product_lines import (
     CLOUD_ADAPTER_DEMO,
+    CLOUD_ADAPTER_DEMO_CLONE,
     CLOUD_DEMO_PROGRESSION,
+    CLOUD_DEMO_TEMPLATE_KIND,
+    CLOUD_LANE_DEMO,
+    CLOUD_ORDER_KIND_DEMO,
     CLOUD_PROVISION_CANCELLED,
     CLOUD_PROVISION_FAILED,
     CLOUD_PROVISION_LEGAL_TRANSITIONS,
@@ -35,6 +39,7 @@ from app.product_lines import (
     CLOUD_REAL_SUBSCRIPTION_STATUSES,
     CLOUD_TEMPLATE_HEALTHY,
     CLOUD_TEMPLATE_KIND,
+    CLOUD_TEMPLATE_READINESS_SELECTABLE,
     CLOUD_TEMPLATE_VALIDATED_STATUSES,
     PRODUCT_LINE_HELPERS_CLOUD,
 )
@@ -283,6 +288,106 @@ def is_cloud_request_eligible_for_real_provisioning(
         plan=plan,
         template=template,
         quote_approved=quote_approved,
+    )
+
+
+def demo_request_eligibility_reasons(
+    request: CloudProvisioningRequest,
+    *,
+    subscription: CloudSubscription | None = None,
+    plan: CloudPlan | None = None,
+    template: CloudTemplate | None = None,
+) -> list[str]:
+    """Return fail-closed denial reasons for demo-clone provisioning (empty == eligible).
+
+    Only a request explicitly classified for the approved demo-clone workflow
+    (adapter=demo_clone, lane=demo, order_kind=demo_checkout, queued, validated
+    demo_template) can be eligible. Does not create runtime resources. Does not
+    mutate the request. Never eligible for real provisioning and vice versa.
+    """
+    reasons: list[str] = []
+    if request.product_line != PRODUCT_LINE_HELPERS_CLOUD:
+        reasons.append("wrong_product_line")
+    adapter = (request.adapter or "").strip().lower()
+    if adapter != CLOUD_ADAPTER_DEMO_CLONE:
+        reasons.append("adapter_not_demo_clone")
+    lane = (getattr(request, "lane", "") or "").strip().lower()
+    if lane != CLOUD_LANE_DEMO:
+        reasons.append("lane_not_demo")
+    order_kind = (getattr(request, "order_kind", "") or "").strip().lower()
+    if order_kind != CLOUD_ORDER_KIND_DEMO:
+        reasons.append("order_kind_not_demo")
+    status = (request.status or "").strip().lower()
+    if status != CLOUD_PROVISION_QUEUED:
+        reasons.append("status_not_queued")
+    # Terminal statuses are also not queued, but explicitly mark
+    if request.status in {CLOUD_PROVISION_READY, CLOUD_PROVISION_FAILED, CLOUD_PROVISION_CANCELLED, "rolled_back", "suspended"}:
+        if "status_not_queued" not in reasons:
+            reasons.append("status_not_queued")
+    if request.template_id is None:
+        reasons.append("template_missing")
+    elif template is None:
+        reasons.append("template_unresolved")
+    else:
+        if template.product_line != PRODUCT_LINE_HELPERS_CLOUD:
+            reasons.append("template_wrong_product_line")
+        if (template.template_kind or "") != CLOUD_DEMO_TEMPLATE_KIND:
+            reasons.append("template_kind_invalid")
+        if not bool(getattr(template, "active", False)):
+            reasons.append("template_inactive")
+        if (getattr(template, "readiness_state", "") or "") not in CLOUD_TEMPLATE_READINESS_SELECTABLE:
+            reasons.append("template_not_prepared")
+        if not (getattr(template, "postgres_database_name", "") or "").strip():
+            reasons.append("template_db_missing")
+        if not (getattr(template, "catalog_code", "") or "").strip():
+            reasons.append("template_catalog_code_missing")
+        if (getattr(template, "odoo_version_code", "") or "") != "19.0":
+            reasons.append("template_version_invalid")
+        if (getattr(template, "edition", "") or "").strip().lower() != "community":
+            reasons.append("template_edition_invalid")
+        if request.template_version and template.version != request.template_version:
+            reasons.append("template_version_mismatch")
+    sub = subscription
+    if sub is None:
+        reasons.append("subscription_missing")
+    else:
+        if sub.product_line != PRODUCT_LINE_HELPERS_CLOUD:
+            reasons.append("subscription_wrong_product_line")
+        s_status = (sub.status or "").strip().lower()
+        if s_status not in {"demo_trial", "demo_active"}:
+            reasons.append("subscription_ineligible")
+        if sub.suspended_at is not None or sub.terminated_at is not None:
+            reasons.append("subscription_inactive")
+        sub_lane = (getattr(sub, "lane", "") or "").strip().lower()
+        if sub_lane and sub_lane != CLOUD_LANE_DEMO:
+            reasons.append("subscription_lane_invalid")
+        sub_ok = (getattr(sub, "order_kind", "") or "").strip().lower()
+        if sub_ok and sub_ok != CLOUD_ORDER_KIND_DEMO:
+            reasons.append("subscription_order_kind_invalid")
+    pl = plan
+    if pl is None and sub is not None:
+        pl = getattr(sub, "plan", None)
+    if pl is None:
+        reasons.append("plan_missing")
+    else:
+        if not pl.active:
+            reasons.append("plan_inactive")
+    return reasons
+
+
+def is_demo_request_eligible_for_demo_clone(
+    request: CloudProvisioningRequest,
+    *,
+    subscription: CloudSubscription | None = None,
+    plan: CloudPlan | None = None,
+    template: CloudTemplate | None = None,
+) -> bool:
+    """Fail-closed gate for demo-clone provisioning."""
+    return not demo_request_eligibility_reasons(
+        request,
+        subscription=subscription,
+        plan=plan,
+        template=template,
     )
 
 
@@ -631,6 +736,131 @@ def claim_next_demo_cloud_job(db: Session, worker_id: str) -> CloudProvisioningR
             .order_by(CloudProvisioningRequest.id.desc())
             .limit(1)
         )
+        return job
+    return None
+
+
+def claim_next_demo_clone_job(db: Session, worker_id: str) -> CloudProvisioningRequest | None:
+    """Atomic claim for demo-clone provisioning queue only (adapter=demo_clone).
+
+    Never claims real provisioning requests. Fail-closed on real adapters.
+    Evaluates demo-clone eligibility inside the claim transaction to skip
+    ineligible, terminal, already-claimed, and malformed rows.
+    """
+    if not worker_id or not worker_id.strip():
+        raise CloudProvisioningError("worker_id required", "invalid_worker")
+    from sqlalchemy import update
+
+    max_passes = 32
+    for _ in range(max_passes):
+        now = datetime.now(timezone.utc)
+        subquery = (
+            select(CloudProvisioningRequest.id)
+            .where(CloudProvisioningRequest.status == CLOUD_PROVISION_QUEUED)
+            .where(CloudProvisioningRequest.product_line == PRODUCT_LINE_HELPERS_CLOUD)
+            .where(CloudProvisioningRequest.adapter == CLOUD_ADAPTER_DEMO_CLONE)
+            .where(CloudProvisioningRequest.template_id.is_not(None))
+            .where(
+                (CloudProvisioningRequest.next_attempt_at == None)
+                | (CloudProvisioningRequest.next_attempt_at <= now)
+            )
+            .order_by(CloudProvisioningRequest.id)
+            .limit(1)
+            .scalar_subquery()
+        )
+        try:
+            result = db.execute(
+                update(CloudProvisioningRequest)
+                .where(CloudProvisioningRequest.id == subquery)
+                .where(CloudProvisioningRequest.status == CLOUD_PROVISION_QUEUED)
+                .values(
+                    status="provisioning",
+                    claimed_by=worker_id,
+                    started_at=now,
+                    lease_expires_at=now + timedelta(minutes=5),
+                    attempt_count=CloudProvisioningRequest.attempt_count + 1,
+                    current_step="provisioning",
+                )
+            )
+            db.commit()
+        except OperationalError:
+            db.rollback()
+            time.sleep(0.01)
+            continue
+
+        if result.rowcount == 0:
+            return None
+
+        job = db.scalar(
+            select(CloudProvisioningRequest)
+            .where(CloudProvisioningRequest.claimed_by == worker_id)
+            .where(CloudProvisioningRequest.status == "provisioning")
+            .where(CloudProvisioningRequest.started_at == now)
+            .order_by(CloudProvisioningRequest.id.desc())
+            .limit(1)
+        )
+        if job is None:
+            return None
+
+        # Re-evaluate eligibility inside the transaction (fail-closed).
+        reasons: list[str] = []
+        adapter = (job.adapter or "").strip().lower()
+        if adapter != CLOUD_ADAPTER_DEMO_CLONE:
+            reasons.append("adapter_not_demo_clone")
+        lane = (getattr(job, "lane", "") or "").strip().lower()
+        if lane != CLOUD_LANE_DEMO:
+            reasons.append("lane_not_demo")
+        order_kind = (getattr(job, "order_kind", "") or "").strip().lower()
+        if order_kind != CLOUD_ORDER_KIND_DEMO:
+            reasons.append("order_kind_not_demo")
+
+        sub, plan, template = _load_eligibility_context(db, job)
+        if job.template_id is None:
+            reasons.append("template_missing")
+        elif template is None:
+            reasons.append("template_unresolved")
+        elif (template.template_kind or "") != CLOUD_DEMO_TEMPLATE_KIND:
+            reasons.append("template_kind_invalid")
+        elif not bool(getattr(template, "active", False)):
+            reasons.append("template_inactive")
+        elif (getattr(template, "readiness_state", "") or "") not in CLOUD_TEMPLATE_READINESS_SELECTABLE:
+            reasons.append("template_not_prepared")
+        elif not (getattr(template, "postgres_database_name", "") or "").strip():
+            reasons.append("template_db_missing")
+        elif not (getattr(template, "catalog_code", "") or "").strip():
+            reasons.append("template_catalog_code_missing")
+        elif (getattr(template, "odoo_version_code", "") or "") != "19.0":
+            reasons.append("template_version_invalid")
+        elif (getattr(template, "edition", "") or "").strip().lower() != "community":
+            reasons.append("template_edition_invalid")
+
+        if sub is None:
+            reasons.append("subscription_missing")
+        else:
+            s_status = (sub.status or "").strip().lower()
+            if s_status not in {"demo_trial", "demo_active"}:
+                reasons.append("subscription_ineligible")
+            elif sub.suspended_at is not None or sub.terminated_at is not None:
+                reasons.append("subscription_inactive")
+
+        if plan is None:
+            reasons.append("plan_missing")
+        elif not plan.active:
+            reasons.append("plan_inactive")
+
+        if reasons:
+            job.status = CLOUD_PROVISION_QUEUED
+            job.claimed_by = None
+            job.started_at = None
+            job.lease_expires_at = None
+            job.current_step = "queued"
+            job.attempt_count = max(0, int(job.attempt_count or 1) - 1)
+            job.last_error_code = "ineligible_for_demo_clone_provisioning"
+            job.last_error_message = ",".join(reasons)
+            job.next_attempt_at = now + timedelta(days=3650)
+            db.commit()
+            continue
+
         return job
     return None
 

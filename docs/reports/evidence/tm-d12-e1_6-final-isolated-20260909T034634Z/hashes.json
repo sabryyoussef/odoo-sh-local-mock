@@ -1,0 +1,21 @@
+{
+  "diagnostics.json": "c20265d0adefd3b4bbfd3c9c69aa9dc30ba75326e0f48bed67a79f06dc5541b8",
+  "live-before.json": "79a184d3f012c96b548b36de3aa1cfee7678217a72dfdbe369476eb072d6969f",
+  "01b-odoo-login-page-source.png": "6ce1654c5b0e41b985eb495410474fc793a7adc7aa8ecef2fb4b35cf7d70e417",
+  "odoo-conf-sanitized.txt": "588ef6a7337055e35917cf09301d394fc21b4984f29cd040be7a79f13a1a0b59",
+  "live-after.json": "82b7fdf86fedc19f22c5c2b36bec479482a1fe6c9ea70af4465f3bc5cca1cfb9",
+  "cleanup-proof.json": "4d7196bada1b6930d5bb9a9ed7939d10a05ae23db60911d59311f7a8bd9fe70e",
+  "browser-page-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "programmatic-access-proof.json": "6c1cb2101e8d9ce347cc9d7c634bf5572d8bf1816109b0eef76038e4380946fa",
+  "01-odoo-login.png": "6ce1654c5b0e41b985eb495410474fc793a7adc7aa8ecef2fb4b35cf7d70e417",
+  "04-odoo-settings-denied.png": "6ce1654c5b0e41b985eb495410474fc793a7adc7aa8ecef2fb4b35cf7d70e417",
+  "live-isolation-gate.json": "afe5f35495550a4eab1f05c206596d153c419f77124e0ba7b6da67ef09690fa5",
+  "02-odoo-web-authenticated.png": "6ce1654c5b0e41b985eb495410474fc793a7adc7aa8ecef2fb4b35cf7d70e417",
+  "03-odoo-user-identity.png": "6ce1654c5b0e41b985eb495410474fc793a7adc7aa8ecef2fb4b35cf7d70e417",
+  "error.txt": "e3d0f99269fe914618319cd1626c2dca70a1e2776cb5e256d73cccba9cad5867",
+  "disposable-mapping.json": "e596abc772751da82647ab51b7bf6841b8a0bdb4206dd76e7f825d977508ea75",
+  "final-diagnostics.json": "19fbee6284429944ee0877d39a38b829ca194b8587f513de61e9b0d29fef5528",
+  "odoo-container-logs.txt": "0df208e6dde33d70cb31749234fcef68adeb5caf04a86a1ece7bfe09e2a37624",
+  "browser-console.log": "e2ea63f7fc7d81837671f3f98148f608b7dc69896f10eb0c089fa6505f74073d",
+  "browser-failed-requests.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

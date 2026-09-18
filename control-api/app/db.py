@@ -13,16 +13,20 @@ class Base(DeclarativeBase):
 
 
 settings = get_settings()
-connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+_is_sqlite = settings.database_url.startswith("sqlite")
+connect_args = {"check_same_thread": False, "timeout": 30} if _is_sqlite else {}
 engine = create_engine(settings.database_url, connect_args=connect_args)
 
 
 @event.listens_for(engine, "connect")
 def _sqlite_fk(dbapi_connection, connection_record) -> None:  # noqa: ARG001
-    if settings.database_url.startswith("sqlite"):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
+    if not _is_sqlite:
+        return
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA busy_timeout=30000")
+    cursor.close()
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
@@ -56,3 +60,6 @@ def init_db() -> None:
         from app.services.cloud_catalog_service import seed_helpers_cloud
 
         seed_helpers_cloud(db)
+        from app.services.helper_compute.store import seed_helper_compute
+
+        seed_helper_compute(db)

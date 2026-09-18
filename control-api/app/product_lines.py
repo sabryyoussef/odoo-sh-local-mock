@@ -25,6 +25,7 @@ PRODUCT_LINE_LABELS = {
 
 AUTH_PROVIDER_GITHUB = "github"
 AUTH_PROVIDER_EMAIL = "email_password"
+AUTH_PROVIDER_GOOGLE = "google"
 
 CLOUD_PROVISION_DRAFT = "draft"
 CLOUD_PROVISION_AWAITING_CHECKOUT = "awaiting_checkout"
@@ -192,14 +193,34 @@ CLOUD_PROVISION_LEGAL_TRANSITIONS: dict[str, frozenset[str]] = {
 
 # Adapter and template contracts
 CLOUD_ADAPTER_DEMO = "demo"
+CLOUD_ADAPTER_DEMO_CLONE = "demo_clone"
 CLOUD_ADAPTER_LOCAL_DOCKER = "local_docker"
 CLOUD_ADAPTER_KUBERNETES = "kubernetes"
-CLOUD_ADAPTERS = (CLOUD_ADAPTER_DEMO, CLOUD_ADAPTER_LOCAL_DOCKER, CLOUD_ADAPTER_KUBERNETES)
+CLOUD_ADAPTERS = (CLOUD_ADAPTER_DEMO, CLOUD_ADAPTER_DEMO_CLONE, CLOUD_ADAPTER_LOCAL_DOCKER, CLOUD_ADAPTER_KUBERNETES)
+
+# Lane and Order Kind contracts
+CLOUD_LANE_DEMO = "demo"
+CLOUD_LANE_REAL = "real"
+CLOUD_LANES = (CLOUD_LANE_DEMO, CLOUD_LANE_REAL)
+
+CLOUD_ORDER_KIND_DEMO = "demo_checkout"
+CLOUD_ORDER_KIND_REAL = "real_subscription"
+CLOUD_ORDER_KINDS = (CLOUD_ORDER_KIND_DEMO, CLOUD_ORDER_KIND_REAL)
+
+# Policy constants (SABRY-01)
+CLOUD_DEMO_TRIAL_DAYS = 7
+CLOUD_DEMO_GRACE_DAYS = 3
+CLOUD_DEMO_RETENTION_DAYS = 30
+CLOUD_DEMO_AUTO_DESTROY = False
 
 CLOUD_TEMPLATE_KIND = "cloud_base"
+CLOUD_DEMO_TEMPLATE_KIND = "demo_template"
 CLOUD_TEMPLATE_HEALTHY = "healthy"
 CLOUD_TEMPLATE_UNHEALTHY = "unhealthy"
 CLOUD_TEMPLATE_INACTIVE = "inactive"
+# CloudTemplate.status and demo catalog readiness share canonical `draft` (fail-closed).
+CLOUD_TEMPLATE_READINESS_DRAFT = "draft"
+CLOUD_TEMPLATE_READINESS_SELECTABLE = frozenset({"prepared", "validated", "clonable"})
 
 # Eligibility and lifecycle
 CLOUD_TRIAL_GRACE_DAYS_DEFAULT = 7
@@ -283,17 +304,33 @@ CLOUD_ALLOWED_EXACT = frozenset(
     {
         "/cloud",
         "/cloud/pricing",
+        "/cloud/build",
+        "/cloud/build/resources",
+        "/cloud/build/review",
+        "/cloud/demo",
         "/cloud/register",
         "/cloud/login",
         "/cloud/setup",
         "/cloud/setup/confirm",
+        "/cloud/demo/confirm",
         "/cloud/instances",
         "/cloud/checkout/success",
+        "/cloud/ready-solutions",
+        "/solutions",
+        "/catalog",
     }
 )
 CLOUD_ALLOWED_PREFIXES = (
+    "/cloud/build",
+    "/cloud/demo",
     "/cloud/instances/",
     "/cloud/subscriptions/",
     "/cloud/provisioning/",
+    "/cloud/demo/status/",
+    "/cloud/demo/open/",
     "/cloud/checkout/success",
+    "/cloud/ready-solutions/",
+    "/solutions/",
+    "/catalog/",
+    "/portal/",
 )

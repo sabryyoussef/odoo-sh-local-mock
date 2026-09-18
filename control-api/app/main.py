@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import BackgroundTasks, Depends, FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -9,6 +10,8 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
+from app.middleware.head_as_get import HeadAsGetMiddleware
+from app.middleware.tenant_routing import TenantRoutingMiddleware
 
 from app.auth.crypto import reveal_token
 from app.auth.session import (
@@ -22,8 +25,8 @@ from app.auth.session import (
     validate_csrf,
 )
 from app.branding import brand_project_name, get_brand
-from app.i18n import apply_locale_cookie, redirect_with_locale, template_i18n
-from app.config import get_settings
+from app.i18n import apply_locale_cookie, redirect_with_locale, resolve_locale, template_i18n
+from app.config import get_settings, session_cookie_https_only
 from app.db import SessionLocal, get_db, init_db
 from app.dependencies import (
     github_authorize_url,
@@ -35,11 +38,12 @@ from app.dependencies import (
 )
 from app.api.backups import router as backups_router
 from app.api.cloud import router as cloud_router
+from app.api.helper_compute import router as helper_compute_router
 from app.api.operator_platform import router as operator_platform_router
 from app.api.platform_deploy import router as platform_deploy_router
 from app.api.catalog import router as catalog_router
 from app.api.portal import router as portal_router
-from app.api.provisioning import router as provisioning_router
+from app.api.provisioning import proxmox_router, router as provisioning_router
 from app.dummy_data import CURRENT_USER
 from app.models import Branch
 from app.services.branch_service import sync_project_branches
@@ -74,6 +78,7 @@ from app.services.catalog_service import (
     list_all_solutions,
     list_customer_subscriptions,
     list_public_solutions,
+    list_public_solutions_with_profiles,
     list_template_databases,
     list_tenants,
 )
@@ -85,6 +90,8 @@ from app.services.customer_serialization import (
 )
 from app.services.portal_service import (
     PortalError,
+    demo_resume_path,
+    existing_open_subscription,
     get_owned_provisioning_job,
     get_owned_subscription,
     get_owned_tenant,
@@ -125,17 +132,22 @@ app.add_middleware(
     secret_key=settings.session_secret,
     session_cookie="mosh_session",
     same_site="lax",
-    https_only=False,
+    https_only=session_cookie_https_only(),
 )
+app.add_middleware(TenantRoutingMiddleware)
+# Outermost: rewrite HEAD before route matching (FastAPI GET routes omit HEAD).
+app.add_middleware(HeadAsGetMiddleware)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.include_router(catalog_router)
 app.include_router(provisioning_router)
+app.include_router(proxmox_router)
 app.include_router(portal_router)
 app.include_router(backups_router)
 app.include_router(operator_platform_router)
 app.include_router(platform_deploy_router)
 app.include_router(cloud_router)
+app.include_router(helper_compute_router)
 
 
 @app.on_event("startup")
@@ -221,10 +233,33 @@ async def github_webhook(request: Request, db: Session = Depends(get_db)):
 
 
 def _client_is_local(request: Request) -> bool:
+    """True for docker/host-local callers (internal APIs / build execute)."""
     host = (request.client.host if request.client else "") or ""
     return host in {"127.0.0.1", "::1", "localhost"} or host.startswith("172.") or host.startswith(
         "192.168."
     )
+
+
+def _portal_request_is_local(request: Request) -> bool:
+    """True only when the browser itself is local — not Tailscale/Cloudflare.
+
+    Hairpin/nginx makes remote users appear as 172.x/192.168.x client IPs.
+    Prefer the Host header so portal launch links never show 127.0.0.1 remotely.
+    """
+    host_hdr = (request.headers.get("host") or "").lower().split(":")[0]
+    if host_hdr and host_hdr not in {"127.0.0.1", "::1", "localhost"}:
+        if (
+            host_hdr.endswith(".ts.net")
+            or host_hdr.endswith(".drpaws.ai")
+            or "." in host_hdr
+        ):
+            return False
+    return _client_is_local(request)
+
+
+def _portal_flags(request: Request) -> tuple[bool, bool]:
+    s = get_settings()
+    return _portal_request_is_local(request), s.tenant_allow_localhost_launch
 
 
 @app.post("/internal/builds/{build_id}/execute")
@@ -261,19 +296,57 @@ def landing(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
 
 
 @app.get("/login", response_class=HTMLResponse)
-def login_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+def login_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    next: str = "",
+) -> HTMLResponse:
+    from urllib.parse import urlencode
+
+    from app.services.cloud_auth_service import is_cloud_customer
+    from app.services.cloud_setup_service import safe_cloud_redirect
+
     user = require_user_or_redirect(request, db)
-    if user:
-        if user.password_hash and not user.github_id:
-            return RedirectResponse("/cloud/instances", status_code=302)
+    raw_next = (next or "").strip()
+    approved_next = safe_cloud_redirect(raw_next, default="") or None
+    lang = (request.query_params.get("lang") or "").strip().lower()
+    if lang not in {"ar", "en"}:
+        lang = ""
+    # Reject open-redirect bait in the URL itself so language toggles cannot echo it.
+    if raw_next and not approved_next:
+        clean: dict[str, str] = {}
+        if lang:
+            clean["lang"] = lang
+        dest = "/login" if not clean else f"/login?{urlencode(clean)}"
+        return RedirectResponse(dest, status_code=302)
+    if user and user.github_id:
         return RedirectResponse("/projects", status_code=302)
+    # Cloud customers returning from HMS/catalog CTAs must resume `next`, not sit on
+    # the GitHub login chooser or fall through to /cloud/instances.
+    if user and is_cloud_customer(user) and approved_next:
+        return RedirectResponse(approved_next, status_code=302)
+    cloud_params: dict[str, str] = {}
+    if approved_next:
+        cloud_params["next"] = approved_next
+    if lang:
+        cloud_params["lang"] = lang
+    cloud_login_href = "/cloud/login" if not cloud_params else f"/cloud/login?{urlencode(cloud_params)}"
+    cloud_register_href = (
+        "/cloud/register" if not cloud_params else f"/cloud/register?{urlencode(cloud_params)}"
+    )
+    # Cloud-only sessions used to bounce here to /cloud/instances, which blocked
+    # switching to GitHub operator/developer sign-in.
     return _render(
         request,
         "login.html",
         {
             "page_title": "Sign in",
             "oauth_ready": oauth_configured(),
-            "user": user_to_dict(None),
+            "user": user_to_dict(user) if user else user_to_dict(None),
+            "cloud_session": bool(user and not user.github_id),
+            "cloud_login_href": cloud_login_href,
+            "cloud_register_href": cloud_register_href,
+            "next_url": approved_next or "",
         },
     )
 
@@ -323,6 +396,10 @@ def github_oauth_callback(
     except Exception:
         set_flash(request, "GitHub login failed. Please try again.", "error")
         return RedirectResponse("/login", status_code=302)
+    from app.dependencies import is_operator
+
+    if is_operator(user):
+        return RedirectResponse("/operator/compute", status_code=302)
     return RedirectResponse("/pricing", status_code=302)
 
 
@@ -993,14 +1070,31 @@ def audit_logs_page(request: Request, db: Session = Depends(get_db)) -> HTMLResp
 
 @app.get("/catalog", response_class=HTMLResponse)
 def public_catalog(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    solutions = list_public_solutions(db)
+    from app.services.solution_explorer_service import build_catalog_explorer
+
+    solutions = list_public_solutions_with_profiles(db)
+    user = require_user_or_redirect(request, db)
+    user_view = user_to_dict(user)
+    locale = resolve_locale(request)
+    selected_param = (request.query_params.get("solution") or "").strip().lower()
+    explorer = build_catalog_explorer(
+        db,
+        solutions,
+        locale=locale,
+        user=user,
+        user_view=user_view,
+        selected_code=selected_param or None,
+    )
     return _render(
         request,
         "catalog.html",
         {
             "page_title": "Solutions",
             "solutions": solutions,
-            "user": user_to_dict(require_user_or_redirect(request, db)),
+            "explorer_solutions": explorer["solutions"],
+            "selected_solution": explorer["selected"],
+            "selected_code": explorer["selected_code"],
+            "user": user_view,
         },
     )
 
@@ -1262,11 +1356,6 @@ def operator_backups(request: Request, db: Session = Depends(get_db)) -> HTMLRes
     )
 
 
-def _portal_flags(request: Request) -> tuple[bool, bool]:
-    s = get_settings()
-    return _client_is_local(request), s.tenant_allow_localhost_launch
-
-
 def _portal_sub_views(request: Request, rows):
     local, allow_local = _portal_flags(request)
     return [
@@ -1293,16 +1382,42 @@ def solutions_detail_redirect(solution_code: str, request: Request) -> RedirectR
 def catalog_solution_detail(
     solution_code: str, request: Request, db: Session = Depends(get_db)
 ) -> HTMLResponse:
-    solution = get_solution_by_code(db, solution_code)
+    from urllib.parse import urlencode
+
+    from app.services.catalog_service import get_solution_by_code_with_profiles
+    from app.services.ready_solution_profile_service import list_active_profiles_for_solution
+    from app.services.saas_serialization import artifact_to_dict, deployment_profile_to_dict
+
+    solution = get_solution_by_code_with_profiles(db, solution_code)
     if not solution or solution.status != "active":
         return _not_found(request, "Solution not found", "This solution is not available.")
+    profiles = list_active_profiles_for_solution(db, solution.id)
+    artifacts = [artifact_to_dict(a) for a in (solution.artifacts or [])]
+    user = require_user_or_redirect(request, db)
+    user_view = user_to_dict(user)
+    # Preserve HMS/demo continuation through Cloud login (path + optional lang).
+    next_path = f"/solutions/{solution.code}"
+    lang = (request.query_params.get("lang") or "").strip().lower()
+    if lang in {"ar", "en"}:
+        next_path = f"{next_path}?lang={lang}"
+    signin_params = {"next": next_path}
+    if lang in {"ar", "en"}:
+        signin_params["lang"] = lang
+    signin_url = f"/login?{urlencode(signin_params)}"
+    existing_demo_href = None
+    if user:
+        existing_demo_href = demo_resume_path(db, user.id, solution.id)
     return _render(
         request,
         "catalog_solution.html",
         {
             "page_title": solution.name,
             "solution": solution,
-            "user": user_to_dict(require_user_or_redirect(request, db)),
+            "deployment_profiles": [deployment_profile_to_dict(p) for p in profiles],
+            "artifacts": artifacts,
+            "user": user_view,
+            "signin_url": signin_url,
+            "existing_demo_href": existing_demo_href,
         },
     )
 
@@ -1468,18 +1583,42 @@ def portal_provisioning_status(
 def portal_trial_confirm(
     request: Request,
     solution_id: int,
-    package_id: int,
+    package_id: int | None = None,
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
+    solution = get_solution_by_id(db, solution_id)
+    if not solution:
+        return _not_found(request, "Not found", "Solution or package not found.")
+
+    # Recover when login/register stripped package_id from an unencoded next= URL.
+    if package_id is None:
+        from app.services.solution_explorer_service import _demo_package
+
+        demo_pkg = _demo_package(solution)
+        if not demo_pkg:
+            set_flash(request, "Select a package to start the trial.", "error")
+            return RedirectResponse(f"/catalog?solution={solution.code}", status_code=302)
+        recover = urlencode({"solution_id": solution_id, "package_id": demo_pkg.id})
+        return RedirectResponse(f"/portal/trial/confirm?{recover}", status_code=302)
+
     user = require_user_or_redirect(request, db)
     if not user:
+        next_path = f"/portal/trial/confirm?{urlencode({'solution_id': solution_id, 'package_id': package_id})}"
         return RedirectResponse(
-            f"/login?next=/portal/trial/confirm?solution_id={solution_id}&package_id={package_id}",
+            f"/login?{urlencode({'next': next_path})}",
             status_code=302,
         )
-    solution = get_solution_by_id(db, solution_id)
+    # Already have a demo for this solution → resume instead of circling confirm→start.
+    resume = demo_resume_path(db, user.id, solution_id)
+    if resume:
+        set_flash(
+            request,
+            "You already have an active demo for this solution. Opening it.",
+            "success",
+        )
+        return RedirectResponse(resume, status_code=302)
     package = get_package_by_id(db, package_id)
-    if not solution or not package or package.solution_id != solution.id:
+    if not package or package.solution_id != solution.id:
         return _not_found(request, "Not found", "Solution or package not found.")
     import secrets
 
@@ -1519,6 +1658,15 @@ def portal_trial_start(
             f"/portal/trial/confirm?solution_id={solution_id}&package_id={package_id}",
             status_code=302,
         )
+    # Fail closed on duplicate: send user to their existing demo, not back to catalog.
+    resume = demo_resume_path(db, user.id, solution_id)
+    if resume:
+        set_flash(
+            request,
+            "You already have an active demo for this solution. Opening it.",
+            "success",
+        )
+        return RedirectResponse(resume, status_code=302)
     try:
         sub, job = start_demo_trial(
             db,
@@ -1531,8 +1679,12 @@ def portal_trial_start(
             idempotency_key=idempotency_key,
         )
     except PortalError as exc:
+        if exc.code == "duplicate_subscription":
+            resume = demo_resume_path(db, user.id, solution_id) or "/portal"
+            set_flash(request, exc.message, "error")
+            return RedirectResponse(resume, status_code=302)
         set_flash(request, exc.message, "error")
-        return RedirectResponse(f"/catalog", status_code=302)
+        return RedirectResponse("/catalog", status_code=302)
     return RedirectResponse(f"/portal/provisioning/{job.id}", status_code=302)
 
 

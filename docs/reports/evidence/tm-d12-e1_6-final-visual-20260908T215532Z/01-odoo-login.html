@@ -1,0 +1,96 @@
+<!DOCTYPE html><html style="height: 100%;" dir="ltr"><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Odoo</title>
+        <link type="image/x-icon" rel="shortcut icon" href="/web/static/img/favicon.ico">
+        <link rel="preload" href="/web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0" as="font" crossorigin="">
+        <link type="text/css" rel="stylesheet" href="/web/assets/f93dedb/web.assets_frontend.min.css">
+        <script id="web.layout.odooscript" type="text/javascript">
+            var odoo = {
+                csrf_token: "c6d44d2f766499ae11ef73dcb50c78dfacd98f41o1820440562",
+                debug: "",
+            };
+        </script>
+        <script type="text/javascript">
+            odoo.__session_info__ = {"is_admin": false, "is_system": false, "is_public": true, "is_internal_user": false, "is_website_user": false, "uid": null, "registry_hash": "38e6483bae621f7acc0929ecd03d4f67d0138fa89c187a2815914fba5acd3b64", "is_frontend": true, "profile_session": null, "profile_collectors": null, "profile_params": null, "show_effect": true, "currencies": {"1": {"name": "USD", "symbol": "$", "position": "before", "digits": [69, 2]}}, "quick_login": true, "bundle_params": {"lang": "en_US"}, "test_mode": false, "websocket_worker_version": "19.0-2", "translationURL": "/website/translations"};
+            if (!/(^|;\s)tz=/.test(document.cookie)) {
+                const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.cookie = `tz=${userTZ}; path=/`;
+            }
+        </script>
+        <script type="text/javascript" defer="defer" src="/web/assets/10d8e96/web.assets_frontend_minimal.min.js" onerror="__odooAssetError=1"></script>
+        <script type="text/javascript" onerror="__odooAssetError=1" defer="defer" src="/web/assets/1619b9d/web.assets_frontend_lazy.min.js"></script>
+        
+    </head>
+    <body class="bg-100" is-ready="true">
+        <div id="wrapwrap" class="  ">
+            <a class="o_skip_to_content btn btn-primary rounded-0 visually-hidden-focusable position-absolute start-0" href="#wrap">Skip to Content</a>
+                <main>
+                    
+
+            <div class="container py-5">
+                <div style="max-width: 300px;" class="card border-0 mx-auto bg-100  o_database_list">
+                    <div class="card-body">
+                        <div class="text-center pb-3 border-bottom mb-4">
+                            <img alt="Logo" style="max-height:120px; max-width: 100%; width:auto" src="/web/binary/company_logo?dbname=REDACTED_DB">
+                        </div>
+                        
+            <div class="oe_structure" id="oe_structure_login_top"></div>
+            <owl-component name="web.user_switch"><owl-root contenteditable="false" data-oe-protected="true" style="display: contents;"></owl-root></owl-component>
+            <form role="form" method="post" onsubmit="this.action = '/web/login' + location.hash" data-captcha="login" class="oe_login_form" action="/web/login">
+                <input type="hidden" name="csrf_token" value="c6d44d2f766499ae11ef73dcb50c78dfacd98f41o1820440562" style="">
+
+
+                <div class="mb-3 field-login">
+                    <label for="login" class="form-label d-flex justify-content-between">Email</label>
+                    <input type="text" placeholder="Enter your email" name="login" id="login" class="form-control" required="required" autocapitalize="off" autocomplete="username" style="">
+                </div>
+
+                <div class="o_caps_lock_warning">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <label for="password" class="form-label">Password</label>
+                <a class="btn btn-link btn-sm" tabindex="1" href="/web/reset_password?db=REDACTED_DB">Reset Password</a>
+                    </div>
+                    <div class="input-group mb-1">
+                        <input type="password" placeholder="Enter your password" name="password" id="password" class="form-control" required="required" autocomplete="current-password" maxlength="4096" style="">
+                        <button type="button" class="btn btn-sm border border-start-0 o_show_password">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </div>
+                <span class="o_caps_lock_warning_text text-danger d-none"> Caps Lock is on! </span></div>
+
+
+                <div class="oe_login_buttons text-center d-grid mb-1 pt-3">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                <a class="btn btn-link btn-sm mt-2" href="/web/signup?db=REDACTED_DB">Don't have an account?</a>
+        
+            
+        <div class="o_login_auth">
+            <em class="d-block my-3 small text-center text-muted">- or -</em>
+            <div class="list-group">
+                <a class="passkey_login_link list-group-item list-group-item-action d-flex align-items-center gap-2 py-2" href="#">
+                    <i role="presentation" class="fa fa-qrcode"></i>
+                    <span class="mx-auto">Use a Passkey</span>
+                </a>
+            </div>
+        </div>
+                </div>
+
+                <input type="hidden" name="type" value="password" style="">
+            <input type="hidden" name="webauthn_response" style="">
+                <input type="hidden" name="redirect" style="">
+            </form>
+            <div class="oe_structure" id="oe_structure_login_bottom"></div>
+        
+                        <div class="text-center small mt-4 pt-3 border-top">
+                            <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>Odoo</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+                </main>
+            </div>
+        
+<div class="o-main-components-container"><div class="o-overlay-container"></div><div></div><div class="editor_notification_manager o_notification_manager o_upload_progress_toast"></div><div class="o_notification_manager"></div></div></body></html>

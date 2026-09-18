@@ -10,7 +10,7 @@ def test_english_homepage_is_ltr(client):
     assert resp.status_code == 200
     html = resp.text
     assert '<html lang="en" dir="ltr">' in html
-    assert "Your whole company, one ERP." in html
+    assert "Choose the right ERP path for your needs" in html
     assert "Ready Solutions" in html
     assert 'href="?lang=ar"' in html or 'href="/?lang=ar"' in html
 
@@ -20,10 +20,12 @@ def test_arabic_homepage_is_rtl_and_translated(client):
     assert resp.status_code == 200
     html = resp.text
     assert '<html lang="ar" dir="rtl">' in html
-    assert "شركتك كلها في نظام ERP واحد." in html
+    assert "اختر مسار ERP المناسب لاحتياجك" in html
     assert "الحلول الجاهزة" in html
     assert "دخول السحابة" in html
     assert "دخول المطوّرين" in html
+    assert "جرّب نسخة تجريبية" in html
+    assert 'href="/cloud/demo?lang=ar"' in html
     cookie = resp.headers.get("set-cookie", "")
     assert "lang=ar" in cookie
 
@@ -33,8 +35,8 @@ def test_language_toggle_en_to_ar_and_back(client):
     assert '<html lang="ar" dir="rtl">' in ar.text
     en = client.get("/?lang=en")
     assert '<html lang="en" dir="ltr">' in en.text
-    assert "Your whole company, one ERP." in en.text
-    assert "شركتك كلها في نظام ERP واحد." not in en.text
+    assert "Choose the right ERP path for your needs" in en.text
+    assert "اختر مسار ERP المناسب لاحتياجك" not in en.text
 
 
 def test_arabic_survives_refresh_without_query(client):
@@ -43,7 +45,7 @@ def test_arabic_survives_refresh_without_query(client):
     refreshed = client.get("/")
     assert refreshed.status_code == 200
     assert '<html lang="ar" dir="rtl">' in refreshed.text
-    assert "شركتك كلها في نظام ERP واحد." in refreshed.text
+    assert "اختر مسار ERP المناسب لاحتياجك" in refreshed.text
     assert "الحلول الجاهزة" in refreshed.text
 
 
@@ -63,6 +65,8 @@ def test_arabic_public_links_carry_lang(client):
     html = client.get("/?lang=ar").text
     assert 'href="/solutions?lang=ar"' in html
     assert 'href="/cloud?lang=ar"' in html
+    assert 'href="/cloud/demo?lang=ar"' in html
+    assert 'href="/cloud/build?lang=ar"' in html
     assert 'href="/platform?lang=ar"' in html
     assert 'href="/?lang=en"' in html or 'href="/?lang=en' in html
 

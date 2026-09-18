@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8400/web/login?db=mosh_demo_2_d4735e3a",
+  "readyState": "complete",
+  "hasOdoo": false,
+  "hasSession": false,
+  "sessionUid": null,
+  "bodyTextLen": 177,
+  "bodyText": "Internal Server Error\n\nThe server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.",
+  "visibleCount": 2,
+  "hasWebClient": false,
+  "hasNavbar": false,
+  "hasApp": false,
+  "htmlLen": 283
+}

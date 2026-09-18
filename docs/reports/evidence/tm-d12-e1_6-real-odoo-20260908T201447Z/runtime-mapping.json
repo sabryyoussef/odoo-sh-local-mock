@@ -1,0 +1,17 @@
+{
+  "portal_demo_instance": {
+    "request_id": 2,
+    "tenant_code": "demo_clone_2_d4735e3a",
+    "user_id": 2
+  },
+  "launch_url_sanitized": "http://100.76.217.35:8399/web/login?db=REDACTED_DB",
+  "disposable_odoo_runtime": {
+    "container_name": "tm-d12-real-odoo-tm-d12-real-20260908t201447z-21ec4f-f2d4",
+    "port": 8399,
+    "host": "127.0.0.1"
+  },
+  "cloned_db_sanitized": "REDACTED_DB",
+  "restricted_user": "demo_demo_clone_2_d4735e3",
+  "prefix": "tm_d12_real_20260908t201447z_21ec4f",
+  "timestamp": "20260908T201447Z"
+}

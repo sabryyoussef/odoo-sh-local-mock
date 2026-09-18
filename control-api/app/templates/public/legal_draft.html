@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default('Legal Draft') }}{% endblock %}
+{% block body_class %}body--landing{% endblock %}
+{% block shell %}
+<div class="legal-draft-page">
+  <main class="legal-draft-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">Helpers ERP Cloud</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ page_title }}</span>
+    </nav>
+
+    <article class="flow-card legal-draft-card">
+      <p class="legal-draft-tag">{{ t('legal.uat_demo_draft') }}</p>
+      <h1>{{ page_title }}</h1>
+      <p class="legal-draft-note">{{ t('legal.legal_notice') }}</p>
+      <p>{{ t('legal.privacy_notice') }}</p>
+
+      {% if page_kind == 'terms' %}
+        <h2>Terms (draft)</h2>
+        <ul>
+          <li>Users create an account to save a selected plan and continue onboarding.</li>
+          <li>Registration is only for the Helpers ERP Cloud demo/UAT flow and does not create a production contract.</li>
+          <li>Account data, plan selection, and company details are stored in the application as currently implemented.</li>
+          <li>Any future production deployment requires legal review and formal approval.</li>
+        </ul>
+      {% else %}
+        <h2>Privacy Policy (draft)</h2>
+        <ul>
+          <li>The application stores account identity, email, company name, selected plan, and onboarding state.</li>
+          <li>Passwords are stored as hashed values using the project&#39;s current password service.</li>
+          <li>Google authentication is currently disabled by default and no Google tokens are retained in this implementation.</li>
+          <li>Only the data and behavior actually present in the current codebase are described here.</li>
+        </ul>
+      {% endif %}
+    </article>
+  </main>
+</div>
+{% endblock %}

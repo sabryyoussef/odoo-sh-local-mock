@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8400/odoo/action-base_setup.action_general_configuration?action=base_setup.action_general_configuration",
+  "readyState": "complete",
+  "hasOdoo": true,
+  "hasSession": false,
+  "session": null,
+  "bodyTextLen": 249,
+  "bodyText": "1\nMy Company\nAccess Error\n\nYou are not allowed to access 'Config Settings' (res.config.settings) records.\n\nThis operation is allowed for the following groups:\n\t- Role / Administrator\n\nContact your administrator to request access if necessary.\n\nClose",
+  "visibleCount": 65,
+  "hasWebClient": true,
+  "hasNavbar": true,
+  "hasUserMenu": true,
+  "htmlLen": 10938
+}

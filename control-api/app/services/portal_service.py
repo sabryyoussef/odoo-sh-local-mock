@@ -124,14 +124,47 @@ def get_owned_provisioning_job(db: Session, user_id: int, job_id: int) -> Provis
     return job
 
 
-def _existing_open_subscription(db: Session, user_id: int, solution_id: int) -> CustomerSubscription | None:
+def existing_open_subscription(db: Session, user_id: int, solution_id: int) -> CustomerSubscription | None:
     return db.scalar(
-        select(CustomerSubscription).where(
+        select(CustomerSubscription)
+        .where(
             CustomerSubscription.customer_user_id == user_id,
             CustomerSubscription.solution_id == solution_id,
             CustomerSubscription.status.in_(OPEN_SUBSCRIPTION_STATUSES),
         )
+        .options(
+            selectinload(CustomerSubscription.tenant),
+            selectinload(CustomerSubscription.provisioning_jobs),
+        )
+        .order_by(CustomerSubscription.id.desc())
     )
+
+
+def _existing_open_subscription(db: Session, user_id: int, solution_id: int) -> CustomerSubscription | None:
+    """Backward-compatible alias."""
+    return existing_open_subscription(db, user_id, solution_id)
+
+
+def demo_resume_path(db: Session, user_id: int, solution_id: int) -> str | None:
+    """
+    If the user already has an open subscription for this solution, return the
+    portal path they should open instead of starting another trial.
+    """
+    sub = existing_open_subscription(db, user_id, solution_id)
+    if not sub:
+        return None
+    tenant = db.scalar(
+        select(Tenant)
+        .where(Tenant.customer_subscription_id == sub.id)
+        .order_by(Tenant.id.desc())
+        .limit(1)
+    )
+    if tenant is not None:
+        return f"/portal/tenants/{tenant.id}"
+    job = latest_provisioning_job_for_subscription(db, sub.id)
+    if job is not None:
+        return f"/portal/provisioning/{job.id}"
+    return f"/portal/subscriptions/{sub.id}"
 
 
 def validate_trial_eligibility(db: Session, user_id: int, solution_id: int, package_id: int) -> tuple[Solution, Package]:

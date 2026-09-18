@@ -1,0 +1,10 @@
+Please correct the highlighted fields.
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 100, in <module>
+    st = _setup(db, user)
+         ^^^^^^^^^^^^^^^^
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 83, in _setup
+    save_company(db, st, {"legal_company_name": "T", "workspace_name": "T", "requested_subdomain": f"x{secrets.token_hex(4)}", "country": "Egypt", "currency": "EGP", "language": "en_US", "timezone": "Africa/Cairo", "required_users": "5", "required_storage_gb": "20"})
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/app/services/cloud_setup_service.py", line 246, in save_company
+    raise CloudSetupError("Please correct the highlighted fields.", "validation", errors)
+app.services.cloud_setup_service.CloudSetupError: Please correct the highlighted fields.

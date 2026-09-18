@@ -1,0 +1,58 @@
+{
+  "base": "http://127.0.0.1:8024",
+  "outDir": "/opt/projects/active/odoo-sh-local-mock/docs/reports/evidence/cloud-confirm-redesign/20260907T030947Z",
+  "captures": [
+    {
+      "name": "confirm-desktop-ar.png",
+      "finalUrl": "http://127.0.0.1:8024/cloud/setup/confirm?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "hasEgypt": false,
+      "hasEnUS": false
+    },
+    {
+      "name": "confirm-desktop-en.png",
+      "finalUrl": "http://127.0.0.1:8024/cloud/setup/confirm",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "hasEgypt": true,
+      "hasEnUS": false
+    },
+    {
+      "name": "confirm-mobile-ar.png",
+      "finalUrl": "http://127.0.0.1:8024/cloud/setup/confirm?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "hasEgypt": false,
+      "hasEnUS": false
+    },
+    {
+      "name": "confirm-mobile-en.png",
+      "finalUrl": "http://127.0.0.1:8024/cloud/setup/confirm",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "hasConfirmShell": 1,
+      "hasSummary": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "hasEgypt": true,
+      "hasEnUS": false
+    }
+  ]
+}

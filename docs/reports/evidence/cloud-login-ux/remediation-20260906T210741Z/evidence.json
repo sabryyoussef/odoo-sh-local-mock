@@ -1,0 +1,38 @@
+{
+  "base": "https://mock-odoo.drpaws.ai",
+  "outDir": "docs/reports/evidence/cloud-login-ux/remediation-20260906T210741Z",
+  "shots": [
+    {
+      "name": "login-desktop-ar.png",
+      "finalUrl": "https://mock-odoo.drpaws.ai/cloud/login?plan=trial&cycle=monthly&lang=ar",
+      "dir": "rtl",
+      "hasLayout": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "login-mobile-ar.png",
+      "finalUrl": "https://mock-odoo.drpaws.ai/cloud/login?plan=trial&cycle=monthly&lang=ar",
+      "dir": "rtl",
+      "hasLayout": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "login-desktop-en.png",
+      "finalUrl": "https://mock-odoo.drpaws.ai/cloud/login?plan=trial&cycle=monthly&lang=en",
+      "dir": "ltr",
+      "hasLayout": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "login-mobile-en.png",
+      "finalUrl": "https://mock-odoo.drpaws.ai/cloud/login?plan=trial&cycle=monthly&lang=en",
+      "dir": "ltr",
+      "hasLayout": 1,
+      "consoleErrors": [],
+      "horizontalScroll": false
+    }
+  ]
+}

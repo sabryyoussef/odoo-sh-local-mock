@@ -1,0 +1,16 @@
+{
+  "requested_command": "pvesh usage /nodes/pve-test/qemu/9000/clone -v",
+  "attempts": [
+    {
+      "target": "root@pve-test.home.arpa",
+      "result": "unknown_hostname_host_key_strict_check_failed",
+      "remote_command_executed": false
+    },
+    {
+      "target": "root@100.122.63.86",
+      "result": "known_IP_host_key_authenticated_connection_but_root_login_denied",
+      "remote_command_executed": false
+    }
+  ],
+  "trust_modified": false
+}

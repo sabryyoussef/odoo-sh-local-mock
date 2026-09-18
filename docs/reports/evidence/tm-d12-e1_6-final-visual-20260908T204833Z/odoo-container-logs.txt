@@ -1,0 +1,3 @@
+Usage: odoo [--addons-path=PATH,...] server [options]
+
+odoo [--addons-path=PATH,...] server: error: the config file '/mnt/runtime/odoo.conf' selected with -c/--config doesn't exist or is not readable, use -s/--save if you want to generate it

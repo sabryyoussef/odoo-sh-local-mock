@@ -1,0 +1,13 @@
+{% if google_enabled %}
+<a class="btn-hero btn-hero--secondary cloud-google-btn" href="{{ google_auth_url }}">
+  {% include "cloud/_google_icon.html" %}
+  <span>{{ t('cloud.google_continue') }}</span>
+</a>
+{% else %}
+<button type="button" class="btn-hero btn-hero--secondary cloud-google-btn is-disabled" disabled aria-describedby="google-disabled-note">
+  {% include "cloud/_google_icon.html" %}
+  <span>{{ t('cloud.google_continue') }}</span>
+</button>
+<p class="cloud-google-helper" id="google-disabled-note" role="note">{{ t('cloud.google_disabled') }}</p>
+{% endif %}
+<p class="cloud-divider"><span>{{ t('cloud.work_email_or') }}</span></p>

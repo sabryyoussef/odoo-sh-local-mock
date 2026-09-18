@@ -1,0 +1,6 @@
+
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 313, in <module>
+    assert "Odoo" in pg.content().lower()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

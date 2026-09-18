@@ -8,7 +8,7 @@ import re
 import pytest
 from sqlalchemy import select
 
-from app.models import CloudOrder, CloudProvisioningRequest, User
+from app.models import CloudOrder, CloudProvisioningRequest, ProviderIdentity, User
 from app.product_lines import (
     CLOUD_PROVISION_HEALTH_CHECKS,
     CLOUD_PROVISION_QUEUED,
@@ -18,6 +18,7 @@ from app.product_lines import (
 from app.services.cloud_auth_service import (
     CloudAuthError,
     RegisterInput,
+    link_provider_identity,
     register_cloud_customer,
     reset_rate_limit_for_tests,
 )
@@ -57,7 +58,6 @@ def _login_http(client, email: str, password: str = "SecurePass1"):
             "csrf_token": token,
             "email": email,
             "password": password,
-            "next": "/cloud/instances",
         },
         follow_redirects=False,
     )
@@ -127,16 +127,43 @@ def test_cloud_overview_and_pricing_routes(client, db):
     seed_helpers_cloud(db)
     overview = client.get("/cloud")
     assert overview.status_code == 200
-    assert "Fully managed Odoo" in overview.text or "managed Odoo" in overview.text.lower()
-    assert "View plans and start" in overview.text
+    assert "Build your company Odoo cloud with a clear monthly total" in overview.text
+    assert "Build Your Odoo Cloud" in overview.text
+    assert "How the paid service works" in overview.text
+    assert "View Plans" not in overview.text
     assert "Start Free Trial" not in overview.text
-    assert "Configure Your ERP" not in overview.text
     pricing = client.get("/cloud/pricing")
     assert pricing.status_code == 200
-    for name in ("Trial", "Starter", "Business", "Enterprise Cloud"):
+    for name in ("Starter", "Business", "Enterprise Cloud"):
         assert name in pricing.text
-    assert "Presentation Only" in pricing.text
-    assert "github" not in pricing.text.lower()
+    assert "cloud-pricing-card--trial" not in pricing.text
+    assert "Platform fee, not the full hosting total" in pricing.text
+    assert "github" not in pricing.text.split("<footer", 1)[0].lower()
+
+
+def test_cloud_register_bilingual_ux_and_google_disabled(client):
+    page = client.get("/cloud/register?plan=starter&cycle=monthly&lang=en")
+    assert page.status_code == 200
+    assert "Continue with Google" in page.text
+    assert "or continue with work email" in page.text.lower()
+    assert "Create your Helpers ERP Cloud account" in page.text
+    assert "Your selected plan" in page.text
+    import html as _html
+    assert "Next, you'll choose your ERP applications and enter your company details." in _html.unescape(page.text)
+    assert "Google authentication is currently disabled" in page.text
+
+    ar = client.get("/cloud/register?plan=starter&cycle=monthly&lang=ar")
+    assert ar.status_code == 200
+    assert "المتابعة باستخدام Google" in ar.text
+    assert "أو تابع باستخدام بريد العمل" in ar.text
+    assert "خطتك المختارة" in ar.text
+
+    terms = client.get("/terms?lang=en")
+    assert terms.status_code == 200
+    assert "UAT / Demo draft" in terms.text
+    privacy = client.get("/privacy?lang=ar")
+    assert privacy.status_code == 200
+    assert "سياسة الخصوصية" in privacy.text
 
 
 def test_registration_validation(client):
@@ -182,6 +209,155 @@ def test_registration_unique_email_and_login(client, db):
     assert again.status_code == 400
     assert "already exists" in again.text.lower() or "sign in" in again.text.lower()
 
+    client.get("/logout", follow_redirects=False)
+    login = _login_http(client, "mona@company.example")
+    assert login.headers["location"] == "/cloud/pricing"
+
+
+def test_registration_rejects_missing_csrf(client):
+    resp = client.post(
+        "/cloud/register",
+        data={
+            "full_name": "Mona Cloud",
+            "email": "csrf@company.example",
+            "password": "SecurePass1",
+            "password_confirm": "SecurePass1",
+            "terms": "1",
+        },
+        follow_redirects=False,
+    )
+    assert resp.status_code == 302
+    assert resp.headers["location"] == "/cloud/register"
+
+
+def test_pricing_register_create_account_preserves_arabic_locale(client, db):
+    seed_helpers_cloud(db)
+    pricing = client.get("/cloud/pricing?lang=ar")
+    assert pricing.status_code == 200
+    assert 'dir="rtl"' in pricing.text
+    assert "/cloud/build/resources?plan=starter" in pricing.text
+    assert "lang=ar" in pricing.text
+
+    register = client.get("/cloud/register?plan=starter&cycle=monthly&lang=ar")
+    assert register.status_code == 200
+    assert 'dir="rtl"' in register.text
+    assert 'action="/cloud/register?lang=ar"' in register.text
+    assert 'href="/terms?lang=ar"' in register.text
+    assert 'href="/privacy?lang=ar"' in register.text
+    assert 'href="/cloud/login?plan=starter&amp;cycle=monthly&amp;lang=ar"' in register.text
+    token = _csrf(register.text)
+    created = client.post(
+        "/cloud/register?lang=ar",
+        data={
+            "csrf_token": token,
+            "full_name": "Mona Cloud",
+            "email": "arabic-flow@company.example",
+            "password": "SecurePass1",
+            "password_confirm": "SecurePass1",
+            "plan": "starter",
+            "cycle": "monthly",
+            "terms": "1",
+        },
+        follow_redirects=False,
+    )
+    assert created.status_code == 302
+    assert created.headers["location"] == "/cloud/setup"
+    setup = client.get("/cloud/setup")
+    assert setup.status_code == 200
+    assert 'dir="rtl"' in setup.text
+
+
+def test_cloud_login_matches_registration_layout_and_preserves_arabic_context(client, db):
+    seed_helpers_cloud(db)
+    login = client.get("/cloud/login?plan=trial&cycle=monthly&lang=ar")
+    assert login.status_code == 200
+    assert 'dir="rtl"' in login.text
+    assert 'cloud-login-layout' in login.text
+    assert 'data-password-toggle="password"' in login.text
+    assert "الخطة التجريبية" in login.text
+    assert "فوترة شهرية" in login.text
+    assert 'href="/cloud/register?plan=trial&amp;cycle=monthly&amp;lang=ar"' in login.text
+    assert "Continue with Google" in client.get("/cloud/login").text or "المتابعة باستخدام Google" in login.text
+    assert "Google authentication is currently disabled" in login.text or "غير مفعّل" in login.text
+    assert 'id="err-email"' in login.text
+    assert 'id="err-password"' in login.text
+    assert login.headers.get("cache-control") == "no-store"
+
+
+def test_cloud_login_csrf_failure_keeps_form_and_email(client, db):
+    seed_helpers_cloud(db)
+    resp = client.post(
+        "/cloud/login",
+        data={"csrf_token": "stale", "email": "keepme@company.example", "password": "x"},
+        follow_redirects=False,
+    )
+    assert resp.status_code == 400
+    assert "location" not in {k.lower() for k in resp.headers.keys()}
+    assert "keepme@company.example" in resp.text
+    assert "Invalid session token" in resp.text
+    assert "cloud-login-layout" in resp.text
+
+
+def test_cloud_google_auth_fails_closed_without_credentials(client):
+    resp = client.get("/cloud/auth/google?plan=starter&cycle=monthly", follow_redirects=False)
+    assert resp.status_code == 302
+    assert resp.headers["location"] == "/cloud/register?plan=starter&cycle=monthly"
+    callback = client.get("/cloud/auth/google/callback?state=bad&code=fake", follow_redirects=False)
+    assert callback.status_code == 302
+    assert callback.headers["location"] == "/cloud/register?plan=starter&cycle=monthly"
+
+
+def test_provider_identity_safe_linking_no_tokens(db):
+    owner = _register(db, "google-owner@company.example")
+    other = _register(db, "google-other@company.example")
+    identity = link_provider_identity(
+        db,
+        owner,
+        provider="Google",
+        provider_subject="google-sub-123",
+        provider_email="google-owner@company.example",
+        email_verified=True,
+        profile_name="Mona Cloud",
+        avatar_url="https://example.invalid/avatar.png",
+    )
+    assert identity.provider == "google"
+    assert identity.provider_subject == "google-sub-123"
+    assert identity.user_id == owner.id
+    assert identity.provider_email == "google-owner@company.example"
+    assert not hasattr(identity, "access_token")
+    assert not hasattr(identity, "refresh_token")
+
+    same = link_provider_identity(
+        db,
+        owner,
+        provider="google",
+        provider_subject="google-sub-123",
+        provider_email="google-owner@company.example",
+        email_verified=True,
+    )
+    assert same.id == identity.id
+
+    with pytest.raises(CloudAuthError):
+        link_provider_identity(
+            db,
+            other,
+            provider="google",
+            provider_subject="google-sub-123",
+            provider_email="google-other@company.example",
+            email_verified=True,
+        )
+
+    with pytest.raises(CloudAuthError):
+        link_provider_identity(
+            db,
+            other,
+            provider="google",
+            provider_subject="google-sub-456",
+            provider_email="google-owner@company.example",
+            email_verified=True,
+        )
+    assert db.scalar(select(ProviderIdentity).where(ProviderIdentity.provider_subject == "google-sub-456")) is None
+
 
 def test_cloud_login_rejects_github_only_account(client, db):
     from app.services.project_service import upsert_github_user
@@ -204,6 +380,9 @@ def test_wizard_requires_cloud_account(client):
     resp = client.get("/cloud/setup", follow_redirects=False)
     assert resp.status_code == 302
     assert resp.headers["location"].startswith("/cloud/login")
+    ar_resp = client.get("/cloud/setup?lang=ar", follow_redirects=False)
+    assert ar_resp.status_code == 302
+    assert ar_resp.headers["location"] == "/cloud/login?lang=ar"
     plan = client.get("/cloud/setup/plan", follow_redirects=False)
     assert plan.status_code == 302
     assert plan.headers["location"].startswith("/cloud/login")
@@ -384,6 +563,45 @@ def test_provisioning_transitions_and_open_odoo_guard(db):
     assert advanced.runtime_verified is False
 
 
+def test_customer_cloud_pages_use_bilingual_review_theme(client, db):
+    user = _register(db, "theme-pages@company.example")
+    setup = _complete_setup(db, user, "theme-pages")
+    _order, sub, req, inst = checkout_demo(
+        db,
+        user=user,
+        setup=setup,
+        idempotency_key="idem-theme-pages01",
+    )
+    _login_http(client, "theme-pages@company.example")
+
+    for path in (
+        f"/cloud/provisioning/{req.id}",
+        "/cloud/instances",
+        f"/cloud/instances/{inst.id}",
+        f"/cloud/subscriptions/{sub.id}",
+    ):
+        page = client.get(path)
+        assert page.status_code == 200
+        assert "cloud-setup-hero flow-card" in page.text
+        assert "cloud-review-grid" in page.text
+        assert "cloud." not in re.sub(r"<[^>]+>", " ", page.text)
+
+    instances = client.get("/cloud/instances")
+    assert "Business plan" in instances.text
+    assert "Trading" in instances.text
+    assert "Open Odoo" in instances.text
+    assert "disabled" in instances.text
+
+    arabic = client.get(f"/cloud/subscriptions/{sub.id}?lang=ar")
+    assert arabic.status_code == 200
+    assert 'dir="rtl"' in arabic.text
+    assert "ملخص الاشتراك" in arabic.text
+    assert "خطة Business" in arabic.text
+    # Package catalog names stay English in AR, matching setup/confirm.
+    assert "Trading" in arabic.text
+    assert "فوترة شهرية" in arabic.text
+
+
 def test_customer_ownership_isolation(client, db):
     owner = _register(db, "owner-iso@company.example")
     other = _register(db, "other-iso@company.example")
@@ -411,7 +629,7 @@ def test_cloud_pages_have_no_github_or_module_upload(client, db):
         "/cloud/setup",
         "/cloud/instances",
     ):
-        html = client.get(path).text.lower()
+        html = client.get(path).text.split("<footer", 1)[0].lower()
         assert 'name="github' not in html
         assert 'name="repository"' not in html
         assert 'type="file"' not in html

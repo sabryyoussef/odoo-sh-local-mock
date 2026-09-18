@@ -1,46 +1,56 @@
 {% extends "cloud/base.html" %}
-{% block title %}My ERP{% endblock %}
-{% block cloud_crumb %} · Instances{% endblock %}
+{% block title %}{{ t('cloud.instances.title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.instances.crumb') }}{% endblock %}
 {% block cloud_content %}
-<div class="flow-header">
-  <h1>Your Helpers ERP Cloud workspaces</h1>
-  <p>Managed by Helpers ERP. No coding or server administration required.</p>
+<div class="cloud-customer-shell cloud-customer-shell--single">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip"><span>{{ t('cloud.managed_badge') }}</span></p>
+      <h1>{{ t('cloud.instances.heading') }}</h1>
+      <p>{{ t('cloud.instances.lead') }}</p>
+    </section>
+
+    {% if instances %}
+      <section class="cloud-customer-grid" aria-label="{{ t('cloud.instances.aria') }}">
+        {% for inst in instances %}
+          {% set plan_code = (inst.plan_code or '')|lower %}
+          {% set package_code = (inst.package_code or '')|lower %}
+          <article class="cloud-setup-section flow-card cloud-workspace-card">
+            <p class="cloud-plan-chip">
+              <span class="badge">{{ t('cloud.status.' ~ inst.status) }}</span>
+              <span>{{ t('cloud.plan_name_' ~ plan_code) if plan_code else t('cloud.plan_name_generic') }}</span>
+            </p>
+            <h2>{{ inst.workspace_name or inst.company_name }}</h2>
+            <dl class="cloud-review-grid">
+              <div><dt>{{ t('cloud.company') }}</dt><dd>{{ inst.company_name }}</dd></div>
+              <div><dt>{{ t('cloud.product_line') }}</dt><dd>{{ t('cloud.title') }}</dd></div>
+              <div><dt>{{ t('cloud.odoo_version') }}</dt><dd><bdi dir="ltr">{{ inst.odoo_version_code }}</bdi></dd></div>
+              <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ t('cloud.setup.package.' ~ package_code) if package_code else t('cloud.none') }}</dd></div>
+              <div><dt>{{ t('cloud.users') }}</dt><dd><bdi dir="ltr">{{ inst.requested_users }}</bdi> {{ t('cloud.requested') }} / <bdi dir="ltr">{{ inst.included_users }}</bdi> {{ t('cloud.included') }}</dd></div>
+              <div><dt>{{ t('cloud.storage_gb') }}</dt><dd><bdi dir="ltr">{{ inst.requested_storage_gb }}</bdi> {{ t('cloud.unit_gb') }} {{ t('cloud.requested') }} / <bdi dir="ltr">{{ inst.included_storage_gb }}</bdi> {{ t('cloud.unit_gb') }} {{ t('cloud.included') }}</dd></div>
+              <div><dt>{{ t('cloud.backups') }}</dt><dd><bdi dir="ltr">{{ inst.backup_retention_days }}</bdi> {{ t('cloud.days_retention') }}</dd></div>
+              <div><dt>{{ t('cloud.last_backup') }}</dt><dd>{% if inst.last_backup_at %}{{ inst.last_backup_at }}{% else %}{{ t('cloud.none_yet_demo') }}{% endif %}</dd></div>
+            </dl>
+            <div class="cloud-customer-actions">
+            {% if can_open[inst.id] and external_urls[inst.id] %}
+              <a class="btn-hero btn-hero--primary" href="{{ external_urls[inst.id] }}" target="_blank" rel="noopener">{{ t('cloud.open_odoo') }}</a>
+            {% else %}
+              <button type="button" class="btn-hero btn-hero--primary" disabled>{{ t('cloud.open_odoo') }}</button>
+              <p class="muted">{{ t('cloud.open_odoo_unavailable') }}</p>
+            {% endif %}
+              <a class="btn" href="{{ locale_url('/cloud/instances/' ~ inst.id) }}">{{ t('cloud.workspace_details') }}</a>
+              <a class="btn" href="{{ locale_url('/cloud/subscriptions/' ~ inst.subscription_id) }}">{{ t('cloud.view_subscription') }}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <section class="cloud-setup-section flow-card cloud-empty-card">
+        <h2>{{ t('cloud.instances.empty_title') }}</h2>
+        <p>{{ t('cloud.instances.empty_lead') }}</p>
+        <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.view_plans') }}</a>
+      </section>
+    {% endif %}
+  </main>
 </div>
-{% if instances %}
-  <div class="pricing-grid">
-    {% for inst in instances %}
-      <article class="flow-card">
-        <h2>{{ inst.workspace_name or inst.company_name }}</h2>
-        <dl class="kv">
-          <div><dt>Company</dt><dd>{{ inst.company_name }}</dd></div>
-          <div><dt>Product line</dt><dd>Helpers ERP Cloud</dd></div>
-          <div><dt>Odoo</dt><dd>{{ inst.odoo_version_code }}</dd></div>
-          <div><dt>Plan</dt><dd>{{ inst.plan_code }}</dd></div>
-          <div><dt>Package</dt><dd>{{ inst.package_code }}</dd></div>
-          <div><dt>Status</dt><dd>{{ status_labels.get(inst.status, inst.status) }}</dd></div>
-          <div><dt>Users</dt><dd>{{ inst.requested_users }} requested / {{ inst.included_users }} included</dd></div>
-          <div><dt>Storage</dt><dd>{{ inst.requested_storage_gb }} GB requested / {{ inst.included_storage_gb }} GB included</dd></div>
-          <div><dt>Backups</dt><dd>{{ inst.backup_retention_days }}-day retention</dd></div>
-          <div><dt>Last backup</dt><dd>{% if inst.last_backup_at %}{{ inst.last_backup_at }}{% else %}None yet (demo){% endif %}</dd></div>
-        </dl>
-        {% if can_open[inst.id] and external_urls[inst.id] %}
-          <a class="btn-hero btn-hero--primary" href="{{ external_urls[inst.id] }}" target="_blank" rel="noopener">Open Odoo</a>
-        {% elif can_open[inst.id] and not external_urls[inst.id] %}
-          <p class="muted">Open Odoo is ready but external access is not configured. Contact support.</p>
-        {% else %}
-          <p class="muted">Open Odoo is unavailable until this workspace is Ready with a verified address.</p>
-        {% endif %}
-        <div class="flow-actions-row">
-          <a class="btn" href="/cloud/instances/{{ inst.id }}">Workspace details</a>
-          <a class="btn" href="/cloud/subscriptions/{{ inst.subscription_id }}">View subscription</a>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
-{% else %}
-  <section class="flow-card">
-    <p>No Cloud workspaces yet.</p>
-    <a class="btn-hero btn-hero--primary" href="/cloud/pricing">{{ t('cloud.view_plans') }}</a>
-  </section>
-{% endif %}
 {% endblock %}

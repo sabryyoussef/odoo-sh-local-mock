@@ -17,11 +17,12 @@
   </fieldset>
   <div class="pricing-grid">
     {% for plan in plans %}
+      {% if not plan.is_demo and (plan.code or '') != 'trial' %}
       <label class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
         {% if plan.recommended %}<div class="pricing-badge">Recommended</div>{% endif %}
         <h2>{{ plan.name }}</h2>
-        <div class="pricing-price"><strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong><span>/ month</span></div>
-        <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} / year</p>
+        <div class="pricing-price"><strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong><span>/ {{ t('cloud.pricing.per_month') }}</span></div>
+        <p class="muted">{{ t('cloud.term.platform_fee') }} · {{ t('cloud.term.resources_separate') }}</p>
         <ul class="pricing-features">
           <li>{{ plan.included_users }} users included</li>
           <li>{{ plan.included_storage_gb }} GB storage</li>
@@ -32,6 +33,7 @@
         <input type="radio" name="plan_id" value="{{ plan.id }}" {% if setup.plan_id == plan.id or (not setup.plan_id and plan.recommended) %}checked{% endif %} required>
         <span class="muted">Select {{ plan.name }}</span>
       </label>
+      {% endif %}
     {% endfor %}
   </div>
   <div class="flow-actions">

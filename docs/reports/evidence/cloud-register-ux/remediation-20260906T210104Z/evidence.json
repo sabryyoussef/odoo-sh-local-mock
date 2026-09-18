@@ -1,0 +1,115 @@
+{
+  "base": "http://127.0.0.1:8018",
+  "outDir": "docs/reports/evidence/cloud-register-ux/remediation-20260906T210104Z",
+  "screenshots": [
+    {
+      "name": "registration-desktop-ar.png",
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "registration-desktop-en.png",
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "registration-mobile-ar.png",
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "registration-mobile-en.png",
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "pricing-register-account-setup-flow.png",
+      "consoleErrors": [],
+      "horizontalScroll": false
+    }
+  ],
+  "scans": [
+    {
+      "name": "register-ar",
+      "finalUrl": "http://127.0.0.1:8018/cloud/register?plan=trial&cycle=monthly&lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "register-en",
+      "finalUrl": "http://127.0.0.1:8018/cloud/register?plan=trial&cycle=monthly&lang=en",
+      "status": 200,
+      "htmlDir": "ltr",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "pricing-ar",
+      "finalUrl": "http://127.0.0.1:8018/cloud/pricing?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "overview-ar",
+      "finalUrl": "http://127.0.0.1:8018/cloud?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "login-ar",
+      "finalUrl": "http://127.0.0.1:8018/cloud/login?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "setup-ar",
+      "finalUrl": "http://127.0.0.1:8018/cloud/login?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "terms-ar",
+      "finalUrl": "http://127.0.0.1:8018/terms?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    },
+    {
+      "name": "privacy-ar",
+      "finalUrl": "http://127.0.0.1:8018/privacy?lang=ar",
+      "status": 200,
+      "htmlDir": "rtl",
+      "rawKeys": [],
+      "consoleErrors": [],
+      "horizontalScroll": false
+    }
+  ],
+  "flow": {
+    "finalUrl": "http://127.0.0.1:8018/cloud/setup",
+    "containsSetup": true,
+    "consoleErrors": []
+  },
+  "interactions": {
+    "tooltipVisible": true,
+    "passwordVisible": true,
+    "inlineErrorsAfterInvalidSubmit": 4
+  }
+}

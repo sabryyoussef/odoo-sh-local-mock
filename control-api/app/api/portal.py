@@ -27,3 +27,20 @@ def api_portal_provisioning_status(
     if not job:
         raise HTTPException(status_code=404, detail="Not found")
     return provisioning_job_portal_view(job)
+
+
+
+@router.get("/api/portal/cloud/demo-status/{request_id}")
+def api_portal_cloud_demo_status(
+    request_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    from app.models import CloudProvisioningRequest
+    from app.services.cloud_demo_lifecycle_service import get_demo_portal_status
+
+    row = db.get(CloudProvisioningRequest, request_id)
+    if not row or getattr(row, "user_id", None) != user.id:
+        raise HTTPException(status_code=404, detail="Not found")
+    return get_demo_portal_status(db, row)

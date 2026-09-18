@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>حالة العرض · Helpers ERP Cloud Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+</head>
+<body class="theme-helpers-erp body--app">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/?lang=ar">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="القائمة الرئيسية">
+    <a href="/solutions?lang=ar">الحلول الجاهزة</a>
+    <a href="/cloud?lang=ar" class="is-active"><bdi dir="ltr">Helpers ERP Cloud</bdi></a>
+    <a href="/platform?lang=ar">منصة المطوّرين</a>
+    <a href="/pricing?lang=ar">الأسعار</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="اللغة">
+      <a href="/cloud/demo/status/2?lang=en" hreflang="en" lang="en">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="/cloud/demo/status/2?lang=ar" hreflang="ar" lang="ar" class="is-active">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost" href="/cloud/instances">نظامي</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="lx0aRCIwFUcvUjrOQHTMahig-h7zwHtkn0gQkEOpW1M">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">خروج</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/?lang=ar">الرئيسية</a> · <a href="/cloud?lang=ar">Helpers ERP Cloud</a> · حالة العرض</p>
+    
+    
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip">
+        <span class="badge badge--warning">للعرض فقط</span>
+        <span>وضع العرض — بيئة تجريبية</span>
+      </p>
+      <h1>بيئة التجريب الخاصة بك</h1>
+      <p>Your demo is being prepared.</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">الحالة</p>
+        <h2>تفاصيل الطلب</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div class="cloud-review-grid__wide"><dt>رقم الطلب</dt><dd><bdi dir="ltr">78061590a754c5078b89aca2c2912919</bdi></dd></div>
+        <div><dt>الحالة</dt><dd>Preparing</dd></div>
+        
+        
+        
+      </dl>
+    </section>
+
+    
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">يرجى الانتظار</p>
+        <h2>جاري إعداد عرضك التجريبي</h2>
+      </div>
+      <p>نقوم بإعداد بيئة التجريب المعزولة الخاصة بك. عادة ما يستغرق هذا بضع دقائق.</p>
+    </section>
+    
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>الوصول لمساحة العمل</h2>
+    
+      <p><span class="badge badge--warning">قيد الإعداد</span></p>
+    
+    <p class="cloud-summary-note">تعرض هذه الصفحة حالة آمنة للعميل فقط، ولا تعرض سجلات المطورين أو الكود المصدري.</p>
+    <div class="cloud-confirm-actions">
+      
+        <button type="button" class="btn-hero btn-hero--primary" disabled>فتح Odoo</button>
+        
+          <p class="muted">عرضك التجريبي لا يزال قيد الإعداد.</p>
+        
+      
+      <a class="btn" href="/cloud/instances?lang=ar">العودة لمساحات العمل</a>
+    </div>
+  </aside>
+</div>
+
+    <script>
+    (function () {
+      var summary = document.getElementById("form-error-summary");
+      if (summary) {
+        if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+        summary.focus();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+</body>
+</html>

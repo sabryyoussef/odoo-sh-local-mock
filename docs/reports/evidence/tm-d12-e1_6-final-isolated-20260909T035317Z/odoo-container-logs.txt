@@ -1,0 +1,14 @@
+2026-09-09 03:53:26,185 1 WARNING ? odoo.tools.config: option addons_path, invalid addons directory '/mnt/extra-addons', skipped 
+2026-09-09 03:53:26,185 1 INFO ? odoo: Odoo version 19.0-20260817 
+2026-09-09 03:53:26,186 1 INFO ? odoo: Using configuration file at /mnt/runtime/odoo.conf 
+2026-09-09 03:53:26,186 1 INFO ? odoo: addons paths: _NamespacePath(['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/19.0', '/usr/lib/python3/dist-packages/addons']) 
+2026-09-09 03:53:26,186 1 INFO ? odoo: database: REDACTED_ROLE@build-postgres:5432 
+2026-09-09 03:53:26,669 1 INFO ? odoo.service.server: HTTP service (werkzeug) running on 4b8ada2acb52:8069 
+2026-09-09 03:53:26,727 1 INFO REDACTED_DB odoo.modules.loading: loading 1 modules... 
+2026-09-09 03:53:26,737 1 INFO REDACTED_DB odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra) 
+2026-09-09 03:53:26,761 1 INFO REDACTED_DB odoo.modules.loading: loading 43 modules... 
+2026-09-09 03:53:27,310 1 INFO REDACTED_DB odoo.modules.loading: 43 modules loaded in 0.55s, 0 queries (+0 extra) 
+2026-09-09 03:53:27,460 1 INFO REDACTED_DB odoo.modules.loading: Modules loaded. 
+2026-09-09 03:53:27,509 1 INFO REDACTED_DB odoo.registry: Registry loaded in 0.839s 
+2026-09-09 03:53:48,759 1 INFO REDACTED_DB odoo.addons.base.models.ir_http: Generating routing map for key None 
+2026-09-09 03:53:49,120 1 INFO REDACTED_DB werkzeug: 192.168.112.1 - - [09/Sep/2026 03:53:49] "GET /web/login HTTP/1.1" 200 - 54 0.051 0.314

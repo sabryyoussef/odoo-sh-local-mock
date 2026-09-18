@@ -715,6 +715,22 @@ def save_configure(db: Session, setup: CloudSetupSelection, fields: dict) -> Clo
             addon_ids.append(int(item))
         except (TypeError, ValueError):
             continue
+    if setup.package and setup.version:
+        catalog = {a.id: a for a in list_active_cloud_addons(db)}
+        for addon_id in addon_ids:
+            addon = catalog.get(addon_id)
+            if not addon:
+                errors["addon_ids"] = "One of the selected add-ons is not available."
+                break
+            if not addon_allowed_for_plan(addon, plan):
+                errors["addon_ids"] = f"{addon.name} is not available with this plan."
+                break
+            if not addon_compatible(addon, version_code=setup.version.code, package_code=setup.package.code):
+                errors["addon_ids"] = f"{addon.name} is not available with the selected package."
+                break
+            if not addon_dependencies_met(addon, setup.package):
+                errors["addon_ids"] = f"{addon.name} requires capabilities that are not in the selected package."
+                break
 
     if errors:
         raise CloudSetupError("Please correct the highlighted fields.", "validation", errors)

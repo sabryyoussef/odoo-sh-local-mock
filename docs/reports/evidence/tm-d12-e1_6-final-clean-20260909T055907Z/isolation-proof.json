@@ -1,0 +1,8 @@
+{
+  "postgres_isolation": true,
+  "disposable_postgres_container": "tm-d12-pg-final-20260909t055907z-e18c3da5",
+  "disposable_postgres_network": "tm-d12-net-final-e18c3da5",
+  "disposable_postgres_volume": "tm-d12-pg-data-final-e18c3da5",
+  "disposable_postgres_ip": "192.168.176.2",
+  "live_postgres_not_used": true
+}

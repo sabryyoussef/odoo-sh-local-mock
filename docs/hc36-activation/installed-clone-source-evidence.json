@@ -1,0 +1,49 @@
+{
+  "schema": "hc36-installed-clone-source-v1",
+  "provenance": "operator-provided authenticated installed-source inspection; not re-fetched during offline implementation",
+  "installed_version": "9.2.11",
+  "source_path": "/usr/share/perl5/PVE/API2/Qemu.pm",
+  "method": "POST",
+  "path": "/nodes/{node}/qemu/{vmid}/clone",
+  "additionalProperties": 0,
+  "requirements": {
+    "/vms/{vmid}": [
+      "VM.Clone"
+    ],
+    "/vms/{newid}": [
+      "VM.Allocate"
+    ],
+    "/storage/{used-storage}": [
+      "Datastore.AllocateSpace"
+    ],
+    "/sdn/zones/localnetwork/{used-bridge}": [
+      "SDN.Use"
+    ]
+  },
+  "frozen": {
+    "node": "pve-test",
+    "vmid": 9000,
+    "full": 1,
+    "storage": "local-lvm",
+    "bridge": "vmbr0",
+    "no_pool": true,
+    "no_target": true,
+    "no_snapname": true,
+    "no_format": true,
+    "no_bwlimit": true,
+    "remain_stopped": true
+  },
+  "runtime_checks": [
+    "storage availability",
+    "quorum",
+    "lock",
+    "source state stability",
+    "dynamic storage access",
+    "dynamic bridge access"
+  ],
+  "GET_privileges_are_not_POST_requirements": [
+    "VM.Audit",
+    "Sys.Audit"
+  ],
+  "raw_source_sha256": null
+}

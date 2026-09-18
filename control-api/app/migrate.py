@@ -30,6 +30,104 @@ def _add_column(engine: Engine, table: str, column_sql: str) -> None:
     logger.info("Added column %s.%s", table, col_name)
 
 
+def _index_names(engine: Engine, table: str) -> set[str]:
+    insp = inspect(engine)
+    if table not in insp.get_table_names():
+        return set()
+    names = {ix.get("name") for ix in insp.get_indexes(table) if ix.get("name")}
+    with engine.connect() as conn:
+        for row in conn.execute(text(f"PRAGMA index_list({table})")):
+            names.add(str(row[1]))
+    return names
+
+
+def _drop_index_if_exists(engine: Engine, table: str, name: str) -> None:
+    if table not in inspect(engine).get_table_names():
+        return
+    if name not in _index_names(engine, table):
+        return
+    with engine.begin() as conn:
+        conn.execute(text(f"DROP INDEX IF EXISTS {name}"))
+    logger.info("Dropped index %s on %s", name, table)
+
+
+def _create_index(
+    engine: Engine,
+    *,
+    table: str,
+    name: str,
+    columns_sql: str,
+    unique: bool = False,
+    where_sql: str | None = None,
+) -> None:
+    insp = inspect(engine)
+    if table not in insp.get_table_names():
+        return
+    if name in _index_names(engine, table):
+        return
+    uniq = "UNIQUE " if unique else ""
+    where_clause = f" WHERE {where_sql}" if where_sql else ""
+    with engine.begin() as conn:
+        conn.execute(
+            text(f"CREATE {uniq}INDEX IF NOT EXISTS {name} ON {table} ({columns_sql}){where_clause}")
+        )
+    logger.info("Created index %s on %s", name, table)
+
+
+def _migrate_cloud_template_catalog(engine: Engine) -> None:
+    """Additive demo-catalog columns, fail-closed defaults, coexistence indexes."""
+    table = "cloud_templates"
+    if table not in inspect(engine).get_table_names():
+        return
+
+    _add_column(engine, table, "industry_code VARCHAR(64) DEFAULT 'general'")
+    _add_column(engine, table, "edition VARCHAR(32) DEFAULT 'community'")
+    _add_column(engine, table, "supported_languages VARCHAR(64) DEFAULT 'ar,en'")
+    _add_column(engine, table, "active BOOLEAN DEFAULT 0")
+    _add_column(engine, table, "readiness_state VARCHAR(32) DEFAULT 'draft'")
+    _add_column(engine, table, "catalog_code VARCHAR(128)")
+
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "UPDATE cloud_templates SET catalog_code = NULL "
+                "WHERE catalog_code IS NOT NULL AND TRIM(catalog_code) = ''"
+            )
+        )
+        conn.execute(
+            text(
+                "UPDATE cloud_templates SET readiness_state = 'draft' "
+                "WHERE readiness_state IS NULL OR readiness_state = '' "
+                "OR ((template_kind IS NULL OR template_kind != 'demo_template') "
+                "AND readiness_state = 'prepared')"
+            )
+        )
+        conn.execute(
+            text(
+                "UPDATE cloud_templates SET active = 0 "
+                "WHERE template_kind IS NULL OR template_kind != 'demo_template'"
+            )
+        )
+
+    # Old uniqueness blocked demo + cloud_base coexistence for the same package/version.
+    _drop_index_if_exists(engine, table, "uq_cloud_template_package_version")
+    _drop_index_if_exists(engine, table, "uq_cloud_template_industry_package_version")
+    _create_index(
+        engine,
+        table=table,
+        name="uq_cloud_template_catalog_code",
+        columns_sql="catalog_code",
+        unique=True,
+        where_sql="catalog_code IS NOT NULL AND catalog_code != ''",
+    )
+    _create_index(
+        engine,
+        table=table,
+        name="ix_cloud_template_catalog_identity",
+        columns_sql="industry_code, package_code, odoo_version_code, edition, template_kind",
+    )
+
+
 def _sqlite_table_info(conn, table: str) -> list:
     return list(conn.execute(text(f"PRAGMA table_info({table})")))
 
@@ -159,6 +257,9 @@ def migrate_schema(engine: Engine) -> None:
 
     # Phase 10 metering / quota columns on tenants
     _add_column(engine, "tenants", "filestore_bytes INTEGER DEFAULT 0")
+
+    # HMS packages: one-time software price
+    _add_column(engine, "packages", "price_one_time VARCHAR(32)")
     _add_column(engine, "tenants", "database_bytes INTEGER DEFAULT 0")
     _add_column(engine, "tenants", "backup_storage_bytes INTEGER DEFAULT 0")
     _add_column(engine, "tenants", "active_users INTEGER")
@@ -191,6 +292,47 @@ def migrate_schema(engine: Engine) -> None:
     _add_column(engine, "subscriptions", "product_line VARCHAR(32) DEFAULT 'developer_platform'")
     _add_column(engine, "projects", "product_line VARCHAR(32) DEFAULT 'developer_platform'")
     _add_column(engine, "tenants", "product_line VARCHAR(32)")
+
+    # Provider identity model for Cloud Google/OIDC registrations (additive, safe, no provider tokens retained)
+    if "provider_identities" not in inspect(engine).get_table_names():
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    CREATE TABLE provider_identities (
+                        id INTEGER PRIMARY KEY,
+                        user_id INTEGER NOT NULL,
+                        provider VARCHAR(32) NOT NULL,
+                        provider_subject VARCHAR(255) NOT NULL,
+                        provider_email VARCHAR(255),
+                        email_verified BOOLEAN DEFAULT 0,
+                        profile_name VARCHAR(255),
+                        avatar_url VARCHAR(512),
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(user_id) REFERENCES users(id),
+                        UNIQUE (provider, provider_subject)
+                    )
+                    """
+                )
+            )
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_provider_identities_user_id ON provider_identities (user_id)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_provider_identities_provider ON provider_identities (provider)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_provider_identities_provider_email ON provider_identities (provider_email)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_provider_identities_provider_subject ON provider_identities (provider_subject)"))
+
+    if "provider_identities" in inspect(engine).get_table_names():
+        _add_column(engine, "provider_identities", "email_verified BOOLEAN DEFAULT 0")
+        _add_column(engine, "provider_identities", "profile_name VARCHAR(255)")
+        _add_column(engine, "provider_identities", "avatar_url VARCHAR(512)")
+        _add_column(engine, "provider_identities", "updated_at DATETIME")
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_provider_identity_subject "
+                    "ON provider_identities (provider, provider_subject)"
+                )
+            )
 
     # DP2 — Platform plan entitlements
     _add_column(engine, "platform_plans", "updated_at DATETIME")
@@ -266,6 +408,12 @@ def migrate_schema(engine: Engine) -> None:
     _add_column(engine, "cloud_provisioning_requests", "quote_approved_by_user_id INTEGER")
     _add_column(engine, "cloud_instances", "tenant_id INTEGER")
     _add_column(engine, "cloud_instances", "internal_url VARCHAR(512)")
+    _add_column(engine, "cloud_orders", "lane VARCHAR(32) DEFAULT 'demo'")
+    _add_column(engine, "cloud_orders", "order_kind VARCHAR(32) DEFAULT 'demo_checkout'")
+    _add_column(engine, "cloud_subscriptions", "lane VARCHAR(32) DEFAULT 'demo'")
+    _add_column(engine, "cloud_subscriptions", "order_kind VARCHAR(32) DEFAULT 'demo_checkout'")
+    _add_column(engine, "cloud_provisioning_requests", "lane VARCHAR(32) DEFAULT 'demo'")
+    _add_column(engine, "cloud_provisioning_requests", "order_kind VARCHAR(32) DEFAULT 'demo_checkout'")
     _add_column(engine, "cloud_instances", "public_url VARCHAR(512)")
     _add_column(engine, "cloud_instances", "domain VARCHAR(255)")
     _add_column(engine, "cloud_instances", "suspended_at DATETIME")
@@ -273,8 +421,111 @@ def migrate_schema(engine: Engine) -> None:
     _add_column(engine, "cloud_instances", "deletion_scheduled_at DATETIME")
     _add_column(engine, "cloud_instances", "deleted_at DATETIME")
     _add_column(engine, "cloud_instances", "version INTEGER DEFAULT 1")
+    _migrate_cloud_template_catalog(engine)
+
+    # RS1 — Ready Solution deployment profiles + artifacts (additive, offline only)
+    _add_column(engine, "solutions", "industry_code VARCHAR(64)")
+    _add_column(engine, "solutions", "category VARCHAR(64)")
+    # New tables are created via Base.metadata.create_all; no manual CREATE needed here.
+    # Ensure legacy DBs get RS1 tables if create_all was not re-run (defensive).
+    from sqlalchemy import inspect as _inspect
+    if "solution_artifacts" not in _inspect(engine).get_table_names():
+        with engine.begin() as conn:
+            conn.execute(__import__("sqlalchemy").text("""
+                CREATE TABLE IF NOT EXISTS solution_artifacts (
+                    id INTEGER PRIMARY KEY,
+                    solution_id INTEGER NOT NULL REFERENCES solutions(id),
+                    code VARCHAR(64) NOT NULL,
+                    name VARCHAR(255) DEFAULT '',
+                    package_identifier VARCHAR(255) DEFAULT '',
+                    version VARCHAR(32) DEFAULT '1.0.0',
+                    odoo_version VARCHAR(32) DEFAULT '19.0',
+                    edition VARCHAR(32) DEFAULT 'community',
+                    source_type VARCHAR(32) DEFAULT 'template_database',
+                    install_strategy VARCHAR(32) DEFAULT 'restore',
+                    status VARCHAR(32) DEFAULT 'draft',
+                    verification_state VARCHAR(32) DEFAULT 'unverified',
+                    is_verified BOOLEAN DEFAULT 0,
+                    deployment_ready BOOLEAN DEFAULT 0,
+                    template_database_id INTEGER REFERENCES template_databases(id),
+                    notes TEXT DEFAULT '',
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (solution_id, code)
+                )
+            """))
+            conn.execute(__import__("sqlalchemy").text("CREATE INDEX IF NOT EXISTS ix_artifact_solution ON solution_artifacts (solution_id)"))
+    if "solution_deployment_profiles" not in _inspect(engine).get_table_names():
+        with engine.begin() as conn:
+            conn.execute(__import__("sqlalchemy").text("""
+                CREATE TABLE IF NOT EXISTS solution_deployment_profiles (
+                    id INTEGER PRIMARY KEY,
+                    solution_id INTEGER NOT NULL REFERENCES solutions(id),
+                    artifact_id INTEGER REFERENCES solution_artifacts(id),
+                    template_database_id INTEGER REFERENCES template_databases(id),
+                    code VARCHAR(64) NOT NULL,
+                    name VARCHAR(255) NOT NULL,
+                    environment_type VARCHAR(32) DEFAULT 'demo',
+                    active BOOLEAN DEFAULT 1,
+                    is_default BOOLEAN DEFAULT 0,
+                    sort_order INTEGER DEFAULT 0,
+                    odoo_version VARCHAR(32) DEFAULT '19.0',
+                    edition VARCHAR(32) DEFAULT 'community',
+                    min_vcpu INTEGER DEFAULT 1,
+                    recommended_vcpu INTEGER DEFAULT 2,
+                    min_ram_gb INTEGER DEFAULT 2,
+                    recommended_ram_gb INTEGER DEFAULT 4,
+                    min_storage_gb INTEGER DEFAULT 20,
+                    recommended_storage_gb INTEGER DEFAULT 80,
+                    expected_users_min INTEGER,
+                    expected_users_max INTEGER,
+                    compatible_compute_tier VARCHAR(64),
+                    demo_suitable BOOLEAN DEFAULT 0,
+                    production_suitable BOOLEAN DEFAULT 0,
+                    status VARCHAR(32) DEFAULT 'published',
+                    notes TEXT DEFAULT '',
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE (solution_id, code)
+                )
+            """))
+            conn.execute(__import__("sqlalchemy").text("CREATE INDEX IF NOT EXISTS ix_profile_solution ON solution_deployment_profiles (solution_id)"))
+            conn.execute(__import__("sqlalchemy").text("CREATE INDEX IF NOT EXISTS ix_profile_active ON solution_deployment_profiles (active)"))
+
+    # --- HC3.5 VMID allocation and dry-run fields (previously missing) ---
+    _add_column(engine, "proxmox_provisioning_jobs", "provider_mode VARCHAR(32)")
+    _add_column(engine, "proxmox_provisioning_jobs", "plan_fingerprint VARCHAR(128)")
+    _add_column(engine, "proxmox_provisioning_jobs", "plan_schema_version INTEGER")
+    _add_column(engine, "proxmox_provisioning_jobs", "target_vmid INTEGER")
+    _add_column(engine, "proxmox_provisioning_jobs", "provider_task_id VARCHAR(128)")
+    _add_column(engine, "proxmox_provisioning_jobs", "worker_lease_expires_at DATETIME")
+    _add_column(engine, "proxmox_provisioning_jobs", "last_reconciled_at DATETIME")
+    _add_column(engine, "proxmox_provisioning_jobs", "dry_run_result_json TEXT")
+    _add_column(engine, "proxmox_provisioning_jobs", "ownership_fingerprint VARCHAR(128)")
+
+    # --- HC3.7 Gate 2, 3, 4 — Mutation readiness, drift validation, execution evidence ---
+    _add_column(engine, "proxmox_provisioning_jobs", "mutation_readiness_status VARCHAR(32)")
+    _add_column(engine, "proxmox_provisioning_jobs", "mutation_readiness_json TEXT")
+    _add_column(engine, "proxmox_provisioning_jobs", "mutation_blocker VARCHAR(256)")
+    _add_column(engine, "proxmox_provisioning_jobs", "drift_validation_status VARCHAR(32)")
+    _add_column(engine, "proxmox_provisioning_jobs", "drift_validation_json TEXT")
+    _add_column(engine, "proxmox_provisioning_jobs", "mutation_execution_status VARCHAR(32)")
+    _add_column(engine, "proxmox_provisioning_jobs", "mutation_execution_json TEXT")
+    _add_column(engine, "proxmox_provisioning_jobs", "contract_fingerprint VARCHAR(128)")
+    _add_column(engine, "proxmox_provisioning_jobs", "source_template_vmid INTEGER")
+    _add_column(engine, "proxmox_provisioning_jobs", "target_node VARCHAR(64)")
+    _add_column(engine, "proxmox_provisioning_jobs", "target_storage VARCHAR(64)")
+    _add_column(engine, "proxmox_provisioning_jobs", "target_bridge VARCHAR(64)")
+    _add_column(engine, "proxmox_provisioning_jobs", "acquired_at DATETIME")
+
+    # --- HC3.8 / HC3.7.6 — post-clone readiness evidence (additive, nullable) ---
+    _add_column(engine, "proxmox_provisioning_jobs", "post_clone_readiness_json TEXT")
+
+    # --- HC3.7.6 — lease acquisition timestamp (additive) ---
+    _add_column(engine, "proxmox_vmid_leases", "acquired_at DATETIME")
 
     logger.info("Schema migration complete")
+
 
 
 def migrate_subscription_data(engine: Engine) -> dict:

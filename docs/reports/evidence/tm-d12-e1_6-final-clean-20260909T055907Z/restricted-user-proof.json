@@ -1,0 +1,16 @@
+{
+  "login": "demo_demo_clone_2_0e53cc1",
+  "active": true,
+  "is_admin": false,
+  "not_in_admin_groups": true,
+  "groups": [
+    1
+  ],
+  "pg_role": "REDACTED_ROLE",
+  "pg_role_createdb": false,
+  "pg_role_superuser": false,
+  "cannot_create_db": true,
+  "cannot_access_settings": true,
+  "is_restricted": true,
+  "denied": true
+}

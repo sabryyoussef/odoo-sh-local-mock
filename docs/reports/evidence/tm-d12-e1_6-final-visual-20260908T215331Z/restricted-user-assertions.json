@@ -1,0 +1,9 @@
+{
+  "login": "demo_demo_clone_2_d4735e3",
+  "groups": [
+    1
+  ],
+  "pg_no_createdb": true,
+  "pg_no_superuser": true,
+  "settings_denied": true
+}

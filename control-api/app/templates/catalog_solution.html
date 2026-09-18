@@ -5,17 +5,82 @@
 {% block shell %}
 <div class="app-flow">
   <main class="flow-main flow-main--full">
-    <p class="muted"><a href="{{ locale_url('/solutions') }}">{{ t('catalog.back') }}</a></p>
+    <p class="muted"><a href="{{ locale_url('/catalog?solution=' ~ solution.code) }}">{{ t('catalog.back') }}</a></p>
     <div class="flow-header">
       <h1>{{ solution.name }}
         {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
       </h1>
       <p>{{ solution.description }}</p>
+      {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+      {% endif %}
       <dl class="kv">
         <div><dt>{{ t('catalog.erp_version') }}</dt><dd>{{ solution.odoo_version }}</dd></div>
         <div><dt>{{ t('catalog.release') }}</dt><dd>{{ solution.current_version }}</dd></div>
       </dl>
     </div>
+
+    {# RS1 — Deployment profiles #}
+    {% if deployment_profiles %}
+    <h2>Deployment Options</h2>
+    <p class="muted">Select a deployment profile to see recommended compute resources.</p>
+    <div class="settings-grid">
+      {% for prof in deployment_profiles %}
+        <section class="flow-card">
+          <h3>{{ prof.name }}
+            {% if prof.is_default %}<span class="badge">Default</span>{% endif %}
+            {% if prof.environment_type == 'demo' %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
+          </h3>
+          <p class="muted">{{ prof.notes or '' }}</p>
+          <dl class="kv">
+            <div><dt>Environment</dt><dd>{{ prof.environment_type }}</dd></div>
+            <div><dt>Min vCPU</dt><dd>{{ prof.min_vcpu }}</dd></div>
+            <div><dt>Recommended vCPU</dt><dd>{{ prof.recommended_vcpu }}</dd></div>
+            <div><dt>Min RAM</dt><dd>{{ prof.min_ram_gb }} GB</dd></div>
+            <div><dt>Recommended RAM</dt><dd>{{ prof.recommended_ram_gb }} GB</dd></div>
+            <div><dt>Min Storage</dt><dd>{{ prof.min_storage_gb }} GB</dd></div>
+            <div><dt>Recommended Storage</dt><dd>{{ prof.recommended_storage_gb }} GB</dd></div>
+            {% if prof.expected_users_min or prof.expected_users_max %}
+            <div><dt>Expected Users</dt><dd>
+              {% if prof.expected_users_min and prof.expected_users_max %}{{ prof.expected_users_min }}–{{ prof.expected_users_max }}
+              {% elif prof.expected_users_max %}Up to {{ prof.expected_users_max }}
+              {% else %}{{ prof.expected_users_min }}+
+              {% endif %}
+            </dd></div>
+            {% endif %}
+            {% if prof.compatible_compute_tier %}
+            <div><dt>Compatible Plan</dt><dd>{{ prof.compatible_compute_tier|title }}</dd></div>
+            {% endif %}
+            <div><dt>Demo</dt><dd>{% if prof.demo_suitable %}✓{% else %}—{% endif %}</dd></div>
+            <div><dt>Production</dt><dd>{% if prof.production_suitable %}✓{% else %}—{% endif %}</dd></div>
+          </dl>
+        </section>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# RS1 — Artifact status #}
+    {% if artifacts %}
+    <h2>Application Artifact</h2>
+    <div class="settings-grid">
+      {% for art in artifacts %}
+        <section class="flow-card">
+          <h3>{{ art.name }} <span class="muted">({{ art.code }})</span></h3>
+          <dl class="kv">
+            <div><dt>Version</dt><dd>{{ art.version }}</dd></div>
+            <div><dt>Odoo</dt><dd>{{ art.odoo_version }}</dd></div>
+            <div><dt>Edition</dt><dd>{{ art.edition }}</dd></div>
+            <div><dt>Status</dt><dd>{{ art.verification_state }}</dd></div>
+            <div><dt>Verified</dt><dd>{% if art.is_verified %}✓{% else %}—{% endif %}</dd></div>
+            <div><dt>Deployment Ready</dt><dd>{% if art.deployment_ready %}✓{% else %}—{% endif %}</dd></div>
+          </dl>
+          {% if not art.is_verified %}
+            <p class="muted">Artifact is not yet verified. Recommendations are estimates only.</p>
+          {% endif %}
+        </section>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <h2>{{ t('catalog.packages') }}</h2>
     <div class="settings-grid">
@@ -40,10 +105,14 @@
             <div><dt>{{ t('catalog.support') }}</dt><dd>{{ pkg.support_sla|replace('_', ' ') }}</dd></div>
           </dl>
           {% if pkg.is_demo and solution.is_demo %}
-            {% if user.github_connected %}
-              <a class="btn btn--primary" href="/portal/trial/confirm?solution_id={{ solution.id }}&amp;package_id={{ pkg.id }}">{{ t('catalog.start_trial') }}</a>
+            {% if user.github_connected or user.cloud_customer %}
+              {% if existing_demo_href %}
+                <a class="btn btn--primary" href="{{ existing_demo_href }}">Open your demo</a>
+              {% else %}
+                <a class="btn btn--primary" href="/portal/trial/confirm?solution_id={{ solution.id }}&package_id={{ pkg.id }}">{{ t('catalog.start_trial') }}</a>
+              {% endif %}
             {% else %}
-              <a class="btn" href="/login?next=/solutions/{{ solution.code }}">{{ t('catalog.signin_trial') }}</a>
+              <a class="btn" href="{{ signin_url|default('/login?next=/solutions/' ~ solution.code) }}">{{ t('catalog.signin_trial') }}</a>
             {% endif %}
           {% else %}
             <p class="muted">{{ t('catalog.contact_sales') }}</p>

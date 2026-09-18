@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.build.resources_title') }} · {{ t('cloud.title') }}{% endblock %}
+{% block body_class %}body--landing body--cloud-build{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=7">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-pricing-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ t('cloud.journey.step.resources') }}</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main cloud-build-layout">
+    <section class="cloud-pricing-hero" aria-labelledby="cloud-resources-title">
+      {% include "cloud/_paid_progress.html" %}
+      <div class="cloud-pricing-hero__copy">
+        <h1 id="cloud-resources-title">{{ t('cloud.build.resources_title') }}</h1>
+        <p>{{ t('cloud.build.resources_lead') }}</p>
+        {% if reservation %}
+        <p class="cloud-reservation-badge" data-hc-reservation-id="{{ reservation.reservation_id }}" data-hc-reservation-expires="{{ reservation.expires_at }}" aria-live="polite">
+          ✅ <strong>{{ t('cloud.build.reservation_held') }}</strong>
+          <span class="cloud-reservation-countdown" data-hc-countdown="{{ reservation.expires_at }}"></span>
+          <span class="muted"> · {{ t('cloud.build.reservation_expires') }} <time data-hc-reservation-expiry="{{ reservation.expires_at }}">{{ reservation.expires_at }}</time></span>
+        </p>
+        {% elif reservation_expired %}
+        <p class="cloud-reservation-expired" data-hc-reservation-expired="true" aria-live="polite">
+          ⚠️ {{ t('cloud.build.reservation_expired') }}
+          <a href="{{ locale_url('/cloud/build/resources') }}" class="btn btn--sm">{{ t('cloud.build.reservation_refresh') }}</a>
+        </p>
+        {% endif %}
+      </div>
+    </section>
+
+    <div class="cloud-build-columns">
+      <form method="post" action="{{ locale_url('/cloud/build/resources') }}" class="cloud-build-form" data-hc-integration="cloud-resources" data-hc-compute-quote="{{ compute_quote|tojson if compute_quote }}" data-hc-compute-version="{{ compute_quote.version if compute_quote else "" }}" data-hc-package="{{ selected_package_code }}" data-hc-plan="{{ selected_plan.code }}" data-hc-profile="{{ chosen.profile }}" data-hc-vcpu="{{ chosen.vcpu }}" data-hc-ram="{{ chosen.ram_gb }}" data-hc-storage="{{ chosen.storage_gb }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="package_code" value="{{ selected_package_code }}">
+        <input type="hidden" name="plan_code" value="{{ selected_plan.code }}">
+        <input type="hidden" name="cycle" value="{{ selected_cycle }}">
+        {% if reservation %}
+        <input type="hidden" name="reservation_id" value="{{ reservation.reservation_id }}">
+        {% endif %}
+
+        <p class="muted">{{ t('cloud.build.resources_context') }} <strong><bdi dir="ltr">{{ selected_package_name }}</bdi></strong> · {{ t('cloud.term.platform_fee') }}: <strong><bdi dir="ltr">{{ selected_plan.name }}</bdi></strong></p>
+        <p>{{ t(guide.why_key) }}</p>
+        <p class="cloud-build-note">{{ t('cloud.build.plan_not_size') }}</p>
+
+        <div class="cloud-pricing-grid cloud-resource-profiles">
+          <article class="cloud-pricing-card{% if chosen.profile == 'minimum' %} is-recommended{% endif %}">
+            <h2 class="cloud-pricing-card__title">{{ t('cloud.term.minimum') }}</h2>
+            <p class="cloud-pricing-card__desc">{{ t('cloud.build.min_help') }}</p>
+            <ul class="cloud-pricing-features">
+              <li>{{ t('cloud.term.processing') }}: <bdi dir="ltr">{{ guide.minimum.vcpu }}</bdi></li>
+              <li>{{ t('cloud.term.memory') }}: <bdi dir="ltr">{{ guide.minimum.ram_gb }} GB</bdi></li>
+              <li>{{ t('cloud.term.storage') }}: <bdi dir="ltr">{{ guide.minimum.storage_gb }} GB</bdi></li>
+              <li>{{ t('cloud.term.monthly_total') }}: <bdi dir="ltr">{{ format_money(guide.minimum.monthly_cents, guide.pricing.currency) }} {{ guide.pricing.currency }}</bdi></li>
+            </ul>
+            <button type="submit" name="profile" value="minimum" class="btn-hero btn-hero--secondary">{{ t('cloud.build.use_minimum') }}</button>
+          </article>
+          <article class="cloud-pricing-card is-recommended">
+            <span class="cloud-pricing-badge">{{ t('cloud.term.recommended') }}</span>
+            <h2 class="cloud-pricing-card__title">{{ t('cloud.term.recommended') }}</h2>
+            <p class="cloud-pricing-card__desc">{{ t('cloud.build.rec_help') }}</p>
+            <ul class="cloud-pricing-features">
+              <li>{{ t('cloud.term.processing') }}: <bdi dir="ltr">{{ guide.recommended.vcpu }}</bdi></li>
+              <li>{{ t('cloud.term.memory') }}: <bdi dir="ltr">{{ guide.recommended.ram_gb }} GB</bdi></li>
+              <li>{{ t('cloud.term.storage') }}: <bdi dir="ltr">{{ guide.recommended.storage_gb }} GB</bdi></li>
+              <li>{{ t('cloud.term.monthly_total') }}: <bdi dir="ltr">{{ format_money(guide.recommended.monthly_cents, guide.pricing.currency) }} {{ guide.pricing.currency }}</bdi></li>
+            </ul>
+            <button type="submit" name="profile" value="recommended" class="btn-hero btn-hero--primary">{{ t('cloud.build.use_recommended') }}</button>
+          </article>
+        </div>
+
+        <section class="cloud-setup-section flow-card" style="margin-top:24px" aria-labelledby="custom-resources-title">
+          <h2 id="custom-resources-title">{{ t('cloud.build.increase_title') }}</h2>
+          <p>{{ t('cloud.build.increase_lead') }}</p>
+          <div class="cloud-field-grid">
+            <label class="field"><span>{{ t('cloud.term.processing') }} (vCPU)</span><input type="number" name="vcpu" min="{{ guide.minimum.vcpu }}" max="{{ guide.catalog.vcpu.max }}" step="{{ guide.catalog.vcpu.step }}" value="{{ chosen.vcpu }}" required></label>
+            <label class="field"><span>{{ t('cloud.term.memory') }} (GB)</span><input type="number" name="ram_gb" min="{{ guide.minimum.ram_gb }}" max="{{ guide.catalog.ram_gb.max }}" step="{{ guide.catalog.ram_gb.step }}" value="{{ chosen.ram_gb }}" required></label>
+            <label class="field"><span>{{ t('cloud.term.storage') }} (GB)</span><input type="number" name="storage_gb" min="{{ guide.minimum.storage_gb }}" max="{{ guide.catalog.storage_gb.max }}" step="{{ guide.catalog.storage_gb.step }}" value="{{ chosen.storage_gb }}" required></label>
+          </div>
+          <button type="submit" name="profile" value="custom"{% if compute_quote and not compute_quote.validation.valid %} disabled aria-disabled="true"{% endif %} class="btn-hero btn-hero--primary">{{ t('cloud.build.continue_review') }}</button>
+        {% if compute_quote and not compute_quote.validation.valid %}<p class="muted" data-hc-capacity-error style="margin-top:12px">{{ compute_quote.validation.errors[0].message if compute_quote.validation.errors else "Selection cannot be provisioned." }}</p>{% endif %}
+</section>
+      </form>
+
+      <aside class="cloud-quote cloud-setup-summary" aria-live="polite" data-hc-capacity-status="{{ compute_quote.validation.limiting_factor if compute_quote else "" }}">
+        <h2>{{ t('cloud.term.monthly_total') }}</h2>
+        <dl class="cloud-due-list">
+          <div><dt>{{ t('cloud.term.platform_fee') }}</dt><dd>{% if selected_plan.quote_required %}{{ t('cloud.custom_quote') }}{% elif platform_quote %}<bdi dir="ltr">{{ format_money(selected_plan.price_monthly_cents if selected_cycle != 'annual' else selected_plan.price_annual_cents, selected_plan.currency) }} {{ selected_plan.currency }}</bdi>{% endif %}</dd></div>
+          <div><dt>{{ t('cloud.term.cloud_resources') }}</dt><dd>{% if compute_quote and compute_quote.validation.valid %}<bdi dir="ltr">{{ compute_quote.resource_price_display }} {{ compute_quote.currency }}</bdi>{% else %}{{ t('cloud.term.resources_pending') }}{% endif %}</dd></div>
+          <div><dt>{{ t('cloud.term.addons') }}</dt><dd>{{ t('cloud.term.addons_later') }}</dd></div>
+        </dl>
+        <p class="cloud-summary-note">{{ t('cloud.term.monthly_total_note') }}</p>
+        {% if reservation %}
+        <p class="cloud-reservation-status" data-hc-reservation-state="{{ reservation.state }}">{{ t('cloud.term.reserved') }}: <code>{{ reservation.reservation_id }}</code></p>
+        {% endif %}
+        <p class="muted">{{ t('cloud.build.hc_placeholder') }}</p>
+      </aside>
+    </div>
+  </main>
+  {% include "partials/site_footer.html" %}
+</div>
+{% endblock %}

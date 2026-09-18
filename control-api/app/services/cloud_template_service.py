@@ -14,11 +14,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings, odoo_image_for_version
 from app.models import CloudTemplate
-from app.product_lines import CLOUD_TEMPLATE_HEALTHY, CLOUD_TEMPLATE_KIND, CLOUD_TEMPLATE_VALIDATED_STATUSES, PRODUCT_LINE_HELPERS_CLOUD
+from app.product_lines import (
+    CLOUD_DEMO_TEMPLATE_KIND,
+    CLOUD_TEMPLATE_HEALTHY,
+    CLOUD_TEMPLATE_KIND,
+    CLOUD_TEMPLATE_READINESS_DRAFT,
+    CLOUD_TEMPLATE_READINESS_SELECTABLE,
+    CLOUD_TEMPLATE_VALIDATED_STATUSES,
+    PRODUCT_LINE_HELPERS_CLOUD,
+)
 from app.services.module_catalog_service import BASE_REQUIRED_MODULES
 from app.services.provisioning_identifiers import assert_safe_identifier
 from app.services.tenant_postgres_service import init_empty_template_database
@@ -29,6 +38,13 @@ CLOUD_BASE_TEMPLATE_PACKAGE = "trading"
 CLOUD_BASE_TEMPLATE_VERSION = "19.0"
 CLOUD_BASE_TEMPLATE_DB = "mosh_tpl_cloud_base_19_0_trading"
 CLOUD_BASE_TEMPLATE_KIND = CLOUD_TEMPLATE_KIND  # "cloud_base"
+
+DEMO_CATALOG_INDUSTRY = "general"
+DEMO_CATALOG_PACKAGES = ("sales", "trading", "operations", "full_erp")
+DEMO_CATALOG_VERSION = "19.0"
+DEMO_CATALOG_EDITION = "community"
+DEMO_CATALOG_LANGUAGES = "ar,en"
+
 
 class CloudTemplateError(Exception):
     def __init__(self, message: str, code: str = "cloud_template_error"):
@@ -41,6 +57,229 @@ def _cloud_template_conf_paths(template_id: int) -> tuple[Path, Path]:
     settings = get_settings()
     rel = Path(".cloud-tpl-build") / str(template_id)
     return Path(settings.tenant_root) / rel, Path(settings.tenant_host_root) / rel
+
+
+def demo_catalog_code(
+    industry: str,
+    package: str,
+    *,
+    odoo_version: str = DEMO_CATALOG_VERSION,
+    edition: str = DEMO_CATALOG_EDITION,
+) -> str:
+    """Stable catalog identity; not derived from display names."""
+    return f"demo-{odoo_version}-{edition}-{industry}-{package}"
+
+
+def _supported_languages(tpl: CloudTemplate) -> list[str]:
+    return [part.strip().lower() for part in (tpl.supported_languages or "").split(",") if part.strip()]
+
+
+def _raise_demo(code: str) -> None:
+    messages = {
+        "unsupported_language": "The requested language is not supported for this demo catalog selection.",
+        "unsupported_version": "The requested Odoo version is not supported for demo catalog selection.",
+        "unsupported_edition": "The requested edition is not supported for demo catalog selection.",
+        "invalid_template_kind": "The matching catalog entry is not a demo template.",
+        "inactive_template": "The matching demo catalog entry is inactive.",
+        "template_not_prepared": "The matching demo catalog entry is not prepared for cloning.",
+        "missing_source_metadata": "The matching demo catalog entry is missing source identity metadata.",
+        "ambiguous_demo_template": "Multiple prepared demo catalog entries match this selection.",
+        "duplicate_catalog_code": "A catalog entry with this code already exists.",
+        "demo_template_not_found": "No demo catalog entry matches this selection.",
+    }
+    raise CloudTemplateError(messages.get(code, "Demo catalog selection failed."), code)
+
+
+def assert_catalog_code_available(db: Session, catalog_code: str, *, exclude_id: int | None = None) -> str:
+    code = (catalog_code or "").strip()
+    if not code:
+        return ""
+    stmt = select(CloudTemplate).where(CloudTemplate.catalog_code == code)
+    if exclude_id is not None:
+        stmt = stmt.where(CloudTemplate.id != exclude_id)
+    if db.scalar(stmt) is not None:
+        _raise_demo("duplicate_catalog_code")
+    return code
+
+
+def get_demo_template(
+    db: Session,
+    industry: str,
+    package: str,
+    language: str,
+    odoo_version: str = DEMO_CATALOG_VERSION,
+    edition: str = DEMO_CATALOG_EDITION,
+) -> CloudTemplate:
+    """Deterministic selector for a prepared demo template. Fail-closed."""
+    industry_n = (industry or "").strip()
+    package_n = (package or "").strip()
+    language_n = (language or "").strip().lower()
+    version_n = (odoo_version or "").strip()
+    edition_n = (edition or "").strip().lower()
+
+    if version_n != DEMO_CATALOG_VERSION:
+        _raise_demo("unsupported_version")
+    if edition_n != DEMO_CATALOG_EDITION:
+        _raise_demo("unsupported_edition")
+
+    slot_rows = list(
+        db.scalars(
+            select(CloudTemplate).where(
+                CloudTemplate.industry_code == industry_n,
+                CloudTemplate.package_code == package_n,
+            )
+        ).all()
+    )
+    if not slot_rows:
+        _raise_demo("demo_template_not_found")
+
+    demo_rows = [row for row in slot_rows if row.template_kind == CLOUD_DEMO_TEMPLATE_KIND]
+    if not demo_rows:
+        _raise_demo("invalid_template_kind")
+
+    version_rows = [row for row in demo_rows if (row.odoo_version_code or "") == version_n]
+    if not version_rows:
+        _raise_demo("unsupported_version")
+
+    edition_rows = [row for row in version_rows if (row.edition or "").strip().lower() == edition_n]
+    if not edition_rows:
+        _raise_demo("unsupported_edition")
+
+    active_rows = [row for row in edition_rows if bool(row.active)]
+    if not active_rows:
+        _raise_demo("inactive_template")
+
+    ready_rows = [
+        row for row in active_rows if (row.readiness_state or "") in CLOUD_TEMPLATE_READINESS_SELECTABLE
+    ]
+    if not ready_rows:
+        _raise_demo("template_not_prepared")
+
+    sourced = [row for row in ready_rows if (row.postgres_database_name or "").strip()]
+    if not sourced:
+        _raise_demo("missing_source_metadata")
+
+    coded = [row for row in sourced if (row.catalog_code or "").strip()]
+    if not coded:
+        _raise_demo("demo_template_not_found")
+
+    language_rows = [row for row in coded if language_n in _supported_languages(row)]
+    if not language_rows:
+        _raise_demo("unsupported_language")
+
+    if len(language_rows) > 1:
+        _raise_demo("ambiguous_demo_template")
+
+    return language_rows[0]
+
+
+def seed_demo_template_catalog(db: Session) -> list[CloudTemplate]:
+    """Idempotent metadata-only demo catalog. Never marks entries prepared/clonable."""
+    seeded: list[CloudTemplate] = []
+    for package in DEMO_CATALOG_PACKAGES:
+        code = demo_catalog_code(DEMO_CATALOG_INDUSTRY, package)
+        existing = db.scalar(select(CloudTemplate).where(CloudTemplate.catalog_code == code))
+        if existing is not None:
+            seeded.append(existing)
+            continue
+        slot = db.scalar(
+            select(CloudTemplate).where(
+                CloudTemplate.industry_code == DEMO_CATALOG_INDUSTRY,
+                CloudTemplate.package_code == package,
+                CloudTemplate.odoo_version_code == DEMO_CATALOG_VERSION,
+                CloudTemplate.edition == DEMO_CATALOG_EDITION,
+                CloudTemplate.template_kind == CLOUD_DEMO_TEMPLATE_KIND,
+            )
+        )
+        if slot is not None:
+            if (slot.catalog_code or "").strip() and slot.catalog_code != code:
+                _raise_demo("duplicate_catalog_code")
+            if not (slot.catalog_code or "").strip():
+                assert_catalog_code_available(db, code, exclude_id=slot.id)
+                slot.catalog_code = code
+            seeded.append(slot)
+            continue
+        assert_catalog_code_available(db, code)
+        row = CloudTemplate(
+            catalog_code=code,
+            product_line=PRODUCT_LINE_HELPERS_CLOUD,
+            industry_code=DEMO_CATALOG_INDUSTRY,
+            package_code=package,
+            odoo_version_code=DEMO_CATALOG_VERSION,
+            edition=DEMO_CATALOG_EDITION,
+            template_kind=CLOUD_DEMO_TEMPLATE_KIND,
+            supported_languages=DEMO_CATALOG_LANGUAGES,
+            active=False,
+            readiness_state=CLOUD_TEMPLATE_READINESS_DRAFT,
+            status="draft",
+            health="unhealthy",
+            postgres_database_name=None,
+        )
+        try:
+            with db.begin_nested():
+                db.add(row)
+                db.flush()
+        except IntegrityError:
+            # Live DBs may still have UNIQUE(package_code, odoo_version_code), which
+            # blocks demo_template next to an existing cloud_base row. Leave that
+            # occupant untouched and continue seeding other packages.
+            logger.info(
+                "Skipping demo catalog insert for package=%s version=%s; slot occupied",
+                package,
+                DEMO_CATALOG_VERSION,
+            )
+            occupant = db.scalar(
+                select(CloudTemplate).where(
+                    CloudTemplate.package_code == package,
+                    CloudTemplate.odoo_version_code == DEMO_CATALOG_VERSION,
+                )
+            )
+            if occupant is not None:
+                seeded.append(occupant)
+            continue
+        seeded.append(row)
+    db.commit()
+    for row in seeded:
+        db.refresh(row)
+    return seeded
+
+
+def create_demo_catalog_entry(
+    db: Session,
+    *,
+    catalog_code: str,
+    industry: str,
+    package: str,
+    odoo_version: str = DEMO_CATALOG_VERSION,
+    edition: str = DEMO_CATALOG_EDITION,
+    supported_languages: str = DEMO_CATALOG_LANGUAGES,
+    postgres_database_name: str | None = None,
+    active: bool = False,
+    readiness_state: str = CLOUD_TEMPLATE_READINESS_DRAFT,
+) -> CloudTemplate:
+    """Create one demo catalog metadata row. Does not build or clone a database."""
+    code = assert_catalog_code_available(db, catalog_code)
+    if not code:
+        _raise_demo("demo_template_not_found")
+    row = CloudTemplate(
+        catalog_code=code,
+        product_line=PRODUCT_LINE_HELPERS_CLOUD,
+        industry_code=industry,
+        package_code=package,
+        odoo_version_code=odoo_version,
+        edition=edition,
+        template_kind=CLOUD_DEMO_TEMPLATE_KIND,
+        supported_languages=supported_languages,
+        active=active,
+        readiness_state=readiness_state,
+        status="draft",
+        health="unhealthy",
+        postgres_database_name=postgres_database_name,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return row
 
 
 def _verify_template_database_accessible(db_name: str) -> bool:
@@ -233,11 +472,16 @@ def _validate_cloud_template(db: Session, tpl: CloudTemplate) -> CloudTemplate:
     return tpl
 
 
-def get_validated_cloud_template(db: Session, template_id: int) -> CloudTemplate:
-    """Get and verify a validated cloud_base template. Fail-closed."""
-    tpl = db.get(CloudTemplate, template_id)
-    if not tpl:
-        raise CloudTemplateError("Cloud template not found", "not_found")
+def validate_cloud_template_metadata(tpl: CloudTemplate) -> CloudTemplate:
+    """Validate template metadata fields without live DB access.
+
+    Checks product_line, template_kind, status, health, and postgres_database_name.
+    Does NOT verify database accessibility — use ``get_validated_cloud_template``
+    for the full check including live DB verification.
+
+    This split allows tests and helpers to prove contract correctness without
+    starting a worker or touching UAT tenants (TM-D3 testability).
+    """
     if tpl.product_line != PRODUCT_LINE_HELPERS_CLOUD:
         raise CloudTemplateError("Template wrong product line", "wrong_product_line")
     if tpl.template_kind != CLOUD_BASE_TEMPLATE_KIND:
@@ -248,6 +492,20 @@ def get_validated_cloud_template(db: Session, template_id: int) -> CloudTemplate
         raise CloudTemplateError(f"Template unhealthy: {tpl.health!r}", "unhealthy")
     if not tpl.postgres_database_name:
         raise CloudTemplateError("Template missing postgres database", "db_missing")
+    return tpl
+
+
+def get_validated_cloud_template(db: Session, template_id: int) -> CloudTemplate:
+    """Get and verify a validated cloud_base template. Fail-closed.
+
+    Validates metadata AND verifies live database accessibility.
+    For unit tests that need to prove contract without a live DB, use
+    ``validate_cloud_template_metadata`` directly on a fixture template.
+    """
+    tpl = db.get(CloudTemplate, template_id)
+    if not tpl:
+        raise CloudTemplateError("Cloud template not found", "not_found")
+    validate_cloud_template_metadata(tpl)
     if not _verify_template_database_accessible(tpl.postgres_database_name):
         raise CloudTemplateError("Template database not accessible", "db_inaccessible")
     return tpl

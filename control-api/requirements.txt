@@ -8,6 +8,7 @@ itsdangerous==2.2.0
 pydantic==2.10.4
 pydantic-settings==2.7.0
 cryptography==44.0.0
+PyJWT==2.10.1
 pytest==8.3.4
 docker==7.1.0
 psycopg2-binary==2.9.10

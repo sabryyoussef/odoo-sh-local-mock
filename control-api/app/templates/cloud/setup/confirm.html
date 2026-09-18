@@ -1,50 +1,81 @@
 {% extends "cloud/setup/_wizard_base.html" %}
 {% block wizard_body %}
-<div class="flow-header">
-  <h1>{{ t('cloud.confirm_title') }}</h1>
-  <p><span class="badge badge--warning">{{ t('cloud.presentation') }}</span> {{ t('cloud.no_charge') }}</p>
-</div>
-{% if error_message %}<div class="sub-result sub-result--bad" role="alert" id="form-error-summary" tabindex="-1">{{ error_message }}</div>{% endif %}
-<section class="flow-card">
-  <dl class="kv">
-    <div><dt>{{ t('cloud.customer') }}</dt><dd>{{ user.name }} · {{ user.email }}</dd></div>
-    <div><dt>{{ t('cloud.company') }}</dt><dd>{{ snapshot.company.legal_company_name }}</dd></div>
-    <div><dt>{{ t('cloud.workspace_name') }}</dt><dd>{{ snapshot.company.workspace_name }} ({{ hostname }})</dd></div>
-    <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ snapshot.plan.name }} · {{ snapshot.billing_cycle }}</dd></div>
-    <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ snapshot.package.name }}</dd></div>
-    <div><dt>{{ t('cloud.users') }}</dt><dd>{{ snapshot.users }}</dd></div>
-    <div><dt>{{ t('cloud.storage_gb') }}</dt><dd>{{ snapshot.storage_gb }} GB</dd></div>
-    <div><dt>{{ t('cloud.country') }}</dt><dd>{{ snapshot.company.country }} · {{ snapshot.company.currency }} · {{ snapshot.company.language }}</dd></div>
-    <div><dt>{{ t('cloud.optional_addons') }}</dt><dd>{% for a in snapshot.addons %}{{ a.name }}{% if not loop.last %}, {% endif %}{% else %}{{ t('cloud.none') }}{% endfor %}</dd></div>
-  </dl>
-</section>
-<section class="flow-card">
-  <h2>{{ t('cloud.price_breakdown') }}</h2>
-  {% if quote_required %}
-    <p class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></p>
-    <p class="muted">{{ t('cloud.enterprise_quote_note') }}</p>
-  {% else %}
-    <ul class="pricing-features">
-      {% for line in pricing.lines %}
-        <li>{{ line.label }} · {{ format_money(line.cents, pricing.currency) }}</li>
-      {% endfor %}
-    </ul>
-    <p><strong>{{ t('cloud.total') }} {{ pricing.total_display }} / {{ pricing.period_label }}</strong></p>
-    {% if pricing.billing_cycle == 'annual' %}
-      <p class="muted">{{ t('cloud.yearly_total') }}{% if pricing.monthly_equivalent_display %} · {{ t('cloud.equiv_month') }} {{ pricing.monthly_equivalent_display }}{% endif %}</p>
-    {% endif %}
-  {% endif %}
-</section>
-<form method="post" action="/cloud/setup/confirm" id="cloud-confirm-form">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
-  <div class="flow-actions">
-    <a class="btn" href="/cloud/setup">{{ t('cloud.back') }}</a>
-    <button type="submit" class="btn-hero btn-hero--primary" id="cloud-confirm-cta" data-disable-after-submit="1">
-      {% if quote_required %}{{ t('cloud.submit_enterprise') }}{% else %}{{ t('cloud.place_demo_order') }}{% endif %}
-    </button>
+<div class="cloud-confirm-shell">
+  <div class="cloud-confirm-main">
+    <section class="cloud-setup-hero flow-card">
+      {% if snapshot.plan.is_demo %}
+      <p class="cloud-plan-chip"><span class="badge badge--warning">{{ t('cloud.demo.badge_free') }}</span><span>{{ t('cloud.demo.confirm_reassurance') }}</span></p>
+      {% else %}
+      <p class="cloud-plan-chip"><span class="badge badge--warning">{{ t('cloud.presentation') }}</span><span>{{ t('cloud.no_charge') }}</span></p>
+      {% endif %}
+      <h1>{{ t('cloud.confirm_title') }}</h1>
+      <p>{{ t('cloud.confirm_lead') }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading"><p class="cloud-section-kicker">{{ t('cloud.confirm_section_company') }}</p><h2>{{ t('cloud.company_workspace') }}</h2></div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('cloud.customer') }}</dt><dd>{{ user.name }} · {{ user.email }}</dd></div>
+        <div><dt>{{ t('cloud.company') }}</dt><dd>{{ snapshot.company.legal_company_name }}</dd></div>
+        <div><dt>{{ t('cloud.workspace_name') }}</dt><dd>{{ snapshot.company.workspace_name }}</dd></div>
+        <div><dt>{{ t('cloud.workspace_url') }}</dt><dd><bdi dir="ltr">{{ hostname }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.country') }}</dt><dd>{{ confirm_view.country }} · <bdi dir="ltr">{{ snapshot.company.currency }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.language') }}</dt><dd>{{ confirm_view.language }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading"><p class="cloud-section-kicker">{{ t('cloud.confirm_section_package') }}</p><h2>{{ t('cloud.choose_how') }}</h2><p>{{ confirm_view.package_description }}</p></div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ confirm_view.plan_name }} · {{ confirm_view.billing_cycle }}</dd></div>
+        <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ confirm_view.package_name }}</dd></div>
+        <div><dt>{{ t('cloud.users') }}</dt><dd><bdi dir="ltr">{{ snapshot.users }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.storage_gb') }}</dt><dd><bdi dir="ltr">{{ snapshot.storage_gb }}</bdi> {{ t('cloud.unit_gb') }}</dd></div>
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.optional_addons') }}</dt><dd>{% for name in confirm_view.addons %}{{ name }}{% if not loop.last %}, {% endif %}{% else %}{{ t('cloud.none') }}{% endfor %}</dd></div>
+      </dl>
+    </section>
   </div>
-</form>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary" aria-live="polite">
+    <h2>{{ t('cloud.price_breakdown') }}</h2>
+    {% if quote_required %}
+      <p class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></p>
+      <p class="muted">{{ t('cloud.enterprise_quote_note') }}</p>
+    {% elif confirm_view.quote %}
+      <p class="pricing-price"><strong>{{ confirm_view.quote.total_display }}</strong> <span>/ {{ confirm_view.quote.period_label }}</span></p>
+      {% if confirm_view.quote.billing_cycle == 'annual' %}
+        <p class="muted">{{ t('cloud.yearly_total') }}{% if confirm_view.quote.monthly_equivalent_display %} · {{ t('cloud.equiv_month') }} {{ confirm_view.quote.monthly_equivalent_display }}{% endif %}</p>
+      {% endif %}
+      <ul class="pricing-features">
+        {% for line in confirm_view.quote.lines %}
+          {% if line.cents %}<li>{{ line.label }} · {{ format_money(line.cents, confirm_view.quote.currency) }}</li>{% endif %}
+        {% endfor %}
+        {% if confirm_view.quote.resources_pending_label %}
+          <li>{{ confirm_view.quote.resources_pending_label }} · {{ confirm_view.quote.resources_pending_value }}</li>
+        {% endif %}
+      </ul>
+      <p class="muted">{{ confirm_view.quote.monthly_total_note }}</p>
+      <p class="pricing-price"><strong>{{ confirm_view.quote.monthly_total_label }}</strong></p>
+      <p>{{ confirm_view.quote.total_display }} + {{ confirm_view.quote.resources_pending_label }}</p>
+      <dl class="cloud-due-list">
+        <div><dt>{{ t('cloud.setup.due_today') }}</dt><dd>{{ confirm_view.quote.due_today }}</dd></div>
+        <div><dt>{{ t('cloud.setup.after_trial') }}</dt><dd>{{ confirm_view.quote.after_trial }}</dd></div>
+        <div><dt>{{ t('cloud.setup.monthly_recurring') }}</dt><dd>{{ confirm_view.quote.monthly_recurring }}</dd></div>
+      </dl>
+    {% endif %}
+    <p class="cloud-summary-note">{{ t('cloud.confirm_reassurance') }}</p>
+    <form method="post" action="{{ locale_url('/cloud/setup/confirm') }}" id="cloud-confirm-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+      <div class="flow-actions cloud-confirm-actions">
+        <a class="btn" href="{{ locale_url('/cloud/setup') }}">{{ t('cloud.back') }}</a>
+        <button type="submit" class="btn-hero btn-hero--primary cloud-register-submit" id="cloud-confirm-cta" data-disable-after-submit="1">
+          {% if quote_required %}{{ t('cloud.submit_enterprise') }}{% elif snapshot.plan.is_demo %}{{ t('cloud.place_demo_order') }}{% else %}{{ t('cloud.confirm_paid_cta') }}{% endif %}
+        </button>
+      </div>
+    </form>
+  </aside>
+</div>
 {% endblock %}
 {% block scripts %}
 <script>

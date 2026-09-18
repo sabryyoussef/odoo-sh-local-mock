@@ -1,0 +1,5 @@
+Programmatic denial failed: denied != true, result={'operation': 'res.config.settings search_read', 'user_uid': 5, 'denied': False, 'error_type': 'auth_failed', 'status': 500}
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_final_isolated_harness.py", line 1208, in <module>
+    raise RuntimeError(f"Programmatic denial failed: denied != true, result={programmatic_result}")
+RuntimeError: Programmatic denial failed: denied != true, result={'operation': 'res.config.settings search_read', 'user_uid': 5, 'denied': False, 'error_type': 'auth_failed', 'status': 500}

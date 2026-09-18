@@ -1,43 +1,141 @@
 {% extends "cloud/base.html" %}
 {% block title %}{{ t('cloud.register_title') }}{% endblock %}
 {% block cloud_crumb %} · {{ t('cloud.create_account') }}{% endblock %}
+
+{% macro tip(id, text) -%}
+  <span class="cloud-tip">
+    <button type="button" class="cloud-tip-btn" data-tooltip-trigger aria-label="{{ t('cloud.tooltip_open') }}" aria-expanded="false" aria-controls="{{ id }}">i</button>
+    <span class="cloud-tip-bubble" id="{{ id }}" role="tooltip" hidden>{{ text }}</span>
+  </span>
+{%- endmacro %}
+
 {% block cloud_content %}
-<div class="flow-header">
+<div class="flow-header cloud-register-heading">
   <h1>{{ t('cloud.register_title') }}</h1>
   <p>{{ t('cloud.register_lead') }}</p>
 </div>
 {% if error_message %}
   <div class="sub-result sub-result--bad" role="alert" id="form-error-summary" tabindex="-1">{{ error_message }}</div>
 {% endif %}
-<section class="flow-card" style="max-width:640px">
-  <form method="post" action="/cloud/register" class="deploy-form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="hidden" name="plan" value="{{ plan|default('') }}">
-    <input type="hidden" name="cycle" value="{{ cycle|default('') }}">
-    <label class="field"><span>{{ t('cloud.full_name') }}</span>
-      <input type="text" name="full_name" id="full_name" value="{{ form.full_name|default('') }}" autocomplete="name" required {% if errors.full_name %}aria-invalid="true" aria-describedby="err-full_name"{% endif %}>
-      {% if errors.full_name %}<small class="field-error" id="err-full_name">{{ errors.full_name }}</small>{% endif %}
-    </label>
-    <label class="field"><span>{{ t('cloud.email') }}</span>
-      <input type="email" name="email" id="email" value="{{ form.email|default('') }}" autocomplete="email" required {% if errors.email %}aria-invalid="true" aria-describedby="err-email"{% endif %}>
-      {% if errors.email %}<small class="field-error" id="err-email">{{ errors.email }}</small>{% endif %}
-    </label>
-    <label class="field"><span>{{ t('cloud.password') }}</span>
-      <input type="password" name="password" id="password" autocomplete="new-password" required minlength="8" {% if errors.password %}aria-invalid="true" aria-describedby="err-password"{% endif %}>
-      {% if errors.password %}<small class="field-error" id="err-password">{{ errors.password }}</small>{% endif %}
-    </label>
-    <label class="field"><span>{{ t('cloud.password_confirm') }}</span>
-      <input type="password" name="password_confirm" id="password_confirm" autocomplete="new-password" required minlength="8" {% if errors.password_confirm %}aria-invalid="true" aria-describedby="err-password_confirm"{% endif %}>
-      {% if errors.password_confirm %}<small class="field-error" id="err-password_confirm">{{ errors.password_confirm }}</small>{% endif %}
-    </label>
-    <label class="field">
-      <span><input type="checkbox" name="terms" value="1" required {% if form.terms %}checked{% endif %}> {{ t('cloud.terms') }}</span>
-      {% if errors.terms %}<small class="field-error">{{ errors.terms }}</small>{% endif %}
-    </label>
-    <div class="flow-actions">
-      <button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.create_account_btn') }}</button>
-      <a class="btn" href="/cloud/login{% if plan %}?plan={{ plan }}&amp;cycle={{ cycle }}{% endif %}">{{ t('cloud.have_account') }}</a>
+<section class="cloud-register-layout" aria-label="{{ t('cloud.create_account') }}">
+  <aside class="cloud-register-promo" aria-labelledby="cloud-register-promo-title">
+    <div class="flow-card cloud-register-promo-card">
+      <div class="cloud-register-visual" role="img" aria-label="{{ t('cloud.register_visual_alt') }}" data-replaceable-image="cloud-register-promo">
+        <div class="cloud-register-visual-art" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <p class="cloud-register-visual-note">{{ t('cloud.register_visual_pending') }}</p>
+      <p class="cloud-register-eyebrow">{{ t('cloud.register_promo_eyebrow') }}</p>
+      <h2 id="cloud-register-promo-title">{{ t('cloud.register_promo_title') }}</h2>
+      <ul class="cloud-register-benefits">
+        <li>{{ t('cloud.register_promo_benefit_1') }}</li>
+        <li>{{ t('cloud.register_promo_benefit_2') }}</li>
+        <li>{{ t('cloud.register_promo_benefit_3') }}</li>
+      </ul>
+      <p class="cloud-register-trust">{{ t('cloud.register_promo_trust') }}</p>
+      <div class="cloud-register-visual-options" aria-label="{{ t('cloud.visual_options_label') }}">
+        <h3 class="cloud-register-visual-options-title">{{ t('cloud.visual_directions_title') }}</h3>
+        <article class="cloud-register-visual-option">
+          <div class="cloud-register-mockup cloud-register-mockup--laptop" aria-hidden="true"><span></span><span></span><span></span></div>
+          <h3>{{ t('cloud.visual_option_a_title') }}</h3>
+          <p>{{ t('cloud.visual_option_a_body') }}</p>
+        </article>
+        <article class="cloud-register-visual-option">
+          <div class="cloud-register-mockup cloud-register-mockup--network" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+          <h3>{{ t('cloud.visual_option_b_title') }}</h3>
+          <p>{{ t('cloud.visual_option_b_body') }}</p>
+        </article>
+        <article class="cloud-register-visual-option">
+          <div class="cloud-register-mockup cloud-register-mockup--team" aria-hidden="true"><span></span><span></span><span></span></div>
+          <h3>{{ t('cloud.visual_option_c_title') }}</h3>
+          <p>{{ t('cloud.visual_option_c_body') }}</p>
+        </article>
+      </div>
     </div>
-  </form>
+  </aside>
+
+  <div class="cloud-register-main">
+    <div class="flow-card cloud-register-card">
+      <form method="post" action="{{ locale_url('/cloud/register') }}" class="deploy-form cloud-register-form" novalidate data-cloud-register-form data-submitting-label="{{ t('cloud.submitting') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="plan" value="{{ plan|default('') }}">
+        <input type="hidden" name="cycle" value="{{ cycle|default('') }}">
+        {% if next_url %}<input type="hidden" name="next" value="{{ next_url }}">{% endif %}
+
+        {% include "cloud/_google_continue.html" %}
+
+        <div class="field">
+          <div class="field-label-row"><label for="full_name">{{ t('cloud.full_name') }}</label>{{ tip('tip-full-name', t('cloud.tooltip_full_name')) }}</div>
+          <input type="text" name="full_name" id="full_name" value="{{ form.full_name|default('') }}" autocomplete="name" required minlength="2" data-validate="full_name" data-error-message="{{ t('cloud.err_full_name') }}" aria-describedby="tip-full-name{% if errors.full_name %} err-full_name{% endif %}" {% if errors.full_name %}aria-invalid="true"{% endif %}>
+          <small class="field-error" id="err-full_name" {% if not errors.full_name %}hidden{% endif %}>{{ errors.full_name|default('') }}</small>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row"><label for="email">{{ t('cloud.email') }}</label>{{ tip('tip-email', t('cloud.tooltip_email')) }}</div>
+          <input type="email" name="email" id="email" value="{{ form.email|default('') }}" autocomplete="email" inputmode="email" required data-validate="email" data-error-message="{{ t('cloud.err_email') }}" aria-describedby="tip-email{% if errors.email %} err-email{% endif %}" {% if errors.email %}aria-invalid="true"{% endif %}>
+          <small class="field-error" id="err-email" {% if not errors.email %}hidden{% endif %}>{{ errors.email|default('') }}</small>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row"><label for="password">{{ t('cloud.password') }}</label>{{ tip('tip-password', t('cloud.tooltip_password')) }}</div>
+          <div class="cloud-password-wrap">
+            <input type="password" name="password" id="password" autocomplete="new-password" required minlength="8" data-validate="password" data-error-message="{{ t('cloud.err_password') }}" aria-describedby="hint-password tip-password{% if errors.password %} err-password{% endif %}" {% if errors.password %}aria-invalid="true"{% endif %}>
+            <button type="button" class="cloud-password-toggle" data-password-toggle="password" aria-controls="password" aria-pressed="false" aria-label="{{ t('cloud.password_show') }}" data-label-show="{{ t('cloud.password_show') }}" data-label-hide="{{ t('cloud.password_hide') }}"></button>
+          </div>
+          <small class="field-hint" id="hint-password">{{ t('cloud.password_hint') }}</small>
+          <small class="field-error" id="err-password" {% if not errors.password %}hidden{% endif %}>{{ errors.password|default('') }}</small>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row"><label for="password_confirm">{{ t('cloud.password_confirm') }}</label></div>
+          <div class="cloud-password-wrap">
+            <input type="password" name="password_confirm" id="password_confirm" autocomplete="new-password" required minlength="8" data-validate="password_confirm" data-error-message="{{ t('cloud.err_password_confirm') }}" aria-describedby="{% if errors.password_confirm %}err-password_confirm{% endif %}" {% if errors.password_confirm %}aria-invalid="true"{% endif %}>
+            <button type="button" class="cloud-password-toggle" data-password-toggle="password_confirm" aria-controls="password_confirm" aria-pressed="false" aria-label="{{ t('cloud.password_show') }}" data-label-show="{{ t('cloud.password_show') }}" data-label-hide="{{ t('cloud.password_hide') }}"></button>
+          </div>
+          <small class="field-error" id="err-password_confirm" {% if not errors.password_confirm %}hidden{% endif %}>{{ errors.password_confirm|default('') }}</small>
+        </div>
+
+        <div class="field cloud-terms-field">
+          <label class="cloud-terms-check" for="terms">
+            <input type="checkbox" name="terms" id="terms" value="1" required data-validate="terms" data-error-message="{{ t('cloud.err_terms') }}" aria-describedby="{% if errors.terms %}err-terms{% endif %}" {% if form.terms %}checked{% endif %} {% if errors.terms %}aria-invalid="true"{% endif %}>
+            <span>{{ t('cloud.terms') }}</span>
+          </label>
+          <p class="cloud-terms-links"><a href="{{ locale_url('/terms') }}" target="_blank" rel="noopener">{{ t('cloud.terms_label') }}</a> <span aria-hidden="true">·</span> <a href="{{ locale_url('/privacy') }}" target="_blank" rel="noopener">{{ t('cloud.privacy_label') }}</a></p>
+          <small class="field-error" id="err-terms" {% if not errors.terms %}hidden{% endif %}>{{ errors.terms|default('') }}</small>
+        </div>
+
+        <div class="flow-actions cloud-register-actions"><button type="submit" class="btn-hero btn-hero--primary cloud-register-submit">{{ t('cloud.create_account_btn') }}</button></div>
+        <p class="cloud-login-link"><a href="{{ login_url|default('') or locale_url('/cloud/login' ~ ('?plan=' ~ plan ~ '&cycle=' ~ cycle if plan else '')) }}">{{ t('cloud.have_account') }}</a></p>
+      </form>
+    </div>
+  </div>
+
+  <aside class="cloud-register-summary">
+    <div class="flow-card cloud-register-summary-card">
+      <details class="cloud-summary-details" data-cloud-summary open>
+        <summary class="cloud-summary-toggle"><h2>{{ t('cloud.plan_summary_heading') }}</h2></summary>
+        <div class="cloud-summary-body">
+          <div class="cloud-register-plan-box">
+            <div class="cloud-plan-name"><strong>{{ plan_label|default('') or (t('cloud.plan_name_trial') if plan == 'trial' else t('cloud.plan_name_generic')) }}</strong></div>
+            <div class="cloud-plan-cycle">{{ cycle_label|default('') or (t('cloud.cycle_annual') if cycle == 'annual' else t('cloud.cycle_monthly')) }}</div>
+          </div>
+          <h3 class="cloud-summary-subhead">{{ t('cloud.plan_summary_next_heading') }}</h3>
+          <p>{{ t('cloud.plan_summary_next') }}</p>
+          <ul class="cloud-summary-glossary">
+            <li>{{ t('cloud.company') }} URL {{ tip('tip-company-url', t('cloud.tooltip_company_url')) }}</li>
+            <li>{{ t('cloud.users') }} {{ tip('tip-users', t('cloud.tooltip_users')) }}</li>
+            <li>{{ t('cloud.storage') }} {{ tip('tip-storage', t('cloud.tooltip_storage')) }}</li>
+          </ul>
+          <a class="cloud-summary-link" href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.plan_summary_change') }}</a>
+        </div>
+      </details>
+      <div class="cloud-register-help"><h3>{{ t('cloud.register_help_title') }}</h3><p>{{ t('cloud.register_help_body') }}</p></div>
+    </div>
+  </aside>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/cloud-register.js" defer></script>
 {% endblock %}

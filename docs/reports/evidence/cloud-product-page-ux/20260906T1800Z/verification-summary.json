@@ -1,0 +1,230 @@
+{
+  "checks": [
+    {
+      "name": "Desktop EN lang/dir",
+      "passed": true,
+      "detail": "lang=en, dir=ltr"
+    },
+    {
+      "name": "Desktop EN Breadcrumb",
+      "passed": true,
+      "detail": "Found: \"Home\n·\nHelpers ERP Cloud\""
+    },
+    {
+      "name": "Desktop EN Eyebrow",
+      "passed": true,
+      "detail": "Found: \"Managed Cloud ERP for your company\""
+    },
+    {
+      "name": "Desktop EN Heading",
+      "passed": true,
+      "detail": "Found: \"Configure your company ERP and start faster\""
+    },
+    {
+      "name": "Desktop EN Subtitle",
+      "passed": true,
+      "detail": "Found: \"Choose your plan, applications, and users. We take care of hosting, backups, and technical support based on your plan.\""
+    },
+    {
+      "name": "Desktop EN Hero CTAs",
+      "passed": true,
+      "detail": "Primary: Configure My ERP, Secondary: View Plans, Account: I already have an account\n→"
+    },
+    {
+      "name": "Desktop EN 4 Steps Rendered",
+      "passed": true,
+      "detail": "Steps count: 4"
+    },
+    {
+      "name": "Desktop EN 5 Benefits Rendered",
+      "passed": true,
+      "detail": "Benefits count: 5"
+    },
+    {
+      "name": "Desktop EN Developer Platform Callout",
+      "passed": true,
+      "detail": "Dev Title: Need advanced development and customization?, CTA: Explore Developer Platform, Href: /platform"
+    },
+    {
+      "name": "Desktop EN Final CTA",
+      "passed": true,
+      "detail": "Final Title: Ready to configure your company ERP?"
+    },
+    {
+      "name": "Desktop EN Nav Contextual Labels",
+      "passed": true,
+      "detail": "Nav Signin: Cloud Sign In, Nav CTA: Configure My ERP"
+    },
+    {
+      "name": "Keyboard focus applied",
+      "passed": true,
+      "detail": "Focus state captured on step card"
+    },
+    {
+      "name": "Desktop AR lang/dir",
+      "passed": true,
+      "detail": "lang=ar, dir=rtl"
+    },
+    {
+      "name": "Desktop AR Breadcrumb",
+      "passed": true,
+      "detail": "Found: \"الرئيسية\n·\nسحابة Helpers ERP\""
+    },
+    {
+      "name": "Desktop AR Eyebrow",
+      "passed": true,
+      "detail": "Found: \"نظام ERP سحابي مُدار لشركتك\""
+    },
+    {
+      "name": "Desktop AR Heading",
+      "passed": true,
+      "detail": "Found: \"جهّز نظام شركتك وابدأ العمل بسرعة\""
+    },
+    {
+      "name": "Desktop AR Subtitle",
+      "passed": true,
+      "detail": "Found: \"اختر خطتك وتطبيقاتك وعدد المستخدمين، ونحن نتولى الاستضافة والنسخ الاحتياطي والدعم الفني حسب خطتك.\""
+    },
+    {
+      "name": "Desktop AR Hero CTAs",
+      "passed": true,
+      "detail": "Primary: ابدأ إعداد نظام شركتي, Secondary: استعرض الخطط, Account: لدي حساب بالفعل\n→"
+    },
+    {
+      "name": "Desktop AR 4 Steps Rendered",
+      "passed": true,
+      "detail": "Steps count: 4"
+    },
+    {
+      "name": "Desktop AR 5 Benefits Rendered",
+      "passed": true,
+      "detail": "Benefits count: 5"
+    },
+    {
+      "name": "Desktop AR Developer Platform Callout",
+      "passed": true,
+      "detail": "Dev Title: هل تحتاج إلى تطوير وتخصيص متقدم؟, CTA: استكشف منصة المطورين, Href: /platform?lang=ar"
+    },
+    {
+      "name": "Desktop AR Final CTA",
+      "passed": true,
+      "detail": "Final Title: هل أنت مستعد لتجهيز نظام شركتك؟"
+    },
+    {
+      "name": "Desktop AR Nav Contextual Labels",
+      "passed": true,
+      "detail": "Nav Signin: دخول عملاء السحابة, Nav CTA: ابدأ إعداد نظامي"
+    },
+    {
+      "name": "160% Zoom EN No Overflow",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    },
+    {
+      "name": "160% Zoom AR No Overflow",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    },
+    {
+      "name": "Mobile EN No Horizontal Scroll",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    },
+    {
+      "name": "Mobile AR No Horizontal Scroll",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    }
+  ],
+  "cta_matrix": [
+    {
+      "name": "Hero Primary (EN)",
+      "text": "Configure My ERP",
+      "href": "/cloud/pricing"
+    },
+    {
+      "name": "Hero Secondary (EN)",
+      "text": "View Plans",
+      "href": "/cloud/pricing"
+    },
+    {
+      "name": "Hero Account Link (EN)",
+      "text": "I already have an account\n→",
+      "href": "/cloud/login"
+    },
+    {
+      "name": "Dev Callout (EN)",
+      "text": "Explore Developer Platform",
+      "href": "/platform"
+    },
+    {
+      "name": "Final CTA Primary (EN)",
+      "text": "Configure My ERP",
+      "href": "/cloud/pricing"
+    },
+    {
+      "name": "Final CTA Secondary (EN)",
+      "text": "View Plans",
+      "href": "/cloud/pricing"
+    },
+    {
+      "name": "Nav Sign In (EN)",
+      "text": "Cloud Sign In",
+      "href": "/cloud/login"
+    },
+    {
+      "name": "Nav CTA (EN)",
+      "text": "Configure My ERP",
+      "href": "/cloud/pricing"
+    },
+    {
+      "name": "Hero Primary (AR)",
+      "text": "ابدأ إعداد نظام شركتي",
+      "href": "/cloud/pricing?lang=ar"
+    },
+    {
+      "name": "Hero Secondary (AR)",
+      "text": "استعرض الخطط",
+      "href": "/cloud/pricing?lang=ar"
+    },
+    {
+      "name": "Hero Account Link (AR)",
+      "text": "لدي حساب بالفعل\n→",
+      "href": "/cloud/login?lang=ar"
+    },
+    {
+      "name": "Dev Callout (AR)",
+      "text": "استكشف منصة المطورين",
+      "href": "/platform?lang=ar"
+    },
+    {
+      "name": "Final CTA Primary (AR)",
+      "text": "ابدأ إعداد نظام شركتي",
+      "href": "/cloud/pricing?lang=ar"
+    },
+    {
+      "name": "Final CTA Secondary (AR)",
+      "text": "استعرض الخطط",
+      "href": "/cloud/pricing?lang=ar"
+    },
+    {
+      "name": "Nav Sign In (AR)",
+      "text": "دخول عملاء السحابة",
+      "href": "/cloud/login?lang=ar"
+    },
+    {
+      "name": "Nav CTA (AR)",
+      "text": "ابدأ إعداد نظامي",
+      "href": "/cloud/pricing?lang=ar"
+    }
+  ],
+  "screenshots": [
+    "01-cloud-desktop-en-100.png",
+    "07-keyboard-focus-state.png",
+    "02-cloud-desktop-ar-100.png",
+    "03-cloud-desktop-en-160.png",
+    "04-cloud-desktop-ar-160.png",
+    "05-cloud-mobile-en.png",
+    "06-cloud-mobile-ar.png"
+  ]
+}

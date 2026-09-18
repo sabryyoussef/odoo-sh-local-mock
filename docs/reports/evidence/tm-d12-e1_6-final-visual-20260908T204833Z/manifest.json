@@ -1,0 +1,132 @@
+{
+  "checkpoint": "E1.6",
+  "tm": "TM-D12",
+  "remediation": "final-visual",
+  "timestamp": "20260908T204833Z",
+  "branch": "sabry-06-session-01-demo-contracts",
+  "head": "1f96959e9f5fd4c29531b5e83cdbe2fae213b337",
+  "prefix": "tm_d12_final_20260908t204833z_c8a7c6",
+  "objective": "Real disposable Odoo runtime with restricted user browser login - final visual",
+  "isolation": {
+    "prefix": "tm_d12_final_20260908t204833z_c8a7c6",
+    "disposable_db": "mosh_demo_2_d4735e3a",
+    "disposable_role": "mosh_demo_r_2_d4735e3a",
+    "filestore": "/data/tenants/.demo_clone_demo_clone_2_d4735e3a/filestore",
+    "container": "tm-d12-final-odoo-tm-d12-final-20260908t204833z-c8a7c6-cd01",
+    "port": 8399,
+    "control_plane": "disposable SQLite (never live control.db)",
+    "network": "127.0.0.1 isolated"
+  },
+  "worker_flags": {
+    "before": {
+      "helpers_cloud_real_provisioning_enabled": false,
+      "helpers_cloud_worker_max_jobs": 0,
+      "helpers_cloud_demo_worker_enabled": false,
+      "helpers_cloud_demo_worker_max_jobs": 0,
+      "helpers_cloud_demo_lifecycle_enabled": false,
+      "helpers_cloud_demo_lifecycle_max_jobs": 0,
+      "helpers_cloud_demo_cleanup_enabled": false,
+      "helpers_cloud_demo_cleanup_max_jobs": 0
+    },
+    "after": {
+      "helpers_cloud_real_provisioning_enabled": false,
+      "helpers_cloud_worker_max_jobs": 0,
+      "helpers_cloud_demo_worker_enabled": false,
+      "helpers_cloud_demo_worker_max_jobs": 0,
+      "helpers_cloud_demo_lifecycle_enabled": false,
+      "helpers_cloud_demo_lifecycle_max_jobs": 0,
+      "helpers_cloud_demo_cleanup_enabled": false,
+      "helpers_cloud_demo_cleanup_max_jobs": 0
+    },
+    "restored": true
+  },
+  "browser_evidence": {
+    "login_screenshot": "01-odoo-login.png",
+    "authenticated_screenshot": "02-odoo-web-authenticated.png",
+    "user_identity_screenshot": "03-odoo-user-identity.png",
+    "settings_denied_screenshot": "04-odoo-settings-denied.png",
+    "db_manager_denied_screenshot": "05-odoo-db-manager-denied.png",
+    "real_odoo_ui": true,
+    "restricted_user": "demo_demo_clone_2_d4735e3"
+  },
+  "access_control": {
+    "settings_denied": true,
+    "db_manager_denied": true,
+    "no_createdb": true,
+    "not_superuser": true,
+    "not_in_admin_groups": true
+  },
+  "portal_continuity": {
+    "launch_url_sanitized": "REDACTED",
+    "runtime_port": 8399,
+    "db_sanitized": "REDACTED_DB",
+    "verified": true
+  },
+  "idempotency": {
+    "checkout_idempotent": true,
+    "execution_idempotent": true,
+    "no_second_clone": true
+  },
+  "cleanup": {
+    "started": "2026-09-08T20:51:58.357026+00:00",
+    "disposable_dbs": [
+      "mosh_demo_2_d4735e3a"
+    ],
+    "disposable_roles": [
+      "mosh_demo_r_2_d4735e3a"
+    ],
+    "disposable_filestores": [
+      "/data/tenants/.demo_clone_demo_clone_2_d4735e3a/filestore",
+      "/data/tenants/.demo_clone_demo_clone_2_d4735e3a"
+    ],
+    "disposable_containers": [
+      "tm-d12-final-odoo-tm-d12-final-20260908t204833z-c8a7c6-cd01"
+    ],
+    "allocated_port": 8399,
+    "pg_db_before": 33,
+    "pg_db_after": 33,
+    "pg_role_before": 19,
+    "pg_role_after": 19,
+    "containers_before": 21,
+    "containers_after": 21,
+    "filestores_before": 0,
+    "filestores_after": 0,
+    "baseline_restored": true,
+    "live_tnt_count": 17,
+    "live_tpl_count": 5,
+    "live_unchanged": true,
+    "worker_flags_before": {
+      "helpers_cloud_real_provisioning_enabled": false,
+      "helpers_cloud_worker_max_jobs": 0,
+      "helpers_cloud_demo_worker_enabled": false,
+      "helpers_cloud_demo_worker_max_jobs": 0,
+      "helpers_cloud_demo_lifecycle_enabled": false,
+      "helpers_cloud_demo_lifecycle_max_jobs": 0,
+      "helpers_cloud_demo_cleanup_enabled": false,
+      "helpers_cloud_demo_cleanup_max_jobs": 0
+    },
+    "worker_flags_after": {
+      "helpers_cloud_real_provisioning_enabled": false,
+      "helpers_cloud_worker_max_jobs": 0,
+      "helpers_cloud_demo_worker_enabled": false,
+      "helpers_cloud_demo_worker_max_jobs": 0,
+      "helpers_cloud_demo_lifecycle_enabled": false,
+      "helpers_cloud_demo_lifecycle_max_jobs": 0,
+      "helpers_cloud_demo_cleanup_enabled": false,
+      "helpers_cloud_demo_cleanup_max_jobs": 0
+    },
+    "worker_flags_restored": true,
+    "finished": "2026-09-08T20:51:58.813700+00:00"
+  },
+  "hashes": {
+    "cleanup-proof.json": "d3eb233282f897da04b246e45094790c6aba6ccecd8de10d4034cb47190bafbf",
+    "error_detail.json": "c82f49057b7db67195ac0b03c5bf2193551dcd88f045a14cbdab4fb3a7163098"
+  },
+  "files": [
+    "cleanup-proof.json",
+    "error.txt",
+    "hashes.json",
+    "error_detail.json",
+    "odoo-container-logs.txt"
+  ]
+}

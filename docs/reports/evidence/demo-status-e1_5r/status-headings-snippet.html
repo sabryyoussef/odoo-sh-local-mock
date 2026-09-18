@@ -1,0 +1,33 @@
+{% if portal.status == 'preparing' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.preparing_kicker') }}</p>
+        <h2>{{ t('cloud.demo.preparing_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.preparing_lead') }}</p>
+    </section>
+    {% elif portal.status == 'active' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.active_kicker') }}</p>
+        <h2>{{ t('cloud.demo.active_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.active_lead') }}</p>
+    </section>
+    {% elif portal.status == 'expired' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.expired_kicker') }}</p>
+        <h2>{{ t('cloud.demo.expired_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.expired_lead') }}</p>
+    </section>
+    {% elif portal.status == 'failed' %}
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.demo.failed_kicker') }}</p>
+        <h2>{{ t('cloud.demo.failed_title') }}</h2>
+      </div>
+      <p>{{ t('cloud.demo.failed_lead') }}</p>
+    </section>
+    {% endif %}

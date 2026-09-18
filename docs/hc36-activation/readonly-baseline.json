@@ -1,0 +1,32 @@
+{
+  "observed_at_utc": "2026-09-13T13:08:16.292655+00:00",
+  "version": {
+    "version": "9.2.11",
+    "release": "9.2",
+    "repoid": "f6997e698c7933ea"
+  },
+  "source_config_hash_algorithm": "sha256 canonical sorted compact ensure_ascii JSON of all GET config fields except digest",
+  "source_config_sha256": "70ee786c24fd689edbe676495ea53a4cd7123d35c79b0c18c4dc1ab9dc3c64e6",
+  "source_matches_prior_nonsecret_fields": true,
+  "mismatched_field_names": [],
+  "bridge_hash_algorithm": "sha256 canonical sorted compact ensure_ascii JSON of complete vmbr0 GET network object",
+  "bridge_sha256": "7fa9b32add9ea0df9af3b0221583e9f889271e912813ab9768b4d5641410b973",
+  "bridge_active": 1,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api2/json/version",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api2/json/nodes/pve-test/qemu/9000/config",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api2/json/nodes/pve-test/network",
+      "status": 200
+    }
+  ]
+}

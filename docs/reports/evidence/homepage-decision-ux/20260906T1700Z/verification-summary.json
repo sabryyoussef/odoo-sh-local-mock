@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "name": "Desktop EN lang/dir",
+      "passed": true,
+      "detail": "lang=en, dir=ltr"
+    },
+    {
+      "name": "Desktop EN Heading",
+      "passed": true,
+      "detail": "Found: \"Choose the right ERP path for your needs\""
+    },
+    {
+      "name": "Desktop EN Subheading",
+      "passed": true,
+      "detail": "Found: \"Start with an industry-ready solution, configure cloud ERP for your company, or open a development environment.\""
+    },
+    {
+      "name": "Card 1 EN Title/CTA",
+      "passed": true,
+      "detail": "Title: Ready Solutions, CTA: Browse Ready Solutions"
+    },
+    {
+      "name": "Card 2 EN Title/CTA",
+      "passed": true,
+      "detail": "Title: Helpers ERP Cloud, CTA: Configure My ERP"
+    },
+    {
+      "name": "Card 3 EN Title/CTA",
+      "passed": true,
+      "detail": "Title: Developer Platform, CTA: Open Developer Platform"
+    },
+    {
+      "name": "Nav CTA EN text",
+      "passed": true,
+      "detail": "Nav CTA: Choose Your Solution"
+    },
+    {
+      "name": "Nav CTA scroll target",
+      "passed": true,
+      "detail": "URL: http://127.0.0.1:8000/#decision-paths"
+    },
+    {
+      "name": "Desktop AR lang/dir",
+      "passed": true,
+      "detail": "lang=ar, dir=rtl"
+    },
+    {
+      "name": "Desktop AR Heading",
+      "passed": true,
+      "detail": "Found: \"اختر مسار ERP المناسب لاحتياجك\""
+    },
+    {
+      "name": "Desktop AR Subheading",
+      "passed": true,
+      "detail": "Found: \"ابدأ بحل جاهز لنشاطك، أو جهّز نظام ERP سحابي لشركتك، أو افتح بيئة للتطوير والاختبار.\""
+    },
+    {
+      "name": "Card 1 AR Title/CTA",
+      "passed": true,
+      "detail": "Title: حلول جاهزة, CTA: استعرض الحلول الجاهزة"
+    },
+    {
+      "name": "Card 2 AR Title/CTA",
+      "passed": true,
+      "detail": "Title: سحابة Helpers ERP, CTA: جهّز نظام شركتي"
+    },
+    {
+      "name": "Card 3 AR Title/CTA",
+      "passed": true,
+      "detail": "Title: منصة المطوّرين, CTA: افتح منصة المطورين"
+    },
+    {
+      "name": "Card 1 AR Link",
+      "passed": true,
+      "detail": "Href: /solutions?lang=ar"
+    },
+    {
+      "name": "Card 2 AR Link",
+      "passed": true,
+      "detail": "Href: /cloud?lang=ar"
+    },
+    {
+      "name": "Card 3 AR Link",
+      "passed": true,
+      "detail": "Href: /platform?lang=ar"
+    },
+    {
+      "name": "150% Zoom No Overflow",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    },
+    {
+      "name": "Mobile EN No Horizontal Scroll",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    },
+    {
+      "name": "Mobile AR No Horizontal Scroll",
+      "passed": true,
+      "detail": "Overflow: 0px"
+    }
+  ],
+  "cta_matrix": [
+    {
+      "card": "Ready Solutions (AR)",
+      "href": "/solutions?lang=ar",
+      "expected": "/solutions?lang=ar"
+    },
+    {
+      "card": "Helpers ERP Cloud (AR)",
+      "href": "/cloud?lang=ar",
+      "expected": "/cloud?lang=ar"
+    },
+    {
+      "card": "Developer Platform (AR)",
+      "href": "/platform?lang=ar",
+      "expected": "/platform?lang=ar"
+    }
+  ],
+  "screenshots": [
+    "01-desktop-en-100.png",
+    "02-desktop-en-focus-state.png",
+    "03-desktop-ar-100.png",
+    "04-desktop-en-150-zoom.png",
+    "05-desktop-ar-150-zoom.png",
+    "06-mobile-en.png",
+    "07-mobile-ar.png"
+  ]
+}

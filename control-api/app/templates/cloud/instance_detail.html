@@ -1,36 +1,54 @@
 {% extends "cloud/base.html" %}
-{% block title %}Workspace{% endblock %}
-{% block cloud_crumb %} · Instance{% endblock %}
+{% block title %}{{ t('cloud.instance.title') }}{% endblock %}
+{% block cloud_crumb %} · {{ t('cloud.instance.crumb') }}{% endblock %}
 {% block cloud_content %}
-<div class="flow-header">
-  <h1>{{ instance.workspace_name }}</h1>
-  <p>{{ instance.company_name }} · Helpers ERP Cloud</p>
+{% set plan_code = (instance.plan_code or '')|lower %}
+{% set package_code = (instance.package_code or '')|lower %}
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip">
+        <span class="badge">{{ t('cloud.status.' ~ instance.status) }}</span>
+        <span>{{ t('cloud.title') }}</span>
+      </p>
+      <h1>{{ instance.workspace_name }}</h1>
+      <p>{{ instance.company_name }} · {{ t('cloud.instance.lead') }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">{{ t('cloud.instance.section_overview') }}</p>
+        <h2>{{ t('cloud.workspace_details') }}</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('cloud.odoo_version') }}</dt><dd><bdi dir="ltr">{{ instance.odoo_version_code }}</bdi></dd></div>
+        <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ t('cloud.plan_name_' ~ plan_code) if plan_code else t('cloud.plan_name_generic') }}</dd></div>
+        <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ t('cloud.setup.package.' ~ package_code) if package_code else t('cloud.none') }}</dd></div>
+        <div><dt>{{ t('cloud.status') }}</dt><dd>{{ t('cloud.status.' ~ instance.status) }}</dd></div>
+        <div><dt>{{ t('cloud.users') }}</dt><dd><bdi dir="ltr">{{ instance.requested_users }}</bdi> / <bdi dir="ltr">{{ instance.included_users }}</bdi> {{ t('cloud.included') }}</dd></div>
+        <div><dt>{{ t('cloud.storage_gb') }}</dt><dd><bdi dir="ltr">{{ instance.requested_storage_gb }}</bdi> {{ t('cloud.unit_gb') }} / <bdi dir="ltr">{{ instance.included_storage_gb }}</bdi> {{ t('cloud.unit_gb') }} {{ t('cloud.included') }}</dd></div>
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.backup_policy') }}</dt><dd><bdi dir="ltr">{{ instance.backup_retention_days }}</bdi> {{ t('cloud.days_retention') }}</dd></div>
+      </dl>
+    </section>
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>{{ t('cloud.account_actions') }}</h2>
+    <p class="cloud-summary-note">{{ t('cloud.instance.actions_note') }}</p>
+    <div class="cloud-confirm-actions">
+      {% if can_open and external_url %}
+        <a class="btn-hero btn-hero--primary" href="{{ external_url }}" target="_blank" rel="noopener">{{ t('cloud.open_odoo') }}</a>
+      {% else %}
+        <button type="button" class="btn-hero btn-hero--primary" disabled>{{ t('cloud.open_odoo') }}</button>
+        <p class="muted">{{ t('cloud.open_odoo_demo_disabled') }}</p>
+      {% endif %}
+      <a class="btn" href="{{ locale_url('/cloud/subscriptions/' ~ instance.subscription_id) }}">{{ t('cloud.view_subscription') }}</a>
+      <a class="btn" href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.upgrade_plan') }}</a>
+      <a class="btn" href="{{ locale_url('/cloud/setup/company') }}">{{ t('cloud.request_more_users') }}</a>
+      <a class="btn" href="{{ locale_url('/cloud/setup/company') }}">{{ t('cloud.request_more_storage') }}</a>
+      <a class="btn" href="{{ locale_url('/cloud/setup/addons') }}">{{ t('cloud.browse_addons') }}</a>
+      <a class="btn" href="mailto:support@helpers-erp.example">{{ t('cloud.request_support') }}</a>
+    </div>
+  </aside>
 </div>
-<section class="flow-card">
-  <dl class="kv">
-    <div><dt>Odoo version</dt><dd>{{ instance.odoo_version_code }}</dd></div>
-    <div><dt>Plan</dt><dd>{{ instance.plan_code }}</dd></div>
-    <div><dt>Package</dt><dd>{{ instance.package_code }}</dd></div>
-    <div><dt>Status</dt><dd>{{ status_labels.get(instance.status, instance.status) }}</dd></div>
-    <div><dt>Users</dt><dd>{{ instance.requested_users }} / {{ instance.included_users }} included</dd></div>
-    <div><dt>Storage</dt><dd>{{ instance.requested_storage_gb }} GB / {{ instance.included_storage_gb }} GB included</dd></div>
-    <div><dt>Backup policy</dt><dd>{{ instance.backup_retention_days }} days</dd></div>
-  </dl>
-  {% if can_open and external_url %}
-    <a class="btn-hero btn-hero--primary" href="{{ external_url }}" target="_blank" rel="noopener">Open Odoo</a>
-  {% elif can_open and not external_url %}
-    <p class="muted">Open Odoo is ready but external access is not configured. Contact support.</p>
-  {% else %}
-    <p class="muted">Open Odoo is disabled. This demo workspace does not have a verified live runtime.</p>
-  {% endif %}
-  <h2>Account actions</h2>
-  <ul class="pricing-features">
-    <li><a href="/cloud/subscriptions/{{ instance.subscription_id }}">View subscription</a></li>
-    <li><a href="/cloud/pricing">Upgrade plan</a></li>
-    <li><a href="/cloud/setup/company">Request more users</a></li>
-    <li><a href="/cloud/setup/company">Request more storage</a></li>
-    <li><a href="/cloud/setup/addons">Browse approved add-ons</a></li>
-    <li><a href="mailto:support@helpers-erp.example">Request support</a></li>
-  </ul>
-</section>
 {% endblock %}

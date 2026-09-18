@@ -1,0 +1,39 @@
+{
+  "portal_demo_instance": {
+    "request_id": 2,
+    "tenant_code": "demo_clone_2_d4735e3a",
+    "user_id": 2,
+    "subdomain": "REDACTED"
+  },
+  "launch_url": "http://127.0.0.1:8399/web/login?db=REDACTED_DB",
+  "launch_url_internal": "http://tm-d12-real-odoo-tm-d12-real-20260908t201447z-21ec4f-f2d4:8069/web/login?db=REDACTED_DB",
+  "disposable_odoo_runtime": {
+    "container_name": "tm-d12-real-odoo-tm-d12-real-20260908t201447z-21ec4f-f2d4",
+    "port": 8399,
+    "host": "127.0.0.1"
+  },
+  "cloned_db": {
+    "db_name": "REDACTED_DB",
+    "role_name": "REDACTED_ROLE",
+    "prefix": "tm_d12_real_20260908t201447z_21ec4f"
+  },
+  "restricted_user": {
+    "login": "demo_demo_clone_2_d4735e3",
+    "active": true,
+    "is_admin": false,
+    "groups": [
+      1
+    ],
+    "pg_role_createdb": false,
+    "pg_role_superuser": false
+  },
+  "portal_to_odoo_continuity": {
+    "portal_request_id": 2,
+    "portal_tenant_code": "demo_clone_2_d4735e3a",
+    "launch_url_sanitized": "http://100.76.217.35:8399/web/login?db=REDACTED_DB",
+    "disposable_runtime_port": 8399,
+    "cloned_db_sanitized": "REDACTED_DB",
+    "restricted_user": "demo_demo_clone_2_d4735e3",
+    "continuity_verified": true
+  }
+}

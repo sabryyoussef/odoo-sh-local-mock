@@ -1,0 +1,272 @@
+{
+  "checks": [
+    {
+      "name": "EN metadata",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN breadcrumb",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN progress active",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN heading",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN demo notice",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN header CTA anchor",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN four cards",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN order",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN business recommended",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN trial no monthly price",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN enterprise quote",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN included and max split",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN monthly values",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN CTA routes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN header CTA scroll URL",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR metadata",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR bdi product",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR heading",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR demo notice",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR header CTA anchor",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR localized cards",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR included and max split",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR plan name bidi",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR CTA routes preserve locale",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN annual selected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "EN annual totals and savings",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR annual selected",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AR annual totals and savings",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "100% EN no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "100% AR no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "125% EN no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "125% AR no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "140% EN no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "140% AR no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "150% EN no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "150% AR no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "160% EN no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "160% AR no overflow",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "Mobile EN no horizontal scroll",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "Mobile EN cards single-column fit",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Mobile AR no horizontal scroll",
+      "passed": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "Mobile AR cards single-column fit",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "cta_matrix": [
+    {
+      "lang": "en",
+      "text": "Start Free Trial",
+      "href": "/cloud/register?plan=trial&cycle=monthly"
+    },
+    {
+      "lang": "en",
+      "text": "Choose Starter",
+      "href": "/cloud/register?plan=starter&cycle=monthly"
+    },
+    {
+      "lang": "en",
+      "text": "Choose Business",
+      "href": "/cloud/register?plan=business&cycle=monthly"
+    },
+    {
+      "lang": "en",
+      "text": "Request a Quote",
+      "href": "/cloud/register?plan=enterprise&cycle=monthly"
+    },
+    {
+      "lang": "ar",
+      "text": "ابدأ التجربة المجانية",
+      "href": "/cloud/register?plan=trial&cycle=monthly&lang=ar"
+    },
+    {
+      "lang": "ar",
+      "text": "اختر خطة Starter",
+      "href": "/cloud/register?plan=starter&cycle=monthly&lang=ar"
+    },
+    {
+      "lang": "ar",
+      "text": "اختر خطة Business",
+      "href": "/cloud/register?plan=business&cycle=monthly&lang=ar"
+    },
+    {
+      "lang": "ar",
+      "text": "اطلب عرض سعر",
+      "href": "/cloud/register?plan=enterprise&cycle=monthly&lang=ar"
+    }
+  ],
+  "screenshots": [
+    "01-pricing-full-en-100.png",
+    "03-pricing-cards-en-100.png",
+    "05-pricing-monthly-en.png",
+    "13-pricing-keyboard-focus.png",
+    "02-pricing-full-ar-100.png",
+    "04-pricing-cards-ar-100.png",
+    "06-pricing-monthly-ar.png",
+    "07-pricing-annual-en.png",
+    "08-pricing-annual-ar.png",
+    "09-pricing-ar-140.png",
+    "10-pricing-en-160.png",
+    "11-pricing-ar-160.png",
+    "12-pricing-mobile-en.png",
+    "14-pricing-mobile-ar.png"
+  ]
+}

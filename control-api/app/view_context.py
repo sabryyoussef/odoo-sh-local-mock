@@ -17,6 +17,8 @@ from app.dummy_data import (
 )
 from app.models import Build, Project, User
 from app.services.build_service import build_to_view, list_project_builds
+from app.services.cloud_auth_service import is_cloud_customer
+from app.dependencies import is_operator
 from app.services.subscription_service import _serialize
 
 
@@ -31,6 +33,7 @@ def user_to_dict(user: User | None) -> dict:
             "avatar_url": None,
             "github_connected": False,
             "cloud_customer": False,
+            "is_operator": False,
         }
     initials = (user.github_login or user.name or user.email or "U")[:1].upper()
     return {
@@ -42,7 +45,8 @@ def user_to_dict(user: User | None) -> dict:
         "initials": initials,
         "avatar_url": user.avatar_url,
         "github_connected": bool(user.github_id),
-        "cloud_customer": bool(user.password_hash),
+        "cloud_customer": is_cloud_customer(user),
+        "is_operator": is_operator(user),
     }
 
 

@@ -1,0 +1,137 @@
+{
+  "base": "http://127.0.0.1:8014",
+  "outDir": "docs/reports/evidence/cloud-registration-ux-review-gate/20260906T203831Z",
+  "screenshots": [
+    "registration-desktop-en.png",
+    "registration-desktop-ar.png",
+    "registration-mobile-en.png",
+    "registration-mobile-ar.png",
+    "pricing-register-account-setup-flow.png"
+  ],
+  "checks": [
+    {
+      "name": "registration-desktop-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-desktop-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "registration-mobile-en.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "title": "Create your Helpers ERP Cloud account",
+      "dir": "ltr"
+    },
+    {
+      "name": "registration-mobile-ar.png",
+      "url": "/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "title": "أنشئ حساب سحابة Helpers ERP",
+      "dir": "rtl"
+    },
+    {
+      "name": "pricing-register-account-setup-flow",
+      "finalUrl": "http://127.0.0.1:8014/cloud/setup",
+      "containsSetupHeading": true
+    },
+    {
+      "name": "translation-scan-registration-en",
+      "status": "http://127.0.0.1:8014/cloud/register?plan=starter&cycle=monthly&lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-registration-ar",
+      "status": "http://127.0.0.1:8014/cloud/register?plan=starter&cycle=monthly&lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-pricing-en",
+      "status": "http://127.0.0.1:8014/cloud/pricing?lang=en",
+      "rawCloudKeys": [
+        "cloud.pricing.users_included_prefix2",
+        "cloud.pricing.backup_prefix1-day",
+        "cloud.pricing.users_included_prefix5",
+        "cloud.pricing.backup_prefix7-day",
+        "cloud.pricing.users_included_prefix25",
+        "cloud.pricing.backup_prefix30-day",
+        "cloud.pricing.users_included_prefix100",
+        "cloud.pricing.backup_prefix90-day"
+      ]
+    },
+    {
+      "name": "translation-scan-pricing-ar",
+      "status": "http://127.0.0.1:8014/cloud/pricing?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-overview-en",
+      "status": "http://127.0.0.1:8014/cloud?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-overview-ar",
+      "status": "http://127.0.0.1:8014/cloud?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-login-en",
+      "status": "http://127.0.0.1:8014/cloud/login?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-login-ar",
+      "status": "http://127.0.0.1:8014/cloud/login?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-setup-en",
+      "status": "http://127.0.0.1:8014/cloud/login",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-setup-ar",
+      "status": "http://127.0.0.1:8014/cloud/login",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-terms-en",
+      "status": "http://127.0.0.1:8014/terms?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-terms-ar",
+      "status": "http://127.0.0.1:8014/terms?lang=ar",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-privacy-en",
+      "status": "http://127.0.0.1:8014/privacy?lang=en",
+      "rawCloudKeys": []
+    },
+    {
+      "name": "translation-scan-privacy-ar",
+      "status": "http://127.0.0.1:8014/privacy?lang=ar",
+      "rawCloudKeys": []
+    }
+  ],
+  "untranslated": [
+    {
+      "name": "pricing-en",
+      "url": "/cloud/pricing?lang=en",
+      "matches": [
+        "cloud.pricing.users_included_prefix2",
+        "cloud.pricing.backup_prefix1-day",
+        "cloud.pricing.users_included_prefix5",
+        "cloud.pricing.backup_prefix7-day",
+        "cloud.pricing.users_included_prefix25",
+        "cloud.pricing.backup_prefix30-day",
+        "cloud.pricing.users_included_prefix100",
+        "cloud.pricing.backup_prefix90-day"
+      ]
+    }
+  ]
+}

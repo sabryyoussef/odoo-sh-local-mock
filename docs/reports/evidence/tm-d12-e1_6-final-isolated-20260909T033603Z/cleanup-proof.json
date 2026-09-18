@@ -1,0 +1,55 @@
+{
+  "started": "2026-09-09T03:38:29.067526+00:00",
+  "disposable_dbs": [
+    "mosh_demo_2_d4735e3a"
+  ],
+  "disposable_roles": [
+    "mosh_demo_r_2_d4735e3a"
+  ],
+  "disposable_filestores": [
+    "/tmp/tm-d12-iso-x2dn4l80/tenants/.demo_clone_demo_clone_2_d4735e3a/filestore",
+    "/tmp/tm-d12-iso-x2dn4l80/tenants/.demo_clone_demo_clone_2_d4735e3a"
+  ],
+  "disposable_containers": [
+    "tm-d12-iso-odoo-tm-d12-iso-20260909t033609z-0bc1fa-be0d"
+  ],
+  "allocated_port": 8400,
+  "disposable_base": "/tmp/tm-d12-iso-x2dn4l80",
+  "tm_d12_venv_removed": true,
+  "leftover_dbs": [],
+  "leftover_roles": [],
+  "leftover_filestores": [],
+  "leftover_containers": [],
+  "no_leftovers": true,
+  "pg_db_before": 33,
+  "pg_db_after": 33,
+  "pg_role_before": 19,
+  "pg_role_after": 19,
+  "containers_before": 21,
+  "containers_after": 21,
+  "filestores_before": 0,
+  "filestores_after": 1,
+  "baseline_restored": true,
+  "worker_flags_before": {
+    "helpers_cloud_real_provisioning_enabled": false,
+    "helpers_cloud_worker_max_jobs": 0,
+    "helpers_cloud_demo_worker_enabled": false,
+    "helpers_cloud_demo_worker_max_jobs": 0,
+    "helpers_cloud_demo_lifecycle_enabled": false,
+    "helpers_cloud_demo_lifecycle_max_jobs": 0,
+    "helpers_cloud_demo_cleanup_enabled": false,
+    "helpers_cloud_demo_cleanup_max_jobs": 0
+  },
+  "worker_flags_after": {
+    "helpers_cloud_real_provisioning_enabled": false,
+    "helpers_cloud_worker_max_jobs": 0,
+    "helpers_cloud_demo_worker_enabled": false,
+    "helpers_cloud_demo_worker_max_jobs": 0,
+    "helpers_cloud_demo_lifecycle_enabled": false,
+    "helpers_cloud_demo_lifecycle_max_jobs": 0,
+    "helpers_cloud_demo_cleanup_enabled": false,
+    "helpers_cloud_demo_cleanup_max_jobs": 0
+  },
+  "worker_flags_restored": true,
+  "finished": "2026-09-09T03:38:30.734436+00:00"
+}

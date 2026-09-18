@@ -3,48 +3,291 @@
 {% block body_class %}body--app{% endblock %}
 {% block shell_class %}{% endblock %}
 {% block shell %}
-<div class="app-flow">
+<div class="app-flow catalog-explorer" data-catalog-explorer data-selected="{{ selected_code or '' }}" data-selected-label="{{ t('catalog.selected_badge') }}">
   <main class="flow-main flow-main--full">
-    <div class="flow-header">
+    <div class="flow-header catalog-explorer__header">
       <h1>{{ t('catalog.title') }}</h1>
       <p>{{ t('catalog.lead') }}</p>
     </div>
 
-    <div class="page-intro">
-      <p><span class="badge">{{ t('catalog.badge') }}</span> {{ t('catalog.intro') }}</p>
-      <p class="muted">{{ t('catalog.alt') }} <a href="{{ locale_url('/platform') }}">{{ t('nav.platform') }}</a> {{ t('catalog.alt_instead') }} <a href="{{ locale_url('/cloud') }}">{{ t('catalog.configure_cloud') }}</a>.</p>
-      <p class="muted"><span class="badge badge--warning">{{ t('common.demo_data') }}</span> {{ t('catalog.demo_note') }}</p>
-    </div>
+    {% if not explorer_solutions %}
+      <p class="muted">{{ t('catalog.empty') }}</p>
+    {% else %}
 
-    <div class="solution-grid">
-      {% for solution in solutions %}
-        <article class="solution-card">
-          <h2><a href="{{ locale_url('/solutions/' ~ solution.code) }}">{{ solution.name }}</a>
-            {% if solution.is_demo %}<span class="badge badge--warning">{{ t('common.demo') }}</span>{% endif %}
-          </h2>
-          <p class="muted">{{ solution.description }}</p>
-          <dl class="kv solution-card__meta">
-            <div><dt>{{ t('catalog.erp_version') }}</dt><dd>{{ solution.odoo_version }}</dd></div>
-          </dl>
-          <ul class="solution-card__packages plain-list">
-            {% for pkg in solution.packages if pkg.status == 'active' %}
-              <li>
-                <strong>{{ pkg.name }}</strong>
-                · {{ pkg.max_users }} {{ t('common.users') }} · {{ pkg.filestore_quota_mb }} {{ t('common.mb') }}
-                {% if pkg.is_demo %}<span class="badge badge--warning">{{ t('common.demo_trial') }}</span>{% endif %}
-              </li>
+    {% set item = selected_solution %}
+    {% if item %}
+
+    <!-- 1. SELECTED SOLUTION HERO -->
+    <section class="catalog-hero" id="solution-hero" aria-label="{{ item.display_name }}" data-solution-code="{{ item.code }}">
+      <div class="catalog-hero__grid">
+        <div class="catalog-hero__copy">
+          <div class="catalog-detail__badges">
+            {% if item.is_demo %}<span class="badge badge--trial">{{ t('catalog.badge_trial') }}</span>{% endif %}
+            <span class="badge">{{ item.category_label }}</span>
+            <span class="readiness readiness--{{ item.readiness.state }}">{{ item.readiness.label }}</span>
+          </div>
+          <h2>{{ item.display_name }}</h2>
+          <p>{{ item.short_desc }}</p>
+          <div class="catalog-hero__cta">
+            {% if item.trial_href %}
+            <a class="btn btn--primary" href="{{ item.trial_href }}" data-cta-trial>{{ t('catalog.hero.cta_primary') }}</a>
+            {% endif %}
+            <a class="btn btn--ghost" href="#packages">{{ t('catalog.hero.cta_secondary') }}</a>
+          </div>
+          <p class="catalog-hero__reassurance">{{ t('catalog.hero.trial_reassurance') }}</p>
+        </div>
+        <div class="catalog-hero__media">
+          {% if item.image_href %}
+          <img src="{{ item.image_href }}" alt="{{ item.display_name }}" width="900" height="420" loading="eager" decoding="async">
+          {% else %}
+          <span class="solution-card__icon solution-card__icon--{{ item.icon }} solution-card__icon--xl" aria-hidden="true"></span>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TRUST / VALUE INDICATORS -->
+    <section class="trust-bar" aria-label="{{ t('catalog.section.trust') }}">
+      {% for indicator in item.trust_indicators %}
+      <div class="trust-item">
+        <div class="trust-item__icon" aria-hidden="true">
+          {% if indicator.icon == 'hosted' %}☁️
+          {% elif indicator.icon == 'trial' %}🎁
+          {% elif indicator.icon == 'support' %}💬
+          {% elif indicator.icon == 'security' %}🔒
+          {% else %}✓{% endif %}
+        </div>
+        <div class="trust-item__label">{{ t(indicator.label_key) }}</div>
+        <div class="trust-item__desc">{{ t(indicator.desc_key) }}</div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <!-- 3. SERVICE-BENEFIT CARDS -->
+    {% if item.benefit_cards %}
+    <section class="catalog-section catalog-section--benefits" id="benefits" data-section="benefits">
+      <h3>{{ t(item.benefit_title_key or 'catalog.benefit.card.title') }}</h3>
+      <div class="benefit-cards">
+        {% for card in item.benefit_cards %}
+        <div class="benefit-card">
+          <div class="benefit-card__icon" aria-hidden="true">{{ card.icon }}</div>
+          <div class="benefit-card__title">{{ card.title }}</div>
+          <div class="benefit-card__desc">{{ card.desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 4. MAIN BUSINESS CAPABILITIES -->
+    <section class="catalog-section" id="capabilities" data-section="capabilities">
+      <h3>{{ t('catalog.section.capabilities') }}</h3>
+      <div class="capabilities-grid">
+        {% for cap in item.capabilities %}
+        <div class="capability-card">
+          <div class="capability-card__icon" aria-hidden="true">{{ cap.icon }}</div>
+          <div class="capability-card__label">{{ cap.title }}</div>
+          <div class="capability-card__benefit">{{ cap.benefit }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 5. WORKFLOW -->
+    <section class="catalog-section" id="workflow" data-section="workflow">
+      <h3>{{ t('catalog.section.workflow') }}</h3>
+      <div class="workflow-steps" dir="ltr">
+        {% for step in item.workflow_steps %}
+        <div class="workflow-step">
+          <div class="workflow-step__number" aria-hidden="true">{{ loop.index }}</div>
+          <div class="workflow-step__label" dir="{{ html_dir }}">{{ t(step.label_key) }}</div>
+        </div>
+        {% if not loop.last %}
+        <span class="workflow-arrow" aria-hidden="true">→</span>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 6. PACKAGES (with selection) -->
+    {% if item.packages %}
+    <section class="catalog-section" id="packages" data-section="packages">
+      <h3>{{ t('catalog.section.packages') }}</h3>
+      <div class="package-grid" id="package-grid">
+        {% for pkg in item.packages %}
+        <article class="package-card" data-package-card data-package-id="{{ pkg.id }}" data-package-code="{{ pkg.code }}" data-trial-href="/portal/trial/confirm?solution_id={{ item.id }}&amp;package_id={{ pkg.id }}">
+          <div class="package-card__header">
+            <h4>{{ pkg.name }}</h4>
+            {% if pkg.is_demo %}<span class="badge badge--trial">{{ t('common.demo_trial') }}</span>{% endif %}
+          </div>
+          <div class="package-card__price">
+            {% if pkg.price_one_time %}
+            <span class="package-card__amount">{{ pkg.price_one_time }} {{ pkg.currency }}</span>
+            <span class="package-card__billing">{{ t('catalog.package.billing') }}</span>
             {% else %}
-              <li class="muted">{{ t('catalog.no_packages') }}</li>
+            <span class="package-card__amount muted">—</span>
+            {% endif %}
+          </div>
+          <div class="package-card__edition">
+            {{ pkg.edition_label or (item.edition_labels or {}).get(pkg.code, '') }}
+          </div>
+          <ul class="package-card__features">
+            {% for feat in (pkg.enabled_features or [])[:5] %}
+            <li>{{ t('catalog.feature.' ~ feat) }}</li>
             {% endfor %}
           </ul>
-          <div class="solution-card__cta">
-            <a class="btn btn--primary" href="{{ locale_url('/solutions/' ~ solution.code) }}">{{ t('catalog.compare') }}</a>
+          <button type="button" class="btn btn--primary package-card__select" data-select-package="{{ pkg.id }}">{{ t('catalog.package.select') }}</button>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 7. SELECTED-PACKAGE SUMMARY PANEL -->
+    <section class="catalog-section catalog-section--selected" id="selected-package" data-section="selected-package" hidden>
+      <h3>{{ t('catalog.selected_package.title') }}</h3>
+      <div class="selected-package-panel" id="selected-package-panel">
+        <div class="selected-package-panel__info">
+          <h4 id="selected-package-name">—</h4>
+          <div class="selected-package-panel__price">
+            <span id="selected-package-price">—</span>
+          </div>
+          <div class="selected-package-panel__edition" id="selected-package-edition"></div>
+        </div>
+        <a class="btn btn--primary selected-package-panel__cta" id="selected-package-cta" href="#">{{ t('catalog.selected_package.trial_cta') }}</a>
+      </div>
+    </section>
+
+    <!-- 8. PACKAGE COMPARISON TABLE -->
+    {% if item.comparison_rows %}
+    <section class="catalog-section catalog-section--comparison" id="comparison" data-section="comparison">
+      <h3>{{ t('catalog.compare.title') }}</h3>
+      <div class="comparison-scroll">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>{{ t('catalog.compare.feature') }}</th>
+              {% for pkg in item.packages %}
+              <th>{{ pkg.name }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in item.comparison_rows %}
+            <tr>
+              <td>{{ t(row.label_key) }}</td>
+              {% for val in row.cells %}
+              <td>{{ val }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- 9. WHO IT IS FOR -->
+    <section class="catalog-section" id="who-for" data-section="who-for">
+      <h3>{{ t('catalog.section.who_for') }}</h3>
+      {% if item.audience %}
+      <p class="catalog-section__lead">{{ item.audience }}</p>
+      {% endif %}
+      <div class="who-section">
+        {% for aud in item.audience_cards %}
+        <div class="who-card">
+          <div class="who-card__icon" aria-hidden="true">{{ aud.icon }}</div>
+          <h4>{{ aud.title }}</h4>
+          <p class="who-card__desc">{{ aud.desc }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 10. DOCUMENTATION -->
+    <section class="catalog-section catalog-section--docs" id="docs" data-section="docs">
+      <h3>{{ t('catalog.section.docs') }}</h3>
+      <div class="docs-grid">
+        {% for doc in item.docs_full %}
+        <article class="docs-card docs-card--{{ doc.status }}">
+          <div class="docs-card__icon" aria-hidden="true">{{ doc.icon }}</div>
+          <h4>{{ doc.title }}</h4>
+          <p class="docs-card__summary">{{ doc.summary }}</p>
+        </article>
+        {% endfor %}
+      </div>
+
+      <!-- TECHNICAL SECTION (collapsed by default) -->
+      {% if item.module_docs and item.module_docs.has_module_docs %}
+      <details class="catalog-section--technical" id="technical-info">
+        <summary class="catalog-section__toggle">
+          <span>{{ t('catalog.section.technical') }}</span>
+          <span class="catalog-section__toggle-icon" aria-hidden="true"></span>
+        </summary>
+        <div class="catalog-section__collapsible">
+          {% for mod in item.module_docs.modules %}
+          <article class="module-doc-card">
+            <div class="module-doc-card__head">
+              {% if mod.icon_href %}
+              <img class="module-doc-card__icon" src="{{ mod.icon_href }}" alt="" width="32" height="32" loading="lazy" decoding="async">
+              {% endif %}
+              <div>
+                <h4>{{ mod.name }}</h4>
+                <p class="muted module-doc-card__tech"><code dir="ltr">{{ mod.technical_name }}</code></p>
+              </div>
+            </div>
+            {% if mod.purpose %}<p class="module-doc-card__purpose">{{ mod.purpose }}</p>{% endif %}
+            <p class="module-doc-card__meta">{{ t('catalog.depends_count') }}: {{ mod.depends_count }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      </details>
+      {% endif %}
+    </section>
+
+    <!-- 11. FINAL TRIAL CTA -->
+    <section class="final-cta" id="final-cta">
+      <h3>{{ t('catalog.final_cta.title') }}</h3>
+      <p>{{ t('catalog.final_cta.subtitle') }}</p>
+      {% if item.trial_href %}
+      <a class="btn btn--primary" href="{{ item.trial_href }}">{{ t('catalog.final_cta.button') }}</a>
+      {% endif %}
+    </section>
+
+    {% endif %} {# end selected_solution #}
+
+    <!-- 12. COMPACT "OTHER SOLUTIONS" SECTION -->
+    {% if explorer_solutions and explorer_solutions|length > 1 %}
+    <section class="other-solutions" id="other-solutions">
+      <h3>{{ t('catalog.section.other_solutions') }}</h3>
+      <div class="other-solutions__grid">
+        {% for sol in explorer_solutions if not selected_code or sol.code != selected_code %}
+        <article class="other-solution-card" data-solution-card data-solution-code="{{ sol.code }}">
+          <div class="other-solution-card__media">
+            {% if sol.image_href %}
+            <img src="{{ sol.image_href }}" alt="{{ sol.display_name }}" loading="lazy" decoding="async">
+            {% else %}
+            <span class="solution-card__icon solution-card__icon--{{ sol.icon }} solution-card__icon--lg" aria-hidden="true"></span>
+            {% endif %}
+          </div>
+          <div class="other-solution-card__body">
+            <h3>{{ sol.display_name }}</h3>
+            <p class="other-solution-card__audience">{{ sol.audience or sol.category_label }}</p>
+            <div class="other-solution-card__status">
+              <span class="readiness readiness--{{ sol.readiness.state }}">{{ sol.readiness.label }}</span>
+            </div>
+            <a class="other-solution-card__link" href="?solution={{ sol.code }}&lang={{ lang }}">{{ t('catalog.other_solutions.view') }} →</a>
           </div>
         </article>
-      {% else %}
-        <p class="muted">{{ t('catalog.empty') }}</p>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% endif %} {# end has solutions #}
   </main>
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/catalog-explorer.js" defer></script>
 {% endblock %}

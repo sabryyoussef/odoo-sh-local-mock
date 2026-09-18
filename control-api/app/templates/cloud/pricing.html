@@ -1,62 +1,130 @@
-{% extends "cloud/base.html" %}
-{% block title %}{{ t('cloud.plans_title') }}{% endblock %}
-{% block cloud_crumb %} · {{ t('nav.pricing') }}{% endblock %}
-{% block cloud_content %}
-<div class="flow-header" style="text-align:center">
-  <h1>{{ t('cloud.plans_title') }}</h1>
-  <p>{{ t('cloud.plans_lead') }}</p>
-  <p><span class="badge badge--warning">{{ t('cloud.presentation') }}</span> {{ t('cloud.no_charge') }}</p>
-</div>
-<form method="get" action="/cloud/pricing" class="seg billing-cycle-form" id="cloud-cycle-form">
-  <fieldset class="seg">
-    <legend class="muted">{{ t('cloud.billing_cycle') }}</legend>
-    <label class="seg__opt{% if selected_cycle != 'annual' %} is-active{% endif %}">
-      <input type="radio" name="cycle" value="monthly" {% if selected_cycle != 'annual' %}checked{% endif %}>
-      {{ t('cloud.monthly') }}
-    </label>
-    <label class="seg__opt{% if selected_cycle == 'annual' %} is-active{% endif %}">
-      <input type="radio" name="cycle" value="annual" {% if selected_cycle == 'annual' %}checked{% endif %}>
-      {{ t('cloud.annual') }}
-    </label>
-  </fieldset>
-  <noscript><button type="submit" class="btn">{{ t('cloud.show_prices') }}</button></noscript>
-</form>
-<p class="muted" style="text-align:center">{{ t('cloud.annual_is_yearly') }}</p>
-<div class="pricing-grid">
-  {% for card in plan_cards %}
-    {% set plan = card.plan %}
-    <article class="pricing-card{% if plan.recommended %} pricing-card--recommended{% endif %}">
-      {% if plan.recommended %}<div class="pricing-badge">{{ t('common.recommended') }}</div>{% endif %}
-      <h2>{{ plan.name }}</h2>
-      {% if plan.quote_required %}
-        <div class="pricing-price"><strong>{{ t('cloud.custom_quote') }}</strong></div>
-      {% elif card.cycle == 'annual' %}
-        <div class="pricing-price">
-          <strong>{{ format_money(plan.price_annual_cents, plan.currency) }}</strong>
-          <span>{{ t('common.year') }}</span>
-        </div>
-        <p class="muted">{{ t('cloud.yearly_total') }} · {{ t('cloud.equiv_month') }} {{ format_money(((plan.price_annual_cents + 6) // 12), plan.currency) }}</p>
-      {% else %}
-        <div class="pricing-price">
-          <strong>{{ format_money(plan.price_monthly_cents, plan.currency) }}</strong>
-          <span>{{ t('common.month') }}</span>
-        </div>
-        {% if not card.annual_disabled %}
-          <p class="muted">{{ format_money(plan.price_annual_cents, plan.currency) }} {{ t('common.year') }} · {{ t('cloud.yearly_total') }}</p>
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.pricing.title') }} · {{ t('cloud.title') }}{% endblock %}
+{% block body_class %}body--landing body--cloud-pricing{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=7">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-pricing-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ t('cloud.pricing.crumb') }}</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main">
+    <section class="cloud-pricing-hero" aria-labelledby="cloud-pricing-title">
+      {% include "cloud/_paid_progress.html" %}
+
+      <div class="cloud-pricing-hero__copy">
+        <h1 id="cloud-pricing-title">{{ t('cloud.pricing.title') }}</h1>
+        <p>{{ t('cloud.pricing.lead') }}</p>
+        {% if selected_package_name %}
+          <p class="muted">{{ t('cloud.pricing.selected_solution') }} <strong><bdi dir="ltr">{{ selected_package_name }}</bdi></strong></p>
         {% endif %}
-      {% endif %}
-      <p>{{ plan.description }}</p>
-      <ul class="pricing-features">
-        <li><span class="check">✓</span> {{ plan.included_users }} {{ t('cloud.users_included') }}{% if plan.max_users %} ({{ t('cloud.max') }} {{ plan.max_users }}){% endif %}</li>
-        <li><span class="check">✓</span> {{ plan.included_storage_gb }} {{ t('cloud.storage') }}{% if plan.max_storage_gb %} ({{ t('cloud.max') }} {{ plan.max_storage_gb }} GB){% endif %}</li>
-        <li><span class="check">✓</span> {{ plan.backup_retention_days }}{{ t('cloud.backup_retention') }}</li>
-        <li><span class="check">✓</span> {{ plan.support_level|replace('_',' ') }} {{ t('cloud.support') }}</li>
-        {% if plan.trial_days %}<li><span class="check">✓</span> {{ plan.trial_days }}{{ t('cloud.day_trial') }}{% if plan.is_demo %} {{ t('cloud.demo_limits') }}{% endif %}</li>{% endif %}
-        {% if plan.quote_required %}<li><span class="check">✓</span> {{ t('cloud.quote') }}</li>{% endif %}
-      </ul>
-      <a class="btn-hero {% if plan.recommended %}btn-hero--primary{% else %}btn-hero--secondary btn-hero--on-light{% endif %} pricing-cta" href="{{ card.href }}">{{ card.cta }}</a>
-    </article>
-  {% endfor %}
+      </div>
+
+      <aside class="cloud-demo-notice" role="note" aria-labelledby="cloud-platform-notice-title">
+        <strong id="cloud-platform-notice-title">{{ t('cloud.pricing.platform_notice_title') }}</strong>
+        <span>{{ t('cloud.pricing.platform_notice_body') }}</span>
+      </aside>
+      <p class="hc-pricing-calc-link">{{ t('cloud.pricing.demo_alt') }} <a href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a></p>
+    </section>
+
+    <section class="cloud-pricing-controls" aria-labelledby="cloud-billing-cycle-title">
+      <form method="get" action="/cloud/pricing" class="cloud-billing-form" id="cloud-cycle-form">
+        {% if lang == 'ar' %}<input type="hidden" name="lang" value="ar">{% endif %}
+        {% if selected_package_code %}<input type="hidden" name="package" value="{{ selected_package_code }}">{% endif %}
+        <fieldset class="cloud-billing-fieldset">
+          <legend id="cloud-billing-cycle-title">{{ t('cloud.billing_cycle') }}</legend>
+          <div class="cloud-billing-segment" role="presentation">
+            <label class="cloud-billing-segment__opt{% if selected_cycle != 'annual' %} is-active{% endif %}">
+              <input type="radio" name="cycle" value="monthly" {% if selected_cycle != 'annual' %}checked{% endif %}>
+              <span>{{ t('cloud.monthly') }}</span>
+            </label>
+            <label class="cloud-billing-segment__opt{% if selected_cycle == 'annual' %} is-active{% endif %}">
+              <input type="radio" name="cycle" value="annual" {% if selected_cycle == 'annual' %}checked{% endif %}>
+              <span>{{ t('cloud.annual') }}</span>
+            </label>
+          </div>
+        </fieldset>
+        <p class="cloud-billing-help">{{ t('cloud.pricing.billing_help') }}</p>
+        <noscript><button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.show_prices') }}</button></noscript>
+      </form>
+    </section>
+
+    <section class="cloud-pricing-plans" id="plans" aria-labelledby="cloud-plans-title">
+      <h2 class="sr-only" id="cloud-plans-title">{{ t('cloud.pricing.title') }}</h2>
+      <div class="cloud-pricing-grid cloud-pricing-grid--paid">
+        {% for card in plan_cards %}
+          {% set plan = card.plan %}
+          {% set code = plan.code %}
+          {% set annual_savings = (plan.price_monthly_cents * 12) - plan.price_annual_cents %}
+          <article class="cloud-pricing-card cloud-pricing-card--{{ code }}{% if plan.recommended %} is-recommended{% endif %}{% if plan.quote_required %} is-quote{% endif %}" tabindex="0">
+            <div class="cloud-pricing-card__top">
+              {% if plan.recommended %}<span class="cloud-pricing-badge">{{ t('cloud.pricing.badge_popular') }}</span>{% endif %}
+              <h3 class="cloud-pricing-card__title"><bdi dir="ltr">{{ plan.name }}</bdi></h3>
+              <p class="cloud-pricing-card__desc">
+                {% if code == 'starter' %}{{ t('cloud.pricing.starter_desc') }}{% elif code == 'business' %}{{ t('cloud.pricing.business_desc') }}{% elif code == 'enterprise' %}{{ t('cloud.pricing.enterprise_desc') }}{% else %}{{ plan.description }}{% endif %}
+              </p>
+            </div>
+
+            <div class="cloud-pricing-card__price">
+              {% if plan.quote_required %}
+                <strong>{{ t('cloud.custom_quote') }}</strong>
+                <span>{{ t('cloud.term.platform_fee') }}</span>
+              {% elif card.cycle == 'annual' %}
+                <span class="cloud-price-kind">{{ t('cloud.term.platform_fee') }}</span>
+                <strong><bdi dir="ltr">{{ format_money(plan.price_annual_cents, plan.currency) }} {{ plan.currency }}</bdi></strong>
+                <span>{{ t('cloud.pricing.billed_annually') }}</span>
+                {% if annual_savings > 0 %}
+                  <em>{{ t('cloud.pricing.save_annual') }} <bdi dir="ltr">{{ format_money(annual_savings, plan.currency) }} {{ plan.currency }}</bdi></em>
+                {% endif %}
+              {% else %}
+                <span class="cloud-price-kind">{{ t('cloud.term.platform_fee') }}</span>
+                <strong><bdi dir="ltr">{{ format_money(plan.price_monthly_cents, plan.currency) }} {{ plan.currency }}</bdi></strong>
+                <span>{{ t('cloud.pricing.per_month') }}</span>
+              {% endif %}
+              <small class="cloud-price-aside">{{ t('cloud.term.resources_separate') }}</small>
+            </div>
+
+            <ul class="cloud-pricing-features">
+              <li><span class="check" aria-hidden="true">✓</span><span>{{ t('cloud.pricing.users_included_prefix') }}<bdi dir="ltr">{{ plan.included_users }}</bdi>{{ t('cloud.pricing.users_included_suffix') }}</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>{% if plan.max_users %}{{ t('cloud.pricing.users_max_prefix') }}<bdi dir="ltr">{{ plan.max_users }}</bdi>{{ t('cloud.pricing.users_max_suffix') }}{% else %}{{ t('cloud.pricing.no_max_users') }}{% endif %}</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span><bdi dir="ltr">{{ plan.included_storage_gb }}</bdi>{{ t('cloud.pricing.storage_included_suffix') }}</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>{% if plan.max_storage_gb %}{{ t('cloud.pricing.storage_max_prefix') }}<bdi dir="ltr">{{ plan.max_storage_gb }}</bdi>{{ t('cloud.pricing.storage_max_suffix') }}{% else %}{{ t('cloud.pricing.no_max_storage') }}{% endif %}</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>{{ t('cloud.pricing.backup_prefix') }}<bdi dir="ltr">{{ plan.backup_retention_days }}</bdi>{{ t('cloud.pricing.backup_suffix') }}</span></li>
+              <li><span class="check" aria-hidden="true">✓</span><span>{{ t('cloud.pricing.support_prefix') }}{{ t('cloud.support.' ~ plan.support_level) }}</span></li>
+              {% if plan.trial_days %}<li><span class="check" aria-hidden="true">✓</span><span>{{ t('cloud.pricing.trial_prefix') }}<bdi dir="ltr">{{ plan.trial_days }}</bdi>{{ t('cloud.day_trial') }}</span></li>{% endif %}
+              <li><span class="check" aria-hidden="true">✓</span><span>{{ t('cloud.pricing.onboarding') }}</span></li>
+            </ul>
+
+            <a class="btn-hero {% if plan.recommended %}btn-hero--primary{% else %}btn-hero--secondary{% endif %} cloud-pricing-card__cta" href="{{ locale_url(card.href) }}">
+              {% if plan.quote_required %}
+                {{ t('cloud.pricing.cta_quote') }}
+              {% elif lang == 'ar' %}
+                {{ t('cloud.pricing.cta_choose') }} <bdi dir="ltr">{{ plan.name }}</bdi>
+              {% else %}
+                {{ t('cloud.pricing.cta_choose') }} {{ plan.name }}
+              {% endif %}
+            </a>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  {% include "partials/site_footer.html" %}
 </div>
 {% endblock %}
 {% block scripts %}

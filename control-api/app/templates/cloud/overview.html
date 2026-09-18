@@ -1,23 +1,161 @@
-{% extends "cloud/base.html" %}
-{% block title %}{{ t('cloud.title') }}{% endblock %}
-{% block cloud_content %}
-<div class="flow-header">
-  <p class="badge">{{ t('cloud.managed_badge') }}</p>
-  <h1>{{ t('cloud.title') }}</h1>
-  <p>{{ t('cloud.lead') }}</p>
-</div>
-<section class="flow-card">
-  <ul class="pricing-features">
-    <li><span class="check">✓</span> {{ t('cloud.f1') }}</li>
-    <li><span class="check">✓</span> {{ t('cloud.f2') }}</li>
-    <li><span class="check">✓</span> {{ t('cloud.f3') }}</li>
-    <li><span class="check">✓</span> {{ t('cloud.f4') }}</li>
-    <li><span class="check">✓</span> {{ t('cloud.f5') }}</li>
-  </ul>
-  <p class="muted">{{ t('cloud.not_dev') }}</p>
-  <div class="flow-actions-row">
-    <a class="btn-hero btn-hero--primary btn-hero--on-light" href="/cloud/pricing">{{ t('cloud.view_plans') }}</a>
-    <a class="btn" href="/cloud/login">{{ t('cloud.signin') }}</a>
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.title') }} · {{ brand.product_name if brand is defined else 'Helpers ERP' }}{% endblock %}
+{% block body_class %}body--landing body--cloud-overview{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=7">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></span>
+    </nav>
   </div>
-</section>
+
+  <section class="hero hero--cloud-product" aria-label="{{ t('cloud.title') }}">
+    <div class="hero__content">
+      <p class="hero__eyebrow">{{ t('cloud.hero.eyebrow') }}</p>
+      <h1 class="hero__title">{{ t('cloud.hero.title') }}</h1>
+      <p class="hero__subtitle">{{ t('cloud.hero.subtitle') }}</p>
+      <div class="hero__actions">
+        <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a>
+        <a class="btn-hero btn-hero--secondary" href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
+      </div>
+      <div class="cloud-hero__account-row">
+        <a class="cloud-hero__account-link" href="{{ locale_url('/cloud/login') }}">{{ t('cloud.hero.have_account') }} <span class="arrow-indicator" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cloud-section" id="journeys" aria-labelledby="journeys-title">
+    <div class="cloud-section__inner">
+      <h2 class="cloud-section__title" id="journeys-title">{{ t('cloud.journey.choose_path') }}</h2>
+      <div class="cloud-journey-split">
+        <article class="cloud-journey-card cloud-journey-card--paid" tabindex="0">
+          <p class="cloud-journey-card__kicker">{{ t('cloud.journey.paid_kicker') }}</p>
+          <h3>{{ t('cloud.cta.build') }}</h3>
+          <p>{{ t('cloud.journey.paid_lead') }}</p>
+          <ul class="cloud-journey-card__list">
+            <li>{{ t('cloud.journey.paid_point1') }}</li>
+            <li>{{ t('cloud.journey.paid_point2') }}</li>
+            <li>{{ t('cloud.journey.paid_point3') }}</li>
+            <li>{{ t('cloud.journey.paid_point4') }}</li>
+          </ul>
+          <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a>
+        </article>
+        <article class="cloud-journey-card cloud-journey-card--demo" tabindex="0">
+          <p class="cloud-journey-card__kicker">{{ t('cloud.demo.badge_free') }}</p>
+          <h3>{{ t('cloud.cta.try_demo') }}</h3>
+          <p>{{ t('cloud.journey.demo_lead') }}</p>
+          <ul class="cloud-journey-card__list">
+            <li>{{ t('cloud.demo.point_free') }}</li>
+            <li>{{ t('cloud.demo.point_ready') }}</li>
+            <li>{{ t('cloud.demo.point_limited') }}</li>
+            <li>{{ t('cloud.demo.point_predefined') }}</li>
+            <li>{{ t('cloud.demo.point_not_production') }}</li>
+          </ul>
+          <a class="btn-hero btn-hero--secondary" href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cloud-section cloud-how" id="how-it-works" aria-labelledby="how-it-works-title">
+    <div class="cloud-section__inner">
+      <h2 class="cloud-section__title" id="how-it-works-title">{{ t('cloud.how.title') }}</h2>
+      <div class="cloud-steps-grid">
+        <article class="cloud-step-card" tabindex="0">
+          <div class="cloud-step-card__badge" aria-hidden="true">1</div>
+          <div class="cloud-step-card__body">
+            <h3 class="cloud-step-card__title">{{ t('cloud.how.step1.title') }}</h3>
+            <p class="cloud-step-card__desc">{{ t('cloud.how.step1.desc') }}</p>
+          </div>
+        </article>
+        <article class="cloud-step-card" tabindex="0">
+          <div class="cloud-step-card__badge" aria-hidden="true">2</div>
+          <div class="cloud-step-card__body">
+            <h3 class="cloud-step-card__title">{{ t('cloud.how.step2.title') }}</h3>
+            <p class="cloud-step-card__desc">{{ t('cloud.how.step2.desc') }}</p>
+          </div>
+        </article>
+        <article class="cloud-step-card" tabindex="0">
+          <div class="cloud-step-card__badge" aria-hidden="true">3</div>
+          <div class="cloud-step-card__body">
+            <h3 class="cloud-step-card__title">{{ t('cloud.how.step3.title') }}</h3>
+            <p class="cloud-step-card__desc">{{ t('cloud.how.step3.desc') }}</p>
+          </div>
+        </article>
+        <article class="cloud-step-card" tabindex="0">
+          <div class="cloud-step-card__badge" aria-hidden="true">4</div>
+          <div class="cloud-step-card__body">
+            <h3 class="cloud-step-card__title">{{ t('cloud.how.step4.title') }}</h3>
+            <p class="cloud-step-card__desc">{{ t('cloud.how.step4.desc') }}</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cloud-section cloud-benefits" aria-labelledby="benefits-title">
+    <div class="cloud-section__inner">
+      <h2 class="cloud-section__title" id="benefits-title">{{ t('cloud.benefits.title') }}</h2>
+      <div class="cloud-benefits-grid">
+        <article class="cloud-benefit-card" tabindex="0">
+          <span class="cloud-benefit-card__icon" aria-hidden="true">✓</span>
+          <p class="cloud-benefit-card__text">{{ t('cloud.benefits.item1') }}</p>
+        </article>
+        <article class="cloud-benefit-card" tabindex="0">
+          <span class="cloud-benefit-card__icon" aria-hidden="true">✓</span>
+          <p class="cloud-benefit-card__text">{{ t('cloud.benefits.item2') }}</p>
+        </article>
+        <article class="cloud-benefit-card" tabindex="0">
+          <span class="cloud-benefit-card__icon" aria-hidden="true">✓</span>
+          <p class="cloud-benefit-card__text">{{ t('cloud.benefits.item3') }}</p>
+        </article>
+        <article class="cloud-benefit-card" tabindex="0">
+          <span class="cloud-benefit-card__icon" aria-hidden="true">✓</span>
+          <p class="cloud-benefit-card__text">{{ t('cloud.benefits.item4') }}</p>
+        </article>
+        <article class="cloud-benefit-card" tabindex="0">
+          <span class="cloud-benefit-card__icon" aria-hidden="true">✓</span>
+          <p class="cloud-benefit-card__text">{{ t('cloud.benefits.item5') }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cloud-section cloud-dev-callout-wrap" aria-labelledby="dev-callout-title">
+    <div class="cloud-section__inner">
+      <div class="cloud-dev-callout" tabindex="0">
+        <div class="cloud-dev-callout__text">
+          <h3 class="cloud-dev-callout__title" id="dev-callout-title">{{ t('cloud.dev_callout.title') }}</h3>
+          <p class="cloud-dev-callout__desc">{{ t('cloud.dev_callout.desc') }}</p>
+        </div>
+        <div class="cloud-dev-callout__action">
+          <a class="btn-hero btn-hero--secondary btn-hero--callout" href="{{ locale_url('/platform') }}">{{ t('cloud.dev_callout.cta') }}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cloud-final-cta" aria-labelledby="final-cta-title">
+    <div class="cloud-final-cta__inner">
+      <h2 class="cloud-final-cta__title" id="final-cta-title">{{ t('cloud.final_cta.title') }}</h2>
+      <div class="cloud-final-cta__actions">
+        <a class="btn-hero btn-hero--primary" href="{{ locale_url('/cloud/build') }}">{{ t('cloud.cta.build') }}</a>
+        <a class="btn-hero btn-hero--secondary" href="{{ locale_url('/cloud/demo') }}">{{ t('cloud.cta.try_demo') }}</a>
+      </div>
+    </div>
+  </section>
+
+  {% include "partials/site_footer.html" %}
+</div>
 {% endblock %}

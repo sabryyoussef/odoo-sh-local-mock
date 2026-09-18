@@ -1,0 +1,6 @@
+{
+  "auth_status": 200,
+  "rpc_status": 200,
+  "denied": false,
+  "body": "{\"jsonrpc\": \"2.0\", \"id\": 2, \"result\": [{\"id\": 2, \"login\": \"admin\"}, {\"id\": 5, \"login\": \"demo_demo_clone_2_d4735e3\"}]}"
+}

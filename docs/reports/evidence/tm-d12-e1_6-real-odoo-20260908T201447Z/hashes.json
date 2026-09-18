@@ -1,0 +1,15 @@
+{
+  "runtime-mapping.json": "401cba634dc57de9c8fd26db84e369d991a3c0033092b80db76f7652766f4773",
+  "odoo-settings-attempt.html": "df7fcac7e17ccdb09c9846e4894d164d9529212a54613808426de92edd68af4a",
+  "odoo-web-authenticated.html": "a3415049c038bc9f35112342c5a7fe5c143007b6492994a8a02a914ea04ee559",
+  "cleanup-proof.json": "1bb7e5bf24796e2141c830c397c305d451e655ef6e92c1066c817bc5b262f8b9",
+  "01-odoo-login.png": "752438554a4e3d316277103a6fe770830c11143b33547f488bd8c1e4a88441e2",
+  "04-odoo-settings-denied.png": "a8c28974995907e62db8a30128c1a6cb921150b19cf2c5e7a633868f3fa485eb",
+  "02-odoo-web-authenticated.png": "a8c28974995907e62db8a30128c1a6cb921150b19cf2c5e7a633868f3fa485eb",
+  "browser-evidence.json": "dd17d1f385777281889c1ac5e28f09b8eb63e27677bd33cc463e47125c87da57",
+  "03-odoo-user-identity.png": "a8c28974995907e62db8a30128c1a6cb921150b19cf2c5e7a633868f3fa485eb",
+  "odoo-db-manager-attempt.html": "77511ab8180655274470ad8be77f404768e274f10db00787ec7cf7143518c55a",
+  "odoo-login-page.html": "58d4aee3916029a229f938ea53a2362f6c25f37914392126795960cdd75001a3",
+  "restricted-user-assertions.json": "349e2f8ef27c183f88169a3bf91d0d1434d23170d25ef223825e6eb42c9f72f1",
+  "05-odoo-db-manager-denied.png": "9b015eb1cebe55be00c6ffe7354b7e60fe6681ec8d31b52c2804882965f61001"
+}

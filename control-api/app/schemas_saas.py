@@ -98,6 +98,7 @@ class PackageCreate(BaseModel):
     description: str = ""
     price_monthly: Decimal | None = None
     price_annual: Decimal | None = None
+    price_one_time: Decimal | None = None
     currency: str = "USD"
     trial_days: int = Field(default=14, ge=0, le=365)
     max_users: int = Field(default=5, ge=1, le=10000)
@@ -133,6 +134,7 @@ class PackageUpdate(BaseModel):
     description: str | None = None
     price_monthly: Decimal | None = None
     price_annual: Decimal | None = None
+    price_one_time: Decimal | None = None
     currency: str | None = None
     trial_days: int | None = Field(default=None, ge=0, le=365)
     max_users: int | None = Field(default=None, ge=1, le=10000)

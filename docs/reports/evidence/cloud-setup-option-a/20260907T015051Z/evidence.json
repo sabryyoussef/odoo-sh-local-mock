@@ -1,0 +1,64 @@
+{
+  "base": "http://127.0.0.1:8021",
+  "outDir": "docs/reports/evidence/cloud-setup-option-a/20260907T015051Z",
+  "captures": [
+    {
+      "name": "setup-desktop-ar.png",
+      "finalUrl": "http://127.0.0.1:8021/cloud/setup?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "summaryOrder": "before-main-start",
+      "packageFieldsetBorder": "none"
+    },
+    {
+      "name": "setup-desktop-en.png",
+      "finalUrl": "http://127.0.0.1:8021/cloud/setup",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "summaryOrder": "before-main-start",
+      "packageFieldsetBorder": "none"
+    },
+    {
+      "name": "setup-mobile-ar.png",
+      "finalUrl": "http://127.0.0.1:8021/cloud/setup?lang=ar",
+      "dir": "rtl",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "summaryOrder": "after-main-start",
+      "packageFieldsetBorder": "none"
+    },
+    {
+      "name": "setup-mobile-en.png",
+      "finalUrl": "http://127.0.0.1:8021/cloud/setup",
+      "dir": "ltr",
+      "rawKeys": [],
+      "technicalNames": [],
+      "consoleErrors": [],
+      "horizontalScroll": false,
+      "summaryOrder": "after-main-start",
+      "packageFieldsetBorder": "none"
+    }
+  ],
+  "interactions": {
+    "advisorText": "باقة Trading موصى بها لأنك تبيع منتجات وتحتاج مشتريات ومخزونًا ومحاسبة.",
+    "detailsVisible": true,
+    "quoteTotal": "$107.00",
+    "errorCount": 3,
+    "focusVisible": true,
+    "rawKeys": [],
+    "technicalNames": [],
+    "consoleErrorsBeforeValidation": [],
+    "validationStatusConsoleMessages": [
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    ],
+    "horizontalScroll": false
+  }
+}

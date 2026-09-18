@@ -1,0 +1,247 @@
+{
+  "schema": "hc36-one-clone-complete-v1",
+  "checkpoint": "CHECKPOINT_HC3_6_COMPLETE",
+  "observed_at_utc": "2026-09-16T10:02:30.884896+00:00",
+  "mutation": {
+    "attempted": "ATTEMPTED_ONCE",
+    "clone_post_count": 1,
+    "method": "POST",
+    "endpoint": "https://pve-test.home.arpa:8006/api2/json/nodes/pve-test/qemu/9000/clone",
+    "dispatched_at_utc": "2026-09-16T09:56:59.387647+00:00",
+    "upid": "UPID:pve-test:000BD55A:019D3E28:6AAA67EC:qmclone:9000:helper-compute-hc36@pve!clone-once:",
+    "task_exitstatus": "OK",
+    "task_started_utc": "2026-09-16T09:57:00+00:00",
+    "task_ended_utc": "2026-09-16T09:57:30+00:00",
+    "identity": "helper-compute-hc36@pve!clone-once",
+    "source_vmid": 9000,
+    "target_vmid": 9500,
+    "node": "pve-test",
+    "full_clone": true,
+    "linked_clone": false,
+    "storage": "local-lvm",
+    "payload": {
+      "newid": 9500,
+      "name": "hc3-6-test-clone-9500",
+      "full": 1,
+      "storage": "local-lvm",
+      "description": "882de1648b1a04d1298c140f9fd11c6b9ace9500cc97b51f09b567e44a7c778a"
+    }
+  },
+  "identifiers": {
+    "job_id": "hc36-job-20260914t034518z-001",
+    "request_id": "hc36-req-20260914t034518z-001",
+    "reservation_id": "hc36-res-20260914t034518z-001",
+    "approval_id": "hc36-appr-20260914t034518z-001",
+    "operator_id": "operator-hc36-test",
+    "lease_id": 1,
+    "plan_fingerprint": "4010eff6626804e0c19b027599deecea88391a129dd28327f73544c6b7ca450e",
+    "contract_binding": "882de1648b1a04d1298c140f9fd11c6b9ace9500cc97b51f09b567e44a7c778a",
+    "ownership_fingerprint": "d5ef5f23775b4b695be88a2d0a7008ac9abf05f46e1fae24064672393a2a136e",
+    "staging_manifest_fingerprint": "4010eff6626804e0c19b027599deecea88391a129dd28327f73544c6b7ca450e",
+    "preflight_evidence_fingerprint": "6eb878e34801795676b916817055cc189185fb16f568714602edba42a574ff0e"
+  },
+  "preflight": {
+    "schema": "hc36-fresh-v1",
+    "checked_at": "2026-09-16T09:56:58.159333+00:00",
+    "source_hash": "70ee786c24fd689edbe676495ea53a4cd7123d35c79b0c18c4dc1ab9dc3c64e6",
+    "bridge_hash": "7fa9b32add9ea0df9af3b0221583e9f889271e912813ab9768b4d5641410b973",
+    "disk_hash": "51e573777d677ff184ac70f68ab09cf46b59a15521c1e34c947ee0407883f4af",
+    "capacity_bytes": 133629723909,
+    "permissions_verified": true,
+    "maintenance_clear": true,
+    "fingerprint": "6eb878e34801795676b916817055cc189185fb16f568714602edba42a574ff0e"
+  },
+  "effective_acl": {
+    "/vms/9500": [
+      "VM.Allocate"
+    ],
+    "/vms/9000": [
+      "VM.Clone"
+    ],
+    "/sdn/zones/localnetwork/vmbr0": [
+      "SDN.Use"
+    ],
+    "/storage/local-lvm": [
+      "Datastore.AllocateSpace"
+    ]
+  },
+  "backup": {
+    "path": "/home/sabry/.local/share/helper-compute/hc36-db-backups/control-20260916T095657Z.db",
+    "sha256": "5e0f1e0aa3926113e1b1896a1f59fe0543ee5df739295f132ef45c97100b6ff3",
+    "integrity": "ok",
+    "table_counts": {
+      "proxmox_clone_approvals": 1,
+      "proxmox_clone_intents": 0,
+      "proxmox_mutation_controls": 1,
+      "proxmox_provisioning_audit_events": 1,
+      "proxmox_provisioning_jobs": 1,
+      "proxmox_reservations": 1,
+      "proxmox_vmid_leases": 1
+    }
+  },
+  "independence": {
+    "decision": "independent",
+    "independent": true,
+    "checks": {
+      "target_lv_names_distinct": true,
+      "target_owned_by_target_vmid": true,
+      "target_in_expected_vg_thinpool": true,
+      "target_disk_sizes_consistent": true,
+      "target_not_base_volumes": true,
+      "no_lvm_origin_references_source": true,
+      "no_proxmox_config_parent": true,
+      "no_storage_content_parent_origin": true,
+      "expected_disk_count_present": true,
+      "source_target_config_consistent": true,
+      "all_checks_passed": true
+    },
+    "failed_checks": [],
+    "notes": [
+      "check4: no_expected_sizes_supplied",
+      "check8: substituted_by_host_lvm",
+      "all 10 required checks passed"
+    ]
+  },
+  "verify_full_clone": {
+    "ok": true,
+    "hash": "c99986243f99e85e76062be1d1568de756354d8fa8b97bee25539500c1fed505"
+  },
+  "target_state": {
+    "exists": true,
+    "status": "stopped",
+    "qmpstatus": "stopped",
+    "lock": null,
+    "template": 0,
+    "onboot": 0,
+    "name": "hc3-6-test-clone-9500",
+    "parent_in_config": false,
+    "disks": {
+      "ide2": "local-lvm:vm-9500-cloudinit,media=cdrom,size=4M",
+      "efidisk0": "local-lvm:vm-9500-disk-0,efitype=4m,ms-cert=2023k,pre-enrolled-keys=1,size=4M",
+      "scsi0": "local-lvm:vm-9500-disk-1,discard=on,iothread=1,size=20G,ssd=1"
+    },
+    "description": "helper-compute:hc36:882de1648b1a04d1298c140f9fd11c6b9ace9500cc97b51f09b567e44a7c778a"
+  },
+  "source_unchanged": {
+    "status": "stopped",
+    "template": 1,
+    "name": "ubuntu-2404-cloudinit-template",
+    "lock": null,
+    "disks": {
+      "ide2": "local-lvm:vm-9000-cloudinit,media=cdrom",
+      "scsi0": "local-lvm:base-9000-disk-0,discard=on,iothread=1,size=20G,ssd=1",
+      "efidisk0": "local-lvm:base-9000-disk-1,efitype=4m,ms-cert=2023k,pre-enrolled-keys=1,size=4M"
+    }
+  },
+  "host_lvm": {
+    "node": "pve-test",
+    "vg": "pve",
+    "thinpool": "data",
+    "target_volumes": [
+      {
+        "lv": "vm-9500-cloudinit",
+        "size": 4194304,
+        "origin": "",
+        "pool": "data"
+      },
+      {
+        "lv": "vm-9500-disk-0",
+        "size": 4194304,
+        "origin": "",
+        "pool": "data"
+      },
+      {
+        "lv": "vm-9500-disk-1",
+        "size": 21474836480,
+        "origin": "",
+        "pool": "data"
+      }
+    ],
+    "source_volumes": [
+      {
+        "lv": "base-9000-disk-0",
+        "size": 21474836480,
+        "origin": "",
+        "pool": "data"
+      },
+      {
+        "lv": "base-9000-disk-1",
+        "size": 4194304,
+        "origin": "",
+        "pool": "data"
+      },
+      {
+        "lv": "vm-9000-cloudinit",
+        "size": 4194304,
+        "origin": "",
+        "pool": "data"
+      }
+    ]
+  },
+  "cluster_inventory_after": [
+    101,
+    102,
+    103,
+    9000,
+    9500
+  ],
+  "durable_state": {
+    "intent_phase": "clone_verified",
+    "job_state": "clone_verified",
+    "approval_consumed": true,
+    "lease": [
+      [
+        9500,
+        "consumed"
+      ]
+    ],
+    "kill_switch": true,
+    "owner_job_id_retained": "hc36-job-20260914t034518z-001",
+    "owner_job_id_note": "retained by design: real acceptance keeps the single global mutation slot",
+    "audit_trail": [
+      "staging_complete",
+      "mutation_requested",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "provider_acknowledged",
+      "manual_review_required",
+      "clone_verified"
+    ]
+  },
+  "fail_closed_after": {
+    "kill_switch": true,
+    "worker_armed": false,
+    "mutation_token_in_repo": false,
+    "mutation_token_in_agent_shell": false,
+    "temporary_acl_added_by_agent": false,
+    "target_started": false,
+    "hc37_authorized": false,
+    "vms_101_102_103_touched": false,
+    "source_9000_modified": false
+  },
+  "code_fixes_required_during_run": [
+    {
+      "file": "control-api/app/services/helper_compute/proxmox/real_clone_transport.py",
+      "change": "lookup_vm now loads the host LVM proof when the auditor content listing lacks origin/backing, mirroring collect_preflight; without it acceptance failed as independence_unverifiable."
+    },
+    {
+      "file": "control-api/app/services/helper_compute/proxmox/staging_guard.py",
+      "change": "_target_expected_sizes derives the LV-name to size map from the target qemu config; Proxmox does not preserve the source disk index."
+    },
+    {
+      "file": "control-api/app/services/helper_compute/proxmox/independence_verifier.py",
+      "change": "check 10 uses the target config as the authoritative slot to volume mapping instead of the LV index suffix."
+    }
+  ],
+  "historical_note": {
+    "prior_qmclone_task_by_same_identity": "UPID:pve-test:000365BD:00795701:6AA77CA6:qmclone:9000:helper-compute-hc36@pve!clone-once:",
+    "prior_task_utc": "2026-09-14T04:48:38+00:00 to 2026-09-14T04:49:09+00:00",
+    "prior_task_status": "OK",
+    "note": "Predates this session. VMID 9500 was absent at session start and the isolated lab DB recorded no intent, so any VM it produced was removed before this run."
+  }
+}

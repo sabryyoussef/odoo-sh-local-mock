@@ -130,6 +130,39 @@ def test_duplicate_subscription_blocked(db, customer_a):
     assert exc.value.code == "duplicate_subscription"
 
 
+def test_duplicate_trial_resumes_existing_demo_path(db, customer_a):
+    """Existing open demo must resume to tenant/portal, not allow another Start Demo loop."""
+    from app.models import Tenant
+    from app.services.portal_service import demo_resume_path
+
+    seed_demo_catalog(db)
+    sol = db.scalar(select(Solution).where(Solution.code == "vet-hospital"))
+    pkg = next(p for p in sol.packages if p.is_demo)
+    sub, job = start_demo_trial(
+        db,
+        user_id=customer_a.id,
+        user_email=customer_a.email,
+        user_name=customer_a.name,
+        user_login=customer_a.github_login,
+        solution_id=sol.id,
+        package_id=pkg.id,
+        idempotency_key="dup-resume-1",
+    )
+    assert demo_resume_path(db, customer_a.id, sol.id) == f"/portal/provisioning/{job.id}"
+
+    tenant = Tenant(
+        tenant_code="resume_t",
+        customer_subscription_id=sub.id,
+        database_name="resume_db",
+        status="active",
+        internal_url="http://127.0.0.1:8201/",
+    )
+    db.add(tenant)
+    db.commit()
+    db.refresh(tenant)
+    assert demo_resume_path(db, customer_a.id, sol.id) == f"/portal/tenants/{tenant.id}"
+
+
 def test_idempotent_trial_replay(db, customer_a):
     seed_demo_catalog(db)
     sol = db.scalar(select(Solution).where(Solution.code == "vet-hospital"))

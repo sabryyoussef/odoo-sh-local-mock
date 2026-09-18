@@ -35,14 +35,17 @@ from app.services.audit_service import record_audit
 from app.services.provisioning_identifiers import (
     generate_admin_password,
     generate_database_name,
+    generate_tenant_code,
     generate_job_uuid,
     generate_role_name,
-    generate_tenant_code,
 )
 from app.services.provisioning_rollback import RollbackError, rollback_provisioning_job
 from app.services.template_init_service import get_validated_template_db
 from app.services.tenant_docker_service import run_tenant_odoo_container, wait_tenant_healthy
 from app.services.tenant_port_service import allocate_tenant_port
+from app.services.public_url_service import get_safe_public_url
+from app.services.solution_module_docs_service import _SOLUTION_MODULES
+from app.services.hms_tenant_provisioner import prepare_hms_tenant_config, install_hms_modules_post_provision
 from app.services.tenant_postgres_service import clone_database_from_template, create_tenant_role
 
 logger = logging.getLogger(__name__)
@@ -302,6 +305,14 @@ def execute_provisioning_job(db: Session, job_id: int) -> ProvisioningJob:
         db.commit()
 
         job.current_step = "start_odoo"
+        # Resolve HMS-specific addons path and extra volumes if this is an HMS tenant
+        hms_addons_path = None
+        hms_extra_volumes = None
+        if sol.code == "hms":
+            hms_config = prepare_hms_tenant_config(settings, sol)
+            hms_addons_path = hms_config.get("addons_path")
+            hms_extra_volumes = hms_config.get("extra_volumes")
+            _audit_job(job, "hms_addons_configured", addons_path=hms_addons_path)
         run_tenant_odoo_container(
             name=container_name,
             tenant_id=tenant.id,
@@ -314,6 +325,8 @@ def execute_provisioning_job(db: Session, job_id: int) -> ProvisioningJob:
             filestore_container_path=str(filestore_container),
             filestore_host_path=str(filestore_host),
             admin_passwd=admin_password,
+            addons_path=hms_addons_path,
+            extra_volumes=hms_extra_volumes,
         )
         _audit_job(job, "container_started", container=container_name, port=port)
 
@@ -321,11 +334,31 @@ def execute_provisioning_job(db: Session, job_id: int) -> ProvisioningJob:
         if not wait_tenant_healthy(container_name, port, settings.build_health_timeout_sec):
             raise ProvisioningError("Odoo health check failed", "health_check_failed")
 
-        internal_url = f"http://127.0.0.1:{port}/"
+        # Post-provision: install HMS modules if this is an HMS tenant
+        if sol.code == "hms" and hms_addons_path:
+            job.current_step = "install_hms_modules"
+            hms_modules = _SOLUTION_MODULES.get("hms", [])
+            if hms_modules:
+                install_ok = install_hms_modules_post_provision(
+                    db_name=db_name,
+                    modules=hms_modules,
+                    container_name=container_name,
+                    http_port=port,
+                )
+                if not install_ok:
+                    raise ProvisioningError("HMS module install failed", "hms_module_install_failed")
+                _audit_job(job, "hms_modules_installed", modules=",".join(hms_modules))
+
+        # Use live Odoo runtime endpoint (multi-tenant shared) instead of container localhost endpoint
+        live_endpoint = (settings.tenant_live_odoo_endpoint or "").strip().rstrip("/")
+        internal_url = f"{live_endpoint}/" if live_endpoint else f"http://127.0.0.1:{port}/"
         tenant.internal_url = internal_url
-        base = (settings.tenant_public_base_url or "").strip().rstrip("/")
-        if base:
-            tenant.public_url = f"{base}/t/{tenant_code}"
+        
+        # Generate clean public URL using public_url_service
+        # Priority: configured base_url → nip.io (if external IP available) → no public URL
+        public_url = get_safe_public_url(internal_url, None, tenant_code)
+        if public_url:
+            tenant.public_url = public_url
         tenant.admin_password_protected = protect_token(admin_password)
         tenant.status = "active"
         env.status = "active"

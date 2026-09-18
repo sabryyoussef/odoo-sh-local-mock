@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('cloud.calculator.title') }} · {{ t('cloud.title') }}{% endblock %}
+{% block body_class %}body--landing body--cloud-pricing{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block extra_head %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/landing-odoo.css?v=6">
+{% endblock %}
+
+{% block shell %}
+<div class="landing cloud-pricing-page hc-calc-page">
+  <div class="cloud-page__breadcrumb-wrap">
+    <nav class="cloud-page__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ locale_url('/') }}">{{ t('common.home') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud') }}"><bdi dir="ltr">{{ t('cloud.title') }}</bdi></a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <a href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.pricing.crumb') }}</a>
+      <span class="cloud-page__breadcrumb-sep" aria-hidden="true">·</span>
+      <span class="cloud-page__breadcrumb-current">{{ t('cloud.calculator.crumb') }}</span>
+    </nav>
+  </div>
+
+  <main class="cloud-pricing-main hc-calc">
+    <section class="cloud-pricing-hero" aria-labelledby="hc-calc-title">
+      <div class="cloud-pricing-hero__copy">
+        <h1 id="hc-calc-title">{{ t('cloud.calculator.title') }}</h1>
+        <p>{{ t('cloud.calculator.lead') }}</p>
+      </div>
+      <aside class="cloud-demo-notice" role="note">
+        <strong>{{ t('cloud.calculator.notice_title') }}</strong>
+        <span>{{ t('cloud.calculator.notice') }}</span>
+      </aside>
+    </section>
+
+    <div class="hc-calc-layout">
+      <form method="get" action="{{ locale_url('/cloud/calculator') }}" class="flow-card hc-calc-form" id="hc-calculator-form">
+        {% if lang == 'ar' %}<input type="hidden" name="lang" value="ar">{% endif %}
+        <input type="hidden" name="estimate" value="1">
+        <label class="field">
+          <span>{{ t('cloud.calculator.package') }}</span>
+          <select name="package_code" required>
+            {% for pkg in packages %}
+              <option value="{{ pkg.code }}" {% if form.package_code == pkg.code %}selected{% endif %}>{{ pkg.name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <div class="cloud-field-grid">
+          <label class="field"><span>{{ t('cloud.calculator.named_users') }}</span><input type="number" name="named_users" min="1" value="{{ form.named_users }}" required></label>
+          <label class="field"><span>{{ t('cloud.calculator.concurrent_users') }}</span><input type="number" name="concurrent_users" min="1" value="{{ form.concurrent_users }}" required></label>
+          <label class="field"><span>{{ t('cloud.calculator.db_size') }}</span><input type="number" name="estimated_db_gb" min="1" value="{{ form.estimated_db_gb }}" required></label>
+          <label class="field"><span>{{ t('cloud.calculator.filestore') }}</span><input type="number" name="filestore_gb" min="1" value="{{ form.filestore_gb }}" required></label>
+          <label class="field"><span>{{ t('cloud.calculator.backup_retention') }}</span><input type="number" name="backup_retention_days" min="1" value="{{ form.backup_retention_days }}" required></label>
+          <label class="field"><span>{{ t('cloud.calculator.extra_storage') }}</span><input type="number" name="extra_storage_gb" min="0" value="{{ form.extra_storage_gb }}"></label>
+        </div>
+        <fieldset class="cloud-billing-fieldset">
+          <legend>{{ t('cloud.calculator.environment') }}</legend>
+          <div class="cloud-billing-segment">
+            <label class="cloud-billing-segment__opt{% if form.environment != 'production' %} is-active{% endif %}">
+              <input type="radio" name="environment" value="demo" {% if form.environment != 'production' %}checked{% endif %}>
+              <span>{{ t('cloud.calculator.env.demo') }}</span>
+            </label>
+            <label class="cloud-billing-segment__opt{% if form.environment == 'production' %} is-active{% endif %}">
+              <input type="radio" name="environment" value="production" {% if form.environment == 'production' %}checked{% endif %}>
+              <span>{{ t('cloud.calculator.env.production') }}</span>
+            </label>
+          </div>
+        </fieldset>
+        <label class="field">
+          <span>{{ t('cloud.calculator.workload') }}</span>
+          <select name="workload_size">
+            <option value="small" {% if form.workload_size == 'small' %}selected{% endif %}>{{ t('cloud.calculator.workload.small') }}</option>
+            <option value="medium" {% if form.workload_size == 'medium' %}selected{% endif %}>{{ t('cloud.calculator.workload.medium') }}</option>
+            <option value="large" {% if form.workload_size == 'large' %}selected{% endif %}>{{ t('cloud.calculator.workload.large') }}</option>
+          </select>
+        </label>
+        <fieldset class="hc-calc-optional">
+          <legend>{{ t('cloud.calculator.optional') }}</legend>
+          <label class="hc-check"><input type="checkbox" name="staging" value="1" {% if form.staging %}checked{% endif %}> {{ t('cloud.calculator.staging') }}</label>
+          <label class="hc-check"><input type="checkbox" name="ha" value="1" {% if form.ha %}checked{% endif %}> {{ t('cloud.calculator.ha') }}</label>
+        </fieldset>
+        <button type="submit" class="btn-hero btn-hero--primary">{{ t('cloud.calculator.submit') }}</button>
+      </form>
+
+      <section class="flow-card hc-result" aria-live="polite" {% if result %}data-hc-availability="{{ result.availability }}" data-hc-package="{{ result.recommended_package }}"{% endif %}>
+        <h2>{{ t('cloud.calculator.result') }}</h2>
+        {% if result %}
+          <p class="hc-avail hc-avail--{{ result.availability }}" data-hc-availability-label>{{ t('cloud.calculator.availability.' ~ result.availability) }}</p>
+          <dl class="hc-result-grid">
+            <div><dt>{{ t('cloud.calculator.recommended') }}</dt><dd data-hc-package-name>{{ result.recommended_package_name }}</dd></div>
+            <div><dt>{{ t('cloud.calculator.vcpu') }}</dt><dd data-hc-vcpu>{{ result.vcpu }}</dd></div>
+            <div><dt>{{ t('cloud.calculator.ram') }}</dt><dd data-hc-ram>{{ result.ram_gb }} GB</dd></div>
+            <div><dt>{{ t('cloud.calculator.disk') }}</dt><dd data-hc-disk>{{ result.disk_gb }} GB</dd></div>
+            <div><dt>{{ t('cloud.calculator.backup') }}</dt><dd data-hc-backup>{{ result.backup_gb }} GB</dd></div>
+            <div><dt>{{ t('cloud.calculator.price') }}</dt><dd data-hc-price>{{ result.estimated_price_display }}</dd></div>
+            <div><dt>{{ t('cloud.calculator.provisioning_time') }}</dt><dd data-hc-minutes>{% if result.estimated_provisioning_minutes %}{{ result.estimated_provisioning_minutes }} {{ t('cloud.calculator.minutes') }}{% else %}—{% endif %}</dd></div>
+          </dl>
+          <p class="hc-result-explain" data-hc-explanation>{{ result.explanation }}</p>
+          <p class="muted"><a href="{{ locale_url('/cloud/pricing') }}">{{ t('cloud.calculator.back_pricing') }}</a></p>
+        {% else %}
+          <p class="muted">{{ t('cloud.calculator.result_empty') }}</p>
+        {% endif %}
+      </section>
+    </div>
+  </main>
+</div>
+{% endblock %}

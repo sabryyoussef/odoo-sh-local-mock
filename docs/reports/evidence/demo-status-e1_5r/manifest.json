@@ -1,0 +1,42 @@
+{
+  "checkpoint": "E1.5R",
+  "states": [
+    "preparing",
+    "active",
+    "expired",
+    "failed"
+  ],
+  "locales": [
+    "en",
+    "ar"
+  ],
+  "rendered_via_testclient": [
+    "status-preparing-en.html",
+    "status-preparing-ar.html"
+  ],
+  "translation_level": [
+    "active",
+    "expired",
+    "failed"
+  ],
+  "note": "preparing verified via TestClient rendered page (no Tenant required); active/expired/failed verified via translate() exact string match because portal requires Tenant with deployment_mode=demo_clone for those states. See test_cloud_demo_clone_checkpoint_e1_5.py TestE1_5R_HeadingsAndTranslations.",
+  "files": {
+    "translations": "translations.json",
+    "template_snippet": "status-headings-snippet.html",
+    "test_file": "control-api/tests/test_cloud_demo_clone_checkpoint_e1_5.py",
+    "test_class": "TestE1_5R_HeadingsAndTranslations",
+    "tests": "8 tests (2 rendered page + 6 translation-level)"
+  },
+  "test_results": {
+    "E1.5R": "36 passed (~18s, exit 0)",
+    "E1.4_regression": "45 passed (~24s, exit 0)",
+    "E1.1-E1.3_regression": "55 passed (~43s, exit 0)",
+    "real_provisioning_regression": "92 passed (~73s, exit 0)"
+  },
+  "rendered_evidence": {
+    "method": "TestClient inside pytest with in-memory SQLite (conftest.py isolated_app_db fixture)",
+    "preparing_en": "test_en_preparing_heading (T-E1.5R-01): client.get('/cloud/demo/status/{id}?lang=en') asserts 'Your demo is being prepared' in resp.text",
+    "preparing_ar": "test_ar_preparing_heading (T-E1.5R-02): client.get('/cloud/demo/status/{id}?lang=ar') asserts 'جاري إعداد عرضك التجريبي' in resp.text",
+    "active_expired_failed": "Verified via translate() exact string match (portal requires Tenant fixture for these states)"
+  }
+}

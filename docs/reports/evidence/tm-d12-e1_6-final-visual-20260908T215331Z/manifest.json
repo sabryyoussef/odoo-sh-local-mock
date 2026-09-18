@@ -1,0 +1,65 @@
+{
+  "checkpoint": "E1.6",
+  "tm": "TM-D12",
+  "remediation": "final-visual",
+  "timestamp": "20260908T215331Z",
+  "head": "1f96959e9f5fd4c29531b5e83cdbe2fae213b337",
+  "prefix": "tm_d12_final_20260908t215331z_3d9889",
+  "isolation": {
+    "db": "mosh_demo_2_d4735e3a",
+    "role": "mosh_demo_r_2_d4735e3a",
+    "container": "tm-d12-final-tm-d12-final-20260908t215331z-3d9889-d095",
+    "port": 8399
+  },
+  "access_control": {
+    "settings_denied": true,
+    "no_createdb": true,
+    "no_superuser": true
+  },
+  "cleanup": {
+    "db_before": 33,
+    "db_after": 34,
+    "rl_before": 19,
+    "rl_after": 20,
+    "ct_before": 21,
+    "ct_after": 22,
+    "restored": false
+  },
+  "hashes": {
+    "01-odoo-login.html": "4d0928ec7ccacaf817c0fcbdf205daa991b4ae3e278dd8e178e051e71f8000d1",
+    "odoo-settings-attempt.html": "18ce345373c758da4485fd946ccc6aebca64a28cfbe678cb8c6efc2b84fcf435",
+    "odoo-web-authenticated.html": "0acf34aa14efb3e75acb8bc38963d03e649bfc27fee42964fda2fe3be7a701b2",
+    "diag.json": "31ca852eacc00efda40b97d9953af81822c20580297666987d95d11c387e9080",
+    "page-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanup-proof.json": "46cba642ee33d049c12c17d9844d71603e5f1b5eb0d4f48b7eb1429778e9b59e",
+    "failed-requests.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "programmatic-access-proof.json": "c614a0045315f614dcbb31331416d39ff1ad256eef10e29f9ae12badec1f7c91",
+    "01-odoo-login.png": "b7fed948d42fd45da182f765424deda800213f05f348db1d623e4ed7ffe89743",
+    "04-odoo-settings-denied.png": "530c094b063d3d8c52f4aa4ddc180f82d7b43ee789d3bcf77d69c275cb65a4a7",
+    "02-odoo-web-authenticated.png": "051068149e1a30eee196d5bd63a50cc3c7d0396fd946a9f8ee4814efee166283",
+    "browser-evidence.json": "c3ae9ff4e7ac1638c43d5dd460ec31dd384e632ca38d8d32bc43c7b65bac14e0",
+    "03-odoo-user-identity.png": "b5e04eb4e0ca1065c4efd0671d5c71ec8d18ca9e5dfa792dc6796ab4921eae10",
+    "console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "restricted-user-assertions.json": "db877ab3139c575d9ce2aa820cec9d87d1563c7baef0ce3452ab923eaeab9b37",
+    "05-odoo-db-manager-denied.png": "2b386d6c8171d7301b9c6891db855bde8b33732efa6cd22f0620c47417c53247"
+  },
+  "files": [
+    "01-odoo-login.html",
+    "odoo-settings-attempt.html",
+    "odoo-web-authenticated.html",
+    "diag.json",
+    "page-errors.log",
+    "cleanup-proof.json",
+    "failed-requests.log",
+    "programmatic-access-proof.json",
+    "01-odoo-login.png",
+    "04-odoo-settings-denied.png",
+    "02-odoo-web-authenticated.png",
+    "browser-evidence.json",
+    "03-odoo-user-identity.png",
+    "hashes.json",
+    "console.log",
+    "restricted-user-assertions.json",
+    "05-odoo-db-manager-denied.png"
+  ]
+}

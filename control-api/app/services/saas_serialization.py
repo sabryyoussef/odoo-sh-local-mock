@@ -6,7 +6,7 @@ import json
 from decimal import Decimal
 from typing import Any
 
-from app.models import CustomerSubscription, Package, Solution, TemplateDatabase, Tenant, TenantEnvironment
+from app.models import CustomerSubscription, Package, Solution, SolutionArtifact, SolutionDeploymentProfile, TemplateDatabase, Tenant, TenantEnvironment
 
 
 def modules_to_csv(items: list[str]) -> str:
@@ -64,6 +64,7 @@ def package_to_dict(package: Package, *, include_internal: bool = False) -> dict
         "description": package.description,
         "price_monthly": package.price_monthly,
         "price_annual": package.price_annual,
+        "price_one_time": package.price_one_time,
         "currency": package.currency,
         "trial_days": package.trial_days,
         "max_users": package.max_users,
@@ -102,6 +103,63 @@ def template_to_dict(row: TemplateDatabase) -> dict[str, Any]:
         "validated_at": row.validated_at.isoformat() if row.validated_at else None,
         "created_at": row.created_at.isoformat() if row.created_at else None,
     }
+
+
+def artifact_to_dict(row: SolutionArtifact, *, include_internal: bool = False) -> dict[str, Any]:
+    return {
+        "id": row.id,
+        "solution_id": row.solution_id,
+        "code": row.code,
+        "name": row.name,
+        "package_identifier": row.package_identifier,
+        "version": row.version,
+        "odoo_version": row.odoo_version,
+        "edition": row.edition,
+        "source_type": row.source_type,
+        "install_strategy": row.install_strategy,
+        "status": row.status,
+        "verification_state": row.verification_state,
+        "is_verified": row.is_verified,
+        "deployment_ready": row.deployment_ready,
+        "template_database_id": row.template_database_id,
+        "notes": row.notes,
+        "created_at": row.created_at.isoformat() if row.created_at else None,
+        "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+    }
+
+
+def deployment_profile_to_dict(row: SolutionDeploymentProfile, *, include_internal: bool = False) -> dict[str, Any]:
+    data = {
+        "id": row.id,
+        "solution_id": row.solution_id,
+        "code": row.code,
+        "name": row.name,
+        "environment_type": row.environment_type,
+        "active": row.active,
+        "is_default": row.is_default,
+        "sort_order": row.sort_order,
+        "odoo_version": row.odoo_version,
+        "edition": row.edition,
+        "min_vcpu": row.min_vcpu,
+        "recommended_vcpu": row.recommended_vcpu,
+        "min_ram_gb": row.min_ram_gb,
+        "recommended_ram_gb": row.recommended_ram_gb,
+        "min_storage_gb": row.min_storage_gb,
+        "recommended_storage_gb": row.recommended_storage_gb,
+        "expected_users_min": row.expected_users_min,
+        "expected_users_max": row.expected_users_max,
+        "compatible_compute_tier": row.compatible_compute_tier,
+        "demo_suitable": row.demo_suitable,
+        "production_suitable": row.production_suitable,
+        "status": row.status,
+        "notes": row.notes,
+        "created_at": row.created_at.isoformat() if row.created_at else None,
+        "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+    }
+    if include_internal:
+        data["artifact_id"] = row.artifact_id
+        data["template_database_id"] = row.template_database_id
+    return data
 
 
 def customer_subscription_to_dict(row: CustomerSubscription) -> dict[str, Any]:

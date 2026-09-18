@@ -1,0 +1,12 @@
+{
+  "status": "active",
+  "status_label": "Active",
+  "is_active": true,
+  "is_expired": false,
+  "is_cleanup_eligible": false,
+  "can_launch": true,
+  "expires_at": "2026-09-15T17:40:04.066222+00:00",
+  "grace_ends_at": "2026-09-18T17:40:04.066222+00:00",
+  "retention_ends_at": "2026-10-18T17:40:04.066222+00:00",
+  "safe_message": "Your demo is active."
+}

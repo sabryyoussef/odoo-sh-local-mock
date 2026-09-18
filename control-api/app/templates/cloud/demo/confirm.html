@@ -1,0 +1,73 @@
+{% extends "cloud/setup/_wizard_base.html" %}
+{% block wizard_body %}
+<div class="cloud-confirm-shell">
+  <div class="cloud-confirm-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip"><span class="badge badge--warning">{{ t('cloud.presentation') }}</span><span>{{ t('cloud.demo.request_lead') }}</span></p>
+      <h1>{{ t('cloud.demo.confirm_title') }}</h1>
+      <p>{{ t('cloud.demo.confirm_lead') }}</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading"><p class="cloud-section-kicker">{{ t('cloud.confirm_section_company') }}</p><h2>{{ t('cloud.company_workspace') }}</h2></div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('cloud.customer') }}</dt><dd>{{ user.name }} · {{ user.email }}</dd></div>
+        <div><dt>{{ t('cloud.company') }}</dt><dd>{{ snapshot.company.legal_company_name }}</dd></div>
+        <div><dt>{{ t('cloud.workspace_name') }}</dt><dd>{{ snapshot.company.workspace_name }}</dd></div>
+        <div><dt>{{ t('cloud.workspace_url') }}</dt><dd><bdi dir="ltr">{{ hostname }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.country') }}</dt><dd>{{ confirm_view.country }} · <bdi dir="ltr">{{ snapshot.company.currency }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.language') }}</dt><dd>{{ confirm_view.language }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading"><p class="cloud-section-kicker">{{ t('cloud.confirm_section_package') }}</p><h2>{{ t('cloud.choose_how') }}</h2><p>{{ confirm_view.package_description }}</p></div>
+      <dl class="cloud-review-grid">
+        <div><dt>{{ t('nav.pricing') }}</dt><dd>{{ confirm_view.plan_name }} · {{ confirm_view.billing_cycle }}</dd></div>
+        <div><dt>{{ t('cloud.choose_how') }}</dt><dd>{{ confirm_view.package_name }}</dd></div>
+        <div><dt>{{ t('cloud.users') }}</dt><dd><bdi dir="ltr">{{ snapshot.users }}</bdi></dd></div>
+        <div><dt>{{ t('cloud.storage_gb') }}</dt><dd><bdi dir="ltr">{{ snapshot.storage_gb }}</bdi> {{ t('cloud.unit_gb') }}</dd></div>
+        <div class="cloud-review-grid__wide"><dt>{{ t('cloud.optional_addons') }}</dt><dd>{% for name in confirm_view.addons %}{{ name }}{% if not loop.last %}, {% endif %}{% else %}{{ t('cloud.none') }}{% endfor %}</dd></div>
+      </dl>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading"><p class="cloud-section-kicker">{{ t('cloud.demo.info_kicker') }}</p><h2>{{ t('cloud.demo.info_title') }}</h2></div>
+      <ul class="pricing-features">
+        <li>{{ t('cloud.demo.info_trial') }}</li>
+        <li>{{ t('cloud.demo.info_isolated') }}</li>
+        <li>{{ t('cloud.demo.info_no_payment') }}</li>
+      </ul>
+    </section>
+  </div>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary" aria-live="polite">
+    <h2>{{ t('cloud.demo.summary_title') }}</h2>
+    <p class="pricing-price"><strong>{{ t('cloud.demo.free_trial') }}</strong></p>
+    <p class="cloud-summary-note">{{ t('cloud.demo.confirm_reassurance') }}</p>
+    <form method="post" action="{{ locale_url('/cloud/demo/confirm') }}" id="cloud-demo-confirm-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
+      <div class="flow-actions cloud-confirm-actions">
+        <a class="btn" href="{{ locale_url('/cloud/setup') }}">{{ t('cloud.back') }}</a>
+        <button type="submit" class="btn-hero btn-hero--primary cloud-register-submit" id="cloud-demo-confirm-cta" data-disable-after-submit="1">
+          {{ t('cloud.demo.request_demo') }}
+        </button>
+      </div>
+    </form>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var form = document.getElementById("cloud-demo-confirm-form");
+  var btn = document.getElementById("cloud-demo-confirm-cta");
+  if (!form || !btn) return;
+  form.addEventListener("submit", function () {
+    btn.disabled = true;
+    btn.setAttribute("aria-busy", "true");
+  });
+})();
+</script>
+{% endblock %}

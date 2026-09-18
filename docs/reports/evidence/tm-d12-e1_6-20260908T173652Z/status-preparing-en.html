@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demo Status · Helpers ERP Cloud Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  
+    <link rel="stylesheet" href="/static/css/theme-helpers-erp.css?v=helpers-odoo-landing-1">
+  
+  
+</head>
+<body class="theme-helpers-erp body--app">
+  
+    
+<header class="mkt-nav" id="top">
+  <a class="mkt-nav__brand brand-mark" href="/">
+    
+      <img class="brand-mark__logo" src="/static/branding/helpers_erp/bsc-mark.svg" alt="">
+    
+    <span class="brand-mark__text">
+      <span class="brand-mark__product">Helpers ERP</span>
+      
+    </span>
+  </a>
+  <nav class="mkt-nav__links" aria-label="Primary">
+    <a href="/solutions">Ready Solutions</a>
+    <a href="/cloud" class="is-active">Helpers ERP Cloud</a>
+    <a href="/platform">Developer Platform</a>
+    <a href="/pricing">Pricing</a>
+  </nav>
+  <div class="mkt-nav__actions">
+    <nav class="lang-switcher" aria-label="Language">
+      <a href="/cloud/demo/status/2?lang=en" hreflang="en" lang="en" class="is-active">EN</a>
+      <span aria-hidden="true">|</span>
+      <a href="/cloud/demo/status/2?lang=ar" hreflang="ar" lang="ar">عربي</a>
+    </nav>
+    
+      
+        <a class="mkt-nav__ghost" href="/cloud/instances">My ERP</a>
+        <form method="post" action="/cloud/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="lx0aRCIwFUcvUjrOQHTMahig-h7zwHtkn0gQkEOpW1M">
+          <button type="submit" class="mkt-nav__ghost mkt-nav__button">Logout</button>
+        </form>
+      
+    
+  </div>
+</header>
+  
+  <div class="">
+    
+<div class="app-flow cloud-flow">
+  <main class="flow-main flow-main--full">
+    <p class="cloud-breadcrumb"><a href="/">Home</a> · <a href="/cloud">Helpers ERP Cloud</a> · Demo Status</p>
+    
+    
+<div class="cloud-customer-shell">
+  <main class="cloud-customer-main">
+    <section class="cloud-setup-hero flow-card">
+      <p class="cloud-plan-chip">
+        <span class="badge badge--warning">Presentation Only</span>
+        <span>Presentation mode — demo environment</span>
+      </p>
+      <h1>Your Demo Environment</h1>
+      <p>Your demo is being prepared.</p>
+    </section>
+
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">Status</p>
+        <h2>Request Details</h2>
+      </div>
+      <dl class="cloud-review-grid">
+        <div class="cloud-review-grid__wide"><dt>Request ID</dt><dd><bdi dir="ltr">78061590a754c5078b89aca2c2912919</bdi></dd></div>
+        <div><dt>Status</dt><dd>Preparing</dd></div>
+        
+        
+        
+      </dl>
+    </section>
+
+    
+    <section class="cloud-setup-section flow-card">
+      <div class="cloud-section-heading">
+        <p class="cloud-section-kicker">Please wait</p>
+        <h2>Your demo is being prepared</h2>
+      </div>
+      <p>We are setting up your isolated demo environment. This usually takes a few minutes.</p>
+    </section>
+    
+  </main>
+
+  <aside class="cloud-quote cloud-setup-summary cloud-confirm-summary">
+    <h2>Workspace access</h2>
+    
+      <p><span class="badge badge--warning">Preparing</span></p>
+    
+    <p class="cloud-summary-note">This customer page shows safe status only, never developer logs or source code.</p>
+    <div class="cloud-confirm-actions">
+      
+        <button type="button" class="btn-hero btn-hero--primary" disabled>Open Odoo</button>
+        
+          <p class="muted">Your demo is still being prepared.</p>
+        
+      
+      <a class="btn" href="/cloud/instances">Back to workspaces</a>
+    </div>
+  </aside>
+</div>
+
+    <script>
+    (function () {
+      var summary = document.getElementById("form-error-summary");
+      if (summary) {
+        if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+        summary.focus();
+      }
+    })();
+    </script>
+  </main>
+</div>
+
+  </div>
+  <script src="/static/js/app.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "/pve-docs/api-viewer/apidoc.js": {
+    "method": "GET",
+    "status": 200,
+    "sha256": "9def8f13611184ee1c7d0399713130dfc4a065701d0d91a69b9c03df929344e9"
+  },
+  "/pve-docs/pveum.1.html": {
+    "method": "GET",
+    "status": 200,
+    "sha256": "40388052cdcfdf86bec89f198f6d795ac624ce62ddc2e8855fe39d8e58be8cc7"
+  }
+}

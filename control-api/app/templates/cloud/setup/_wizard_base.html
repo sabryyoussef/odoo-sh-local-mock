@@ -8,9 +8,9 @@
       {% if step == current_step %}
         <span>{{ loop.index }}. {{ wizard_labels[step] }}</span>
       {% elif step == 'configure' %}
-        <a href="/cloud/setup">{{ loop.index }}. {{ wizard_labels[step] }}</a>
+        <a href="{{ locale_url('/cloud/setup') }}">{{ loop.index }}. {{ wizard_labels[step] }}</a>
       {% else %}
-        <a href="/cloud/setup/confirm">{{ loop.index }}. {{ wizard_labels[step] }}</a>
+        <a href="{{ locale_url('/cloud/setup/confirm') }}">{{ loop.index }}. {{ wizard_labels[step] }}</a>
       {% endif %}
     </li>
   {% endfor %}

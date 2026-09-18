@@ -1,0 +1,162 @@
+{
+  "schema": "hc36-preflight-evidence-v1",
+  "timestamp_utc": "2026-09-16T05:30:56+00:00",
+  "job_id": "hc36-job-20260914t034518z-001",
+  "reservation_id": "hc36-res-20260914t034518z-001",
+  "approval_id": "hc36-appr-20260914t034518z-001",
+  "lease_id": 1,
+  "source_vmid": 9000,
+  "target_vmid": 9500,
+  "node": "pve-test",
+  "cluster_fingerprint": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c",
+  "storage": "local-lvm",
+  "bridge": "vmbr0",
+  "http_method_counts": {
+    "GET": 0,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "preflight_checks": {
+    "source_hash_matches": {
+      "status": "PASS",
+      "observed": "70ee786c24fd689edbe676495ea53a4cd7123d35c79b0c18c4dc1ab9dc3c64e6",
+      "expected": "70ee786c24fd689edbe676495ea53a4cd7123d35c79b0c18c4dc1ab9dc3c64e6"
+    },
+    "bridge_hash_matches": {
+      "status": "PASS",
+      "observed": "7fa9b32add9ea0df9af3b0221583e9f889271e912813ab9768b4d5641410b973",
+      "expected": "7fa9b32add9ea0df9af3b0221583e9f889271e912813ab9768b4d5641410b973"
+    },
+    "fresh_preflight_collected": {
+      "status": "PASS",
+      "evidence_fingerprint": "84a55dea69fa00aba67f169ae3f27bc4047b598053e1aaefbf793ac9b2b02a58",
+      "inventory": [[101, "qemu"], [102, "qemu"], [103, "qemu"], [9000, "qemu"]],
+      "reserved_range_occupied": [],
+      "capacity_bytes": 133629723909,
+      "maintenance_clear": true,
+      "permissions_verified": true
+    },
+    "node_not_in_maintenance": {
+      "status": "PASS",
+      "proof": "pve-9.2-ha-node-untracked",
+      "node_id": "pve-test",
+      "ha_current_types": ["quorum", "fencing"]
+    },
+    "node_online": {
+      "status": "PASS",
+      "node_status": "online"
+    },
+    "source_vm_exists": {
+      "status": "PASS",
+      "vmid": 9000,
+      "name": "ubuntu-2404-cloudinit-template",
+      "template": 1,
+      "status": "stopped",
+      "onboot": 0,
+      "ha_managed": 0
+    },
+    "source_net0": {
+      "status": "PASS",
+      "net0": "virtio=BC:24:11:18:0F:44,bridge=vmbr0"
+    },
+    "target_vmid_absent": {
+      "status": "PASS",
+      "vmid_9500_exists": false
+    },
+    "storage_active": {
+      "status": "PASS",
+      "storage_type": "lvmthin",
+      "active": 1,
+      "enabled": 1,
+      "avail": 133629723909,
+      "avail_bytes": 133629723909,
+      "required_bytes": 26851934208
+    },
+    "bridge_active": {
+      "status": "PASS",
+      "iface": "vmbr0",
+      "active": 1
+    },
+    "cluster_identity": {
+      "status": "PASS",
+      "observed": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c",
+      "expected": "hc36-cluster-v1:7ea6f2b0780711f2bbd961b39ab89a4ccd86dfff1a3aca31c06674c7c0a92c8c"
+    },
+    "version": {
+      "status": "PASS",
+      "version": "9.2.11"
+    },
+    "host_lvm_verifier_capability": {
+      "status": "PASS",
+      "all_checks_passed": true,
+      "verifier_command": "/usr/local/sbin/helper-compute-lvm-proof",
+      "verifier_user": "helper-verify",
+      "verifier_host": "pve-test"
+    },
+    "host_lvm_verifier_execution": {
+      "status": "PASS",
+      "exit_code": 0,
+      "records": 15,
+      "source_volumes_proven": 3,
+      "source_volume_proof": {
+        "base-9000-disk-0": {"size": 21474836480, "role": "source"},
+        "base-9000-disk-1": {"size": 4194304, "role": "source"},
+        "vm-9000-cloudinit": {"size": 4194304, "role": "source"}
+      }
+    },
+    "source_lvm_sizes_match": {
+      "status": "PASS"
+    },
+    "lvm_proof_validated": {
+      "status": "PASS"
+    }
+  },
+  "blockers": {
+    "mutation_token_absent": {
+      "status": "FAIL",
+      "detail": "HELPER_COMPUTE_PROXMOX_MUTATION_API_TOKEN is not set in the environment. The token secret is intentionally not provided per task constraints. mutation_authorization() raises mutation_credential_invalid.",
+      "mutation_identity_expected": "helper-compute-hc36@pve!clone-once",
+      "mutation_identity_configured_on_pve": true,
+      "mutation_acls_verified": true
+    },
+    "approval_expired": {
+      "status": "FAIL",
+      "detail": "Approval expires_at 2026-09-14T03:46:19 is 2+ days past current time 2026-09-16T05:30:56. _durable() returns False.",
+      "approval_id": "hc36-appr-20260914t034518z-001",
+      "expires_at": "2026-09-14T03:46:19.096899+00:00",
+      "current_time": "2026-09-16T05:30:56+00:00"
+    },
+    "preflight_evidence_stale": {
+      "status": "FAIL",
+      "detail": "Stored fresh_evidence checked_at is 2026-09-14T03:45:18, age 179138 seconds. Must be <=60s. validate_evidence raises evidence_stale.",
+      "checked_at": "2026-09-14T03:45:18.367908+00:00",
+      "age_seconds": 179138,
+      "max_age_seconds": 60,
+      "fresh_evidence_fingerprint": "3153af1eb565b80a9948ca2b2e3f07695e58fc5539bbf8e3238e3c42f35579d1"
+    },
+    "lease_expired": {
+      "status": "FAIL",
+      "detail": "Lease/reservation expired_at 2026-09-14T03:46:19 is 2+ days past current time. _durable() returns False.",
+      "lease_id": 1,
+      "lease_state": "leased",
+      "reservation_expires_at": "2026-09-14T03:46:19.096899+00:00",
+      "job_worker_lease_expires_at": "2026-09-14T03:46:19.096899+00:00"
+    },
+    "kill_switch_engaged": {
+      "status": "FAIL",
+      "detail": "ProxmoxMutationControl.kill_switch is True (ON). Must be temporarily disabled for dispatch, but all other blockers prevent safe arming.",
+      "kill_switch": true,
+      "owner_job_id": null
+    },
+    "no_clone_intent": {
+      "status": "PASS",
+      "detail": "Clone intents count is 0 (as expected)."
+    }
+  },
+  "dry_run_result": "mutation_blocked",
+  "dry_run_replay": "never_run",
+  "mutation_attempted": false,
+  "verdict": "BLOCKED — preflight fails due to: (1) mutation token absent, (2) approval expired, (3) stale preflight evidence, (4) lease/reservation expired, (5) kill switch engaged."
+}

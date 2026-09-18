@@ -1,0 +1,8 @@
+{
+  "live-before.json": "a6e4c176efb9b4463b8ec31819512e2f28028e56d3a8f006dbb2ac1931b65ac9",
+  "live-after.json": "6c443bff07463eb48bee5440f29275dfa1b61c2e453a97e82e7a48da894a83c3",
+  "cleanup-proof.json": "d9b14ebb8e8fddf07b3c6b47aea66014b44e838115c76671063502e0fb8b68b9",
+  "live-isolation-gate.json": "aacb54022a53c7246899d2540c9f115a3f1c389fe7af7f21f04cc5cc67c12a01",
+  "error.txt": "9c4a039647fb9d593c6e7c4cd6826f0185fe70cf0324e354d4072ac90da0359e",
+  "disposable-mapping.json": "a8990afa57749bc01e70f112f46508e30a2db0a3844d4fee59b4c957f1199d5a"
+}

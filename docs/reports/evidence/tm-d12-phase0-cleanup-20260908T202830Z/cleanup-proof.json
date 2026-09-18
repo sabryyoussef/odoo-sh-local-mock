@@ -1,0 +1,49 @@
+{
+  "phase": "Phase 0 — Clean leftovers",
+  "timestamp": "2026-09-08T20:28:30Z",
+  "before": {
+    "pg_db_total": 34,
+    "pg_db_matching": ["mosh_demo_test_5b412041"],
+    "pg_role_mosh_total": 20,
+    "pg_role_matching": ["mosh_demo_r_61e05d08"],
+    "containers_total": 114,
+    "containers_tm_d12": ["tm-d12-real-odoo-tm-d12-real-20260908t191602z-6f1533-e086"],
+    "evidence_control_api": [
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T183907Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T183953Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T184732Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T185325Z"
+    ],
+    "filestore_tmp": "/tmp/.demo_clone_demo_clone_2_d4735e3a",
+    "host_evidence_preserved": "docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T201447Z"
+  },
+  "deleted": {
+    "pg_db": "mosh_demo_test_5b412041",
+    "pg_role": "mosh_demo_r_61e05d08",
+    "container": "tm-d12-real-odoo-tm-d12-real-20260908t191602z-6f1533-e086",
+    "evidence_dirs": [
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T183907Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T183953Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T184732Z",
+      "control-api/docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T185325Z"
+    ],
+    "filestore": "/tmp/.demo_clone_demo_clone_2_d4735e3a"
+  },
+  "after": {
+    "pg_db_total": 33,
+    "pg_db_matching": [],
+    "pg_role_mosh_total": 19,
+    "pg_role_matching": [],
+    "containers_total": 113,
+    "containers_tm_d12": [],
+    "evidence_control_api": [],
+    "filestore_tmp": null,
+    "host_evidence_preserved": "docs/reports/evidence/tm-d12-e1_6-real-odoo-20260908T201447Z"
+  },
+  "live_contamination": {
+    "control_api": "odoo-sh-local-mock-control-api-1 still has playwright 1.62.0, passlib 1.7.4, cryptography 44.0.0, psycopg2-binary 2.9.10 installed — recorded, not cleaned in-place per safety boundary. Will not use live container as test runner.",
+    "action": "Avoid using live container; build/run remediation in disposable container"
+  },
+  "ownership_verified": true,
+  "ambiguous_resources": "none — all deleted resources proven to belong to failed job dd6ec820-fa9b-4bce-a687-0e0e490fd52c via prefix tm_d12_real_20260908t191602z and mosh_demo_test_5b412041 / mosh_demo_r_61e05d08"
+}

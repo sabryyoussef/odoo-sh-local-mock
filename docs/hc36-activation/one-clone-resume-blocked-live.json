@@ -1,0 +1,80 @@
+{
+  "schema": "hc36-one-clone-attempt-v1",
+  "checkpoint": "CHECKPOINT_HC3_6_MUTATION_BLOCKED",
+  "observed_at_utc": "2026-09-16T09:40:00+00:00",
+  "resumed_from": "CHECKPOINT_HC3_6_MUTATION_BLOCKED",
+  "mutation_attempted": false,
+  "clone_executed": false,
+  "upid": null,
+  "clone_post_count": 0,
+  "http_methods_this_session": {
+    "GET": 12,
+    "POST": 0,
+    "PUT": 0,
+    "PATCH": 0,
+    "DELETE": 0
+  },
+  "preflight_results": {
+    "secret_file_present": true,
+    "secret_file_mode": "0600",
+    "secret_file_path": "/home/sabry/.local/share/helper-compute/secrets/hc36.env",
+    "secret_value_exposed": false,
+    "token_authenticates": true,
+    "token_auth_http_status": 200,
+    "token_identity": "helper-compute-hc36@pve!clone-once",
+    "mutation_authorization_accepts": true,
+    "vm_9500_exists": false,
+    "cluster_vm_inventory": [101, 102, 103, 9000],
+    "source_9000_state": "stopped_template_unchanged",
+    "lease_vmid": 9500,
+    "lease_job_id": "hc36-job-20260914t034518z-001",
+    "lease_state": "leased",
+    "approval_id": "hc36-appr-20260914t034518z-001",
+    "approval_consumed": false,
+    "clone_intents": 0,
+    "durable_kill_switch": true,
+    "identity_gate": true,
+    "transport_settings_valid": true
+  },
+  "credential_format_finding": {
+    "stored_value_shape": "bare_uuid_secret_without_identity_prefix",
+    "required_shape": "helper-compute-hc36@pve!clone-once=<secret>",
+    "required_by": "prerequisites.CREDENTIAL_SHAPE / require_mutation_identity",
+    "effect_if_unfixed": "HTTP 401 from Proxmox and mutation_credential_invalid from the executor",
+    "workaround_used_this_session": "identity prefix composed in-memory in the foreground process only; file not modified, value never printed"
+  },
+  "blockers": [
+    {
+      "code": "target_acl_not_effective_under_privsep",
+      "detail": "Token helper-compute-hc36@pve!clone-once has privsep=1, so effective rights are the intersection of the backing user's ACLs and the token's ACLs. /vms/9500 is bound for the TOKEN (HC36CloneTarget) but not for the backing USER helper-compute-hc36@pve, so effective privileges on /vms/9500 are empty.",
+      "observed": {
+        "/vms/9000": {"user_acl": "HC36CloneSource", "token_acl": "HC36CloneSource", "effective": "granted"},
+        "/vms/9500": {"user_acl": "MISSING", "token_acl": "HC36CloneTarget", "effective": "EMPTY"},
+        "/storage/local-lvm": {"user_acl": "HC36CloneStorage", "token_acl": "HC36CloneStorage", "effective": "granted"},
+        "/sdn/zones/localnetwork/vmbr0": {"user_acl": "HC36CloneNetwork", "token_acl": "HC36CloneNetwork", "effective": "granted"}
+      },
+      "gate_that_would_trip": "real_clone_transport.clone_template -> mutation_permissions_mismatch",
+      "operator_fix": "pveum acl modify /vms/9500 --users helper-compute-hc36@pve --roles HC36CloneTarget --propagate 0",
+      "operator_only": true
+    },
+    {
+      "code": "evidence_stale",
+      "detail": "Staged dispatch state expired. Approval, reservation and worker lease all expired at 2026-09-14T03:46:19Z (60-second TTL from staging_coordinator._stage), and the persisted preflight evidence is ~193700s old against a 60s freshness limit. real_clone_entry._load raises evidence_stale, so execute_real_clone returns mutation_blocked without any POST.",
+      "verified_by": "_load() -> ValueError evidence_stale; validate_evidence(require_fresh=True) -> evidence_stale; validate_evidence(require_fresh=False) -> passes",
+      "requires_authorization": "A fresh staging transaction creates a new lease/reservation/approval/job, which the current instruction forbids.",
+      "vmid_reuse_constraint": "staging_coordinator._used_vmids retains historical target claims (lease.vmid, job.target_vmid, audit target_vmid, stored contract target_vmid), so re-staging in this database selects 9501, not 9500."
+    }
+  ],
+  "fail_closed_state": {
+    "durable_kill_switch": true,
+    "mutation_control_owner_job_id": null,
+    "mutation_token_persisted_to_repo": false,
+    "temporary_acl_added_by_agent": false,
+    "worker_armed": false,
+    "hc37_authorized": false,
+    "vm_9500_created": false,
+    "vm_9000_modified": false,
+    "other_vms_touched": false,
+    "new_reservation_job_or_approval_created": false
+  }
+}

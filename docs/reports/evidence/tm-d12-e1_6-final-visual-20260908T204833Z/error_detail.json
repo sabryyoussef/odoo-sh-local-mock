@@ -1,0 +1,6 @@
+{
+  "error": "Odoo container not healthy after 180s",
+  "claimed_id": 2,
+  "last_error_code": null,
+  "last_error_message": null
+}

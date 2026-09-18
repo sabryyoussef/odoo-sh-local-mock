@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}Operator · Capacity{% endblock %}
+{% block body_class %}body--app{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow">
+  <main class="flow-main flow-main--full">
+    <div class="flow-header">
+      <h1>Operator · Helper Compute Capacity</h1>
+      <p>Fixture capacity view. Not connected to infrastructure. UI reads Helper Compute through the application service only.</p>
+      <div class="flow-actions" style="justify-content:flex-start;margin-top:8px">
+        <a class="btn" href="/operator/solutions">Solutions</a>
+        <a class="btn" href="/operator/tenants">Tenants</a>
+        <a class="btn" href="/operator/provisioning">Provisioning</a>
+        <a class="btn" href="/operator/platform">Platform</a>
+        <a class="btn" href="/operator/compute">Capacity</a>
+      </div>
+    </div>
+
+    {% if flash %}
+      <div class="sub-result {% if flash.level == 'success' %}sub-result--ok{% else %}sub-result--bad{% endif %}">{{ flash.message }}</div>
+    {% endif %}
+
+    <section class="flow-card" data-hc-telemetry="{{ dashboard.telemetry.status }}">
+      <h2>Telemetry freshness</h2>
+      <p><span class="badge">{{ dashboard.provider }}</span> {{ dashboard.telemetry.label }} · status <code>{{ dashboard.telemetry.status }}</code> · age {{ dashboard.telemetry.age_seconds }}s</p>
+      <p class="muted">Warning levels: {% for level in dashboard.warning_levels %}{{ level }}%{% if not loop.last %} / {% endif %}{% endfor %}</p>
+      <p>Bottleneck resource: <strong data-hc-bottleneck>{{ dashboard.bottleneck_resource }}</strong></p>
+    </section>
+
+    <section class="flow-card" data-hc-cluster="true" data-hc-active-nodes="{{ cluster.active_node_count }}">
+      <h2>Helper Compute Cluster — Sellable Capacity (HC1)</h2>
+      <p class="muted">Sellable = Total − Reserve − Allocated − Reserved − Committed · No overcommit · Seed <code>v1-demo</code> (not production) · Production values via DB admin</p>
+      <table class="data-table" data-hc-cluster-resource="cpu">
+        <thead><tr><th>Resource</th><th>Total</th><th>Reserve</th><th>Allocated</th><th>Reserved</th><th>Committed</th><th>Available (Sellable)</th><th>Utilization</th></tr></thead>
+        <tbody>
+          <tr><td>CPU (vCPU)</td><td>{{ cpu.total }}</td><td>{{ cpu.reserve }}</td><td>{{ cpu.allocated }}</td><td>{{ cpu.reserved }}</td><td>{{ cpu.committed }}</td><td><strong data-hc-sellable="cpu">{{ cpu.available }}</strong></td><td>{{ cpu.utilization_percent }}%</td></tr>
+          <tr><td>RAM (GB)</td><td>{{ ram.total }}</td><td>{{ ram.reserve }}</td><td>{{ ram.allocated }}</td><td>{{ ram.reserved }}</td><td>{{ ram.committed }}</td><td><strong data-hc-sellable="ram">{{ ram.available }}</strong></td><td>{{ ram.utilization_percent }}%</td></tr>
+          <tr><td>Storage (GB)</td><td>{{ storage.total }}</td><td>{{ storage.reserve }}</td><td>{{ storage.allocated }}</td><td>{{ storage.reserved }}</td><td>{{ storage.committed }}</td><td><strong data-hc-sellable="storage">{{ storage.available }}</strong></td><td>{{ storage.utilization_percent }}%</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin-top:16px">Per-node breakdown</h3>
+      <table class="data-table" data-hc-nodes="true">
+        <thead><tr><th>Node</th><th>Active</th><th>CPU avail</th><th>RAM avail (GB)</th><th>Storage avail (GB)</th><th>CPU util</th><th>RAM util</th><th>Storage util</th></tr></thead>
+        <tbody>
+          {% for n in nodes %}
+            <tr data-hc-node="{{ n.node_id }}">
+              <td><code>{{ n.node_id }}</code></td>
+              <td>{% if n.active %}yes{% else %}no{% endif %}</td>
+              <td>{{ n.cpu.available }}</td>
+              <td>{{ n.ram.available }}</td>
+              <td>{{ n.storage.available }}</td>
+              <td>{{ n.cpu.utilization_percent }}%</td>
+              <td>{{ n.ram.utilization_percent }}%</td>
+              <td>{{ n.storage.utilization_percent }}%</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="8" class="muted">No nodes</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top:8px">Cluster nodes: {{ cluster.active_node_count }} active · Candidate logic: preferred = most available CPU, tie-break by node_id · No infrastructure secrets exposed</p>
+    </section>
+
+    <section class="flow-card">
+      <h2>CPU</h2>
+      {% set cpu_legacy = dashboard.cpu %}
+      <table class="data-table" data-hc-resource="cpu">
+        <thead><tr><th>Physical</th><th>Allocatable</th><th>Allocated</th><th>Reserved</th><th>Warm</th><th>Available</th><th>Used</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ cpu_legacy.physical }} {{ cpu_legacy.unit }}</td>
+            <td>{{ cpu_legacy.allocatable }}</td>
+            <td>{{ cpu_legacy.allocated }}</td>
+            <td>{{ cpu_legacy.reserved }}</td>
+            <td>{{ cpu_legacy.warm }}</td>
+            <td>{{ cpu_legacy.available }}</td>
+            <td><span class="hc-band hc-band--{{ cpu_legacy.warning_band }}">{{ cpu_legacy.used_percent }}%</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hc-meter" aria-hidden="true"><span class="hc-meter__fill hc-band--{{ cpu_legacy.warning_band }}" style="width: {{ cpu_legacy.used_percent }}%"></span></div>
+    </section>
+
+    <section class="flow-card">
+      <h2>RAM</h2>
+      {% set ram_legacy = dashboard.ram %}
+      <table class="data-table" data-hc-resource="ram">
+        <thead><tr><th>Physical</th><th>Allocatable</th><th>Allocated</th><th>Reserved</th><th>Warm</th><th>Available</th><th>Used</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ ram_legacy.physical }} {{ ram_legacy.unit }}</td>
+            <td>{{ ram_legacy.allocatable }}</td>
+            <td>{{ ram_legacy.allocated }}</td>
+            <td>{{ ram_legacy.reserved }}</td>
+            <td>{{ ram_legacy.warm }}</td>
+            <td>{{ ram_legacy.available }}</td>
+            <td><span class="hc-band hc-band--{{ ram_legacy.warning_band }}">{{ ram_legacy.used_percent }}%</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hc-meter" aria-hidden="true"><span class="hc-meter__fill hc-band--{{ ram_legacy.warning_band }}" style="width: {{ ram_legacy.used_percent }}%"></span></div>
+    </section>
+
+    <section class="flow-card">
+      <h2>Storage</h2>
+      {% set st = dashboard.storage %}
+      <table class="data-table" data-hc-resource="storage">
+        <thead><tr><th>Physical used</th><th>Physical total</th><th>Logical allocated</th><th>Logical total</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ st.physical_used_gb }} GB ({{ st.physical_used_percent }}%)</td>
+            <td>{{ st.physical_total_gb }} GB</td>
+            <td>{{ st.logical_allocated_gb }} GB ({{ st.logical_allocated_percent }}%)</td>
+            <td>{{ st.logical_total_gb }} GB</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Backup capacity</h2>
+      {% set bk = dashboard.backup %}
+      <table class="data-table" data-hc-resource="backup">
+        <thead><tr><th>Physical used</th><th>Physical total</th><th>Logical allocated</th><th>Logical total</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>{{ bk.physical_used_gb }} GB</td>
+            <td>{{ bk.physical_total_gb }} GB</td>
+            <td>{{ bk.logical_allocated_gb }} GB</td>
+            <td>{{ bk.logical_total_gb }} GB</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card hc-pool-grid">
+      <div>
+        <h2>Demo pool</h2>
+        <p>{{ dashboard.demo_pool.allocated }} allocated · {{ dashboard.demo_pool.warm }} warm · {{ dashboard.demo_pool.available }} available {{ dashboard.demo_pool.unit }}</p>
+      </div>
+      <div>
+        <h2>Warm production pool</h2>
+        <p>{{ dashboard.warm_production_pool.allocated }} allocated · {{ dashboard.warm_production_pool.warm }} warm · {{ dashboard.warm_production_pool.available }} available {{ dashboard.warm_production_pool.unit }}</p>
+      </div>
+    </section>
+
+    <section class="flow-card">
+      <h2>Pending reservations</h2>
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Package</th><th>Summary</th></tr></thead>
+        <tbody>
+          {% for row in dashboard.pending_reservations %}
+            <tr><td><code>{{ row.id }}</code></td><td>{{ row.package }}</td><td>{{ row.summary }}</td></tr>
+          {% else %}
+            <tr><td colspan="3" class="muted">None</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Stale reservations</h2>
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Package</th><th>Summary</th></tr></thead>
+        <tbody>
+          {% for row in dashboard.stale_reservations %}
+            <tr><td><code>{{ row.id }}</code></td><td>{{ row.package }}</td><td>{{ row.summary }}</td></tr>
+          {% else %}
+            <tr><td colspan="3" class="muted">None</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Failed provisioning</h2>
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Package</th><th>Summary</th></tr></thead>
+        <tbody>
+          {% for row in dashboard.failed_provisioning %}
+            <tr><td><code>{{ row.id }}</code></td><td>{{ row.package }}</td><td>{{ row.summary }}</td></tr>
+          {% else %}
+            <tr><td colspan="3" class="muted">None</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="flow-card">
+      <h2>Capacity inconsistencies</h2>
+      <ul class="plain-list">
+        {% for note in dashboard.capacity_inconsistencies %}
+          <li><span class="badge badge--warning">{{ note.severity }}</span> <code>{{ note.code }}</code> — {{ note.summary }}</li>
+        {% else %}
+          <li class="muted">None</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section class="flow-card">
+      <h2>Estimated extra customers per package</h2>
+      <table class="data-table">
+        <thead><tr><th>Package</th><th>Extra customers</th></tr></thead>
+        <tbody>
+          {% for code, count in dashboard.extra_customers_per_package.items() %}
+            <tr><td>{{ code }}</td><td>{{ count }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+{% endblock %}

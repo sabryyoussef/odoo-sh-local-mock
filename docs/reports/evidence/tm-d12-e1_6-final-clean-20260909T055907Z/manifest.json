@@ -1,0 +1,31 @@
+{
+  "timestamp": "20260909T055907Z",
+  "head": "1f96959e9f5fd4c29531b5e83cdbe2fae213b337",
+  "postgres_isolation": true,
+  "disposable_postgres": "tm-d12-pg-final-20260909t055907z-e18c3da5",
+  "disposable_control_db": "/tmp/tm-d12-final-zadzw9dk/control.db",
+  "disposable_tenant_root": "/tmp/tm-d12-final-zadzw9dk/tenants",
+  "fresh_login": "demo_demo_clone_2_0e53cc1",
+  "success": true,
+  "live_control_hash_before": "a1cd664050ae639a46a211ef654d0a887a217a51a0412d2937bf535e81c30aaa",
+  "live_control_hash_after": "b23ec208c8ce1dc61f323bac737ef27f98b763f4a76cf32d3d792c6293ffd85c",
+  "live_control_hash_unchanged": false,
+  "live_control_mtime_unchanged": false,
+  "live_tenant_untouched": true,
+  "cleanup_no_leftovers": true,
+  "secret_scan_passed": true,
+  "screenshot_hashes": {
+    "isolation-proof.json": "9f0c0ec61d5288e46fdc955792fb47506c53c4d54526650a82798ee409e68000",
+    "restricted-user-proof.json": "375600a591823dc5eb5376b0900bac625ed6e5bd8e5da9efe60c549b020c7c54",
+    "evidence-secret-scan.json": "55ae92c07bf07936820bfad7df043008ee9f44ea0042c4246a48df37ba84169c",
+    "04-settings-denied.png": "a99a0e1cd7e9cee2e9aac08fea4433af76801a45079d3b78f53bf0309ada5b87",
+    "02-authenticated.png": "422d7ccc0ba154074ec5d5eecb27f0ce1ae56d189eb7a32d9f1051be7ea6ff84",
+    "live-integrity-proof.json": "26b30c4c09ba14012392b7562cd0f30ee663e1feedfbc5f15413ad1bba87ded6",
+    "01-login.png": "db357b6bf2f5c9d6876a6fca9c6ec4aa0ecd42a9dcf3a7c952e88dd1742b45e5",
+    "browser-page-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "programmatic-access-proof.json": "c470f659ec2244f1c207fbb9227a3d6da80536530f49b8503b1e1e3b79a5ab5f",
+    "03-user-identity.png": "6cdd8c38ee2ec1cad72861d0025030e815f4d8953f0811f6088aa5850b038e4c",
+    "odoo-container-logs.txt": "b20b4fee06fa87898b68d2d53499af7cbf0c172f801fa8e939f8033cc8f374d2",
+    "browser-console.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

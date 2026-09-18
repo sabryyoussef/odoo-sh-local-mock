@@ -1,0 +1,11 @@
+Please correct the highlighted fields.
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 97, in <module>
+    user = _reg(db, f"{PFX}@test.example")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 68, in _reg
+    return register_cloud_customer(db, RegisterInput(full_name="T", email=email, phone="+20100000001", company_name="T", country="Egypt", password="SecurePass1", password_confirm="SecurePass1", terms_accepted=True), client_key=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/app/services/cloud_auth_service.py", line 146, in register_cloud_customer
+    raise err
+app.services.cloud_auth_service.CloudAuthError: Please correct the highlighted fields.

@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:8399/web/login?db=REDACTED_DB",
+  "runtime": {
+    "container": "tm-d12-final-tm-d12-final-20260908t213517z-9d492c-7a22",
+    "port": 8399
+  },
+  "user": {
+    "login": "demo_demo_clone_2_d4735e3",
+    "groups": [
+      1
+    ]
+  },
+  "portal": {
+    "url": "http://100.76.217.35:8399/web/login?db=REDACTED_DB"
+  }
+}

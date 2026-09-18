@@ -1,0 +1,7 @@
+[Errno 13] Permission denied: '/opt/projects/active/odoo-sh-local-mock/data/tenants/.demo_clone_demo_clone_2_d4735e3a/filestore/addons'
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 232, in <module>
+    (fsp/"addons").mkdir(exist_ok=True)
+  File "/usr/lib/python3.12/pathlib.py", line 1311, in mkdir
+    os.mkdir(self, mode)
+PermissionError: [Errno 13] Permission denied: '/opt/projects/active/odoo-sh-local-mock/data/tenants/.demo_clone_demo_clone_2_d4735e3a/filestore/addons'

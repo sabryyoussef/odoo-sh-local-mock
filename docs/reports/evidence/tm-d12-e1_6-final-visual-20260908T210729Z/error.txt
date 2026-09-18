@@ -1,0 +1,6 @@
+Clone failed: demo_clone_execution_failed UA.create_restricted_user() got an unexpected keyword argument 'db_name'
+Traceback (most recent call last):
+  File "/opt/projects/active/odoo-sh-local-mock/control-api/tm_d12_host_run.py", line 181, in <module>
+    assert res.success, f"Clone failed: {res.error_code} {res.error_message}"
+           ^^^^^^^^^^^
+AssertionError: Clone failed: demo_clone_execution_failed UA.create_restricted_user() got an unexpected keyword argument 'db_name'

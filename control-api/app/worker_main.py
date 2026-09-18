@@ -52,6 +52,13 @@ def _should_process_cloud() -> bool:
     return enabled and max_jobs > 0
 
 
+
+def _should_process_proxmox() -> bool:
+    """Fail-closed: only process Proxmox provisioning jobs if explicitly enabled."""
+    settings = get_settings()
+    return bool(getattr(settings, "helper_compute_proxmox_provisioning_worker_enabled", False))
+
+
 def run_bounded_cloud_worker(max_jobs: int = 1, run_id: str | None = None, worker_id: str | None = None) -> int:
     """Bounded cloud worker: process at most max_jobs and exit (for P3 canary).
 
@@ -153,6 +160,21 @@ def run_worker_loop() -> int:
                 # Fail-closed: no cloud processing, no resource creation
                 pass
 
+
+            # HC3.7 — Proxmox provisioning (fake provider only, fail-closed)
+            if _should_process_proxmox():
+                try:
+                    from app.services.helper_compute.proxmox.provisioning_worker import (
+                        _process_one_proxmox_job,
+                        _reconcile_stale_proxmox_jobs,
+                    )
+                    _reconcile_stale_proxmox_jobs(db, stale_minutes=5)
+                    if _process_one_proxmox_job(db, settings.provisioning_worker_id):
+                        write_heartbeat("proxmox", {"worker_id": settings.provisioning_worker_id})
+                        continue
+                except Exception as exc:
+                    logger.warning("Proxmox provisioning error: %s", exc)
+
             # DP6 lifecycle (only if no other job claimed)
             from app.services.platform_lifecycle_service import process_due_lifecycle_tick
 
@@ -189,7 +211,20 @@ def main() -> None:
         # Ensure provisioning is enabled for bounded run (fail-closed otherwise)
         # Caller must set HELPERS_CLOUD_REAL_PROVISIONING_ENABLED=true and HELPERS_CLOUD_WORKER_MAX_JOBS
         sys.exit(run_bounded_cloud_worker(max_jobs=max_jobs, run_id=run_id))
+    if "--proxmox-bounded" in sys.argv:
+        try:
+            idx = sys.argv.index("--proxmox-bounded")
+            max_jobs = int(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else 1
+        except Exception:
+            max_jobs = 1
+        sys.exit(run_bounded_proxmox_worker(max_jobs=max_jobs))
     sys.exit(run_worker_loop())
+
+
+def run_bounded_proxmox_worker(max_jobs: int = 1) -> int:
+    """Bounded Proxmox worker: process at most max_jobs and exit cleanly."""
+    from app.services.helper_compute.proxmox.provisioning_worker import run_proxmox_worker_loop
+    return run_proxmox_worker_loop(max_jobs=max_jobs)
 
 
 if __name__ == "__main__":

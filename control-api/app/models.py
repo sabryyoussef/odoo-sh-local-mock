@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    Index,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -45,6 +46,27 @@ class User(Base):
     cloud_orders: Mapped[list["CloudOrder"]] = relationship(back_populates="user")
     cloud_subscriptions: Mapped[list["CloudSubscription"]] = relationship(back_populates="user")
     cloud_instances: Mapped[list["CloudInstance"]] = relationship(back_populates="user")
+
+
+class ProviderIdentity(Base):
+    __tablename__ = "provider_identities"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    provider: Mapped[str] = mapped_column(String(32), index=True)
+    provider_subject: Mapped[str] = mapped_column(String(255), index=True)
+    provider_email: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    profile_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("provider", "provider_subject", name="uq_provider_identity_subject"),
+    )
 
 
 class PlatformPlan(Base):
@@ -286,6 +308,8 @@ class Solution(Base):
     current_version: Mapped[str] = mapped_column(String(32), default="1.0.0")
     status: Mapped[str] = mapped_column(String(32), default="active", index=True)
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
+    industry_code: Mapped[str | None] = mapped_column(String(64), nullable=True, default=None)
+    category: Mapped[str | None] = mapped_column(String(64), nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -294,6 +318,96 @@ class Solution(Base):
     packages: Mapped[list[Package]] = relationship(back_populates="solution")
     template_databases: Mapped[list[TemplateDatabase]] = relationship(back_populates="solution")
     customer_subscriptions: Mapped[list[CustomerSubscription]] = relationship(back_populates="solution")
+    deployment_profiles: Mapped[list["SolutionDeploymentProfile"]] = relationship(back_populates="solution", cascade="all, delete-orphan")
+    artifacts: Mapped[list["SolutionArtifact"]] = relationship(back_populates="solution", cascade="all, delete-orphan")
+
+
+
+class SolutionArtifact(Base):
+    """Application-level artifact abstraction — NOT a Proxmox template.
+
+    Represents a versioned solution package (code + version + Odoo version + edition).
+    RS1 does not build/deploy; unverified artifacts are honestly marked not ready.
+    """
+
+    __tablename__ = "solution_artifacts"
+    __table_args__ = (
+        UniqueConstraint("solution_id", "code", name="uq_artifact_solution_code"),
+        Index("ix_artifact_solution", "solution_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    solution_id: Mapped[int] = mapped_column(ForeignKey("solutions.id"), index=True)
+    code: Mapped[str] = mapped_column(String(64), index=True)
+    name: Mapped[str] = mapped_column(String(255), default="")
+    package_identifier: Mapped[str] = mapped_column(String(255), default="")
+    version: Mapped[str] = mapped_column(String(32), default="1.0.0")
+    odoo_version: Mapped[str] = mapped_column(String(32), default="19.0")
+    edition: Mapped[str] = mapped_column(String(32), default="community")
+    source_type: Mapped[str] = mapped_column(String(32), default="template_database")
+    install_strategy: Mapped[str] = mapped_column(String(32), default="restore")
+    status: Mapped[str] = mapped_column(String(32), default="draft", index=True)
+    verification_state: Mapped[str] = mapped_column(String(32), default="unverified", index=True)
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    deployment_ready: Mapped[bool] = mapped_column(Boolean, default=False)
+    template_database_id: Mapped[int | None] = mapped_column(ForeignKey("template_databases.id"), nullable=True, index=True)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    solution: Mapped[Solution] = relationship(back_populates="artifacts")
+    template_database: Mapped["TemplateDatabase | None"] = relationship()
+
+
+class SolutionDeploymentProfile(Base):
+    """Versioned deployment profile — resource/compatibility requirements.
+
+    Describes minimum/recommended compute for a solution environment.
+    No Proxmox identifiers; provider-neutral.
+    """
+
+    __tablename__ = "solution_deployment_profiles"
+    __table_args__ = (
+        UniqueConstraint("solution_id", "code", name="uq_profile_solution_code"),
+        Index("ix_profile_solution", "solution_id"),
+        Index("ix_profile_active", "active"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    solution_id: Mapped[int] = mapped_column(ForeignKey("solutions.id"), index=True)
+    artifact_id: Mapped[int | None] = mapped_column(ForeignKey("solution_artifacts.id"), nullable=True, index=True)
+    template_database_id: Mapped[int | None] = mapped_column(ForeignKey("template_databases.id"), nullable=True, index=True)
+    code: Mapped[str] = mapped_column(String(64), index=True)
+    name: Mapped[str] = mapped_column(String(255))
+    environment_type: Mapped[str] = mapped_column(String(32), default="demo", index=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    is_default: Mapped[bool] = mapped_column(Boolean, default=False)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    odoo_version: Mapped[str] = mapped_column(String(32), default="19.0")
+    edition: Mapped[str] = mapped_column(String(32), default="community")
+    min_vcpu: Mapped[int] = mapped_column(Integer, default=1)
+    recommended_vcpu: Mapped[int] = mapped_column(Integer, default=2)
+    min_ram_gb: Mapped[int] = mapped_column(Integer, default=2)
+    recommended_ram_gb: Mapped[int] = mapped_column(Integer, default=4)
+    min_storage_gb: Mapped[int] = mapped_column(Integer, default=20)
+    recommended_storage_gb: Mapped[int] = mapped_column(Integer, default=80)
+    expected_users_min: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    expected_users_max: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    compatible_compute_tier: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    demo_suitable: Mapped[bool] = mapped_column(Boolean, default=False)
+    production_suitable: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(32), default="published", index=True)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    solution: Mapped[Solution] = relationship(back_populates="deployment_profiles")
+    artifact: Mapped[SolutionArtifact | None] = relationship()
+    template_database: Mapped["TemplateDatabase | None"] = relationship()
 
 
 class Package(Base):
@@ -307,6 +421,7 @@ class Package(Base):
     description: Mapped[str] = mapped_column(Text, default="")
     price_monthly: Mapped[str | None] = mapped_column(String(32), nullable=True)
     price_annual: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    price_one_time: Mapped[str | None] = mapped_column(String(32), nullable=True)
     currency: Mapped[str] = mapped_column(String(8), default="USD")
     trial_days: Mapped[int] = mapped_column(Integer, default=14)
     max_users: Mapped[int] = mapped_column(Integer, default=5)
@@ -1262,6 +1377,8 @@ class CloudOrder(Base):
     setup_id: Mapped[int | None] = mapped_column(ForeignKey("cloud_setup_selections.id"), nullable=True)
     order_code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     idempotency_key: Mapped[str] = mapped_column(String(128), index=True)
+    lane: Mapped[str] = mapped_column(String(32), default="demo", index=True)
+    order_kind: Mapped[str] = mapped_column(String(32), default="demo_checkout", index=True)
     status: Mapped[str] = mapped_column(String(32), default="demo_paid", index=True)
     pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
     configuration_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
@@ -1290,6 +1407,8 @@ class CloudSubscription(Base):
     version_id: Mapped[int] = mapped_column(ForeignKey("cloud_odoo_versions.id"))
     package_id: Mapped[int] = mapped_column(ForeignKey("cloud_application_packages.id"))
     code: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    lane: Mapped[str] = mapped_column(String(32), default="demo", index=True)
+    order_kind: Mapped[str] = mapped_column(String(32), default="demo_checkout", index=True)
     status: Mapped[str] = mapped_column(String(32), default="demo_trial", index=True)
     billing_cycle: Mapped[str] = mapped_column(String(16), default="monthly")
     requested_users: Mapped[int] = mapped_column(Integer, default=1)
@@ -1331,6 +1450,8 @@ class CloudProvisioningRequest(Base):
     status: Mapped[str] = mapped_column(String(32), default="queued", index=True)
     current_step: Mapped[str | None] = mapped_column(String(64), nullable=True)
     adapter: Mapped[str] = mapped_column(String(32), default="demo")
+    lane: Mapped[str] = mapped_column(String(32), default="demo", index=True)
+    order_kind: Mapped[str] = mapped_column(String(32), default="demo_checkout", index=True)
     # Orchestration fields — P1
     claimed_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
     lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -1441,7 +1562,18 @@ class CloudTemplate(Base):
 
     __tablename__ = "cloud_templates"
     __table_args__ = (
-        UniqueConstraint("package_code", "odoo_version_code", name="uq_cloud_template_package_version"),
+        # catalog_code is independently unique when present; NULLs are fail-closed non-catalog rows.
+        UniqueConstraint("catalog_code", name="uq_cloud_template_catalog_code"),
+        # Matching identity includes template_kind so demo and cloud_base can coexist.
+        # Not UNIQUE: selector fail-closes on duplicate prepared demo rows (TM-D5 ambiguity).
+        Index(
+            "ix_cloud_template_catalog_identity",
+            "industry_code",
+            "package_code",
+            "odoo_version_code",
+            "edition",
+            "template_kind",
+        ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -1454,7 +1586,712 @@ class CloudTemplate(Base):
     health: Mapped[str] = mapped_column(String(32), default="unhealthy", index=True)
     version: Mapped[str] = mapped_column(String(32), default="1.0.0")
     checksum: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    catalog_code: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    industry_code: Mapped[str] = mapped_column(String(64), default="general", index=True)
+    edition: Mapped[str] = mapped_column(String(32), default="community")
+    supported_languages: Mapped[str] = mapped_column(String(64), default="ar,en")
+    active: Mapped[bool] = mapped_column(Boolean, default=False)
+    readiness_state: Mapped[str] = mapped_column(String(32), default="draft")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+
+class HelperComputeCatalog(Base):
+    """Authoritative resource catalog — single active row, versioned.
+
+    Production values are configured via admin/DB seed, not hardcoded.
+    Development/demo defaults are marked v1-demo.
+    """
+
+    __tablename__ = "helper_compute_catalog"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    version: Mapped[str] = mapped_column(String(32), default="v1-demo", unique=True, index=True)
+    vcpu_min: Mapped[int] = mapped_column(Integer, default=1)
+    vcpu_max: Mapped[int] = mapped_column(Integer, default=32)
+    vcpu_step: Mapped[int] = mapped_column(Integer, default=1)
+    ram_min_gb: Mapped[int] = mapped_column(Integer, default=2)
+    ram_max_gb: Mapped[int] = mapped_column(Integer, default=128)
+    ram_step_gb: Mapped[int] = mapped_column(Integer, default=1)
+    storage_min_gb: Mapped[int] = mapped_column(Integer, default=20)
+    storage_max_gb: Mapped[int] = mapped_column(Integer, default=2000)
+    storage_step_gb: Mapped[int] = mapped_column(Integer, default=10)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class HelperComputePricing(Base):
+    """Centralized recurring resource pricing — single active row, versioned.
+
+    Rates in cents per unit per month. Decimal-safe (integer cents).
+    Development/demo defaults are marked v1-demo — NOT production pricing.
+    """
+
+    __tablename__ = "helper_compute_pricing"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    version: Mapped[str] = mapped_column(String(32), default="v1-demo", unique=True, index=True)
+    price_per_vcpu_cents: Mapped[int] = mapped_column(Integer, default=800)
+    price_per_ram_gb_cents: Mapped[int] = mapped_column(Integer, default=400)
+    price_per_storage_gb_cents: Mapped[int] = mapped_column(Integer, default=15)
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class HelperComputeNode(Base):
+    """Node/host abstraction — one row per Proxmox host (or mock host).
+
+    Even with one host, model does not assume single server.
+    Capacity: Sellable = Total - Reserve - Allocated - Reserved (per resource).
+    Conservative Phase 1 policy: no overcommit.
+    """
+
+    __tablename__ = "helper_compute_nodes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    node_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    cpu_total: Mapped[int] = mapped_column(Integer, default=32)
+    cpu_reserve: Mapped[int] = mapped_column(Integer, default=4)
+    cpu_allocated: Mapped[int] = mapped_column(Integer, default=0)
+    cpu_reserved: Mapped[int] = mapped_column(Integer, default=0)
+    cpu_committed: Mapped[int] = mapped_column(Integer, default=0)
+    ram_total_gb: Mapped[int] = mapped_column(Integer, default=128)
+    ram_reserve_gb: Mapped[int] = mapped_column(Integer, default=16)
+    ram_allocated_gb: Mapped[int] = mapped_column(Integer, default=0)
+    ram_reserved_gb: Mapped[int] = mapped_column(Integer, default=0)
+    ram_committed_gb: Mapped[int] = mapped_column(Integer, default=0)
+    storage_total_gb: Mapped[int] = mapped_column(Integer, default=2000)
+    storage_reserve_gb: Mapped[int] = mapped_column(Integer, default=200)
+    storage_allocated_gb: Mapped[int] = mapped_column(Integer, default=0)
+    storage_reserved_gb: Mapped[int] = mapped_column(Integer, default=0)
+    storage_committed_gb: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+# ---------------------------------------------------------------------------
+# Helper Compute Phase 2 — Reservation + Checkout Contract
+# No VM provisioning. Capacity held via Reserved bucket, committed via Committed bucket.
+# ---------------------------------------------------------------------------
+
+# Reservation states — explicit state machine
+HC_RESERVATION_STATE_DRAFT = "draft"
+HC_RESERVATION_STATE_RESERVED = "reserved"
+HC_RESERVATION_STATE_CHECKOUT_BOUND = "checkout_bound"
+HC_RESERVATION_STATE_COMMITTED = "committed"
+HC_RESERVATION_STATE_RELEASED = "released"
+HC_RESERVATION_STATE_EXPIRED = "expired"
+HC_RESERVATION_STATE_CANCELLED = "cancelled"
+
+HC_RESERVATION_STATES = frozenset({
+    HC_RESERVATION_STATE_DRAFT,
+    HC_RESERVATION_STATE_RESERVED,
+    HC_RESERVATION_STATE_CHECKOUT_BOUND,
+    HC_RESERVATION_STATE_COMMITTED,
+    HC_RESERVATION_STATE_RELEASED,
+    HC_RESERVATION_STATE_EXPIRED,
+    HC_RESERVATION_STATE_CANCELLED,
+})
+
+# Valid transitions — illegal must be rejected
+HC_RESERVATION_TRANSITIONS: dict[str, set[str]] = {
+    HC_RESERVATION_STATE_DRAFT: {HC_RESERVATION_STATE_RESERVED, HC_RESERVATION_STATE_CANCELLED},
+    HC_RESERVATION_STATE_RESERVED: {
+        HC_RESERVATION_STATE_CHECKOUT_BOUND,
+        HC_RESERVATION_STATE_RELEASED,
+        HC_RESERVATION_STATE_EXPIRED,
+        HC_RESERVATION_STATE_CANCELLED,
+    },
+    HC_RESERVATION_STATE_CHECKOUT_BOUND: {
+        HC_RESERVATION_STATE_COMMITTED,
+        HC_RESERVATION_STATE_RELEASED,
+        HC_RESERVATION_STATE_EXPIRED,
+        HC_RESERVATION_STATE_CANCELLED,
+    },
+    HC_RESERVATION_STATE_COMMITTED: set(),  # terminal — no release in normal HC2 flow
+    HC_RESERVATION_STATE_RELEASED: set(),
+    HC_RESERVATION_STATE_EXPIRED: set(),
+    HC_RESERVATION_STATE_CANCELLED: set(),
+}
+
+# Release reasons — audit trail
+HC_RELEASE_REASON_EXPIRED = "expired"
+HC_RELEASE_REASON_CANCELLED = "cancelled"
+HC_RELEASE_REASON_PAYMENT_FAILED = "payment_failed"
+HC_RELEASE_REASON_USER_CHANGED = "user_changed_selection"
+HC_RELEASE_REASON_ADMIN_CANCELLED = "admin_cancelled"
+HC_RELEASE_REASON_CHECKOUT_CANCELLED = "checkout_cancelled"
+HC_RELEASE_REASON_SUPERSEDED = "superseded"
+
+
+class HelperComputeQuote(Base):
+    """Authoritative quote — snapshot of catalog/pricing/resources at quote time.
+
+    Quotes expire; checkout cannot use stale quote. Pricing version preserved.
+    """
+
+    __tablename__ = "helper_compute_quotes"
+    __table_args__ = (
+        UniqueConstraint("quote_id", name="uq_hc_quote_id"),
+        Index("ix_hc_quote_expires", "expires_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    quote_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    pricing_version: Mapped[str] = mapped_column(String(32), default="v1-demo")
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    # Resource snapshot
+    vcpu: Mapped[int] = mapped_column(Integer)
+    ram_gb: Mapped[int] = mapped_column(Integer)
+    storage_gb: Mapped[int] = mapped_column(Integer)
+    resource_monthly_price_cents: Mapped[int] = mapped_column(Integer)
+    # Context
+    solution: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    platform_plan_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    compute_profile: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    candidate_node_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Full snapshot for audit (JSON)
+    pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    resource_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
+class HelperComputeReservation(Base):
+    """Commercial reservation — holds capacity between quote and provisioning.
+
+    Capacity accounting: Reserved bucket is real. Committed moves to committed bucket (pending provisioning).
+    No VM is created in Phase 2.
+    """
+
+    __tablename__ = "helper_compute_reservations"
+    __table_args__ = (
+        UniqueConstraint("reservation_id", name="uq_hc_reservation_id"),
+        UniqueConstraint("idempotency_key", name="uq_hc_reservation_idempotency"),
+        Index("ix_hc_reservation_state", "state"),
+        Index("ix_hc_reservation_expires", "expires_at"),
+        Index("ix_hc_reservation_owner", "user_id"),
+        Index("ix_hc_reservation_session", "session_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    reservation_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    # Ownership — user or anonymous session
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
+    session_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    # Quote reference
+    quote_id: Mapped[str] = mapped_column(String(64), index=True)
+    quote_reference: Mapped[str] = mapped_column(String(64), index=True)  # alias for quote_id
+    # Selection snapshot
+    solution: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    platform_plan_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    compute_profile: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    vcpu: Mapped[int] = mapped_column(Integer)
+    ram_gb: Mapped[int] = mapped_column(Integer)
+    storage_gb: Mapped[int] = mapped_column(Integer)
+    resource_monthly_price_cents: Mapped[int] = mapped_column(Integer)
+    pricing_version: Mapped[str] = mapped_column(String(32), default="v1-demo")
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    candidate_node_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Lifecycle
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    state: Mapped[str] = mapped_column(String(32), default=HC_RESERVATION_STATE_DRAFT, index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    # Checkout binding
+    checkout_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    order_reference: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Audit
+    release_reason: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    committed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Snapshot JSON for audit
+    pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    resource_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    audit_json: Mapped[str] = mapped_column(Text, default="{}")
+
+    user: Mapped[User | None] = relationship()
+
+
+class HelperComputeCheckout(Base):
+    """Checkout/commercial binding — one checkout per reservation, separate lines.
+
+    Lines: Platform Subscription, Cloud Resources, Optional Add-ons.
+    Total is server-recomputed; snapshot preserved.
+    """
+
+    __tablename__ = "helper_compute_checkouts"
+    __table_args__ = (
+        UniqueConstraint("checkout_id", name="uq_hc_checkout_id"),
+        UniqueConstraint("idempotency_key", name="uq_hc_checkout_idempotency"),
+        UniqueConstraint("reservation_id", name="uq_hc_checkout_reservation"),
+        Index("ix_hc_checkout_state", "state"),
+        Index("ix_hc_checkout_reservation_id", "reservation_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    checkout_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    reservation_id: Mapped[str] = mapped_column(String(64), index=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
+    session_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    state: Mapped[str] = mapped_column(String(32), default="pending", index=True)  # pending, paid, failed, cancelled
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    # Commercial lines (cents, server-recomputed)
+    platform_cents: Mapped[int] = mapped_column(Integer, default=0)
+    resources_cents: Mapped[int] = mapped_column(Integer, default=0)
+    addons_cents: Mapped[int] = mapped_column(Integer, default=0)
+    total_cents: Mapped[int] = mapped_column(Integer, default=0)
+    currency: Mapped[str] = mapped_column(String(8), default="USD")
+    pricing_version: Mapped[str] = mapped_column(String(32), default="v1-demo")
+    # Snapshots
+    lines_json: Mapped[str] = mapped_column(Text, default="[]")
+    pricing_snapshot_json: Mapped[str] = mapped_column(Text, default="{}")
+    # Payment outcome
+    payment_reference: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failure_reason: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped[User | None] = relationship()
+
+
+class HelperComputeReservationEvent(Base):
+    """Audit trail for reservation lifecycle."""
+
+    __tablename__ = "helper_compute_reservation_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    reservation_id: Mapped[str] = mapped_column(String(64), index=True)
+    event_type: Mapped[str] = mapped_column(String(64), index=True)
+    from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    actor: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    reason: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    meta_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# ---------------------------------------------------------------------------
+# Helper Compute HC3.2 — Proxmox durable reservation (atomic, idempotent)
+# ---------------------------------------------------------------------------
+
+PROXMOX_RESERVATION_STATUS_ACTIVE = "active"
+PROXMOX_RESERVATION_STATUS_CONSUMED = "consumed"
+PROXMOX_RESERVATION_STATUS_RELEASED = "released"
+PROXMOX_RESERVATION_STATUS_EXPIRED = "expired"
+PROXMOX_RESERVATION_STATUS_FAILED = "failed"
+
+PROXMOX_RESERVATION_STATUSES = frozenset({
+    PROXMOX_RESERVATION_STATUS_ACTIVE,
+    PROXMOX_RESERVATION_STATUS_CONSUMED,
+    PROXMOX_RESERVATION_STATUS_RELEASED,
+    PROXMOX_RESERVATION_STATUS_EXPIRED,
+    PROXMOX_RESERVATION_STATUS_FAILED,
+})
+
+
+class ProxmoxReservation(Base):
+    """Durable Proxmox resource reservation (HC3.2).
+
+    Atomic acquire via conditional UPDATE on HelperComputeNode reserved counters.
+    Idempotent via idempotency_key unique constraint.
+    Deterministic placement via stable scoring.
+    """
+
+    __tablename__ = "proxmox_reservations"
+    __table_args__ = (
+        UniqueConstraint("reservation_id", name="uq_proxmox_reservation_id"),
+        UniqueConstraint("idempotency_key", name="uq_proxmox_reservation_idempotency"),
+        UniqueConstraint("request_id", name="uq_proxmox_reservation_request"),
+        Index("ix_proxmox_reservation_status", "status"),
+        Index("ix_proxmox_reservation_expires", "expires_at"),
+        Index("ix_proxmox_reservation_tenant", "tenant_id"),
+        Index("ix_proxmox_reservation_node", "node_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    reservation_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    request_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    tenant_id: Mapped[str] = mapped_column(String(128), index=True)
+    customer_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    node_id: Mapped[str] = mapped_column(String(64), index=True)
+    storage_pool: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    vcpu: Mapped[int] = mapped_column(Integer)
+    ram_gb: Mapped[int] = mapped_column(Integer)
+    disk_gb: Mapped[int] = mapped_column(Integer)
+    template_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    status: Mapped[str] = mapped_column(String(32), default=PROXMOX_RESERVATION_STATUS_ACTIVE, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expired_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+# ---------------------------------------------------------------------------
+# Helper Compute HC3.3 — Durable provisioning job + state machine
+# ---------------------------------------------------------------------------
+
+PROXMOX_JOB_STATE_RESERVED = "reserved"
+PROXMOX_JOB_STATE_QUEUED = "queued"
+PROXMOX_JOB_STATE_PROVISIONING = "provisioning"
+PROXMOX_JOB_STATE_READY = "ready"
+PROXMOX_JOB_STATE_FAILED = "failed"
+PROXMOX_JOB_STATE_ROLLBACK_PENDING = "rollback_pending"
+PROXMOX_JOB_STATE_ROLLED_BACK = "rolled_back"
+PROXMOX_JOB_STATE_CANCELLED = "cancelled"
+
+PROXMOX_JOB_STATE_CLONE_INTENT = "clone_intent"
+PROXMOX_JOB_STATE_CLONE_VERIFIED = "clone_verified"
+PROXMOX_JOB_STATE_CLONE_CANCELLED = "clone_cancelled"
+PROXMOX_JOB_STATE_MUTATION_READY = "mutation_ready"
+PROXMOX_JOB_STATE_MUTATION_VALIDATED = "mutation_validated"
+PROXMOX_JOB_STATE_MUTATION_EXECUTING = "mutation_executing"
+PROXMOX_JOB_STATE_CLONE_EXECUTED = "clone_executed"
+
+# HC3.8: Post-clone VM configuration and boot
+PROXMOX_JOB_STATE_POST_CLONE_VALIDATED = "post_clone_validated"
+PROXMOX_JOB_STATE_POST_CLONE_CONFIGURING = "post_clone_configuring"
+PROXMOX_JOB_STATE_BOOT_STARTING = "boot_starting"
+PROXMOX_JOB_STATE_BOOT_VERIFYING = "boot_verifying"
+PROXMOX_JOB_STATE_BOOTED_AND_READY = "booted_and_ready"
+
+# HC3.9 — Base Odoo Runtime Provisioning
+PROXMOX_JOB_STATE_BASE_RUNTIME_INSTALLING = "base_runtime_installing"
+PROXMOX_JOB_STATE_POSTGRES_READY = "postgres_ready"
+PROXMOX_JOB_STATE_ODOO_RUNTIME_STARTING = "odoo_runtime_starting"
+PROXMOX_JOB_STATE_ODOO_RUNTIME_VERIFYING = "odoo_runtime_verifying"
+PROXMOX_JOB_STATE_BASE_ODOO_RUNTIME_READY = "base_odoo_runtime_ready"
+
+
+PROXMOX_JOB_STATES = frozenset({
+    PROXMOX_JOB_STATE_CLONE_INTENT,
+    PROXMOX_JOB_STATE_CLONE_VERIFIED,
+    PROXMOX_JOB_STATE_CLONE_CANCELLED,
+    PROXMOX_JOB_STATE_RESERVED,
+    PROXMOX_JOB_STATE_QUEUED,
+    PROXMOX_JOB_STATE_PROVISIONING,
+    PROXMOX_JOB_STATE_READY,
+    PROXMOX_JOB_STATE_FAILED,
+    PROXMOX_JOB_STATE_ROLLBACK_PENDING,
+    PROXMOX_JOB_STATE_ROLLED_BACK,
+    PROXMOX_JOB_STATE_CANCELLED,
+    PROXMOX_JOB_STATE_MUTATION_READY,
+    PROXMOX_JOB_STATE_MUTATION_VALIDATED,
+    PROXMOX_JOB_STATE_MUTATION_EXECUTING,
+    PROXMOX_JOB_STATE_CLONE_EXECUTED,
+    PROXMOX_JOB_STATE_POST_CLONE_VALIDATED,
+    PROXMOX_JOB_STATE_POST_CLONE_CONFIGURING,
+    PROXMOX_JOB_STATE_BOOT_STARTING,
+    PROXMOX_JOB_STATE_BOOT_VERIFYING,
+    PROXMOX_JOB_STATE_BOOTED_AND_READY,
+    PROXMOX_JOB_STATE_BASE_RUNTIME_INSTALLING,
+    PROXMOX_JOB_STATE_POSTGRES_READY,
+    PROXMOX_JOB_STATE_ODOO_RUNTIME_STARTING,
+    PROXMOX_JOB_STATE_ODOO_RUNTIME_VERIFYING,
+    PROXMOX_JOB_STATE_BASE_ODOO_RUNTIME_READY,
+})
+
+# Explicit valid transitions — no arbitrary jumps
+PROXMOX_JOB_TRANSITIONS: dict[str, set[str]] = {
+    # HC3.6 entry is controlled by atomic approval/slot/job CAS, never fake execution.
+    PROXMOX_JOB_STATE_CLONE_INTENT: {PROXMOX_JOB_STATE_CLONE_VERIFIED},
+    PROXMOX_JOB_STATE_CLONE_VERIFIED: set(),
+    PROXMOX_JOB_STATE_CLONE_CANCELLED: set(),
+    PROXMOX_JOB_STATE_RESERVED: {PROXMOX_JOB_STATE_QUEUED, PROXMOX_JOB_STATE_CANCELLED},
+    PROXMOX_JOB_STATE_QUEUED: {PROXMOX_JOB_STATE_PROVISIONING, PROXMOX_JOB_STATE_CANCELLED},
+    PROXMOX_JOB_STATE_PROVISIONING: {
+        PROXMOX_JOB_STATE_READY,
+        PROXMOX_JOB_STATE_FAILED,
+        PROXMOX_JOB_STATE_ROLLBACK_PENDING,
+        PROXMOX_JOB_STATE_MUTATION_READY,
+    },
+    PROXMOX_JOB_STATE_FAILED: {
+        PROXMOX_JOB_STATE_QUEUED,
+        PROXMOX_JOB_STATE_ROLLBACK_PENDING,
+        PROXMOX_JOB_STATE_ROLLED_BACK,
+    },
+    PROXMOX_JOB_STATE_ROLLBACK_PENDING: {PROXMOX_JOB_STATE_ROLLED_BACK, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_READY: set(),
+    PROXMOX_JOB_STATE_ROLLED_BACK: set(),
+    PROXMOX_JOB_STATE_CANCELLED: set(),
+    PROXMOX_JOB_STATE_MUTATION_READY: {PROXMOX_JOB_STATE_MUTATION_VALIDATED},
+    PROXMOX_JOB_STATE_MUTATION_VALIDATED: {PROXMOX_JOB_STATE_MUTATION_EXECUTING},
+    PROXMOX_JOB_STATE_MUTATION_EXECUTING: {PROXMOX_JOB_STATE_CLONE_EXECUTED, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_CLONE_EXECUTED: {PROXMOX_JOB_STATE_POST_CLONE_VALIDATED},
+    PROXMOX_JOB_STATE_POST_CLONE_VALIDATED: {PROXMOX_JOB_STATE_POST_CLONE_CONFIGURING},
+    PROXMOX_JOB_STATE_POST_CLONE_CONFIGURING: {PROXMOX_JOB_STATE_BOOT_STARTING},
+    PROXMOX_JOB_STATE_BOOT_STARTING: {PROXMOX_JOB_STATE_BOOT_VERIFYING},
+    PROXMOX_JOB_STATE_BOOT_VERIFYING: {PROXMOX_JOB_STATE_BOOTED_AND_READY, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_BOOTED_AND_READY: {PROXMOX_JOB_STATE_BASE_RUNTIME_INSTALLING},
+    PROXMOX_JOB_STATE_BASE_RUNTIME_INSTALLING: {PROXMOX_JOB_STATE_POSTGRES_READY, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_POSTGRES_READY: {PROXMOX_JOB_STATE_ODOO_RUNTIME_STARTING, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_ODOO_RUNTIME_STARTING: {PROXMOX_JOB_STATE_ODOO_RUNTIME_VERIFYING, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_ODOO_RUNTIME_VERIFYING: {PROXMOX_JOB_STATE_BASE_ODOO_RUNTIME_READY, PROXMOX_JOB_STATE_FAILED},
+    PROXMOX_JOB_STATE_BASE_ODOO_RUNTIME_READY: set()
+}
+
+
+class ProxmoxProvisioningJob(Base):
+    """Durable provisioning job (HC3.3)."""
+
+    __tablename__ = "proxmox_provisioning_jobs"
+    __table_args__ = (
+        UniqueConstraint("job_id", name="uq_proxmox_job_id"),
+        UniqueConstraint("request_id", name="uq_proxmox_job_request"),
+        UniqueConstraint("idempotency_key", name="uq_proxmox_job_idempotency"),
+        Index("ix_proxmox_job_state", "state"),
+        Index("ix_proxmox_job_reservation", "reservation_id"),
+        Index("ix_proxmox_job_tenant", "tenant_id"),
+        Index("ix_proxmox_job_node", "node_id"),
+        Index("ix_proxmox_job_next_retry", "next_retry_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    request_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    reservation_id: Mapped[str] = mapped_column(String(64), index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    tenant_id: Mapped[str] = mapped_column(String(128), index=True)
+    customer_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    provider: Mapped[str] = mapped_column(String(32), default="fake")
+    node_id: Mapped[str] = mapped_column(String(64), index=True)
+    storage_pool: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    template_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    hostname: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    vcpu: Mapped[int] = mapped_column(Integer, default=2)
+    ram_gb: Mapped[int] = mapped_column(Integer, default=4)
+    disk_gb: Mapped[int] = mapped_column(Integer, default=40)
+    state: Mapped[str] = mapped_column(String(32), default=PROXMOX_JOB_STATE_RESERVED, index=True)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=3)
+    last_error_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_error_message: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    next_retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    claimed_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    fake_resource_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    has_partial_resource: Mapped[bool] = mapped_column(Boolean, default=False)
+    # --- HC3.5 — Plan compiler / dry-run fields ---
+    provider_mode: Mapped[str | None] = mapped_column(String(32), nullable=True)  # fake | dry_run
+    plan_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    plan_schema_version: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    target_vmid: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    provider_task_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    worker_lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_reconciled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    dry_run_result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ownership_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    # --- HC3.7 — Mutation readiness evidence ---
+    mutation_readiness_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    mutation_readiness_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    mutation_blocker: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    # --- HC3.7 Gate 3 — Drift validation evidence ---
+    drift_validation_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    drift_validation_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # --- HC3.7 Gate 4 — Controlled execution evidence ---
+    mutation_execution_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    mutation_execution_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # --- HC3.8 Post-clone configuration and boot ---
+    post_clone_readiness_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # --- HC3.7 Gate 4 — Additional execution metadata ---
+    contract_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    # --- HC3.9 — Base Odoo Runtime evidence ---
+    base_runtime_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_template_vmid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    target_node: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    target_storage: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    target_bridge: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    acquired_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+# ---------------------------------------------------------------------------
+# Helper Compute HC3.5 — Plan compiler / dry-run fields (added to ProxmoxProvisioningJob above)
+# ---------------------------------------------------------------------------
+
+# --- HC3.5 VMID Lease constants ---
+PROXMOX_VMID_STATE_LEASED = "leased"
+PROXMOX_VMID_STATE_CONSUMED = "consumed"
+PROXMOX_VMID_STATE_CONFLICTED = "conflicted"
+PROXMOX_VMID_STATE_RELEASED = "released"
+
+PROXMOX_VMID_STATES = frozenset({
+    PROXMOX_VMID_STATE_LEASED,
+    PROXMOX_VMID_STATE_CONSUMED,
+    PROXMOX_VMID_STATE_CONFLICTED,
+    PROXMOX_VMID_STATE_RELEASED,
+})
+
+
+class ProxmoxVmidLease(Base):
+    """Durable VMID lease (HC3.5).
+
+    Concurrent-safe via unique constraint on (cluster_fingerprint, vmid).
+    Deterministic allocation: lowest available in range.
+    """
+
+    __tablename__ = "proxmox_vmid_leases"
+    __table_args__ = (
+        UniqueConstraint("cluster_fingerprint", "vmid", name="uq_proxmox_vmid_cluster_vmid"),
+        Index("ix_proxmox_vmid_job", "job_id"),
+        Index("ix_proxmox_vmid_state", "state"),
+        Index("ix_proxmox_vmid_cluster", "cluster_fingerprint"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    vmid: Mapped[int] = mapped_column(Integer, nullable=False)
+    cluster_fingerprint: Mapped[str] = mapped_column(String(128), nullable=False)
+    job_id: Mapped[str] = mapped_column(String(64), index=True)
+    request_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    state: Mapped[str] = mapped_column(String(32), default=PROXMOX_VMID_STATE_LEASED, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    acquired_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    conflict_reason: Mapped[str | None] = mapped_column(String(256), nullable=True)
+
+
+# ---------------------------------------------------------------------------
+# Helper Compute HC3.5 — Provisioning Audit Event (append-only)
+# ---------------------------------------------------------------------------
+
+class ProxmoxProvisioningAuditEvent(Base):
+    """Append-only audit trail for HC3.5 provisioning plan lifecycle."""
+
+    __tablename__ = "proxmox_provisioning_audit_events"
+    __table_args__ = (
+        Index("ix_proxmox_audit_job", "job_id"),
+        Index("ix_proxmox_audit_event_type", "event_type"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    event_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    job_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    reservation_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    request_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    tenant_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    event_type: Mapped[str] = mapped_column(String(64), index=True)
+    operation_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    attempt: Mapped[int] = mapped_column(Integer, default=0)
+    provider: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    provider_mode: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    cluster_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    node_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    target_vmid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    plan_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    provider_task_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    outcome_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    message: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    actor_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    actor_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    meta_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+# HC3.6 additive tables; registered by the existing Base.metadata.create_all path.
+class ProxmoxCloneApproval(Base):
+    __tablename__ = "proxmox_clone_approvals"
+    approval_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    binding: Mapped[str] = mapped_column(String(64))
+    action: Mapped[str] = mapped_column(String(32))
+    operator_id: Mapped[str] = mapped_column(String(128))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ProxmoxCloneIntent(Base):
+    __tablename__ = "proxmox_clone_intents"
+    job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    binding: Mapped[str] = mapped_column(String(64))
+    approval_id: Mapped[str] = mapped_column(String(64))
+    phase: Mapped[str] = mapped_column(String(40))
+    upid: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+
+class ProxmoxMutationControl(Base):
+    __tablename__ = "proxmox_mutation_controls"
+    # One global slot, across clusters/processes. Never automatically expires.
+    control_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kill_switch: Mapped[bool] = mapped_column(Boolean, default=True)
+    owner_job_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+
+# ---------------------------------------------------------------------------
+# Helper Compute HC3.7 Gate 4 — Proxmox Credential Registry
+# ---------------------------------------------------------------------------
+
+PROXMOX_CREDENTIAL_TYPE_READONLY = "readonly"
+PROXMOX_CREDENTIAL_TYPE_MUTATION = "mutation"
+
+PROXMOX_CREDENTIAL_TYPES = frozenset({
+    PROXMOX_CREDENTIAL_TYPE_READONLY,
+    PROXMOX_CREDENTIAL_TYPE_MUTATION,
+})
+
+
+class ProxmoxCredential(Base):
+    """Durable Proxmox credential registry (HC3.7 Gate 4).
+
+    Stores encrypted secret material with fail-closed resolution.
+    The plaintext token secret is NEVER stored, logged, or exposed.
+    """
+
+    __tablename__ = "proxmox_credentials"
+    __table_args__ = (
+        UniqueConstraint("credential_id", name="uq_proxmox_credential_id"),
+        UniqueConstraint("environment", "purpose", "credential_type", name="uq_proxmox_credential_env_purpose_type"),
+        Index("ix_proxmox_credential_active", "active"),
+        Index("ix_proxmox_credential_environment", "environment"),
+        Index("ix_proxmox_credential_purpose", "purpose"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    credential_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    environment: Mapped[str] = mapped_column(String(32), index=True)  # lab | staging | production
+    cluster: Mapped[str] = mapped_column(String(128))  # cluster/provider identity
+    proxmox_username: Mapped[str] = mapped_column(String(128))
+    proxmox_token_id: Mapped[str] = mapped_column(String(128))
+    credential_type: Mapped[str] = mapped_column(String(32), index=True)  # readonly | mutation
+    purpose: Mapped[str] = mapped_column(String(128), index=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    single_use: Mapped[bool] = mapped_column(Boolean, default=False)
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    allowed_node: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    source_vmid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    target_vmid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    storage: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    bridge: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Non-secret credential fingerprint for evidence
+    fingerprint: Mapped[str] = mapped_column(String(128), index=True)
+    # Encrypted secret material (Fernet-encoded)
+    encrypted_secret: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

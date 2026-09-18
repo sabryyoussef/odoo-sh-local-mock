@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -11,11 +12,14 @@ from app.models import (
     CustomerSubscription,
     Package,
     Solution,
+    SolutionArtifact,
+    SolutionDeploymentProfile,
     TemplateDatabase,
     Tenant,
     TenantEnvironment,
 )
 from app.schemas_saas import (
+    PackageUpdate,
     CUSTOMER_SUBSCRIPTION_STATUSES,
     SUBSCRIPTION_TYPE_SOLUTION,
     CustomerSubscriptionCreate,
@@ -42,6 +46,9 @@ class CatalogError(ValueError):
     pass
 
 
+logger = logging.getLogger(__name__)
+
+
 def list_public_solutions(db: Session) -> list[Solution]:
     return list(
         db.scalars(
@@ -52,6 +59,48 @@ def list_public_solutions(db: Session) -> list[Solution]:
         ).all()
     )
 
+
+def list_public_solutions_with_profiles(db: Session) -> list[Solution]:
+    return list(
+        db.scalars(
+            select(Solution)
+            .where(Solution.status == "active")
+            .options(
+                selectinload(Solution.packages),
+                selectinload(Solution.deployment_profiles),
+                selectinload(Solution.artifacts),
+            )
+            .order_by(Solution.name)
+        ).all()
+    )
+
+
+def get_solution_by_id(db: Session, solution_id: int) -> Solution | None:
+    return db.scalar(
+        select(Solution)
+        .where(Solution.id == solution_id)
+        .options(selectinload(Solution.packages))
+    )
+
+
+def get_solution_by_code(db: Session, code: str) -> Solution | None:
+    return db.scalar(
+        select(Solution)
+        .where(Solution.code == code.strip().lower())
+        .options(selectinload(Solution.packages))
+    )
+
+
+def get_solution_by_code_with_profiles(db: Session, code: str) -> Solution | None:
+    return db.scalar(
+        select(Solution)
+        .where(Solution.code == code.strip().lower())
+        .options(
+            selectinload(Solution.packages),
+            selectinload(Solution.deployment_profiles),
+            selectinload(Solution.artifacts),
+        )
+    )
 
 def list_all_solutions(db: Session) -> list[Solution]:
     return list(
@@ -150,6 +199,7 @@ def create_package(db: Session, payload: PackageCreate) -> Package:
         description=payload.description.strip(),
         price_monthly=decimal_to_str(payload.price_monthly),
         price_annual=decimal_to_str(payload.price_annual),
+        price_one_time=decimal_to_str(payload.price_one_time),
         currency=payload.currency.upper(),
         trial_days=payload.trial_days,
         max_users=payload.max_users,
@@ -181,6 +231,8 @@ def update_package(db: Session, package_id: int, payload: PackageUpdate) -> Pack
         data["price_monthly"] = decimal_to_str(data["price_monthly"])
     if "price_annual" in data:
         data["price_annual"] = decimal_to_str(data["price_annual"])
+    if "price_one_time" in data:
+        data["price_one_time"] = decimal_to_str(data["price_one_time"])
     if "enabled_modules" in data:
         data["enabled_modules"] = modules_to_csv(data["enabled_modules"])
     if "enabled_features" in data:
@@ -439,9 +491,10 @@ def seed_demo_catalog(db: Session) -> None:
             "packages": [
                 PackageCreate(
                     solution_id=0,
-                    name="HMS Essential",
-                    code="essential",
-                    description="Core HMS demo entitlements.",
+                    name="Clinic Essentials",
+                    code="clinic-essentials",
+                    description="Basic clinic package for small practices.",
+                    price_one_time="86.01",
                     price_monthly=None,
                     price_annual=None,
                     currency="USD",
@@ -456,7 +509,79 @@ def seed_demo_catalog(db: Session) -> None:
                     staging_enabled=False,
                     support_sla="business_hours",
                     enabled_modules=["base", "mail", "contacts", "account"],
-                    enabled_features=["admissions", "billing"],
+                    enabled_features=["patients", "appointments", "billing"],
+                    status="active",
+                    is_demo=True,
+                ),
+                PackageCreate(
+                    solution_id=0,
+                    name="Healthcare Premium",
+                    code="healthcare-premium",
+                    description="Premium package with full HMS capabilities.",
+                    price_one_time="1409.03",
+                    price_monthly=None,
+                    price_annual=None,
+                    currency="USD",
+                    trial_days=30,
+                    max_users=25,
+                    max_branches=3,
+                    max_companies=1,
+                    filestore_quota_mb=10240,
+                    backup_frequency_hours=12,
+                    backup_retention_days=14,
+                    api_enabled=True,
+                    staging_enabled=True,
+                    support_sla="24x5",
+                    enabled_modules=["base", "mail", "contacts", "account", "stock", "purchase"],
+                    enabled_features=["patients", "physicians", "appointments", "prescriptions", "procedures", "billing"],
+                    status="active",
+                    is_demo=True,
+                ),
+                PackageCreate(
+                    solution_id=0,
+                    name="Complete Community",
+                    code="complete-community",
+                    description="Complete HMS package — Community Edition.",
+                    price_one_time="5093.06",
+                    price_monthly=None,
+                    price_annual=None,
+                    currency="USD",
+                    trial_days=30,
+                    max_users=50,
+                    max_branches=5,
+                    max_companies=3,
+                    filestore_quota_mb=20480,
+                    backup_frequency_hours=12,
+                    backup_retention_days=14,
+                    api_enabled=True,
+                    staging_enabled=True,
+                    support_sla="24x7",
+                    enabled_modules=["base", "mail", "contacts", "account", "stock", "purchase", "hr", "maintenance"],
+                    enabled_features=["patients", "physicians", "appointments", "prescriptions", "procedures", "billing"],
+                    status="active",
+                    is_demo=True,
+                ),
+                PackageCreate(
+                    solution_id=0,
+                    name="Complete Enterprise",
+                    code="complete-enterprise",
+                    description="Complete HMS package — Enterprise Edition.",
+                    price_one_time="4929.05",
+                    price_monthly=None,
+                    price_annual=None,
+                    currency="USD",
+                    trial_days=30,
+                    max_users=100,
+                    max_branches=10,
+                    max_companies=5,
+                    filestore_quota_mb=51200,
+                    backup_frequency_hours=6,
+                    backup_retention_days=30,
+                    api_enabled=True,
+                    staging_enabled=True,
+                    support_sla="24x7",
+                    enabled_modules=["base", "mail", "contacts", "account", "stock", "purchase", "hr", "maintenance"],
+                    enabled_features=["patients", "physicians", "appointments", "prescriptions", "procedures", "billing"],
                     status="active",
                     is_demo=True,
                 ),
@@ -479,9 +604,32 @@ def seed_demo_catalog(db: Session) -> None:
             "packages": [
                 PackageCreate(
                     solution_id=0,
-                    name="SIS Campus",
-                    code="campus",
-                    description="Single campus demo package.",
+                    name="Education Starter",
+                    code="education-starter",
+                    description="For small schools, nurseries, and training centers starting digital operations.",
+                    price_monthly=None,
+                    price_annual=None,
+                    currency="USD",
+                    trial_days=21,
+                    max_users=15,
+                    max_branches=1,
+                    max_companies=1,
+                    filestore_quota_mb=4096,
+                    backup_frequency_hours=24,
+                    backup_retention_days=7,
+                    api_enabled=False,
+                    staging_enabled=False,
+                    support_sla="business_hours",
+                    enabled_modules=["base", "mail", "contacts", "account", "website", "openeducat_core"],
+                    enabled_features=["students", "fees", "attendance"],
+                    status="active",
+                    is_demo=True,
+                ),
+                PackageCreate(
+                    solution_id=0,
+                    name="Complete School",
+                    code="complete-school",
+                    description="For established schools requiring connected academic and financial workflows.",
                     price_monthly=None,
                     price_annual=None,
                     currency="USD",
@@ -495,8 +643,31 @@ def seed_demo_catalog(db: Session) -> None:
                     api_enabled=True,
                     staging_enabled=True,
                     support_sla="business_hours",
-                    enabled_modules=["base", "mail", "contacts", "account", "website"],
-                    enabled_features=["students", "fees", "parent_portal"],
+                    enabled_modules=["base", "mail", "contacts", "account", "website", "openeducat_core", "openeducat_admission", "openeducat_exam", "openeducat_timetable"],
+                    enabled_features=["students", "admissions", "fees", "attendance", "exams", "parent_portal"],
+                    status="active",
+                    is_demo=True,
+                ),
+                PackageCreate(
+                    solution_id=0,
+                    name="Education Enterprise",
+                    code="education-enterprise",
+                    description="For large schools, university-style institutions, or multi-campus organizations.",
+                    price_monthly=None,
+                    price_annual=None,
+                    currency="USD",
+                    trial_days=30,
+                    max_users=100,
+                    max_branches=10,
+                    max_companies=3,
+                    filestore_quota_mb=20480,
+                    backup_frequency_hours=12,
+                    backup_retention_days=30,
+                    api_enabled=True,
+                    staging_enabled=True,
+                    support_sla="24x5",
+                    enabled_modules=["base", "mail", "contacts", "account", "website", "openeducat_core", "openeducat_admission", "openeducat_exam", "openeducat_timetable", "openeducat_attendance", "openeducat_library", "openeducat_assignment"],
+                    enabled_features=["students", "admissions", "courses", "fees", "attendance", "exams", "timetable", "parent_portal"],
                     status="active",
                     is_demo=True,
                 ),
@@ -506,12 +677,64 @@ def seed_demo_catalog(db: Session) -> None:
 
     for entry in demos:
         sol_payload: SolutionCreate = entry["solution"]
-        if get_solution_by_code(db, sol_payload.code):
-            continue
-        solution = create_solution(db, sol_payload)
+        solution = get_solution_by_code(db, sol_payload.code)
+        if not solution:
+            solution = create_solution(db, sol_payload)
+        # Idempotent package sync: create missing, update existing by code.
         for pkg_template in entry["packages"]:
             pkg_data = pkg_template.model_copy(update={"solution_id": solution.id})
-            create_package(db, pkg_data)
+            existing_pkg = db.scalar(
+                select(Package).where(
+                    Package.solution_id == solution.id,
+                    Package.code == pkg_data.code,
+                )
+            )
+            if existing_pkg:
+                # Update existing package to match approved definition
+                update_payload = PackageUpdate(
+                    name=pkg_data.name,
+                    description=pkg_data.description,
+                    price_one_time=pkg_data.price_one_time,
+                    price_monthly=pkg_data.price_monthly,
+                    price_annual=pkg_data.price_annual,
+                    currency=pkg_data.currency,
+                    trial_days=pkg_data.trial_days,
+                    max_users=pkg_data.max_users,
+                    max_branches=pkg_data.max_branches,
+                    max_companies=pkg_data.max_companies,
+                    filestore_quota_mb=pkg_data.filestore_quota_mb,
+                    backup_frequency_hours=pkg_data.backup_frequency_hours,
+                    backup_retention_days=pkg_data.backup_retention_days,
+                    api_enabled=pkg_data.api_enabled,
+                    staging_enabled=pkg_data.staging_enabled,
+                    support_sla=pkg_data.support_sla,
+                    enabled_modules=pkg_data.enabled_modules,
+                    enabled_features=pkg_data.enabled_features,
+                    status=pkg_data.status,
+                    is_demo=pkg_data.is_demo,
+                )
+                update_package(db, existing_pkg.id, update_payload)
+            else:
+                create_package(db, pkg_data)
+        # Retire packages no longer in the approved definition.
+        # Soft-deprecate when referenced (subscriptions/FK) so startup never
+        # fails with NOT NULL package_id integrity errors.
+        approved_codes = {pt.code for pt in entry["packages"]}
+        for old_pkg in list(solution.packages or []):
+            if old_pkg.code in approved_codes:
+                continue
+            try:
+                delete_package(db, old_pkg.id)
+            except Exception:
+                db.rollback()
+                old_pkg.status = "retired"
+                old_pkg.is_demo = False
+                db.commit()
+                logger.warning(
+                    "Could not delete package %s/%s; marked retired instead",
+                    solution.code,
+                    old_pkg.code,
+                )
 
         tpl_name = f"{solution.code}-v{solution.current_version}-template"
         existing_tpl = db.scalar(
@@ -520,8 +743,9 @@ def seed_demo_catalog(db: Session) -> None:
                 TemplateDatabase.name == tpl_name,
             )
         )
+        tpl = None
         if not existing_tpl:
-            create_template_database(
+            tpl = create_template_database(
                 db,
                 TemplateDatabaseCreate(
                     solution_id=solution.id,
@@ -535,3 +759,154 @@ def seed_demo_catalog(db: Session) -> None:
                     notes="Demo placeholder — no production database cloned.",
                 ),
             )
+        else:
+            tpl = existing_tpl
+        _seed_rs1_defaults(db, solution, tpl)
+
+
+# ---------------------------------------------------------------------------
+# RS1 — seed deployment profiles + artifact defaults (idempotent, additive)
+# ---------------------------------------------------------------------------
+
+_RS1_PROFILES: list[dict] = [
+    {
+        "code": "demo",
+        "name": "Demo",
+        "environment_type": "demo",
+        "is_default": True,
+        "sort_order": 0,
+        "min_vcpu": 1,
+        "recommended_vcpu": 2,
+        "min_ram_gb": 2,
+        "recommended_ram_gb": 4,
+        "min_storage_gb": 20,
+        "recommended_storage_gb": 80,
+        "expected_users_min": None,
+        "expected_users_max": 10,
+        "compatible_compute_tier": "starter",
+        "demo_suitable": True,
+        "production_suitable": False,
+        "notes": "Demo profile — unverified application artifact. Recommendation only, not deployment-ready.",
+    },
+    {
+        "code": "small-clinic",
+        "name": "Small Clinic",
+        "environment_type": "small_production",
+        "is_default": False,
+        "sort_order": 10,
+        "min_vcpu": 2,
+        "recommended_vcpu": 2,
+        "min_ram_gb": 4,
+        "recommended_ram_gb": 4,
+        "min_storage_gb": 80,
+        "recommended_storage_gb": 80,
+        "expected_users_min": 1,
+        "expected_users_max": 10,
+        "compatible_compute_tier": "starter",
+        "demo_suitable": True,
+        "production_suitable": False,
+        "notes": "Small clinic estimate — unbenchmarked. Requires verified artifact before production use.",
+    },
+    {
+        "code": "standard-clinic",
+        "name": "Standard Clinic",
+        "environment_type": "standard_production",
+        "is_default": False,
+        "sort_order": 20,
+        "min_vcpu": 2,
+        "recommended_vcpu": 4,
+        "min_ram_gb": 4,
+        "recommended_ram_gb": 8,
+        "min_storage_gb": 80,
+        "recommended_storage_gb": 160,
+        "expected_users_min": 5,
+        "expected_users_max": 25,
+        "compatible_compute_tier": "business",
+        "demo_suitable": False,
+        "production_suitable": False,
+        "notes": "Standard clinic multi-branch estimate — unbenchmarked. Production suitability requires verified artifact.",
+    },
+]
+
+
+def _seed_rs1_defaults(db, solution, template_database=None) -> None:
+    """Attach artifact + deployment profiles if absent. No-op if already seeded.
+
+    Veterinary reference implementation: profiles represent honest unbenchmarked
+    estimates, not verified deployment requirements.
+    Only vet-hospital is seeded as reference; HMS/SIS remain without profiles
+    to avoid false deployment-ready claims.
+    """
+    if solution.code != "vet-hospital":
+        return
+    from app.models import SolutionArtifact, SolutionDeploymentProfile
+
+    # --- Artifact ---
+    existing_art = db.scalar(
+        select(SolutionArtifact).where(
+            SolutionArtifact.solution_id == solution.id,
+            SolutionArtifact.code == f"{solution.code}-v{solution.current_version}-artifact",
+        )
+    )
+    if not existing_art:
+        art = SolutionArtifact(
+            solution_id=solution.id,
+            code=f"{solution.code}-v{solution.current_version}-artifact",
+            name=f"{solution.name} v{solution.current_version} artifact",
+            package_identifier=f"{solution.code}@{solution.current_version}",
+            version=solution.current_version,
+            odoo_version=solution.odoo_version,
+            edition="community",
+            source_type="template_database",
+            install_strategy="restore",
+            status="draft",
+            verification_state="unverified",
+            is_verified=False,
+            deployment_ready=False,
+            template_database_id=template_database.id if template_database else None,
+            notes="Demo seed placeholder — no verified veterinary application package.",
+        )
+        db.add(art)
+        db.commit()
+        db.refresh(art)
+    else:
+        art = existing_art
+
+    # --- Profiles ---
+    for prof in _RS1_PROFILES:
+        existing_prof = db.scalar(
+            select(SolutionDeploymentProfile).where(
+                SolutionDeploymentProfile.solution_id == solution.id,
+                SolutionDeploymentProfile.code == prof["code"],
+            )
+        )
+        if not existing_prof:
+            db.add(
+                SolutionDeploymentProfile(
+                    solution_id=solution.id,
+                    artifact_id=art.id,
+                    template_database_id=template_database.id if template_database else None,
+                    code=prof["code"],
+                    name=prof["name"],
+                    environment_type=prof["environment_type"],
+                    active=True,
+                    is_default=prof["is_default"],
+                    sort_order=prof["sort_order"],
+                    odoo_version=solution.odoo_version,
+                    edition="community",
+                    min_vcpu=prof["min_vcpu"],
+                    recommended_vcpu=prof["recommended_vcpu"],
+                    min_ram_gb=prof["min_ram_gb"],
+                    recommended_ram_gb=prof["recommended_ram_gb"],
+                    min_storage_gb=prof["min_storage_gb"],
+                    recommended_storage_gb=prof["recommended_storage_gb"],
+                    expected_users_min=prof["expected_users_min"],
+                    expected_users_max=prof["expected_users_max"],
+                    compatible_compute_tier=prof["compatible_compute_tier"],
+                    demo_suitable=prof["demo_suitable"],
+                    production_suitable=prof["production_suitable"],
+                    status="published",
+                    notes=prof["notes"],
+                )
+            )
+    db.commit()

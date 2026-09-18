@@ -1,0 +1,31 @@
+{
+  "checkpoint": "HC3_6_LOCAL_SCHEMA_PREPARED",
+  "verified_at_utc": "2026-09-13T12:16:05.433106+00:00",
+  "database_path": "/opt/projects/active/odoo-sh-local-mock/data-hc36/control.db",
+  "database_sha256": "9a8f30392c7ae33258c6772d9469df18fe4d673d7b298524f970567411c4f2d5",
+  "database_bytes": 233472,
+  "directory_mode": "0o700",
+  "database_mode": "0o600",
+  "uid": 1000,
+  "gid": 1000,
+  "table_counts": {
+    "proxmox_clone_approvals": 0,
+    "proxmox_clone_intents": 0,
+    "proxmox_mutation_controls": 0,
+    "proxmox_provisioning_audit_events": 0,
+    "proxmox_provisioning_jobs": 0,
+    "proxmox_reservations": 0,
+    "proxmox_vmid_leases": 0
+  },
+  "explicit_indexes": 36,
+  "sqlite_automatic_indexes": 9,
+  "exact_ddl_match": true,
+  "integrity": "ok",
+  "readonly_verification_db_hash_unchanged": true,
+  "sidecars_present": false,
+  "bundle_hashes": {
+    "prepare.py": "7e478ca88088ad057ba6c31d075b4fa8d08e07b74bfcac1fdfaf7b8b51dd96c5",
+    "schema.sql": "b5ecbfe5db49930fd536464cabe9d53aa80d1f82bf22b7511cce16289d0b9312",
+    "manifest.json": "c3c0efff05fcfea943896fe21be6523e93e6425c038661b1fa645a91c9ed2a8c"
+  }
+}

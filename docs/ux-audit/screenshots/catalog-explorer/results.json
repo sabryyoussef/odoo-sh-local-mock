@@ -1,0 +1,47 @@
+[
+  {
+    "name": "01-ar-initial.png",
+    "url": "http://127.0.0.1:8000/catalog?lang=ar",
+    "ms": 2528,
+    "overflow": false,
+    "dir": "rtl",
+    "selected": 1,
+    "sideTitle": "نظام إدارة المستشفيات"
+  },
+  {
+    "name": "02-ar-sis-selected.png",
+    "url": "http://127.0.0.1:8000/catalog?lang=ar&solution=sis",
+    "ms": 2432,
+    "overflow": false,
+    "dir": "rtl",
+    "selected": 1,
+    "sideTitle": "نظام معلومات المدارس"
+  },
+  {
+    "name": "03-ar-vet-selected.png",
+    "url": "http://127.0.0.1:8000/catalog?lang=ar&solution=vet-hospital",
+    "ms": 2229,
+    "overflow": false,
+    "dir": "rtl",
+    "selected": 1,
+    "sideTitle": "المستشفى البيطري"
+  },
+  {
+    "name": "04-en-hms-selected.png",
+    "url": "http://127.0.0.1:8000/catalog?solution=hms",
+    "ms": 1558,
+    "overflow": false,
+    "dir": "ltr",
+    "selected": 1,
+    "sideTitle": "Hospital Management System"
+  },
+  {
+    "name": "05-ar-mobile.png",
+    "url": "http://127.0.0.1:8000/catalog?lang=ar&solution=sis",
+    "ms": 2241,
+    "overflow": false,
+    "dir": "rtl",
+    "selected": 1,
+    "sideTitle": "نظام معلومات المدارس"
+  }
+]

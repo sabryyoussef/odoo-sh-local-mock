@@ -1017,7 +1017,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "cloud.calculator.availability.unavailable": "Unavailable",
         "cloud.calculator.availability.capacity_validation_pending": "Capacity validation pending",
         "cloud.calculator.availability.stale": "Capacity data stale",
-    
+
         # QD1 Community Quick Demo
         "quick_demo.cta.try_now": "Try now",
         "quick_demo.cta.free_trial": "Start 7-day free trial",
@@ -2040,7 +2040,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "catalog.package.clinic": "Helpers للعيادات",
         "catalog.package.hospital": "Helpers للمستشفيات",
 "cloud.calculator.availability.stale": "بيانات السعة غير محدّثة",
-    
+
         # QD1 Community Quick Demo
         "quick_demo.cta.try_now": "جرّب الآن",
         "quick_demo.cta.free_trial": "ابدأ تجربة مجانية لمدة 7 أيام",

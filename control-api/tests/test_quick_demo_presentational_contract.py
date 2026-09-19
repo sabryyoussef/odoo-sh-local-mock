@@ -106,41 +106,66 @@ def render(name: str, lang: str = "en", **extra) -> str:
     return template.render(**_base_ctx(lang, **extra))
 
 
-def _hms_solution(**overrides):
+def _explorer_item(*, code: str, name: str, trial: bool = True, **overrides):
+    """Minimal Solution Explorer card compatible with catalog.html after origin/main."""
     data = {
-        "id": 1,
-        "code": "hms",
-        "name": "Hospital Management",
-        "description": "HMS for clinics",
-        "odoo_version": "19.0",
+        "id": 1 if code == "hms" else 2,
+        "code": code,
+        "name": name,
+        "display_name": name,
+        "short_desc": f"{name} short description",
+        "category_label": "Healthcare" if code == "hms" else "Education",
         "is_demo": True,
+        "icon": "hms",
+        "image_href": None,
+        "readiness": SimpleNamespace(state="trial_ready", label="Trial ready"),
+        "trial_href": (
+            f"/portal/trial/confirm?solution_id={1 if code == 'hms' else 2}&package_id=1"
+            if trial
+            else None
+        ),
+        "trust_indicators": [],
+        "benefit_cards": [],
+        "benefit_title_key": None,
+        "capabilities": [],
+        "workflow_steps": [],
         "packages": [
             SimpleNamespace(
+                id=1,
+                code="starter",
+                name="Starter",
                 status="active",
-                name="HMS Starter",
-                max_users=10,
-                filestore_quota_mb=2048,
                 is_demo=True,
+                price_one_time=None,
+                currency="USD",
+                edition_label="Community",
+                enabled_features=[],
             )
         ],
-        "quick_demo_href": "/quick-demo/hms?edition=community",
-        "free_trial_href": "/portal/trial/confirm?solution_id=1&package_id=1",
+        "edition_labels": {},
     }
     data.update(overrides)
     return SimpleNamespace(**data)
 
 
-def _sis_solution():
-    return SimpleNamespace(
-        id=2,
-        code="sis",
-        name="School Information",
-        description="SIS",
-        odoo_version="19.0",
-        is_demo=True,
-        packages=[],
-    )
+def _hms_solution(**overrides):
+    return _explorer_item(code="hms", name="Hospital Management", **overrides)
 
+
+def _sis_solution(**overrides):
+    return _explorer_item(code="sis", name="School Information", **overrides)
+
+
+def _catalog_ctx(solutions, **extra):
+    """Render catalog with explorer_solutions / selected_solution (upstream catalog)."""
+    selected = solutions[0] if solutions else None
+    return {
+        "solutions": solutions,
+        "explorer_solutions": solutions,
+        "selected_solution": selected,
+        "selected_code": selected.code if selected else "",
+        **extra,
+    }
 
 # ---------------------------------------------------------------------------
 # Catalog
@@ -150,23 +175,22 @@ def _sis_solution():
 def test_catalog_unchanged_when_quick_demo_disabled():
     html = render(
         "catalog.html",
-        quick_demo_enabled=False,
-        solutions=[_hms_solution(), _sis_solution()],
+        **_catalog_ctx([_hms_solution(), _sis_solution()], quick_demo_enabled=False),
     )
     assert 'data-cta-quick-demo' not in html
     assert "Try now" not in html
     assert "جرّب الآن" not in html
     assert "badge--community" not in html
-    assert "Compare packages" in html
-    assert "Start 7-day free trial" not in html
+    # Upstream Free Trial primary CTA remains when QD disabled
+    assert 'data-cta-trial' in html
+    assert "Start 7-day free trial" not in html  # QD-specific copy absent
     assert "Choose package" not in html
 
 
 def test_catalog_community_quick_demo_cta_when_enabled():
     html = render(
         "catalog.html",
-        quick_demo_enabled=True,
-        solutions=[_hms_solution(), _sis_solution()],
+        **_catalog_ctx([_hms_solution(), _sis_solution()], quick_demo_enabled=True),
     )
     assert 'data-cta-quick-demo' in html
     assert "Try now" in html
@@ -182,8 +206,7 @@ def test_catalog_community_quick_demo_cta_when_enabled():
 def test_catalog_free_trial_cta_still_present_when_enabled():
     html = render(
         "catalog.html",
-        quick_demo_enabled=True,
-        solutions=[_hms_solution()],
+        **_catalog_ctx([_hms_solution()], quick_demo_enabled=True),
     )
     assert 'data-cta-trial' in html
     assert "Start 7-day free trial" in html
@@ -193,8 +216,7 @@ def test_catalog_free_trial_cta_still_present_when_enabled():
 def test_catalog_paid_cta_separate():
     html = render(
         "catalog.html",
-        quick_demo_enabled=True,
-        solutions=[_hms_solution()],
+        **_catalog_ctx([_hms_solution()], quick_demo_enabled=True),
     )
     assert 'data-cta-paid' in html
     assert "Choose package" in html
@@ -203,25 +225,22 @@ def test_catalog_paid_cta_separate():
 def test_catalog_non_hms_unchanged_when_flag_on():
     html = render(
         "catalog.html",
-        quick_demo_enabled=True,
-        solutions=[_sis_solution()],
+        **_catalog_ctx([_sis_solution()], quick_demo_enabled=True),
     )
     assert 'data-cta-quick-demo' not in html
-    assert "Compare packages" in html
+    assert 'data-cta-trial' in html  # Free Trial remains for non-HMS when available
 
 
 def test_catalog_english_and_arabic_copy_and_dir():
     en = render(
         "catalog.html",
         lang="en",
-        quick_demo_enabled=True,
-        solutions=[_hms_solution()],
+        **_catalog_ctx([_hms_solution()], quick_demo_enabled=True),
     )
     ar = render(
         "catalog.html",
         lang="ar",
-        quick_demo_enabled=True,
-        solutions=[_hms_solution()],
+        **_catalog_ctx([_hms_solution()], quick_demo_enabled=True),
     )
     assert "Try now" in en
     assert "Start 7-day free trial" in en

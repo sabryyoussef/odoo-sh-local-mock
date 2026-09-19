@@ -284,6 +284,66 @@ class AuditEvent(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class QuickDemoSession(Base):
+    __tablename__ = "quick_demo_sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    public_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    request_key: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    solution_code: Mapped[str] = mapped_column(String(32))
+    edition: Mapped[str] = mapped_column(String(32))
+    language: Mapped[str] = mapped_column(String(2))
+    state: Mapped[str] = mapped_column(String(32), index=True)
+    owner_user_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    owner_session_hash: Mapped[str] = mapped_column(String(64), index=True)
+    runtime_pool_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    database_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    role_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    filestore_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    route_hostname: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    public_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    artifact_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    template_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    activated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    idle_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    cleanup_requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    cleaned_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failure_code: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    failure_message: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    claimed_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    lease_token: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    evidence_json: Mapped[str] = mapped_column(Text, default="{}")
+    runtime_slot: Mapped[int | None] = mapped_column(Integer, unique=True, nullable=True)
+    allocation_id: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
+    runtime_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    container_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    database_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    role_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    filestore_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    route_ownership: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    config_fingerprint: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    adapter_name: Mapped[str] = mapped_column(String(32), default="fake")
+    adapter_version: Mapped[str] = mapped_column(String(32), default="qd1-e-v1")
+    cleanup_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    cleanup_retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class QuickDemoAuditEvent(Base):
+    __tablename__ = "quick_demo_audit_events"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[int] = mapped_column(ForeignKey("quick_demo_sessions.id"), index=True)
+    event_type: Mapped[str] = mapped_column(String(32), index=True)
+    from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 # ---------------------------------------------------------------------------
 # SaaS product model (Phase 5+)
 # Legacy demo entitlement remains in ``subscriptions`` (Subscription class).

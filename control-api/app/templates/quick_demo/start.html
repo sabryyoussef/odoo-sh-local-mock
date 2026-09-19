@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ t('quick_demo.start.title') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block body_class %}body--app body--quick-demo{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+<div class="app-flow quick-demo" data-quick-demo-page="start">
+  <main class="flow-main flow-main--full quick-demo__main">
+    <p class="muted quick-demo__back">
+      <a class="quick-demo__back-link" href="{{ locale_url(back_href|default('/catalog?solution=hms')) }}">{{ t('quick_demo.back_hms') }}</a>
+    </p>
+
+    <header class="flow-header quick-demo__header">
+      <div class="quick-demo__badges" aria-label="{{ t('quick_demo.edition_label') }}">
+        <span class="badge badge--community" data-qd-badge="community">{{ t('quick_demo.badge.community') }}</span>
+        <span class="badge" data-qd-badge="product">{{ t('quick_demo.badge.product') }}</span>
+      </div>
+      <h1 id="qd-start-title">{{ t('quick_demo.start.title') }}</h1>
+      <p class="quick-demo__lead">{{ t('quick_demo.start.lead') }}</p>
+    </header>
+
+    <section class="flow-card quick-demo__card" aria-labelledby="qd-start-title">
+      <h2 class="quick-demo__subtitle">{{ t('quick_demo.start.what_title') }}</h2>
+      <ul class="quick-demo__points plain-list">
+        <li>{{ t('quick_demo.point.temporary') }}</li>
+        <li>{{ t('quick_demo.point.explore') }}</li>
+        <li>{{ t('quick_demo.point.short_lived') }}</li>
+        <li>{{ t('quick_demo.point.sample_data') }}</li>
+        <li>{{ t('quick_demo.point.not_trial') }}</li>
+      </ul>
+
+      <p class="quick-demo__notice" role="note">
+        <span class="badge badge--warning">{{ t('quick_demo.sample_notice_badge') }}</span>
+        {{ t('quick_demo.sample_notice') }}
+      </p>
+
+      <p class="muted quick-demo__prep">{{ t('quick_demo.prep_approx') }}</p>
+
+      <form
+        class="quick-demo__form"
+        method="post"
+        action="{{ sessions_action|default('/quick-demo/sessions') }}"
+        id="quick-demo-start-form"
+        data-quick-demo-start
+      >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="solution_code" value="{{ solution_code|default('hms') }}">
+        <input type="hidden" name="edition" value="{{ edition|default('community') }}">
+        <input type="hidden" name="language" value="{{ language|default(lang)|default('en') }}">
+        <div class="quick-demo__actions">
+          <button type="submit" class="btn btn--primary quick-demo__touch" id="quick-demo-start-cta" data-qd-cta="start">
+            {{ t('quick_demo.cta.start') }}
+          </button>
+          <a class="btn btn--ghost quick-demo__touch" href="{{ locale_url(back_href|default('/catalog?solution=hms')) }}">
+            {{ t('quick_demo.back_hms') }}
+          </a>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/quick-demo.js" defer></script>
+{% endblock %}

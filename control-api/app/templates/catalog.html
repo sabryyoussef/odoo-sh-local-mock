@@ -23,16 +23,32 @@
         <div class="catalog-hero__copy">
           <div class="catalog-detail__badges">
             {% if item.is_demo %}<span class="badge badge--trial">{{ t('catalog.badge_trial') }}</span>{% endif %}
+            {% if quick_demo_enabled and item.code == 'hms' %}
+            <span class="badge badge--community" data-qd-badge="community">{{ t('quick_demo.badge.community') }}</span>
+            {% endif %}
             <span class="badge">{{ item.category_label }}</span>
             <span class="readiness readiness--{{ item.readiness.state }}">{{ item.readiness.label }}</span>
           </div>
           <h2>{{ item.display_name }}</h2>
           <p>{{ item.short_desc }}</p>
           <div class="catalog-hero__cta">
+            {% if quick_demo_enabled and item.code == 'hms' %}
+            <a
+              class="btn btn--primary quick-demo__touch"
+              href="{{ locale_url(quick_demo_href) }}"
+              data-cta-quick-demo
+              data-edition="community"
+            >{{ t('quick_demo.cta.try_now') }}</a>
+            {% if item.trial_href %}
+            <a class="btn btn--ghost quick-demo__touch" href="{{ item.trial_href }}" data-cta-trial>{{ t('quick_demo.cta.free_trial') }}</a>
+            {% endif %}
+            <a class="btn btn--ghost quick-demo__touch" href="#packages" data-cta-paid>{{ t('quick_demo.cta.choose_package') }}</a>
+            {% else %}
             {% if item.trial_href %}
             <a class="btn btn--primary" href="{{ item.trial_href }}" data-cta-trial>{{ t('catalog.hero.cta_primary') }}</a>
             {% endif %}
             <a class="btn btn--ghost" href="#packages">{{ t('catalog.hero.cta_secondary') }}</a>
+            {% endif %}
           </div>
           <p class="catalog-hero__reassurance">{{ t('catalog.hero.trial_reassurance') }}</p>
         </div>

@@ -35,12 +35,21 @@ const projects = [
   },
   {
     name: "desktop-chromium",
-    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js|lifecycle|cloud-onboarding-full-journey/,
+    testIgnore: /auth\.spec\.js|auth\.setup\.spec\.js|responsive\.spec\.js|three-product-lines\.spec\.js|lifecycle|cloud-onboarding-full-journey|quick-demo-community/,
     dependencies: ["setup"],
     use: {
       browserName: "chromium",
       viewport: { width: 1280, height: 720 },
       storageState: path.join(AUTH_DIR, "user.json"),
+    },
+  },
+  {
+    name: "quick-demo-chromium",
+    testMatch: /quick-demo-community\.spec\.js/,
+    use: {
+      browserName: "chromium",
+      viewport: { width: 1280, height: 720 },
+      storageState: { cookies: [], origins: [] },
     },
   },
   {

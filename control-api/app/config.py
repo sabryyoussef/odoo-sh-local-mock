@@ -14,6 +14,27 @@ class Settings(BaseSettings):
     app_env: str = "development"
     database_url: str = "sqlite:////data/control.db"
     session_secret: str = "change-me-in-production-please-use-long-random"
+    quick_demo_enabled: bool = False
+    quick_demo_community_hms_enabled: bool = False
+    quick_demo_max_active_sessions: int = 0
+    quick_demo_future_live_capacity: int = 3
+    quick_demo_public_base_domain: str = ""
+    quick_demo_adapter: str = "fake"
+    quick_demo_auth_required: bool = True
+    quick_demo_allow_anonymous: bool = False
+    quick_demo_absolute_ttl_minutes: int = 240
+    quick_demo_idle_timeout_minutes: int = 30
+    quick_demo_cron_enabled: bool = False
+    quick_demo_outbound_integrations_enabled: bool = False
+    # QD1-F2 real-runtime safety gates (all disabled by default; fail closed)
+    quick_demo_real_enabled: bool = False
+    quick_demo_real_hosts: str = ""
+    quick_demo_real_domains: str = ""
+    quick_demo_real_golden_manifest: str = ""
+    quick_demo_real_ownership_schema_version: str = ""
+    quick_demo_mutation_token: str = ""
+    quick_demo_real_root: str = "/data/quick-demo"
+    quick_demo_real_dry_run: bool = True
     github_client_id: str = ""
     github_client_secret: str = ""
     github_callback_url: str = "http://localhost:8000/auth/github/callback"

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ t('quick_demo.status.title') }} · {{ app_name|default('Helpers ERP') }}{% endblock %}
+{% block body_class %}body--app body--quick-demo{% endblock %}
+{% block shell_class %}{% endblock %}
+{% block shell %}
+{% set qd_state = state|default('requested') %}
+{% set qd_progress = progress_percent|default(0) %}
+{% set qd_can_launch = can_launch is defined and can_launch %}
+{% set qd_retry = retry_allowed is defined and retry_allowed %}
+{% set terminal_states = ['active', 'expired', 'deleted', 'failed'] %}
+<div
+  class="app-flow quick-demo"
+  data-quick-demo-page="status"
+  data-qd-state="{{ qd_state }}"
+  data-qd-can-launch="{{ 'true' if qd_can_launch else 'false' }}"
+  data-qd-progress="{{ qd_progress }}"
+  data-status-url="{{ status_poll_url|default('') }}"
+  data-poll-enabled="{{ 'false' if qd_state in terminal_states or not status_poll_url else 'true' }}"
+  data-qd-open-label="{{ t('quick_demo.cta.open') }}"
+>
+  <main class="flow-main flow-main--full quick-demo__main">
+    <p class="muted quick-demo__back">
+      <a class="quick-demo__back-link" href="{{ locale_url(back_href|default('/catalog?solution=hms')) }}">{{ t('quick_demo.back_hms') }}</a>
+    </p>
+
+    <header class="flow-header quick-demo__header">
+      <div class="quick-demo__badges">
+        <span class="badge badge--community">{{ t('quick_demo.badge.community') }}</span>
+        <span class="badge">{{ t('quick_demo.badge.product') }}</span>
+      </div>
+      <h1 id="qd-status-title">{{ t('quick_demo.status.title') }}</h1>
+      <p class="quick-demo__lead">{{ t('quick_demo.status.lead') }}</p>
+    </header>
+
+    <section class="flow-card quick-demo__card" aria-labelledby="qd-status-title">
+      <div
+        class="quick-demo__live"
+        id="quick-demo-live"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-qd-live
+      >
+        <p class="quick-demo__status-label" data-qd-status-label>
+          {{ status_message|default(t('quick_demo.state.' ~ qd_state)) }}
+        </p>
+        <div class="quick-demo__progress" data-qd-progress-wrap>
+          <div
+            class="quick-demo__progress-track"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="{{ qd_progress }}"
+            aria-labelledby="qd-status-title"
+            data-qd-progressbar
+          >
+            <div class="quick-demo__progress-fill" style="width: {{ qd_progress }}%;" data-qd-progress-fill></div>
+          </div>
+          <p class="visually-hidden" data-qd-progress-text>{{ qd_progress }}%</p>
+        </div>
+      </div>
+
+      <div class="quick-demo__state-panel" data-qd-state-panel="{{ qd_state }}">
+        {% if qd_state == 'expired' %}
+        <p class="quick-demo__recovery" data-qd-recovery="expired">{{ t('quick_demo.recovery.expired') }}</p>
+        {% elif qd_state == 'failed' %}
+        <p class="quick-demo__recovery" data-qd-recovery="failed">{{ t('quick_demo.recovery.failed') }}</p>
+        {% elif qd_state == 'deleted' %}
+        <p class="quick-demo__recovery" data-qd-recovery="deleted">{{ t('quick_demo.recovery.deleted') }}</p>
+        {% elif qd_state == 'cleaning' %}
+        <p class="muted" data-qd-recovery="cleaning">{{ t('quick_demo.state.cleaning') }}</p>
+        {% endif %}
+      </div>
+
+      <div class="quick-demo__actions" data-qd-actions>
+        <div class="quick-demo__launch-slot" data-qd-launch-slot>
+          {% if qd_can_launch and open_href %}
+          <a
+            class="btn btn--primary quick-demo__touch"
+            href="{{ open_href }}"
+            data-qd-cta="open"
+            id="quick-demo-open-cta"
+          >{{ t('quick_demo.cta.open') }}</a>
+          {% endif %}
+        </div>
+
+        {% if qd_retry and (qd_state == 'expired' or qd_state == 'failed' or qd_state == 'deleted') %}
+        <a
+          class="btn btn--ghost quick-demo__touch"
+          href="{{ locale_url(retry_href|default('/quick-demo/hms?edition=community')) }}"
+          data-qd-cta="retry"
+        >{{ t('quick_demo.cta.retry') }}</a>
+        {% endif %}
+
+        <a class="btn btn--ghost quick-demo__touch" href="{{ locale_url(back_href|default('/catalog?solution=hms')) }}">
+          {{ t('quick_demo.back_hms') }}
+        </a>
+      </div>
+
+      {% if expires_at and qd_state == 'active' %}
+      <p class="muted quick-demo__expires" data-qd-expires>
+        {{ t('quick_demo.expires_prefix') }}
+        <time datetime="{{ expires_at }}"><bdi dir="ltr">{{ expires_at }}</bdi></time>
+      </p>
+      {% endif %}
+    </section>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/quick-demo.js" defer></script>
+{% endblock %}

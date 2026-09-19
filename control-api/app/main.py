@@ -44,6 +44,7 @@ from app.api.platform_deploy import router as platform_deploy_router
 from app.api.catalog import router as catalog_router
 from app.api.portal import router as portal_router
 from app.api.provisioning import proxmox_router, router as provisioning_router
+from app.api.quick_demo import router as quick_demo_router
 from app.dummy_data import CURRENT_USER
 from app.models import Branch
 from app.services.branch_service import sync_project_branches
@@ -148,6 +149,7 @@ app.include_router(operator_platform_router)
 app.include_router(platform_deploy_router)
 app.include_router(cloud_router)
 app.include_router(helper_compute_router)
+app.include_router(quick_demo_router)
 
 
 @app.on_event("startup")
@@ -1085,6 +1087,10 @@ def public_catalog(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
         user_view=user_view,
         selected_code=selected_param or None,
     )
+    qd_settings = get_settings()
+    quick_demo_enabled = bool(
+        qd_settings.quick_demo_enabled and qd_settings.quick_demo_community_hms_enabled
+    )
     return _render(
         request,
         "catalog.html",
@@ -1094,6 +1100,9 @@ def public_catalog(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
             "explorer_solutions": explorer["solutions"],
             "selected_solution": explorer["selected"],
             "selected_code": explorer["selected_code"],
+            "quick_demo_enabled": quick_demo_enabled,
+            "quick_demo_href": "/quick-demo/hms",
+            "free_trial_href": "/portal/trial/confirm?solution_code=hms",
             "user": user_view,
         },
     )

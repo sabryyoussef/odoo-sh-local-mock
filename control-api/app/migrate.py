@@ -212,6 +212,30 @@ def _relax_sqlite_notnull(engine: Engine, table: str, column: str) -> None:
 
 def migrate_schema(engine: Engine) -> None:
     """Apply additive column/table changes without dropping data."""
+    # Dedicated Quick Demo tables; also covered by init_db's metadata.create_all.
+    from app.models import QuickDemoAuditEvent, QuickDemoSession
+
+    QuickDemoSession.__table__.create(bind=engine, checkfirst=True)
+    QuickDemoAuditEvent.__table__.create(bind=engine, checkfirst=True)
+    for column in (
+        "last_seen_at DATETIME", "idle_expires_at DATETIME", "runtime_slot INTEGER",
+        "allocation_id VARCHAR(64)", "runtime_ownership VARCHAR(128)",
+        "container_ownership VARCHAR(128)", "database_ownership VARCHAR(128)",
+        "role_ownership VARCHAR(128)", "filestore_ownership VARCHAR(128)",
+        "route_ownership VARCHAR(128)", "config_fingerprint VARCHAR(128)",
+        "adapter_name VARCHAR(32) DEFAULT 'fake'", "adapter_version VARCHAR(32) DEFAULT 'qd1-e-v1'",
+        "cleanup_attempts INTEGER DEFAULT 0", "cleanup_retry_at DATETIME",
+    ):
+        _add_column(engine, "quick_demo_sessions", column)
+    with engine.begin() as conn:
+        conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_quick_demo_runtime_slot "
+            "ON quick_demo_sessions (runtime_slot) WHERE runtime_slot IS NOT NULL"
+        ))
+        conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_quick_demo_allocation_id "
+            "ON quick_demo_sessions (allocation_id) WHERE allocation_id IS NOT NULL"
+        ))
     # DP4 live: platform templates have no Solution FK
     _relax_sqlite_notnull(engine, "template_databases", "solution_id")
     # DP5 live: platform_quick tenants have no CustomerSubscription FK

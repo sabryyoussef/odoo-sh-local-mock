@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     quick_demo_idle_timeout_minutes: int = 30
     quick_demo_cron_enabled: bool = False
     quick_demo_outbound_integrations_enabled: bool = False
+    # QD1-F2 real-runtime safety gates (all disabled by default; fail closed)
+    quick_demo_real_enabled: bool = False
+    quick_demo_real_hosts: str = ""
+    quick_demo_real_domains: str = ""
+    quick_demo_real_golden_manifest: str = ""
+    quick_demo_real_ownership_schema_version: str = ""
+    quick_demo_mutation_token: str = ""
+    quick_demo_real_root: str = "/data/quick-demo"
+    quick_demo_real_dry_run: bool = True
     github_client_id: str = ""
     github_client_secret: str = ""
     github_callback_url: str = "http://localhost:8000/auth/github/callback"

@@ -1,0 +1,58 @@
+{
+  "timings": [
+    {
+      "name": "desktop-en-catalog",
+      "ms": 758
+    },
+    {
+      "name": "desktop-en-start",
+      "ms": 156
+    },
+    {
+      "name": "desktop-en-post",
+      "ms": 177
+    },
+    {
+      "name": "desktop-ar-catalog",
+      "ms": 654
+    },
+    {
+      "name": "desktop-ar-start",
+      "ms": 117
+    },
+    {
+      "name": "desktop-ar-post",
+      "ms": 150
+    },
+    {
+      "name": "mobile-en-catalog",
+      "ms": 609
+    },
+    {
+      "name": "mobile-en-start",
+      "ms": 92
+    },
+    {
+      "name": "mobile-en-post",
+      "ms": 142
+    },
+    {
+      "name": "mobile-ar-catalog",
+      "ms": 642
+    },
+    {
+      "name": "mobile-ar-start",
+      "ms": 112
+    },
+    {
+      "name": "mobile-ar-post",
+      "ms": 17148
+    }
+  ],
+  "consoleErrors": [
+    "mobile-ar: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "failedRequests": [
+    "mobile-ar: 503 http://127.0.0.1:8765/quick-demo/sessions"
+  ]
+}

@@ -1,0 +1,21 @@
+# FreePool policy overlay — copy to ~/.config/freellmpool/config.toml
+# Env vars override these values (freellmpool precedence).
+
+[keys]
+# Populate from free-tier signups; never commit real secrets.
+# GROQ_API_KEY = "..."
+# CEREBRAS_API_KEY = "..."
+# GEMINI_API_KEY = "..."
+# OPENROUTER_API_KEY = "..."
+# GITHUB_TOKEN = "..."   # GitHub Models
+
+[aliases]
+# Optional Hermes-friendly aliases to pooled free routes.
+# "gpt-4o-mini" = "auto"
+
+[settings]
+# FreePool default: spread load across providers (maximum free diversity).
+routing = "spread"
+cooldown_seconds = 60
+# Require bearer token when proxy listens beyond loopback (set in .env for Docker).
+# proxy_key = "change-me"
